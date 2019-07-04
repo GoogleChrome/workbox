@@ -6,11 +6,15 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.mjs';
-import {CACHE_UPDATED_MESSAGE_TYPE, CACHE_UPDATED_MESSAGE_META}
-  from './utils/constants.mjs';
+import {assert} from 'workbox-core/_private/assert.js';
+import {CACHE_UPDATED_MESSAGE_TYPE, CACHE_UPDATED_MESSAGE_META} from './utils/constants.js';
+import './_version.js';
 
-import './_version.mjs';
+export interface BroadcastUpdateOptions {
+  cacheName: string;
+  url: string;
+  channel?: BroadcastChannel;
+}
 
 /**
  * You would not normally call this method directly; it's called automatically
@@ -50,15 +54,15 @@ import './_version.mjs';
  *
  * @memberof workbox.broadcastUpdate
  */
-const broadcastUpdate = async ({channel, cacheName, url}) => {
+const broadcastUpdate = async ({channel, cacheName, url}: BroadcastUpdateOptions) => {
   if (process.env.NODE_ENV !== 'production') {
-    assert.isType(cacheName, 'string', {
+    assert!.isType(cacheName, 'string', {
       moduleName: 'workbox-broadcast-update',
       className: '~',
       funcName: 'broadcastUpdate',
       paramName: 'cacheName',
     });
-    assert.isType(url, 'string', {
+    assert!.isType(url, 'string', {
       moduleName: 'workbox-broadcast-update',
       className: '~',
       funcName: 'broadcastUpdate',
@@ -78,7 +82,7 @@ const broadcastUpdate = async ({channel, cacheName, url}) => {
   if (channel) {
     channel.postMessage(data);
   } else {
-    const windows = await clients.matchAll({type: 'window'});
+    const windows = await self.clients.matchAll({type: 'window'});
     for (const win of windows) {
       win.postMessage(data);
     }

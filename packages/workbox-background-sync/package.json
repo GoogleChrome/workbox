@@ -25,7 +25,7 @@
     "browserNamespace": "workbox.backgroundSync",
     "packageType": "browser"
   },
-  "main": "build/workbox-background-sync.prod.js",
+  "main": "index.js",
   "module": "index.mjs",
   "types": "index.d.ts",
   "dependencies": {

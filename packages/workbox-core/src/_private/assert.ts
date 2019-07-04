@@ -26,7 +26,7 @@ const isSWEnv = (moduleName: string) => {
  * needed.
  */
 const isArray = (
-  value: [],
+  value: any[],
   details: WorkboxErrorDetails,
 ) => {
   if (!Array.isArray(value)) {

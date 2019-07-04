@@ -6,13 +6,13 @@
   https://opensource.org/licenses/MIT.
 */
 
-import '../_version.mjs';
+import '../_version.js';
 
 export const CACHE_UPDATED_MESSAGE_TYPE = 'CACHE_UPDATED';
 export const CACHE_UPDATED_MESSAGE_META = 'workbox-broadcast-update';
 export const DEFAULT_BROADCAST_CHANNEL_NAME = 'workbox';
 export const DEFAULT_DEFER_NOTIFICATION_TIMEOUT = 10000;
-export const DEFAULT_HEADERS_TO_CHECK = [
+export const DEFAULT_HEADERS_TO_CHECK: string[] = [
   'content-length',
   'etag',
   'last-modified',

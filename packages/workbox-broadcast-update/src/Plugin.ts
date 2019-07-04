@@ -6,9 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.mjs';
-import {BroadcastCacheUpdate} from './BroadcastCacheUpdate.mjs';
-import './_version.mjs';
+import {assert} from 'workbox-core/_private/assert.js';
+import {BroadcastCacheUpdate, BroadcastCacheUpdateOptions} from './BroadcastCacheUpdate.js';
+import './_version.js';
 
 /**
  * This plugin will automatically broadcast a message whenever a cached response
@@ -17,6 +17,8 @@ import './_version.mjs';
  * @memberof workbox.broadcastUpdate
  */
 class Plugin {
+  private _broadcastUpdate: BroadcastCacheUpdate;
+
   /**
    * Construct a BroadcastCacheUpdate instance with the passed options and
    * calls its `notifyIfUpdated()` method whenever the plugin's
@@ -34,7 +36,7 @@ class Plugin {
    *     to wait for a ready message from the window on navigation requests
    *     before sending the update.
    */
-  constructor(options) {
+  constructor(options: BroadcastCacheUpdateOptions) {
     this._broadcastUpdate = new BroadcastCacheUpdate(options);
   }
 
@@ -51,21 +53,33 @@ class Plugin {
    * @param {Request} options.request The request that triggered the udpate.
    * @param {Request} [options.event] The event that triggered the update.
    */
-  cacheDidUpdate({cacheName, oldResponse, newResponse, request, event}) {
+  cacheDidUpdate({
+    cacheName,
+    oldResponse,
+    newResponse,
+    request,
+    event
+  }: {
+    cacheName: string,
+    oldResponse?: Response,
+    newResponse: Response,
+    request: Request,
+    event?: FetchEvent
+  }) {
     if (process.env.NODE_ENV !== 'production') {
-      assert.isType(cacheName, 'string', {
+      assert!.isType(cacheName, 'string', {
         moduleName: 'workbox-broadcast-update',
         className: 'Plugin',
         funcName: 'cacheDidUpdate',
         paramName: 'cacheName',
       });
-      assert.isInstance(newResponse, Response, {
+      assert!.isInstance(newResponse, Response, {
         moduleName: 'workbox-broadcast-update',
         className: 'Plugin',
         funcName: 'cacheDidUpdate',
         paramName: 'newResponse',
       });
-      assert.isInstance(request, Request, {
+      assert!.isInstance(request, Request, {
         moduleName: 'workbox-broadcast-update',
         className: 'Plugin',
         funcName: 'cacheDidUpdate',

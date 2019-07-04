@@ -26,7 +26,7 @@ export interface WorkboxErrorDetails {
  */
 class WorkboxError extends Error {
   name: string;
-  details: WorkboxErrorDetails;
+  details?: WorkboxErrorDetails;
 
   /**
    *
@@ -36,7 +36,7 @@ class WorkboxError extends Error {
    * that will help developers identify issues should
    * be added as a key on the context object.
    */
-  constructor(errorCode: string, details: WorkboxErrorDetails) {
+  constructor(errorCode: string, details?: WorkboxErrorDetails) {
     let message = messageGenerator(errorCode, details);
 
     super(message);

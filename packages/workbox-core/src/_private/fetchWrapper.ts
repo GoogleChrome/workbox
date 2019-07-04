@@ -63,7 +63,7 @@ const wrappedFetch = async ({
   }
 
   if (process.env.NODE_ENV !== 'production') {
-    assert && assert.isInstance(request, Request, {
+    assert!.isInstance(request, Request, {
       paramName: 'request',
       expectedClass: Request,
       moduleName: 'workbox-core',
@@ -94,7 +94,7 @@ const wrappedFetch = async ({
 
         if (process.env.NODE_ENV !== 'production') {
           if (request) {
-            assert && assert.isInstance(request, Request, {
+            assert!.isInstance(request, Request, {
               moduleName: 'Plugin',
               funcName: pluginEvents.CACHED_RESPONSE_WILL_BE_USED,
               isReturnValueProblem: true,
@@ -141,7 +141,7 @@ const wrappedFetch = async ({
 
         if (process.env.NODE_ENV !== 'production') {
           if (fetchResponse) {
-            assert && assert.isInstance(fetchResponse, Response, {
+            assert!.isInstance(fetchResponse, Response, {
               moduleName: 'Plugin',
               funcName: pluginEvents.FETCH_DID_SUCCEED,
               isReturnValueProblem: true,

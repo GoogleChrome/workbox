@@ -32,7 +32,7 @@ import './_version.js';
 export const setCacheNameDetails = (details: PartialCacheNameDetails) => {
   if (process.env.NODE_ENV !== 'production') {
     Object.keys(details).forEach((key) => {
-      assert && assert.isType(details[key], 'string', {
+      assert!.isType(details[key], 'string', {
         moduleName: 'workbox-core',
         funcName: 'setCacheNameDetails',
         paramName: `details.${key}`,

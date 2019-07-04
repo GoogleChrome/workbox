@@ -6,17 +6,21 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.mjs';
-import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
-import {Deferred} from 'workbox-core/_private/Deferred.mjs';
-import {responsesAreSame} from './responsesAreSame.mjs';
-import {broadcastUpdate} from './broadcastUpdate.mjs';
+import {assert} from 'workbox-core/_private/assert.js';
+import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
+import {logger} from 'workbox-core/_private/logger.js';
+import {Deferred} from 'workbox-core/_private/Deferred.js';
+import {responsesAreSame} from './responsesAreSame.js';
+import {broadcastUpdate, BroadcastUpdateOptions} from './broadcastUpdate.js';
+import {DEFAULT_HEADERS_TO_CHECK, DEFAULT_BROADCAST_CHANNEL_NAME, DEFAULT_DEFER_NOTIFICATION_TIMEOUT} from './utils/constants.js';
+import './_version.js';
 
-import {DEFAULT_HEADERS_TO_CHECK, DEFAULT_BROADCAST_CHANNEL_NAME,
-  DEFAULT_DEFER_NOTIFICATION_TIMEOUT} from './utils/constants.mjs';
 
-import './_version.mjs';
+export interface BroadcastCacheUpdateOptions {
+  headersToCheck?: string[];
+  channelName?: string;
+  deferNoticationTimeout?: number;
+}
 
 /**
  * Uses the [Broadcast Channel API]{@link https://developers.google.com/web/updates/2016/09/broadcastchannel}
@@ -30,6 +34,12 @@ import './_version.mjs';
  * @memberof workbox.broadcastUpdate
  */
 class BroadcastCacheUpdate {
+  private _headersToCheck: string[];
+  private _channelName: string;
+  private _deferNoticationTimeout: number;
+  private _channel?: BroadcastChannel;
+  private _navigationEventsDeferreds?: Map<Event, Deferred<unknown>>;
+
   /**
    * Construct a BroadcastCacheUpdate instance with a specific `channelName` to
    * broadcast messages on
@@ -46,20 +56,24 @@ class BroadcastCacheUpdate {
    *     to wait for a ready message from the window on navigation requests
    *     before sending the update.
    */
-  constructor({headersToCheck, channelName, deferNoticationTimeout} = {}) {
+  constructor({
+    headersToCheck,
+    channelName,
+    deferNoticationTimeout,
+  }: BroadcastCacheUpdateOptions = {}) {
     this._headersToCheck = headersToCheck || DEFAULT_HEADERS_TO_CHECK;
     this._channelName = channelName || DEFAULT_BROADCAST_CHANNEL_NAME;
     this._deferNoticationTimeout =
         deferNoticationTimeout || DEFAULT_DEFER_NOTIFICATION_TIMEOUT;
 
     if (process.env.NODE_ENV !== 'production') {
-      assert.isType(this._channelName, 'string', {
+      assert!.isType(this._channelName, 'string', {
         moduleName: 'workbox-broadcast-update',
         className: 'BroadcastCacheUpdate',
         funcName: 'constructor',
         paramName: 'channelName',
       });
-      assert.isArray(this._headersToCheck, {
+      assert!.isArray(this._headersToCheck, {
         moduleName: 'workbox-broadcast-update',
         className: 'BroadcastCacheUpdate',
         funcName: 'constructor',
@@ -88,7 +102,19 @@ class BroadcastCacheUpdate {
    *     this possible cache update.
    * @return {Promise} Resolves once the update is sent.
    */
-  notifyIfUpdated({oldResponse, newResponse, url, cacheName, event}) {
+  notifyIfUpdated({
+    oldResponse,
+    newResponse,
+    url,
+    cacheName,
+    event
+  }: {
+    oldResponse: Response,
+    newResponse: Response,
+    url: string,
+    cacheName: string,
+    event?: FetchEvent
+  }): Promise<unknown> | void {
     if (!responsesAreSame(oldResponse, newResponse, this._headersToCheck)) {
       if (process.env.NODE_ENV !== 'production') {
         logger.log(`Newer response found (and cached) for:`, url);
@@ -137,7 +163,7 @@ class BroadcastCacheUpdate {
    * @param {Object} opts
    * @private
    */
-  async _broadcastUpdate(opts) {
+  async _broadcastUpdate(opts: BroadcastUpdateOptions) {
     await broadcastUpdate(opts);
   }
 
@@ -164,13 +190,13 @@ class BroadcastCacheUpdate {
    * @return {Promise}
    * @private
    */
-  _windowReadyOrTimeout(event) {
-    if (!this._navigationEventsDeferreds.has(event)) {
+  _windowReadyOrTimeout(event: Event) {
+    if (!this._navigationEventsDeferreds!.has(event)) {
       const deferred = new Deferred();
 
       // Set the deferred on the `_navigationEventsDeferreds` map so it will
       // be resolved when the next ready message event comes.
-      this._navigationEventsDeferreds.set(event, deferred);
+      this._navigationEventsDeferreds!.set(event, deferred);
 
       // But don't wait too long for the message since it may never come.
       const timeout = setTimeout(() => {
@@ -184,7 +210,7 @@ class BroadcastCacheUpdate {
       // Ensure the timeout is cleared if the deferred promise is resolved.
       deferred.promise.then(() => clearTimeout(timeout));
     }
-    return this._navigationEventsDeferreds.get(event).promise;
+    return this._navigationEventsDeferreds!.get(event)!.promise;
   }
 
   /**
@@ -206,18 +232,18 @@ class BroadcastCacheUpdate {
     // The message listener needs to be added in the initial run of the
     // service worker, but since we don't actually need to be listening for
     // messages until the cache updates, we only invoke the callback if set.
-    self.addEventListener('message', (event) => {
+    self.addEventListener('message', (event: MessageEvent) => {
       if (event.data.type === 'WINDOW_READY' &&
           event.data.meta === 'workbox-window' &&
-          this._navigationEventsDeferreds.size > 0) {
+          this._navigationEventsDeferreds!.size > 0) {
         if (process.env.NODE_ENV !== 'production') {
           logger.debug(`Received WINDOW_READY event: `, event);
         }
         // Resolve any pending deferreds.
-        for (const deferred of this._navigationEventsDeferreds.values()) {
+        for (const deferred of this._navigationEventsDeferreds!.values()) {
           deferred.resolve();
         }
-        this._navigationEventsDeferreds.clear();
+        this._navigationEventsDeferreds!.clear();
       }
     });
   }

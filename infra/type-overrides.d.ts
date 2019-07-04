@@ -16,6 +16,7 @@ interface IDBObjectStore {
 
 interface Clients {
   claim(): Promise<any>;
+  matchAll(): Promise<any>;
 }
 
 // NOTE(philipwalton): we need to use `WorkerGlobalScope` here because
