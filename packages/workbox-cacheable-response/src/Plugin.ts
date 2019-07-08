@@ -6,8 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {CacheableResponse} from './CacheableResponse.mjs';
-import './_version.mjs';
+import {CacheableResponse} from './CacheableResponse.js';
+import './_version.js';
 
 /**
  * A class implementing the `cacheWillUpdate` lifecycle callback. This makes it

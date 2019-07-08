@@ -6,11 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
-import {assert} from 'workbox-core/_private/assert.mjs';
-import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
-import './_version.mjs';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
+import {assert} from 'workbox-core/_private/assert.js';
+import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
+import {logger} from 'workbox-core/_private/logger.js';
+import './_version.js';
 
 /**
  * This class allows you to set up rules determining what

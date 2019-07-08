@@ -6,9 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {CacheableResponse} from './CacheableResponse.mjs';
-import {Plugin} from './Plugin.mjs';
-import './_version.mjs';
+import {CacheableResponse} from './CacheableResponse.js';
+import {Plugin} from './Plugin.js';
+import './_version.js';
 
 
 /**
