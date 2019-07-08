@@ -6,11 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {logger} from 'workbox-core/_private/logger.mjs';
+import {logger} from 'workbox-core/_private/logger.js';
 
-import {isSupported} from './isSupported.mjs';
+import {isSupported} from './isSupported.js';
 
-import './_version.mjs';
+import './_version.js';
 
 /**
  * If the browser supports Navigation Preload, then this will disable it.

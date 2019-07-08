@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import './_version.mjs';
+import './_version.js';
 
 /**
  * @return {boolean} Whether or not the current browser supports enabling
