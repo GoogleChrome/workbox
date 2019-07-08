@@ -6,9 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {removeIgnoredSearchParams} from './removeIgnoredSearchParams.mjs';
+import {removeIgnoredSearchParams} from './removeIgnoredSearchParams.js';
 
-import '../_version.mjs';
+import '../_version.js';
 
 /**
  * Generator function that yields possible variations on the original URL to

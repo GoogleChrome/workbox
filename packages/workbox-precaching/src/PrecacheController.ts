@@ -6,18 +6,18 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.mjs';
-import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
-import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.mjs';
-import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.mjs';
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
+import {assert} from 'workbox-core/_private/assert.js';
+import {cacheNames} from 'workbox-core/_private/cacheNames.js';
+import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.js';
+import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.js';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
 
-import {cleanRedirect} from './utils/cleanRedirect.mjs';
-import {createCacheKey} from './utils/createCacheKey.mjs';
-import {printCleanupDetails} from './utils/printCleanupDetails.mjs';
-import {printInstallDetails} from './utils/printInstallDetails.mjs';
+import {cleanRedirect} from './utils/cleanRedirect.js';
+import {createCacheKey} from './utils/createCacheKey.js';
+import {printCleanupDetails} from './utils/printCleanupDetails.js';
+import {printInstallDetails} from './utils/printInstallDetails.js';
 
-import './_version.mjs';
+import './_version.js';
 
 
 /**

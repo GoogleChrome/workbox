@@ -7,8 +7,8 @@
 */
 
 import {getOrCreatePrecacheController}
-  from './utils/getOrCreatePrecacheController.mjs';
-import './_version.mjs';
+  from './utils/getOrCreatePrecacheController.js';
+import './_version.js';
 
 
 /**

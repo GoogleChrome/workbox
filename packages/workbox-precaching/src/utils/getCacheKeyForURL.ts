@@ -7,9 +7,9 @@
 */
 
 import {getOrCreatePrecacheController}
-  from './getOrCreatePrecacheController.mjs';
-import {generateURLVariations} from './generateURLVariations.mjs';
-import '../_version.mjs';
+  from './getOrCreatePrecacheController.js';
+import {generateURLVariations} from './generateURLVariations.js';
+import '../_version.js';
 
 /**
  * This function will take the request URL and manipulate it based on the

@@ -6,8 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {precachePlugins} from './utils/precachePlugins.mjs';
-import './_version.mjs';
+import {precachePlugins} from './utils/precachePlugins.js';
+import './_version.js';
 
 
 /**

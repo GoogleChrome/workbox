@@ -6,9 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
 
-import '../_version.mjs';
+import '../_version.js';
 
 // Name of the search parameter used to store revision info.
 const REVISION_SEARCH_PARAM = '__WB_REVISION__';

@@ -6,11 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
-import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
-import {getCacheKeyForURL} from './getCacheKeyForURL.mjs';
-import '../_version.mjs';
+import {cacheNames} from 'workbox-core/_private/cacheNames.js';
+import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
+import {logger} from 'workbox-core/_private/logger.js';
+import {getCacheKeyForURL} from './getCacheKeyForURL.js';
+import '../_version.js';
 
 
 /**

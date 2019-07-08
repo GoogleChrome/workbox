@@ -6,9 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {logger} from 'workbox-core/_private/logger.mjs';
+import {logger} from 'workbox-core/_private/logger.js';
 
-import '../_version.mjs';
+import '../_version.js';
 
 const logGroup = (groupTitle, deletedURLs) => {
   logger.groupCollapsed(groupTitle);

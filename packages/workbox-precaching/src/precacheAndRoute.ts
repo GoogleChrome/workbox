@@ -6,9 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {addRoute} from './addRoute.mjs';
-import {precache} from './precache.mjs';
-import './_version.mjs';
+import {addRoute} from './addRoute.js';
+import {precache} from './precache.js';
+import './_version.js';
 
 
 /**

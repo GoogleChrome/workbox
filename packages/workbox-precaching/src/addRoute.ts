@@ -6,8 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {addFetchListener} from './utils/addFetchListener.mjs';
-import './_version.mjs';
+import {addFetchListener} from './utils/addFetchListener.js';
+import './_version.js';
 
 
 let listenerAdded = false;

@@ -6,10 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {logger} from 'workbox-core/_private/logger.mjs';
-import {getOrCreatePrecacheController} from './utils/getOrCreatePrecacheController.mjs';
-import {precachePlugins} from './utils/precachePlugins.mjs';
-import './_version.mjs';
+import {logger} from 'workbox-core/_private/logger.js';
+import {getOrCreatePrecacheController} from './utils/getOrCreatePrecacheController.js';
+import {precachePlugins} from './utils/precachePlugins.js';
+import './_version.js';
 
 
 const installListener = (event) => {
