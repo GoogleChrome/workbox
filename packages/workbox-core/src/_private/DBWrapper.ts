@@ -235,7 +235,7 @@ export class DBWrapper {
    * @private
    */
   async transaction(
-    storeNames: string[],
+    storeNames: string | string[],
     type: IDBTransactionMode,
     callback: (txn: IDBTransaction, done: Function) => void,
   ) : Promise<any> {

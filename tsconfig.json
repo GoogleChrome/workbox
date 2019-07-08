@@ -24,6 +24,7 @@
     { "path": "./packages/workbox-background-sync/" },
     { "path": "./packages/workbox-cacheable-response/" },
     { "path": "./packages/workbox-core/" },
+    { "path": "./packages/workbox-expiration/" },
     { "path": "./packages/workbox-window/" }
   ]
 }

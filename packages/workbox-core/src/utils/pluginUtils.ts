@@ -28,7 +28,20 @@ export interface WorkboxPlugin {
   }: {
     response: Response
   }) => Promise<Response | null>;
-  cachedResponseWillBeUsed?: Function;
+
+  cachedResponseWillBeUsed?: ({
+    cacheName,
+    request,
+    matchOptions,
+    cachedResponse,
+    event
+  }: {
+    cacheName: string,
+    request: Request,
+    matchOptions?: CacheQueryOptions,
+    cachedResponse?: Response,
+    event?: ExtendableEvent,
+  }) => Promise<Response | null>;
   fetchDidFail?: ({
     request
   }: {
