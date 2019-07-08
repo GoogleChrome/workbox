@@ -42,10 +42,10 @@ describe(`Plugin`, function() {
   });
 
   describe(`cacheWillUpdate`, function() {
-    it(`should return null for non-cachable response`, function() {
+    it(`should return null for non-cachable response`, async function() {
       const cacheableResponsePlugin = new Plugin({statuses: STATUSES});
       sandbox.stub(cacheableResponsePlugin._cacheableResponse, 'isResponseCacheable').callsFake(() => false);
-      expect(cacheableResponsePlugin.cacheWillUpdate({
+      expect(await cacheableResponsePlugin.cacheWillUpdate({
         response: new Response(),
       })).to.equal(null);
     });

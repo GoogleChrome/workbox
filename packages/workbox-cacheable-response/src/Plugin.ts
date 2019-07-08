@@ -6,8 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {CacheableResponse} from './CacheableResponse.mjs';
-import './_version.mjs';
+import {WorkboxPlugin} from 'workbox-core/utils/pluginUtils.js';
+import {CacheableResponse, CacheableResponseOptions} from './CacheableResponse.js';
+import './_version.js';
 
 /**
  * A class implementing the `cacheWillUpdate` lifecycle callback. This makes it
@@ -16,7 +17,9 @@ import './_version.mjs';
  *
  * @memberof workbox.cacheableResponse
  */
-class Plugin {
+class Plugin implements WorkboxPlugin {
+  private _cacheableResponse: CacheableResponse;
+
   /**
    * To construct a new cacheable response Plugin instance you must provide at
    * least one of the `config` properties.
@@ -31,17 +34,17 @@ class Plugin {
    * and expected values that a `Response` can have and be considered cacheable.
    * If multiple headers are provided, only one needs to be present.
    */
-  constructor(config) {
+  constructor(config: CacheableResponseOptions) {
     this._cacheableResponse = new CacheableResponse(config);
   }
 
   /**
    * @param {Object} options
    * @param {Response} options.response
-   * @return {boolean}
+   * @return {Response|null}
    * @private
    */
-  cacheWillUpdate({response}) {
+  cacheWillUpdate: WorkboxPlugin['cacheWillUpdate'] = async ({response}) => {
     if (this._cacheableResponse.isResponseCacheable(response)) {
       return response;
     }

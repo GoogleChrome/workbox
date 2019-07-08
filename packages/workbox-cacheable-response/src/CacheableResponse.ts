@@ -6,11 +6,17 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
-import {assert} from 'workbox-core/_private/assert.mjs';
-import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
-import './_version.mjs';
+import {assert} from 'workbox-core/_private/assert.js';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
+import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
+import {logger} from 'workbox-core/_private/logger.js';
+import './_version.js';
+
+
+export interface CacheableResponseOptions {
+  statuses?: number[];
+  headers?: {[headerName: string]: string};
+}
 
 /**
  * This class allows you to set up rules determining what
@@ -21,6 +27,9 @@ import './_version.mjs';
  * @memberof workbox.cacheableResponse
  */
 class CacheableResponse {
+  private _statuses?: CacheableResponseOptions['statuses'];
+  private _headers?: CacheableResponseOptions['headers'];
+
   /**
    * To construct a new CacheableResponse instance you must provide at least
    * one of the `config` properties.
@@ -35,7 +44,7 @@ class CacheableResponse {
    * and expected values that a `Response` can have and be considered cacheable.
    * If multiple headers are provided, only one needs to be present.
    */
-  constructor(config = {}) {
+  constructor(config: CacheableResponseOptions = {}) {
     if (process.env.NODE_ENV !== 'production') {
       if (!(config.statuses || config.headers)) {
         throw new WorkboxError('statuses-or-headers-required', {
@@ -46,7 +55,7 @@ class CacheableResponse {
       }
 
       if (config.statuses) {
-        assert.isArray(config.statuses, {
+        assert!.isArray(config.statuses, {
           moduleName: 'workbox-cacheable-response',
           className: 'CacheableResponse',
           funcName: 'constructor',
@@ -55,7 +64,7 @@ class CacheableResponse {
       }
 
       if (config.headers) {
-        assert.isType(config.headers, 'object', {
+        assert!.isType(config.headers, 'object', {
           moduleName: 'workbox-cacheable-response',
           className: 'CacheableResponse',
           funcName: 'constructor',
@@ -77,9 +86,9 @@ class CacheableResponse {
    * @return {boolean} `true` if the `Response` is cacheable, and `false`
    * otherwise.
    */
-  isResponseCacheable(response) {
+  isResponseCacheable(response: Response): boolean {
     if (process.env.NODE_ENV !== 'production') {
-      assert.isInstance(response, Response, {
+      assert!.isInstance(response, Response, {
         moduleName: 'workbox-cacheable-response',
         className: 'CacheableResponse',
         funcName: 'isResponseCacheable',
@@ -95,7 +104,7 @@ class CacheableResponse {
 
     if (this._headers && cacheable) {
       cacheable = Object.keys(this._headers).some((headerName) => {
-        return response.headers.get(headerName) === this._headers[headerName];
+        return response.headers.get(headerName) === this._headers![headerName];
       });
     }
 
@@ -112,7 +121,7 @@ class CacheableResponse {
           JSON.stringify(this._headers, null, 2));
         logger.groupEnd();
 
-        const logFriendlyHeaders = {};
+        const logFriendlyHeaders: {[key: string]: string} = {};
         response.headers.forEach((value, key) => {
           logFriendlyHeaders[key] = value;
         });
