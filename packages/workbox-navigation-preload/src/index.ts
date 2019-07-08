@@ -6,10 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {disable} from './disable.mjs';
-import {enable} from './enable.mjs';
-import {isSupported} from './isSupported.mjs';
-import './_version.mjs';
+import {disable} from './disable.js';
+import {enable} from './enable.js';
+import {isSupported} from './isSupported.js';
+import './_version.js';
 
 
 /**

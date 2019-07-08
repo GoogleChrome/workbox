@@ -10,6 +10,10 @@ import {assert} from 'workbox-core/_private/assert.js';
 import {CACHE_UPDATED_MESSAGE_TYPE, CACHE_UPDATED_MESSAGE_META} from './utils/constants.js';
 import './_version.js';
 
+
+// Give TypeScript the correct global.
+declare var self: ServiceWorkerGlobalScope;
+
 export interface BroadcastUpdateOptions {
   cacheName: string;
   url: string;

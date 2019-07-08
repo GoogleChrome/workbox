@@ -9,6 +9,9 @@
 import './_version.js';
 
 
+// Give TypeScript the correct global.
+declare var self: ServiceWorkerGlobalScope;
+
 /**
  * Force a service worker to become active, instead of waiting. This is
  * normally used in conjunction with `clientsClaim()`.

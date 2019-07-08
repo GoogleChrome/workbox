@@ -15,6 +15,9 @@ import {StorableRequest} from './lib/StorableRequest.js';
 import './_version.js';
 
 
+// Give TypeScript the correct global.
+declare var self: ServiceWorkerGlobalScope;
+
 const TAG_PREFIX = 'workbox-background-sync';
 const MAX_RETENTION_TIME = 60 * 24 * 7; // 7 days in minutes
 

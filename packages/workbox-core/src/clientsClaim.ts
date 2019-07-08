@@ -9,6 +9,9 @@
 import './_version.js';
 
 
+// Give TypeScript the correct global.
+declare var self: ServiceWorkerGlobalScope;
+
 /**
  * Claim any currently available clients once the service worker
  * becomes active. This is normally used in conjunction with `skipWaiting()`.

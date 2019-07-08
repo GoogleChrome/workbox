@@ -23,8 +23,9 @@
     "browserNamespace": "workbox.navigationPreload",
     "packageType": "browser"
   },
-  "main": "build/workbox-navigation-preload.prod.js",
+  "main": "index.js",
   "module": "index.mjs",
+  "types": "index.d.ts",
   "dependencies": {
     "workbox-core": "^4.3.1"
   }

@@ -6,11 +6,13 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {logger} from 'workbox-core/_private/logger.mjs';
+import {logger} from 'workbox-core/_private/logger.js';
+import {isSupported} from './isSupported.js';
+import './_version.js';
 
-import {isSupported} from './isSupported.mjs';
 
-import './_version.mjs';
+// Give TypeScript the correct global.
+declare var self: ServiceWorkerGlobalScope;
 
 /**
  * If the browser supports Navigation Preload, then this will disable it.
@@ -19,7 +21,7 @@ import './_version.mjs';
  */
 function disable() {
   if (isSupported()) {
-    self.addEventListener('activate', (event) => {
+    self.addEventListener('activate', (event: ExtendableEvent) => {
       event.waitUntil(
           self.registration.navigationPreload.disable().then(() => {
             if (process.env.NODE_ENV !== 'production') {
