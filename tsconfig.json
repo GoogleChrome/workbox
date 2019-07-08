@@ -22,6 +22,7 @@
   "references": [
     { "path": "./packages/workbox-broadcast-update/" },
     { "path": "./packages/workbox-background-sync/" },
+    { "path": "./packages/workbox-cacheable-response/" },
     { "path": "./packages/workbox-core/" },
     { "path": "./packages/workbox-window/" }
   ]
