@@ -6,9 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {DBWrapper} from 'workbox-core/_private/DBWrapper.mjs';
-import {deleteDatabase} from 'workbox-core/_private/deleteDatabase.mjs';
-import '../_version.mjs';
+import {DBWrapper} from 'workbox-core/_private/DBWrapper.js';
+import {deleteDatabase} from 'workbox-core/_private/deleteDatabase.js';
+import '../_version.js';
 
 
 const DB_NAME = 'workbox-expiration';

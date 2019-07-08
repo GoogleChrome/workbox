@@ -6,12 +6,12 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {CacheTimestampsModel} from './models/CacheTimestampsModel.mjs';
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
-import {assert} from 'workbox-core/_private/assert.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
+import {CacheTimestampsModel} from './models/CacheTimestampsModel.js';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
+import {assert} from 'workbox-core/_private/assert.js';
+import {logger} from 'workbox-core/_private/logger.js';
 
-import './_version.mjs';
+import './_version.js';
 
 /**
  * The `CacheExpiration` class allows you define an expiration and / or

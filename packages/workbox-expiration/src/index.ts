@@ -6,9 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {CacheExpiration} from './CacheExpiration.mjs';
-import {Plugin} from './Plugin.mjs';
-import './_version.mjs';
+import {CacheExpiration} from './CacheExpiration.js';
+import {Plugin} from './Plugin.js';
+import './_version.js';
 
 
 /**
