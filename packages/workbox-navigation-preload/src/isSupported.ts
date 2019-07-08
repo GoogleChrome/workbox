@@ -8,13 +8,17 @@
 
 import './_version.js';
 
+
+// Give TypeScript the correct global.
+declare var self: ServiceWorkerGlobalScope;
+
 /**
  * @return {boolean} Whether or not the current browser supports enabling
  * navigation preload.
  *
  * @memberof workbox.navigationPreload
  */
-function isSupported() {
+function isSupported(): boolean {
   return Boolean(self.registration && self.registration.navigationPreload);
 }
 

@@ -30,4 +30,5 @@ packages/workbox-broadcast-update/**/*.mjs
 packages/workbox-cacheable-response/**/*.mjs
 packages/workbox-core/**/*.mjs
 packages/workbox-expiration/**/*.mjs
+packages/workbox-navigation-preload/**/*.mjs
 packages/workbox-window/**/*.mjs

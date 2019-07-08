@@ -7,10 +7,12 @@
 */
 
 import {logger} from 'workbox-core/_private/logger.js';
-
 import {isSupported} from './isSupported.js';
-
 import './_version.js';
+
+
+// Give TypeScript the correct global.
+declare var self: ServiceWorkerGlobalScope;
 
 /**
  * If the browser supports Navigation Preload, then this will enable it.
@@ -22,9 +24,9 @@ import './_version.js';
  *
  * @memberof workbox.navigationPreload
  */
-function enable(headerValue) {
+function enable(headerValue: string) {
   if (isSupported()) {
-    self.addEventListener('activate', (event) => {
+    self.addEventListener('activate', (event: ExtendableEvent) => {
       event.waitUntil(
           self.registration.navigationPreload.enable().then(() => {
           // Defaults to Service-Worker-Navigation-Preload: true if not set.
