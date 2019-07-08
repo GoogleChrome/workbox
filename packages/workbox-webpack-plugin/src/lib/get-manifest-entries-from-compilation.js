@@ -123,14 +123,14 @@ function filterAssets(compilation, config) {
     }
 
     // Next, check asset-level checks via includes/excludes:
-    const isExcluded = checkConditions(asset, compilation, config.excludes);
+    const isExcluded = checkConditions(asset, compilation, config.exclude);
     if (isExcluded) {
       continue;
     }
 
     // Treat an empty config.includes as an implicit inclusion.
-    const isIncluded = !Array.isArray(config.includes) ||
-        checkConditions(asset, compilation, config.includes);
+    const isIncluded = !Array.isArray(config.include) ||
+        checkConditions(asset, compilation, config.include);
     if (!isIncluded) {
       continue;
     }
@@ -180,5 +180,9 @@ module.exports = (compilation, config) => {
 
   compilation.warnings = compilation.warnings.concat(warnings || []);
 
-  return manifestEntries;
+  // Ensure that the entries are properly sorted by URL.
+  const sortedEntries = manifestEntries.sort(
+      (a, b) => a.url === b.url ? 0 : (a.url > b.url ? 1 : -1));
+
+  return sortedEntries;
 };

@@ -49,8 +49,8 @@ class GenerateSW {
     // Because this.config is listed last, properties that are already set
     // there take precedence over derived properties from the compiler.
     this.config = Object.assign({
-      mode: compiler.mode,
-      sourcemap: Boolean(compiler.devtool),
+      mode: compiler.options.mode,
+      sourcemap: Boolean(compiler.options.devtool),
     }, this.config);
   }
 
