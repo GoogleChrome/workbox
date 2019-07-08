@@ -6,16 +6,15 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.mjs';
-import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
-import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
-import {registerQuotaErrorCallback}
-  from 'workbox-core/registerQuotaErrorCallback.mjs';
-
-import {CacheExpiration} from './CacheExpiration.mjs';
-import './_version.mjs';
+import {assert} from 'workbox-core/_private/assert.js';
+import {cacheNames} from 'workbox-core/_private/cacheNames.js';
+import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
+import {logger} from 'workbox-core/_private/logger.js';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
+import {registerQuotaErrorCallback} from 'workbox-core/registerQuotaErrorCallback.js';
+import {WorkboxPlugin} from 'workbox-core/utils/pluginUtils.js';
+import {CacheExpiration} from './CacheExpiration.js';
+import './_version.js';
 
 /**
  * This plugin can be used in the Workbox APIs to regularly enforce a
@@ -30,11 +29,17 @@ import './_version.mjs';
  * a light weight expiration check is performed and the request will not be
  * used immediately.
  *
- * When using `maxEntries`, the entry least-recently requested will be removed from the cache first.
+ * When using `maxEntries`, the entry least-recently requested will be removed
+ * from the cache first.
  *
  * @memberof workbox.expiration
  */
 class Plugin {
+  private _config: object;
+  private _maxAgeSeconds?: number;
+  private _cacheExpirations: Map<string, CacheExpiration>;
+
+
   /**
    * @param {Object} config
    * @param {number} [config.maxEntries] The maximum number of entries to cache.
@@ -44,7 +49,11 @@ class Plugin {
    * @param {boolean} [config.purgeOnQuotaError] Whether to opt this cache in to
    * automatic deletion if the available storage quota has been exceeded.
    */
-  constructor(config = {}) {
+  constructor(config: {
+    maxEntries?: number;
+    maxAgeSeconds?: number;
+    purgeOnQuotaError?: boolean;
+  } = {}) {
     if (process.env.NODE_ENV !== 'production') {
       if (!(config.maxEntries || config.maxAgeSeconds)) {
         throw new WorkboxError('max-entries-or-age-required', {
@@ -55,7 +64,7 @@ class Plugin {
       }
 
       if (config.maxEntries) {
-        assert.isType(config.maxEntries, 'number', {
+        assert!.isType(config.maxEntries, 'number', {
           moduleName: 'workbox-expiration',
           className: 'Plugin',
           funcName: 'constructor',
@@ -64,7 +73,7 @@ class Plugin {
       }
 
       if (config.maxAgeSeconds) {
-        assert.isType(config.maxAgeSeconds, 'number', {
+        assert!.isType(config.maxAgeSeconds, 'number', {
           moduleName: 'workbox-expiration',
           className: 'Plugin',
           funcName: 'constructor',
@@ -91,7 +100,7 @@ class Plugin {
    *
    * @private
    */
-  _getCacheExpiration(cacheName) {
+  _getCacheExpiration(cacheName: string): CacheExpiration {
     if (cacheName === cacheNames.getRuntimeName()) {
       throw new WorkboxError('expire-custom-caches-only');
     }
@@ -121,7 +130,12 @@ class Plugin {
    *
    * @private
    */
-  cachedResponseWillBeUsed({event, request, cacheName, cachedResponse}) {
+  cachedResponseWillBeUsed: WorkboxPlugin['cachedResponseWillBeUsed'] = async ({
+    event,
+    request,
+    cacheName,
+    cachedResponse
+  }) => {
     if (!cachedResponse) {
       return null;
     }
@@ -141,8 +155,12 @@ class Plugin {
         event.waitUntil(updateTimestampDone);
       } catch (error) {
         if (process.env.NODE_ENV !== 'production') {
-          logger.warn(`Unable to ensure service worker stays alive when ` +
-            `updating cache entry for '${getFriendlyURL(event.request.url)}'.`);
+          // The event may not be a fetch event; only log the URL if it is.
+          if ('request' in event) {
+            logger.warn(`Unable to ensure service worker stays alive when ` +
+              `updating cache entry for ` +
+              `'${getFriendlyURL((<FetchEvent> event).request.url)}'.`);
+          }
         }
       }
     }
@@ -156,7 +174,7 @@ class Plugin {
    *
    * @private
    */
-  _isResponseDateFresh(cachedResponse) {
+  _isResponseDateFresh(cachedResponse: Response): boolean {
     if (!this._maxAgeSeconds) {
       // We aren't expiring by age, so return true, it's fresh
       return true;
@@ -182,17 +200,17 @@ class Plugin {
    * value.
    *
    * @param {Response} cachedResponse
-   * @return {number}
+   * @return {number|null}
    *
    * @private
    */
-  _getDateHeaderTimestamp(cachedResponse) {
+  _getDateHeaderTimestamp(cachedResponse: Response): number | null {
     if (!cachedResponse.headers.has('date')) {
       return null;
     }
 
     const dateHeader = cachedResponse.headers.get('date');
-    const parsedDate = new Date(dateHeader);
+    const parsedDate = new Date(dateHeader!);
     const headerTime = parsedDate.getTime();
 
     // If the Date header was invalid for some reason, parsedDate.getTime()
@@ -214,15 +232,18 @@ class Plugin {
    *
    * @private
    */
-  async cacheDidUpdate({cacheName, request}) {
+  cacheDidUpdate: WorkboxPlugin['cacheDidUpdate'] = async ({
+    cacheName,
+    request
+  }) => {
     if (process.env.NODE_ENV !== 'production') {
-      assert.isType(cacheName, 'string', {
+      assert!.isType(cacheName, 'string', {
         moduleName: 'workbox-expiration',
         className: 'Plugin',
         funcName: 'cacheDidUpdate',
         paramName: 'cacheName',
       });
-      assert.isInstance(request, Request, {
+      assert!.isInstance(request, Request, {
         moduleName: 'workbox-expiration',
         className: 'Plugin',
         funcName: 'cacheDidUpdate',

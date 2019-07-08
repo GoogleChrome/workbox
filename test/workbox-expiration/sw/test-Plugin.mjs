@@ -97,7 +97,7 @@ describe(`Plugin`, function() {
       expect(plugin).to.respondTo('cachedResponseWillBeUsed');
     });
 
-    it(`should return cachedResponse when cachedResponseWillBeUsed() is called and Responses Data header it valid`, function() {
+    it(`should return cachedResponse when cachedResponseWillBeUsed() is called and Responses Data header it valid`, async function() {
       // Just to ensure no timing flakiness in test.
       sandbox.useFakeTimers({
         toFake: ['Date'],
@@ -111,11 +111,11 @@ describe(`Plugin`, function() {
       const expirationManager = plugin._getCacheExpiration('test-cache');
       sandbox.spy(expirationManager, 'expireEntries');
 
-      expect(plugin.cachedResponseWillBeUsed({request: new Request('/'), cacheName: 'test-cache', cachedResponse})).to.eql(cachedResponse);
+      expect(await plugin.cachedResponseWillBeUsed({request: new Request('/'), cacheName: 'test-cache', cachedResponse})).to.eql(cachedResponse);
       expect(expirationManager.expireEntries.callCount).to.equal(1);
     });
 
-    it(`should return null when cachedResponseWillBeUsed() is called and Responses Date header is too old`, function() {
+    it(`should return null when cachedResponseWillBeUsed() is called and Responses Date header is too old`, async function() {
       const clock = sandbox.useFakeTimers({
         toFake: ['Date'],
       });
@@ -131,26 +131,26 @@ describe(`Plugin`, function() {
       const expirationManager = plugin._getCacheExpiration('test-cache');
       sandbox.spy(expirationManager, 'expireEntries');
 
-      expect(plugin.cachedResponseWillBeUsed({request: new Request('/'), cacheName: 'test-cache', cachedResponse})).to.eql(null);
+      expect(await plugin.cachedResponseWillBeUsed({request: new Request('/'), cacheName: 'test-cache', cachedResponse})).to.eql(null);
       expect(expirationManager.expireEntries.callCount).to.equal(1);
     });
 
-    it(`should handle a null cachedResponse`, function() {
+    it(`should handle a null cachedResponse`, async function() {
       const plugin = new Plugin({maxAgeSeconds: 1});
 
       const expirationManager = plugin._getCacheExpiration('test-cache');
       sandbox.spy(expirationManager, 'expireEntries');
 
-      expect(plugin.cachedResponseWillBeUsed({cacheName: 'test-cache', cachedResponse: null})).to.eql(null);
+      expect(await plugin.cachedResponseWillBeUsed({cacheName: 'test-cache', cachedResponse: null})).to.eql(null);
     });
 
-    it(`should update the timestamp for the request URL`, function() {
+    it(`should update the timestamp for the request URL`, async function() {
       const plugin = new Plugin({maxEntries: 10});
 
       const expirationManager = plugin._getCacheExpiration('test-cache');
       sandbox.spy(expirationManager, 'updateTimestamp');
 
-      plugin.cachedResponseWillBeUsed({
+      await plugin.cachedResponseWillBeUsed({
         request: new Request('/one'),
         cacheName: 'test-cache',
         cachedResponse: new Response(''),

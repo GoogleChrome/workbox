@@ -6,21 +6,28 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {DBWrapper} from 'workbox-core/_private/DBWrapper.mjs';
-import {deleteDatabase} from 'workbox-core/_private/deleteDatabase.mjs';
-import '../_version.mjs';
+import {DBWrapper} from 'workbox-core/_private/DBWrapper.js';
+import {deleteDatabase} from 'workbox-core/_private/deleteDatabase.js';
+import '../_version.js';
 
 
 const DB_NAME = 'workbox-expiration';
 const OBJECT_STORE_NAME = 'cache-entries';
 
-const normalizeURL = (unNormalizedUrl) => {
-  const url = new URL(unNormalizedUrl, location);
+const normalizeURL = (unNormalizedUrl: string) => {
+  const url = new URL(unNormalizedUrl, location.href);
   url.hash = '';
 
   return url.href;
 };
 
+
+interface CacheTimestampsModelEntry {
+  id: string;
+  cacheName: string;
+  url: string;
+  timestamp: number;
+}
 
 /**
  * Returns the timestamp model.
@@ -28,13 +35,16 @@ const normalizeURL = (unNormalizedUrl) => {
  * @private
  */
 class CacheTimestampsModel {
+  private _cacheName: string;
+  private _db: DBWrapper;
+
   /**
    *
    * @param {string} cacheName
    *
    * @private
    */
-  constructor(cacheName) {
+  constructor(cacheName: string) {
     this._cacheName = cacheName;
 
     this._db = new DBWrapper(DB_NAME, 1, {
@@ -49,8 +59,8 @@ class CacheTimestampsModel {
    *
    * @private
    */
-  _handleUpgrade(event) {
-    const db = event.target.result;
+  _handleUpgrade(event: IDBVersionChangeEvent) {
+    const db = (<IDBOpenDBRequest> event.target).result;
 
     // TODO(philipwalton): EdgeHTML doesn't support arrays as a keyPath, so we
     // have to use the `id` keyPath here and create our own values (a
@@ -75,10 +85,10 @@ class CacheTimestampsModel {
    *
    * @private
    */
-  async setTimestamp(url, timestamp) {
+  async setTimestamp(url: string, timestamp: number) {
     url = normalizeURL(url);
 
-    await this._db.put(OBJECT_STORE_NAME, {
+    const entry: CacheTimestampsModelEntry = {
       url,
       timestamp,
       cacheName: this._cacheName,
@@ -86,7 +96,9 @@ class CacheTimestampsModel {
       // Edge switches to Chromium and all browsers we support work with
       // array keyPaths.
       id: this._getId(url),
-    });
+    };
+
+    await this._db.put(OBJECT_STORE_NAME, entry);
   }
 
   /**
@@ -97,8 +109,10 @@ class CacheTimestampsModel {
    *
    * @private
    */
-  async getTimestamp(url) {
-    const entry = await this._db.get(OBJECT_STORE_NAME, this._getId(url));
+  async getTimestamp(url: string): Promise<number> {
+    const entry: CacheTimestampsModelEntry =
+        await this._db.get(OBJECT_STORE_NAME, this._getId(url));
+
     return entry.timestamp;
   }
 
@@ -109,55 +123,55 @@ class CacheTimestampsModel {
    *
    * @param {number} minTimestamp
    * @param {number} maxCount
+   * @return {Array<string>}
    *
    * @private
    */
-  async expireEntries(minTimestamp, maxCount) {
+  async expireEntries(minTimestamp: number, maxCount?: number): Promise<string[]> {
     const entriesToDelete = await this._db.transaction(
         OBJECT_STORE_NAME, 'readwrite', (txn, done) => {
           const store = txn.objectStore(OBJECT_STORE_NAME);
-          const entriesToDelete = [];
+          const request = store.index('timestamp').openCursor(null, 'prev')
+
+          const entriesToDelete: string[] = [];
           let entriesNotDeletedCount = 0;
+          request.onsuccess = () => {
+              const cursor = request.result;
+              if (cursor) {
+                const result = cursor.value;
+                // TODO(philipwalton): once we can use a multi-key index, we
+                // won't have to check `cacheName` here.
+                if (result.cacheName === this._cacheName) {
+                  // Delete an entry if it's older than the max age or
+                  // if we already have the max number allowed.
+                  if ((minTimestamp && result.timestamp < minTimestamp) ||
+                      (maxCount && entriesNotDeletedCount >= maxCount)) {
+                    // TODO(philipwalton): we should be able to delete the
+                    // entry right here, but doing so causes an iteration
+                    // bug in Safari stable (fixed in TP). Instead we can
+                    // store the keys of the entries to delete, and then
+                    // delete the separate transactions.
+                    // https://github.com/GoogleChrome/workbox/issues/1978
+                    // cursor.delete();
 
-          store.index('timestamp')
-              .openCursor(null, 'prev')
-              .onsuccess = ({target}) => {
-                const cursor = target.result;
-                if (cursor) {
-                  const result = cursor.value;
-                  // TODO(philipwalton): once we can use a multi-key index, we
-                  // won't have to check `cacheName` here.
-                  if (result.cacheName === this._cacheName) {
-                    // Delete an entry if it's older than the max age or
-                    // if we already have the max number allowed.
-                    if ((minTimestamp && result.timestamp < minTimestamp) ||
-                        (maxCount && entriesNotDeletedCount >= maxCount)) {
-                      // TODO(philipwalton): we should be able to delete the
-                      // entry right here, but doing so causes an iteration
-                      // bug in Safari stable (fixed in TP). Instead we can
-                      // store the keys of the entries to delete, and then
-                      // delete the separate transactions.
-                      // https://github.com/GoogleChrome/workbox/issues/1978
-                      // cursor.delete();
-
-                      // We only need to return the URL, not the whole entry.
-                      entriesToDelete.push(cursor.value);
-                    } else {
-                      entriesNotDeletedCount++;
-                    }
+                    // We only need to return the URL, not the whole entry.
+                    entriesToDelete.push(cursor.value);
+                  } else {
+                    entriesNotDeletedCount++;
                   }
-                  cursor.continue();
-                } else {
-                  done(entriesToDelete);
                 }
-              };
+                cursor.continue();
+              } else {
+                done(entriesToDelete);
+              }
+            };
         });
 
     // TODO(philipwalton): once the Safari bug in the following issue is fixed,
     // we should be able to remove this loop and do the entry deletion in the
     // cursor loop above:
     // https://github.com/GoogleChrome/workbox/issues/1978
-    const urlsDeleted = [];
+    const urlsDeleted: string[] = [];
     for (const entry of entriesToDelete) {
       await this._db.delete(OBJECT_STORE_NAME, entry.id);
       urlsDeleted.push(entry.url);
@@ -174,7 +188,7 @@ class CacheTimestampsModel {
    *
    * @private
    */
-  _getId(url) {
+  _getId(url: string): string {
     // Creating an ID from the URL and cache name won't be necessary once
     // Edge switches to Chromium and all browsers we support work with
     // array keyPaths.

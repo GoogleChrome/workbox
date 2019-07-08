@@ -23,8 +23,9 @@
     "browserNamespace": "workbox.expiration",
     "packageType": "browser"
   },
-  "main": "build/workbox-expiration.prod.js",
+  "main": "index.js",
   "module": "index.mjs",
+  "types": "index.d.ts",
   "dependencies": {
     "workbox-core": "^4.3.1"
   }

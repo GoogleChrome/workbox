@@ -6,12 +6,18 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {CacheTimestampsModel} from './models/CacheTimestampsModel.mjs';
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
-import {assert} from 'workbox-core/_private/assert.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
+import {CacheTimestampsModel} from './models/CacheTimestampsModel.js';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
+import {assert} from 'workbox-core/_private/assert.js';
+import {logger} from 'workbox-core/_private/logger.js';
 
-import './_version.mjs';
+import './_version.js';
+
+
+interface CacheExpirationConfig {
+  maxEntries?: number;
+  maxAgeSeconds?: number;
+}
 
 /**
  * The `CacheExpiration` class allows you define an expiration and / or
@@ -21,6 +27,13 @@ import './_version.mjs';
  * @memberof workbox.expiration
  */
 class CacheExpiration {
+  private _isRunning: boolean = false;
+  private _rerunRequested: boolean = false;
+  private _maxEntries?: number;
+  private _maxAgeSeconds?: number;
+  private _cacheName: string;
+  private _timestampModel: CacheTimestampsModel;
+
   /**
    * To construct a new CacheExpiration instance you must provide at least
    * one of the `config` properties.
@@ -32,9 +45,9 @@ class CacheExpiration {
    * @param {number} [config.maxAgeSeconds] The maximum age of an entry before
    * it's treated as stale and removed.
    */
-  constructor(cacheName, config = {}) {
+  constructor(cacheName: string, config: CacheExpirationConfig = {}) {
     if (process.env.NODE_ENV !== 'production') {
-      assert.isType(cacheName, 'string', {
+      assert!.isType(cacheName, 'string', {
         moduleName: 'workbox-expiration',
         className: 'CacheExpiration',
         funcName: 'constructor',
@@ -50,7 +63,7 @@ class CacheExpiration {
       }
 
       if (config.maxEntries) {
-        assert.isType(config.maxEntries, 'number', {
+        assert!.isType(config.maxEntries, 'number', {
           moduleName: 'workbox-expiration',
           className: 'CacheExpiration',
           funcName: 'constructor',
@@ -61,7 +74,7 @@ class CacheExpiration {
       }
 
       if (config.maxAgeSeconds) {
-        assert.isType(config.maxAgeSeconds, 'number', {
+        assert!.isType(config.maxAgeSeconds, 'number', {
           moduleName: 'workbox-expiration',
           className: 'CacheExpiration',
           funcName: 'constructor',
@@ -72,8 +85,6 @@ class CacheExpiration {
       }
     }
 
-    this._isRunning = false;
-    this._rerunRequested = false;
     this._maxEntries = config.maxEntries;
     this._maxAgeSeconds = config.maxAgeSeconds;
     this._cacheName = cacheName;
@@ -91,7 +102,7 @@ class CacheExpiration {
     this._isRunning = true;
 
     const minTimestamp = this._maxAgeSeconds ?
-        Date.now() - (this._maxAgeSeconds * 1000) : undefined;
+        Date.now() - (this._maxAgeSeconds * 1000) : 0;
 
     const urlsExpired = await this._timestampModel.expireEntries(
         minTimestamp, this._maxEntries);
@@ -132,9 +143,9 @@ class CacheExpiration {
    *
    * @param {string} url
    */
-  async updateTimestamp(url) {
+  async updateTimestamp(url: string) {
     if (process.env.NODE_ENV !== 'production') {
-      assert.isType(url, 'string', {
+      assert!.isType(url, 'string', {
         moduleName: 'workbox-expiration',
         className: 'CacheExpiration',
         funcName: 'updateTimestamp',
@@ -156,19 +167,20 @@ class CacheExpiration {
    * @param {string} url
    * @return {boolean}
    */
-  async isURLExpired(url) {
-    if (process.env.NODE_ENV !== 'production') {
-      if (!this._maxAgeSeconds) {
+  async isURLExpired(url: string): Promise<boolean> {
+    if (!this._maxAgeSeconds) {
+      if (process.env.NODE_ENV !== 'production') {
         throw new WorkboxError(`expired-test-without-max-age`, {
           methodName: 'isURLExpired',
           paramName: 'maxAgeSeconds',
         });
       }
+      return false;
+    } else {
+      const timestamp = await this._timestampModel.getTimestamp(url);
+      const expireOlderThan = Date.now() - (this._maxAgeSeconds! * 1000);
+      return (timestamp < expireOlderThan);
     }
-
-    const timestamp = await this._timestampModel.getTimestamp(url);
-    const expireOlderThan = Date.now() - (this._maxAgeSeconds * 1000);
-    return (timestamp < expireOlderThan);
   }
 
   /**
