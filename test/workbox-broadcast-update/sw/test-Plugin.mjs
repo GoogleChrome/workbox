@@ -24,26 +24,26 @@ describe(`Plugin`, function() {
     it(`should throw when called and cacheName is missing`, function() {
       if (process.env.NODE_ENV === 'production') this.skip();
 
-      return expectError(() => {
+      return expectError(async () => {
         const bcuPlugin = new Plugin();
         const oldResponse = new Response();
         const newResponse = new Response();
-        bcuPlugin.cacheDidUpdate({oldResponse, newResponse});
+        await bcuPlugin.cacheDidUpdate({oldResponse, newResponse});
       }, 'incorrect-type');
     });
 
     it(`should throw when called and newResponse is missing`, function() {
       if (process.env.NODE_ENV === 'production') this.skip();
 
-      return expectError(() => {
+      return expectError(async () => {
         const bcuPlugin = new Plugin();
         const cacheName = 'cache-name';
         const oldResponse = new Response();
-        bcuPlugin.cacheDidUpdate({cacheName, oldResponse});
+        await bcuPlugin.cacheDidUpdate({cacheName, oldResponse});
       }, 'incorrect-class');
     });
 
-    it(`should not throw when called with valid parameters`, function() {
+    it(`should not throw when called with valid parameters`, async function() {
       const bcuPlugin = new Plugin();
       sandbox.spy(bcuPlugin._broadcastUpdate, 'notifyIfUpdated');
 
@@ -51,12 +51,12 @@ describe(`Plugin`, function() {
       const request = new Request('/');
       const oldResponse = new Response();
       const newResponse = new Response();
-      bcuPlugin.cacheDidUpdate({cacheName, oldResponse, newResponse, request});
+      await bcuPlugin.cacheDidUpdate({cacheName, oldResponse, newResponse, request});
 
       expect(bcuPlugin._broadcastUpdate.notifyIfUpdated.callCount).to.equal(1);
     });
 
-    it(`should notify and pass all options`, function() {
+    it(`should notify and pass all options`, async function() {
       const bcuPlugin = new Plugin();
       sandbox.spy(bcuPlugin._broadcastUpdate, 'notifyIfUpdated');
 
@@ -66,7 +66,7 @@ describe(`Plugin`, function() {
       const oldResponse = new Response();
       const event = new FetchEvent('fetch', {request});
 
-      bcuPlugin.cacheDidUpdate({
+      await bcuPlugin.cacheDidUpdate({
         cacheName,
         newResponse,
         oldResponse,
@@ -84,14 +84,14 @@ describe(`Plugin`, function() {
       });
     });
 
-    it(`should not notify when no oldResponse supplied`, function() {
+    it(`should not notify when no oldResponse supplied`, async function() {
       const bcuPlugin = new Plugin();
       sandbox.spy(bcuPlugin._broadcastUpdate, 'notifyIfUpdated');
 
       const cacheName = 'cache-name';
       const request = new Request('/');
       const newResponse = new Response();
-      bcuPlugin.cacheDidUpdate({cacheName, newResponse, request});
+      await bcuPlugin.cacheDidUpdate({cacheName, newResponse, request});
 
       expect(bcuPlugin._broadcastUpdate.notifyIfUpdated.callCount).to.equal(0);
     });

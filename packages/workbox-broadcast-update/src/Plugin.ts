@@ -7,6 +7,7 @@
 */
 
 import {assert} from 'workbox-core/_private/assert.js';
+import {WorkboxPlugin} from 'workbox-core/utils/pluginUtils.js';
 import {BroadcastCacheUpdate, BroadcastCacheUpdateOptions} from './BroadcastCacheUpdate.js';
 import './_version.js';
 
@@ -16,7 +17,7 @@ import './_version.js';
  *
  * @memberof workbox.broadcastUpdate
  */
-class Plugin {
+class Plugin implements WorkboxPlugin {
   private _broadcastUpdate: BroadcastCacheUpdate;
 
   /**
@@ -53,19 +54,13 @@ class Plugin {
    * @param {Request} options.request The request that triggered the udpate.
    * @param {Request} [options.event] The event that triggered the update.
    */
-  cacheDidUpdate({
+  cacheDidUpdate: WorkboxPlugin['cacheDidUpdate'] = async ({
     cacheName,
     oldResponse,
     newResponse,
     request,
     event
-  }: {
-    cacheName: string,
-    oldResponse?: Response,
-    newResponse: Response,
-    request: Request,
-    event?: FetchEvent
-  }) {
+  }) => {
     if (process.env.NODE_ENV !== 'production') {
       assert!.isType(cacheName, 'string', {
         moduleName: 'workbox-broadcast-update',
@@ -87,17 +82,16 @@ class Plugin {
       });
     }
 
-    if (!oldResponse) {
-      // Without a two responses there is nothing to compare.
-      return;
+    // Without a two responses there is nothing to compare.
+    if (oldResponse) {
+      this._broadcastUpdate.notifyIfUpdated({
+        cacheName,
+        oldResponse,
+        newResponse,
+        event,
+        url: request.url,
+      });
     }
-    this._broadcastUpdate.notifyIfUpdated({
-      cacheName,
-      oldResponse,
-      newResponse,
-      event,
-      url: request.url,
-    });
   }
 }
 
