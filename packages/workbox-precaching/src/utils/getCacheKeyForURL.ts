@@ -6,8 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {getOrCreatePrecacheController}
-  from './getOrCreatePrecacheController.js';
+import {FetchListenerOptions} from './addFetchListener.js';
+import {getOrCreatePrecacheController} from './getOrCreatePrecacheController.js';
 import {generateURLVariations} from './generateURLVariations.js';
 import '../_version.js';
 
@@ -22,7 +22,8 @@ import '../_version.js';
  *
  * @private
  */
-export const getCacheKeyForURL = (url, options) => {
+export const getCacheKeyForURL =
+    (url: string, options: FetchListenerOptions): string | void => {
   const precacheController = getOrCreatePrecacheController();
 
   const urlsToCacheKeys = precacheController.getURLsToCacheKeys();

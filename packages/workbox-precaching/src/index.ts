@@ -18,7 +18,7 @@ import './_version.js';
 
 
 if (process.env.NODE_ENV !== 'production') {
-  assert.isSWEnv('workbox-precaching');
+  assert!.isSWEnv('workbox-precaching');
 }
 
 /**

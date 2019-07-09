@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {addFetchListener} from './utils/addFetchListener.js';
+import {addFetchListener, FetchListenerOptions} from './utils/addFetchListener.js';
 import './_version.js';
 
 
@@ -36,7 +36,7 @@ let listenerAdded = false;
  *
  * @alias workbox.precaching.addRoute
  */
-export const addRoute = (options) => {
+export const addRoute = (options: FetchListenerOptions) => {
   if (!listenerAdded) {
     addFetchListener(options);
     listenerAdded = true;

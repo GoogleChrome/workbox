@@ -7,10 +7,16 @@
 */
 
 import {logger} from 'workbox-core/_private/logger.js';
-
 import '../_version.js';
 
-const logGroup = (groupTitle, deletedURLs) => {
+
+/**
+ * @param {string} groupTitle
+ * @param {Array<string>} deletedURLs
+ *
+ * @private
+ */
+const logGroup = (groupTitle: string, deletedURLs: string[]) => {
   logger.groupCollapsed(groupTitle);
 
   for (const url of deletedURLs) {
@@ -26,7 +32,7 @@ const logGroup = (groupTitle, deletedURLs) => {
  * @private
  * @memberof module:workbox-precaching
  */
-export function printCleanupDetails(deletedURLs) {
+export function printCleanupDetails(deletedURLs: string[]) {
   const deletionCount = deletedURLs.length;
   if (deletionCount > 0) {
     logger.groupCollapsed(`During precaching cleanup, ` +

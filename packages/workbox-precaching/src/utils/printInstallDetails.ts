@@ -7,8 +7,8 @@
 */
 
 import {logger} from 'workbox-core/_private/logger.js';
-
 import '../_version.js';
+
 
 /**
  * @param {string} groupTitle
@@ -16,7 +16,7 @@ import '../_version.js';
  *
  * @private
  */
-function _nestedGroup(groupTitle, urls) {
+function _nestedGroup(groupTitle: string, urls: string[]) {
   if (urls.length === 0) {
     return;
   }
@@ -37,7 +37,7 @@ function _nestedGroup(groupTitle, urls) {
  * @private
  * @memberof module:workbox-precaching
  */
-export function printInstallDetails(urlsToPrecache, urlsAlreadyPrecached) {
+export function printInstallDetails(urlsToPrecache: string[], urlsAlreadyPrecached: string[]) {
   const precachedCount = urlsToPrecache.length;
   const alreadyPrecachedCount = urlsAlreadyPrecached.length;
 

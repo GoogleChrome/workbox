@@ -20,7 +20,7 @@ interface MatchWrapperOptions {
   cacheName: string,
   request: Request,
   event?: Event,
-  plugins?: [],
+  plugins?: WorkboxPlugin[],
   matchOptions?: {},
 }
 
@@ -219,7 +219,7 @@ const _isResponseSafeToCache = async ({
   request: Request,
   response: Response,
   event?: Event,
-  plugins?: [],
+  plugins?: WorkboxPlugin[],
 }) => {
   let responseToCache: Response|undefined = response;
   let pluginsUsed = false;

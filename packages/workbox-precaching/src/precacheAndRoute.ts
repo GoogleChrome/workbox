@@ -6,8 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
+import {FetchListenerOptions} from './utils/addFetchListener.js';
 import {addRoute} from './addRoute.js';
 import {precache} from './precache.js';
+import {PrecacheEntry} from './_types.js';
 import './_version.js';
 
 
@@ -25,7 +27,8 @@ import './_version.js';
  *
  * @alias workbox.precaching.precacheAndRoute
  */
-export const precacheAndRoute = (entries, options) => {
+export const precacheAndRoute =
+    (entries: Array<PrecacheEntry|string>, options: FetchListenerOptions) => {
   precache(entries);
   addRoute(options);
 };

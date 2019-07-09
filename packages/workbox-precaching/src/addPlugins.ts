@@ -6,6 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
+import {WorkboxPlugin} from 'workbox-core/utils/pluginUtils.js';
 import {precachePlugins} from './utils/precachePlugins.js';
 import './_version.js';
 
@@ -17,7 +18,7 @@ import './_version.js';
  *
  * @alias workbox.precaching.addPlugins
  */
-const addPlugins = (newPlugins) => {
+const addPlugins = (newPlugins: WorkboxPlugin[]) => {
   precachePlugins.add(newPlugins);
 };
 

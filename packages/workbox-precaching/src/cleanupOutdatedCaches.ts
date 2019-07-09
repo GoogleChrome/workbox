@@ -19,7 +19,7 @@ import './_version.js';
  * @alias workbox.precaching.cleanupOutdatedCaches
  */
 export const cleanupOutdatedCaches = () => {
-  addEventListener('activate', (event) => {
+  addEventListener('activate', (event: ExtendableEvent) => {
     const cacheName = cacheNames.getPrecacheName();
 
     event.waitUntil(deleteOutdatedCaches(cacheName).then((cachesDeleted) => {

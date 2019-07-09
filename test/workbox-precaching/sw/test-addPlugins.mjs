@@ -29,9 +29,8 @@ describe(`addPlugins()`, function() {
     sandbox.restore();
   });
 
-  it(`should add plugins during install and activate`, async function() {
+  it(`should add plugins during install`, async function() {
     sandbox.spy(PrecacheController.prototype, 'install');
-    sandbox.spy(PrecacheController.prototype, 'activate');
 
     const precacheArgs = ['/'];
     const plugin1 = {name: 'plugin1'};
@@ -45,14 +44,6 @@ describe(`addPlugins()`, function() {
 
     expect(PrecacheController.prototype.install.callCount).to.equal(1);
     expect(PrecacheController.prototype.install.args[0][0].plugins).to.deep.equal([
-      plugin1,
-      plugin2,
-    ]);
-
-    await dispatchAndWaitUntilDone(new ExtendableEvent('activate'));
-
-    expect(PrecacheController.prototype.activate.callCount).to.equal(1);
-    expect(PrecacheController.prototype.activate.args[0][0].plugins).to.deep.equal([
       plugin1,
       plugin2,
     ]);
