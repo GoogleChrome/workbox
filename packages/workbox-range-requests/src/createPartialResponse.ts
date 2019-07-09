@@ -6,15 +6,15 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
-import {assert} from 'workbox-core/_private/assert.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
+import {assert} from 'workbox-core/_private/assert.js';
+import {logger} from 'workbox-core/_private/logger.js';
 
 import {calculateEffectiveBoundaries} from
-  './utils/calculateEffectiveBoundaries.mjs';
-import {parseRangeHeader} from './utils/parseRangeHeader.mjs';
+  './utils/calculateEffectiveBoundaries.js';
+import {parseRangeHeader} from './utils/parseRangeHeader.js';
 
-import './_version.mjs';
+import './_version.js';
 
 /**
  * Given a `Request` and `Response` objects as input, this will return a

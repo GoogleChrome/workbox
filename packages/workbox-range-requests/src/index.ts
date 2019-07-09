@@ -6,9 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {createPartialResponse} from './createPartialResponse.mjs';
-import {Plugin} from './Plugin.mjs';
-import './_version.mjs';
+import {createPartialResponse} from './createPartialResponse.js';
+import {Plugin} from './Plugin.js';
+import './_version.js';
 
 
 /**

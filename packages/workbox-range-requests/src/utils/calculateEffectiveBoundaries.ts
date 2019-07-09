@@ -6,10 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
-import {assert} from 'workbox-core/_private/assert.mjs';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
+import {assert} from 'workbox-core/_private/assert.js';
 
-import '../_version.mjs';
+import '../_version.js';
 
 /**
  * @param {Blob} blob A source blob.
