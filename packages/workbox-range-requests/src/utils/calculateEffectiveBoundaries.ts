@@ -6,24 +6,25 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
-import {assert} from 'workbox-core/_private/assert.mjs';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
+import {assert} from 'workbox-core/_private/assert.js';
+import '../_version.js';
 
-import '../_version.mjs';
 
 /**
  * @param {Blob} blob A source blob.
- * @param {number|null} start The offset to use as the start of the
+ * @param {number} [start] The offset to use as the start of the
  * slice.
- * @param {number|null} end The offset to use as the end of the slice.
+ * @param {number} [end] The offset to use as the end of the slice.
  * @return {Object} An object with `start` and `end` properties, reflecting
  * the effective boundaries to use given the size of the blob.
  *
  * @private
  */
-function calculateEffectiveBoundaries(blob, start, end) {
+function calculateEffectiveBoundaries(
+    blob: Blob, start?: number, end?: number): {start: number, end: number} {
   if (process.env.NODE_ENV !== 'production') {
-    assert.isInstance(blob, Blob, {
+    assert!.isInstance(blob, Blob, {
       moduleName: 'workbox-range-requests',
       funcName: 'calculateEffectiveBoundaries',
       paramName: 'blob',
@@ -32,7 +33,7 @@ function calculateEffectiveBoundaries(blob, start, end) {
 
   const blobSize = blob.size;
 
-  if (end > blobSize || start < 0) {
+  if ((end && end > blobSize) || (start && start < 0)) {
     throw new WorkboxError('range-not-satisfiable', {
       size: blobSize,
       end,
@@ -40,24 +41,24 @@ function calculateEffectiveBoundaries(blob, start, end) {
     });
   }
 
-  let effectiveStart;
-  let effectiveEnd;
+  let effectiveStart: number;
+  let effectiveEnd: number;
 
-  if (start === null) {
-    effectiveStart = blobSize - end;
-    effectiveEnd = blobSize;
-  } else if (end === null) {
-    effectiveStart = start;
-    effectiveEnd = blobSize;
-  } else {
+  if (start && end) {
     effectiveStart = start;
     // Range values are inclusive, so add 1 to the value.
     effectiveEnd = end + 1;
+  } else if (start && !end) {
+    effectiveStart = start;
+    effectiveEnd = blobSize;
+  } else if (end && !start) {
+    effectiveStart = blobSize - end;
+    effectiveEnd = blobSize;
   }
 
   return {
-    start: effectiveStart,
-    end: effectiveEnd,
+    start: effectiveStart!,
+    end: effectiveEnd!,
   };
 }
 

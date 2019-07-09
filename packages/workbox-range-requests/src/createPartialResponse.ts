@@ -6,15 +6,12 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
-import {assert} from 'workbox-core/_private/assert.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
-
-import {calculateEffectiveBoundaries} from
-  './utils/calculateEffectiveBoundaries.mjs';
-import {parseRangeHeader} from './utils/parseRangeHeader.mjs';
-
-import './_version.mjs';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
+import {assert} from 'workbox-core/_private/assert.js';
+import {logger} from 'workbox-core/_private/logger.js';
+import {calculateEffectiveBoundaries} from './utils/calculateEffectiveBoundaries.js';
+import {parseRangeHeader} from './utils/parseRangeHeader.js';
+import './_version.js';
 
 /**
  * Given a `Request` and `Response` objects as input, this will return a
@@ -34,16 +31,17 @@ import './_version.mjs';
  *
  * @memberof workbox.rangeRequests
  */
-async function createPartialResponse(request, originalResponse) {
+async function createPartialResponse(
+    request: Request, originalResponse: Response): Promise<Response> {
   try {
     if (process.env.NODE_ENV !== 'production') {
-      assert.isInstance(request, Request, {
+      assert!.isInstance(request, Request, {
         moduleName: 'workbox-range-requests',
         funcName: 'createPartialResponse',
         paramName: 'request',
       });
 
-      assert.isInstance(originalResponse, Response, {
+      assert!.isInstance(originalResponse, Response, {
         moduleName: 'workbox-range-requests',
         funcName: 'createPartialResponse',
         paramName: 'originalResponse',
@@ -79,10 +77,10 @@ async function createPartialResponse(request, originalResponse) {
       headers: originalResponse.headers,
     });
 
-    slicedResponse.headers.set('Content-Length', slicedBlobSize);
+    slicedResponse.headers.set('Content-Length', String(slicedBlobSize));
     slicedResponse.headers.set('Content-Range',
         `bytes ${effectiveBoundaries.start}-${effectiveBoundaries.end - 1}/` +
-      originalBlob.size);
+        originalBlob.size);
 
     return slicedResponse;
   } catch (error) {

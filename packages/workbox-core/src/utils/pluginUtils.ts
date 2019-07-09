@@ -32,7 +32,7 @@ export interface WorkboxPlugin {
     response: Response,
     request?: Request,
     event?: ExtendableEvent,
-  }) => Promise<Response | null>;
+  }) => Promise<Response | null | undefined>;
   cachedResponseWillBeUsed?: ({
     cacheName,
     request,
@@ -45,7 +45,7 @@ export interface WorkboxPlugin {
     matchOptions?: CacheQueryOptions,
     cachedResponse?: Response,
     event?: ExtendableEvent,
-  }) => Promise<Response | null>;
+  }) => Promise<Response | null | undefined>;
   fetchDidFail?: ({
     request
   }: {
