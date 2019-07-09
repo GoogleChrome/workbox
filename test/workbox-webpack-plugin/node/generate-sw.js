@@ -10,11 +10,9 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const WorkerPlugin = require('worker-plugin');
 const expect = require('chai').expect;
-const fse = require('fs-extra');
 const globby = require('globby');
 const path = require('path');
 const tempy = require('tempy');
-const vm = require('vm');
 const webpack = require('webpack');
 
 const CreateWebpackAssetPlugin = require('../../../infra/testing/create-webpack-asset-plugin');

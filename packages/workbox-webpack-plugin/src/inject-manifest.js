@@ -8,12 +8,14 @@
 
 const {ConcatSource} = require('webpack-sources');
 const SingleEntryPlugin = require('webpack/lib/SingleEntryPlugin');
+const path = require('path');
 const validate = require('workbox-build/build/entry-points/options/validate');
 const webpackInjectManifestSchema = require(
     'workbox-build/build/entry-points/options/webpack-inject-manifest-schema');
 
 const getManifestEntriesFromCompilation =
   require('./lib/get-manifest-entries-from-compilation');
+const relativeToOutputPath = require('./lib/relative-to-output-path');
 const stringifyManifest = require('./lib/stringify-manifest');
 
 /**
@@ -87,6 +89,8 @@ class InjectManifest {
         `configuration:\n${error.message}`);
     }
 
+    this.config.swDest = relativeToOutputPath(compilation, this.config.swDest);
+
     const outputOptions = {
       path: parentCompiler.options.output.path,
       filename: this.config.swDest,
@@ -130,6 +134,10 @@ class InjectManifest {
    * @private
    */
   async handleEmit(compilation) {
+    // See https://webpack.js.org/contribute/plugin-patterns/#monitoring-the-watch-graph
+    const absoluteSwSrc = path.resolve(this.config.swSrc);
+    compilation.fileDependencies.add(absoluteSwSrc);
+
     const swAsset = compilation.assets[this.config.swDest];
     delete compilation.assets[this.config.swDest];
 

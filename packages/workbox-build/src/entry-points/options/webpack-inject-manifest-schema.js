@@ -19,7 +19,9 @@ swSrcBasename.description = 'derived from the swSrc file name';
 
 module.exports = baseSchema.keys(Object.assign({
   injectionPoint: joi.string().default(defaults.injectionPoint),
-  swDest: joi.string().default(swSrcBasename),
   swSrc: joi.string().required(),
   webpackCompilationPlugins: joi.array().items(joi.object()),
-}, webpackCommon));
+}, webpackCommon)).keys({
+  // List this separately, so that the swSrc validation happens first.
+  swDest: joi.string().default(swSrcBasename),
+});

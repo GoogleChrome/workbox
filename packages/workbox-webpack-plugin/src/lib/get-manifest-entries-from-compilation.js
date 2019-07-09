@@ -21,6 +21,7 @@ const resolveWebpackURL = require('./resolve-webpack-url');
  * to any functions that are listed as conditions.
  * @param {Array<string|RegExp|Function>} conditions
  * @return {boolean} Whether or not at least one condition matches.
+ * @private
  */
 function checkConditions(asset, compilation, conditions = []) {
   for (const condition of conditions) {
@@ -54,6 +55,7 @@ function checkConditions(asset, compilation, conditions = []) {
  *
  * @param {Object} stats The webpack compilation stats.
  * @return {Object<string,Set<string>>}
+ * @private
  */
 function assetToChunkNameMapping(stats) {
   const mapping = {};
