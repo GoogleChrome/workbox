@@ -6,9 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {removeIgnoredSearchParams} from './removeIgnoredSearchParams.mjs';
+import {FetchListenerOptions} from './addFetchListener.js';
+import {removeIgnoredSearchParams} from './removeIgnoredSearchParams.js';
+import '../_version.js';
 
-import '../_version.mjs';
 
 /**
  * Generator function that yields possible variations on the original URL to
@@ -20,28 +21,28 @@ import '../_version.mjs';
  * @private
  * @memberof module:workbox-precaching
  */
-export function* generateURLVariations(url, {
+export function* generateURLVariations(url: string, {
   ignoreURLParametersMatching,
   directoryIndex,
   cleanURLs,
   urlManipulation,
-} = {}) {
-  const urlObject = new URL(url, location);
+}: FetchListenerOptions = {}) {
+  const urlObject = new URL(url, location.href);
   urlObject.hash = '';
   yield urlObject.href;
 
-  const urlWithoutIgnoredParams = removeIgnoredSearchParams(
-      urlObject, ignoreURLParametersMatching);
+  const urlWithoutIgnoredParams =
+      removeIgnoredSearchParams(urlObject, ignoreURLParametersMatching);
   yield urlWithoutIgnoredParams.href;
 
   if (directoryIndex && urlWithoutIgnoredParams.pathname.endsWith('/')) {
-    const directoryURL = new URL(urlWithoutIgnoredParams);
+    const directoryURL = new URL(urlWithoutIgnoredParams.href);
     directoryURL.pathname += directoryIndex;
     yield directoryURL.href;
   }
 
   if (cleanURLs) {
-    const cleanURL = new URL(urlWithoutIgnoredParams);
+    const cleanURL = new URL(urlWithoutIgnoredParams.href);
     cleanURL.pathname += '.html';
     yield cleanURL.href;
   }

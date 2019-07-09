@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import '../_version.mjs';
+import '../_version.js';
 
 /**
  * @param {Response} response
@@ -15,14 +15,14 @@ import '../_version.mjs';
  * @private
  * @memberof module:workbox-precaching
  */
-export async function cleanRedirect(response) {
+export async function cleanRedirect(response: Response) {
   const clonedResponse = response.clone();
 
   // Not all browsers support the Response.body stream, so fall back
   // to reading the entire body into memory as a blob.
   const bodyPromise = 'body' in clonedResponse ?
     Promise.resolve(clonedResponse.body) :
-    clonedResponse.blob();
+    clonedResponse!.blob();
 
   const body = await bodyPromise;
 

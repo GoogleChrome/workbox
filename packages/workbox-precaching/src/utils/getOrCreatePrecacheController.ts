@@ -6,11 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {PrecacheController} from '../PrecacheController.mjs';
-import '../_version.mjs';
+import {PrecacheController} from '../PrecacheController.js';
+import '../_version.js';
 
 
-let precacheController;
+let precacheController: PrecacheController | undefined;
 
 /**
  * @return {PrecacheController}

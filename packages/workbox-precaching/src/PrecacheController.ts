@@ -6,18 +6,20 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.mjs';
-import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
-import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.mjs';
-import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.mjs';
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
+import {assert} from 'workbox-core/_private/assert.js';
+import {cacheNames} from 'workbox-core/_private/cacheNames.js';
+import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.js';
+import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.js';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
+import {WorkboxPlugin} from 'workbox-core/utils/pluginUtils.js';
 
-import {cleanRedirect} from './utils/cleanRedirect.mjs';
-import {createCacheKey} from './utils/createCacheKey.mjs';
-import {printCleanupDetails} from './utils/printCleanupDetails.mjs';
-import {printInstallDetails} from './utils/printInstallDetails.mjs';
+import {cleanRedirect} from './utils/cleanRedirect.js';
+import {createCacheKey} from './utils/createCacheKey.js';
+import {printCleanupDetails} from './utils/printCleanupDetails.js';
+import {printInstallDetails} from './utils/printInstallDetails.js';
 
-import './_version.mjs';
+import './_version.js';
+import { PrecacheEntry } from './_types.js';
 
 
 /**
@@ -26,13 +28,16 @@ import './_version.mjs';
  * @memberof module:workbox-precaching
  */
 class PrecacheController {
+  private _cacheName: string;
+  private _urlsToCacheKeys: Map<string, string>;
+
   /**
    * Create a new PrecacheController.
    *
    * @param {string} [cacheName] An optional name for the cache, to override
    * the default precache name.
    */
-  constructor(cacheName) {
+  constructor(cacheName?: string) {
     this._cacheName = cacheNames.getPrecacheName(cacheName);
     this._urlsToCacheKeys = new Map();
   }
@@ -45,9 +50,9 @@ class PrecacheController {
    * Array<module:workbox-precaching.PrecacheController.PrecacheEntry|string>
    * } entries Array of entries to precache.
    */
-  addToCacheList(entries) {
+  addToCacheList(entries: Array<PrecacheEntry|string>) {
     if (process.env.NODE_ENV !== 'production') {
-      assert.isArray(entries, {
+      assert!.isArray(entries, {
         moduleName: 'workbox-precaching',
         className: 'PrecacheController',
         funcName: 'addToCacheList',
@@ -78,10 +83,13 @@ class PrecacheController {
    * and caching during install.
    * @return {Promise<workbox.precaching.InstallResult>}
    */
-  async install({event, plugins} = {}) {
+  async install({event, plugins}: {
+    event?: ExtendableEvent,
+    plugins?: WorkboxPlugin[],
+  } = {}) {
     if (process.env.NODE_ENV !== 'production') {
       if (plugins) {
-        assert.isArray(plugins, {
+        assert!.isArray(plugins, {
           moduleName: 'workbox-precaching',
           className: 'PrecacheController',
           funcName: 'install',
@@ -163,7 +171,11 @@ class PrecacheController {
    * @param {Array<Object>} [options.plugins] An array of plugins to apply to
    * fetch and caching.
    */
-  async _addURLToCache({url, event, plugins}) {
+  async _addURLToCache({url, event, plugins}: {
+    url: string,
+    event?: ExtendableEvent,
+    plugins?: WorkboxPlugin[],
+  }) {
     const request = new Request(url, {credentials: 'same-origin'});
     let response = await fetchWrapper.fetch({
       event,
@@ -174,16 +186,18 @@ class PrecacheController {
     // Allow developers to override the default logic about what is and isn't
     // valid by passing in a plugin implementing cacheWillUpdate(), e.g.
     // a workbox.cacheableResponse.Plugin instance.
-    let cacheWillUpdateCallback;
+    let cacheWillUpdatePlugin;
     for (const plugin of (plugins || [])) {
       if ('cacheWillUpdate' in plugin) {
-        cacheWillUpdateCallback = plugin.cacheWillUpdate.bind(plugin);
+        cacheWillUpdatePlugin = plugin;
       }
     }
 
-    const isValidResponse = cacheWillUpdateCallback ?
+    const isValidResponse = cacheWillUpdatePlugin ?
       // Use a callback if provided. It returns a truthy value if valid.
-      cacheWillUpdateCallback({event, request, response}) :
+      // NOTE: invoke the method on the plugin instance so the `this` context
+      // is correct.
+      cacheWillUpdatePlugin.cacheWillUpdate!({event, request, response}) :
       // Otherwise, default to considering any response status under 400 valid.
       // This includes, by default, considering opaque responses valid.
       response.status < 400;
@@ -242,8 +256,8 @@ class PrecacheController {
    * @return {string} The versioned URL that corresponds to a cache key
    * for the original URL, or undefined if that URL isn't precached.
    */
-  getCacheKeyForURL(url) {
-    const urlObject = new URL(url, location);
+  getCacheKeyForURL(url: string) {
+    const urlObject = new URL(url, location.href);
     return this._urlsToCacheKeys.get(urlObject.href);
   }
 }

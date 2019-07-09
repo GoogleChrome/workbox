@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import './_version.mjs';
+import './_version.js';
 
 /**
  * @typedef {Object} InstallResult
@@ -17,6 +17,10 @@ import './_version.mjs';
  *
  * @memberof workbox.precaching
  */
+export interface InstallResult {
+  updatedURLs: string[];
+  notUpdatedURLs: string[];
+}
 
 /**
  * @typedef {Object} CleanupResult
@@ -25,6 +29,9 @@ import './_version.mjs';
  *
  * @memberof workbox.precaching
  */
+export interface CleanupResult {
+  deletedCacheRequests: string[],
+}
 
 /**
  * @typedef {Object} PrecacheEntry
@@ -33,6 +40,10 @@ import './_version.mjs';
  *
  * @memberof workbox.precaching
  */
+export interface PrecacheEntry {
+  url: string;
+  revision?: string;
+}
 
 /**
  * The "urlManipulation" callback can be used to determine if there are any
@@ -50,3 +61,4 @@ import './_version.mjs';
  *
  * @memberof workbox.precaching
  */
+export type urlManipulation = ({url}: {url: URL}) => URL[];

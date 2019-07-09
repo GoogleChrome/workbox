@@ -6,10 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {getOrCreatePrecacheController}
-  from './getOrCreatePrecacheController.mjs';
-import {generateURLVariations} from './generateURLVariations.mjs';
-import '../_version.mjs';
+import {FetchListenerOptions} from './addFetchListener.js';
+import {getOrCreatePrecacheController} from './getOrCreatePrecacheController.js';
+import {generateURLVariations} from './generateURLVariations.js';
+import '../_version.js';
 
 /**
  * This function will take the request URL and manipulate it based on the
@@ -22,7 +22,8 @@ import '../_version.mjs';
  *
  * @private
  */
-export const getCacheKeyForURL = (url, options) => {
+export const getCacheKeyForURL =
+    (url: string, options: FetchListenerOptions): string | void => {
   const precacheController = getOrCreatePrecacheController();
 
   const urlsToCacheKeys = precacheController.getURLsToCacheKeys();

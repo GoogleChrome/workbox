@@ -6,7 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
-import '../_version.mjs';
+import '../_version.js';
+
+
+// Give TypeScript the correct global.
+declare var self: ServiceWorkerGlobalScope;
 
 const SUBSTRING_TO_FIND = '-precache-';
 
@@ -29,14 +33,14 @@ const SUBSTRING_TO_FIND = '-precache-';
  * @memberof module:workbox-precaching
  */
 const deleteOutdatedCaches = async (
-  currentPrecacheName,
-  substringToFind = SUBSTRING_TO_FIND) => {
+    currentPrecacheName: string,
+    substringToFind:string = SUBSTRING_TO_FIND) => {
   const cacheNames = await caches.keys();
 
   const cacheNamesToDelete = cacheNames.filter((cacheName) => {
     return cacheName.includes(substringToFind) &&
-           cacheName.includes(self.registration.scope) &&
-           cacheName !== currentPrecacheName;
+        cacheName.includes(self.registration.scope) &&
+        cacheName !== currentPrecacheName;
   });
 
   await Promise.all(

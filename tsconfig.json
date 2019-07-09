@@ -26,6 +26,7 @@
     { "path": "./packages/workbox-core/" },
     { "path": "./packages/workbox-expiration/" },
     { "path": "./packages/workbox-navigation-preload/" },
+    { "path": "./packages/workbox-precaching/" },
     { "path": "./packages/workbox-window/" }
   ]
 }

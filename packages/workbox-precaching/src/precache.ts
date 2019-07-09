@@ -6,19 +6,20 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {logger} from 'workbox-core/_private/logger.mjs';
-import {getOrCreatePrecacheController} from './utils/getOrCreatePrecacheController.mjs';
-import {precachePlugins} from './utils/precachePlugins.mjs';
-import './_version.mjs';
+import {logger} from 'workbox-core/_private/logger.js';
+import {getOrCreatePrecacheController} from './utils/getOrCreatePrecacheController.js';
+import {precachePlugins} from './utils/precachePlugins.js';
+import {PrecacheEntry} from './_types.js';
+import './_version.js';
 
 
-const installListener = (event) => {
+const installListener = (event: ExtendableEvent) => {
   const precacheController = getOrCreatePrecacheController();
   const plugins = precachePlugins.get();
 
   event.waitUntil(
       precacheController.install({event, plugins})
-          .catch((error) => {
+          .catch((error: Error) => {
             if (process.env.NODE_ENV !== 'production') {
               logger.error(`Service worker installation failed. It will ` +
               `be retried automatically during the next navigation.`);
@@ -29,11 +30,10 @@ const installListener = (event) => {
   );
 };
 
-const activateListener = (event) => {
+const activateListener = (event: ExtendableEvent) => {
   const precacheController = getOrCreatePrecacheController();
-  const plugins = precachePlugins.get();
 
-  event.waitUntil(precacheController.activate({event, plugins}));
+  event.waitUntil(precacheController.activate());
 };
 
 /**
@@ -55,7 +55,7 @@ const activateListener = (event) => {
  *
  * @alias workbox.precaching.precache
  */
-export const precache = (entries) => {
+export const precache = (entries: Array<PrecacheEntry|string>) => {
   const precacheController = getOrCreatePrecacheController();
   precacheController.addToCacheList(entries);
 

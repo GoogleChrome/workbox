@@ -6,12 +6,20 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
-import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
-import {getCacheKeyForURL} from './getCacheKeyForURL.mjs';
-import '../_version.mjs';
+import {cacheNames} from 'workbox-core/_private/cacheNames.js';
+import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
+import {logger} from 'workbox-core/_private/logger.js';
+import {getCacheKeyForURL} from './getCacheKeyForURL.js';
+import {urlManipulation} from '../_types.js';
+import '../_version.js';
 
+
+export interface FetchListenerOptions {
+  directoryIndex?: string;
+  ignoreURLParametersMatching?: RegExp[];
+  cleanURLs?: boolean;
+  urlManipulation?: urlManipulation;
+}
 
 /**
  * Adds a `fetch` listener to the service worker that will
@@ -44,11 +52,11 @@ export const addFetchListener = ({
   ignoreURLParametersMatching = [/^utm_/],
   directoryIndex = 'index.html',
   cleanURLs = true,
-  urlManipulation = null,
-} = {}) => {
+  urlManipulation,
+}: FetchListenerOptions = {}) => {
   const cacheName = cacheNames.getPrecacheName();
 
-  addEventListener('fetch', (event) => {
+  addEventListener('fetch', (event: FetchEvent) => {
     const precachedURL = getCacheKeyForURL(event.request.url, {
       cleanURLs,
       directoryIndex,

@@ -6,19 +6,19 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.mjs';
-import {addPlugins} from './addPlugins.mjs';
-import {addRoute} from './addRoute.mjs';
-import {cleanupOutdatedCaches} from './cleanupOutdatedCaches.mjs';
-import {getCacheKeyForURL} from './getCacheKeyForURL.mjs';
-import {precache} from './precache.mjs';
-import {precacheAndRoute} from './precacheAndRoute.mjs';
-import {PrecacheController} from './PrecacheController.mjs';
-import './_version.mjs';
+import {assert} from 'workbox-core/_private/assert.js';
+import {addPlugins} from './addPlugins.js';
+import {addRoute} from './addRoute.js';
+import {cleanupOutdatedCaches} from './cleanupOutdatedCaches.js';
+import {getCacheKeyForURL} from './getCacheKeyForURL.js';
+import {precache} from './precache.js';
+import {precacheAndRoute} from './precacheAndRoute.js';
+import {PrecacheController} from './PrecacheController.js';
+import './_version.js';
 
 
 if (process.env.NODE_ENV !== 'production') {
-  assert.isSWEnv('workbox-precaching');
+  assert!.isSWEnv('workbox-precaching');
 }
 
 /**

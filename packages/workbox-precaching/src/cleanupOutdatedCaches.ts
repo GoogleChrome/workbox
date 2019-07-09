@@ -6,10 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
-import {deleteOutdatedCaches} from './utils/deleteOutdatedCaches.mjs';
-import './_version.mjs';
+import {cacheNames} from 'workbox-core/_private/cacheNames.js';
+import {logger} from 'workbox-core/_private/logger.js';
+import {deleteOutdatedCaches} from './utils/deleteOutdatedCaches.js';
+import './_version.js';
 
 
 /**
@@ -19,7 +19,7 @@ import './_version.mjs';
  * @alias workbox.precaching.cleanupOutdatedCaches
  */
 export const cleanupOutdatedCaches = () => {
-  addEventListener('activate', (event) => {
+  addEventListener('activate', (event: ExtendableEvent) => {
     const cacheName = cacheNames.getPrecacheName();
 
     event.waitUntil(deleteOutdatedCaches(cacheName).then((cachesDeleted) => {

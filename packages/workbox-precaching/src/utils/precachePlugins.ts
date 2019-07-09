@@ -6,10 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
-import '../_version.mjs';
+import {WorkboxPlugin} from 'workbox-core/utils/pluginUtils.js';
+import '../_version.js';
 
 
-const plugins = [];
+const plugins: WorkboxPlugin[] = [];
 
 export const precachePlugins = {
   /*
@@ -24,7 +25,7 @@ export const precachePlugins = {
    * @param {Array} newPlugins
    * @private
    */
-  add(newPlugins) {
+  add(newPlugins: WorkboxPlugin[]) {
     plugins.push(...newPlugins);
   },
 };
