@@ -6,10 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
-import {Route} from './Route.mjs';
-import './_version.mjs';
+import {assert} from 'workbox-core/_private/assert.js';
+import {logger} from 'workbox-core/_private/logger.js';
+import {Route} from './Route.js';
+import './_version.js';
 
 /**
  * RegExpRoute makes it easy to create a regular expression based

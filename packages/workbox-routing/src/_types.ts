@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import './_version.mjs';
+import './_version.js';
 
 /**
  * The "match" callback is used to determine if a `Route` should apply for a

@@ -6,11 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.mjs';
+import {assert} from 'workbox-core/_private/assert.js';
 
-import {defaultMethod, validMethods} from './utils/constants.mjs';
-import {normalizeHandler} from './utils/normalizeHandler.mjs';
-import './_version.mjs';
+import {defaultMethod, validMethods} from './utils/constants.js';
+import {normalizeHandler} from './utils/normalizeHandler.js';
+import './_version.js';
 
 /**
  * A `Route` consists of a pair of callback functions, "match" and "handler".

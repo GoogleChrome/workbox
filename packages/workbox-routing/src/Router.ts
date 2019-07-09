@@ -6,13 +6,13 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
-import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
+import {assert} from 'workbox-core/_private/assert.js';
+import {logger} from 'workbox-core/_private/logger.js';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
+import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
 
-import {normalizeHandler} from './utils/normalizeHandler.mjs';
-import './_version.mjs';
+import {normalizeHandler} from './utils/normalizeHandler.js';
+import './_version.js';
 
 /**
  * The Router can be used to process a FetchEvent through one or more

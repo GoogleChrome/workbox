@@ -6,9 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {getOrCreateDefaultRouter} from './utils/getOrCreateDefaultRouter.mjs';
+import {getOrCreateDefaultRouter} from './utils/getOrCreateDefaultRouter.js';
 
-import './_version.mjs';
+import './_version.js';
 
 /**
  * If a Route throws an error while handling a request, this `handler`

@@ -6,12 +6,12 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {logger} from 'workbox-core/_private/logger.mjs';
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
-import {Route} from './Route.mjs';
-import {RegExpRoute} from './RegExpRoute.mjs';
-import {getOrCreateDefaultRouter} from './utils/getOrCreateDefaultRouter.mjs';
-import './_version.mjs';
+import {logger} from 'workbox-core/_private/logger.js';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
+import {Route} from './Route.js';
+import {RegExpRoute} from './RegExpRoute.js';
+import {getOrCreateDefaultRouter} from './utils/getOrCreateDefaultRouter.js';
+import './_version.js';
 
 
 /**

@@ -6,8 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {Router} from '../Router.mjs';
-import '../_version.mjs';
+import {Router} from '../Router.js';
+import '../_version.js';
 
 let defaultRouter;
 

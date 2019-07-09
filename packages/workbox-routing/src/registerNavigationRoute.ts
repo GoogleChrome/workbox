@@ -6,12 +6,12 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.mjs';
-import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
-import {NavigationRoute} from './NavigationRoute.mjs';
-import {getOrCreateDefaultRouter} from './utils/getOrCreateDefaultRouter.mjs';
-import './_version.mjs';
+import {assert} from 'workbox-core/_private/assert.js';
+import {cacheNames} from 'workbox-core/_private/cacheNames.js';
+import {logger} from 'workbox-core/_private/logger.js';
+import {NavigationRoute} from './NavigationRoute.js';
+import {getOrCreateDefaultRouter} from './utils/getOrCreateDefaultRouter.js';
+import './_version.js';
 
 
 /**

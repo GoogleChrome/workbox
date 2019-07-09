@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import '../_version.mjs';
+import '../_version.js';
 
 /**
  * The default HTTP method, 'GET', used when there's no specific method

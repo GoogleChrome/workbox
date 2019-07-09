@@ -6,8 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.mjs';
-import '../_version.mjs';
+import {assert} from 'workbox-core/_private/assert.js';
+import '../_version.js';
 
 /**
  * @param {function()|Object} handler Either a function, or an object with a
