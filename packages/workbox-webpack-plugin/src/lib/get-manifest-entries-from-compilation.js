@@ -82,6 +82,7 @@ function assetToChunkNameMapping(stats) {
  * @param {Object} config The validated configuration, obtained from the plugin.
  * @return {Set<Asset>} The assets that should be included in the manifest,
  * based on the criteria provided.
+ * @private
  */
 function filterAssets(compilation, config) {
   const filteredAssets = new Set();
