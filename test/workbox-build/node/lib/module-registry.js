@@ -9,16 +9,14 @@
 const expect = require('chai').expect;
 const proxyquire = require('proxyquire');
 
-describe(`[workbox-build] lib/create-module-imports.js`, function() {
+describe(`[workbox-build] lib/module-registry.js`, function() {
   const MODULE_PATH = '../../../../packages/workbox-build/src/lib/module-registry';
   let moduleRegistry;
 
   beforeEach(() => {
     const ModuleRegistry = proxyquire(MODULE_PATH, {
-      path: {
-        posix: {
-          resolve: () => '/path/to/node_modules',
-        },
+      upath: {
+        resolve: () => '/path/to/node_modules',
       },
     });
     moduleRegistry = new ModuleRegistry();
