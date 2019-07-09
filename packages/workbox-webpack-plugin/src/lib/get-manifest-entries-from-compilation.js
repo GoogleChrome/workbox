@@ -157,7 +157,7 @@ module.exports = (compilation, config) => {
       fileDetails.push({
         file: resolveWebpackURL(publicPath, asset.name),
         hash: getAssetHash(compilation.assets[asset.name]),
-        size: asset.size,
+        size: asset.size || 0,
       });
     } else {
       compilation.warnings.push(`Could not precache ${asset.name}, as it's ` +
