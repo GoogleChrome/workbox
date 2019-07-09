@@ -26,7 +26,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
   const WEBPACK_ENTRY_FILENAME = 'webpackEntry.js';
   const SRC_DIR = path.join(__dirname, '..', 'static', 'example-project-1');
 
-  describe(`[workbox-webpack-plugin] runtime errors`, function() {
+  describe(`[workbox-webpack-plugin] Runtime errors`, function() {
     it(`should lead to a webpack compilation error when passed invalid config`, function(done) {
       const outputDir = tempy.directory();
       const config = {
@@ -47,68 +47,19 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
 
       const compiler = webpack(config);
       compiler.run((webpackError, stats) => {
-        if (webpackError) {
-          done(new Error(`An unexpected error was thrown: ${webpackError.message}`));
-        } else {
-          const statsJson = stats.toJson('verbose');
-          expect(statsJson.errors).to.have.members([
-            `Please check your GenerateSW plugin configuration:\n'invalid' is not a supported parameter.`,
-          ]);
-          done();
-        }
-      });
-    });
+        expect(webpackError).not.to.exist;
+        const statsJson = stats.toJson();
+        expect(statsJson.warnings).to.be.empty;
+        expect(statsJson.errors).to.have.members([
+          `Please check your GenerateSW plugin configuration:\n"invalid" is not a supported parameter.`,
+        ]);
 
-    it(`should warn when when passed a non-existent chunk`, function(done) {
-      done('tbd');
-      const outputDir = tempy.directory();
-      const config = {
-        mode: 'production',
-        entry: {
-          entry1: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
-          entry2: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
-        },
-        output: {
-          filename: '[name]-[chunkhash].js',
-          path: outputDir,
-        },
-        plugins: [
-          new GenerateSW(),
-        ],
-      };
-
-      const compiler = webpack(config);
-      compiler.run(async (webpackError, stats) => {
-        const swFile = path.join(outputDir, 'service-worker.js');
-        try {
-          webpackBuildCheck(webpackError, stats);
-
-          const files = await globby(outputDir);
-          expect(files).to.have.length(4);
-
-          await validateServiceWorkerRuntime({
-            swFile, expectedMethodCalls: {
-              precacheAndRoute: [[[
-                {
-                  revision: '0fae6a991467bd40263a3ba8cd82835d',
-                  url: 'entry1-43ba396bf52f8419e349.js',
-                }, {
-                  revision: '0fae6a991467bd40263a3ba8cd82835d',
-                  url: 'entry2-aa21f43434f29ed0c946.js',
-                },
-              ], {}]],
-            },
-          });
-
-          done();
-        } catch (error) {
-          done(error);
-        }
+        done();
       });
     });
   });
 
-  describe(`[workbox-webpack-plugin] multiple chunks`, function() {
+  describe(`[workbox-webpack-plugin] Multiple chunks`, function() {
     it(`should work when called without any parameters`, function(done) {
       const outputDir = tempy.directory();
       const config = {
@@ -717,6 +668,56 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
   });
 
   describe(`[workbox-webpack-plugin] Reporting webpack warnings`, function() {
+    it(`should warn when when passed a non-existent chunk`, function(done) {
+      const outputDir = tempy.directory();
+      const config = {
+        mode: 'production',
+        entry: {
+          entry1: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        },
+        output: {
+          filename: '[name]-[chunkhash].js',
+          path: outputDir,
+        },
+        plugins: [
+          new GenerateSW({
+            chunks: ['entry1', 'doesNotExist'],
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError, stats) => {
+        const swFile = path.join(outputDir, 'service-worker.js');
+        try {
+          expect(webpackError).not.to.exist;
+          const statsJson = stats.toJson();
+          expect(statsJson.errors).to.be.empty;
+          expect(statsJson.warnings).to.have.members([
+            `The chunk 'doesNotExist' was provided in your Workbox chunks config, but was not found in the compilation.`,
+          ]);
+
+          const files = await globby(outputDir);
+          expect(files).to.have.length(3);
+
+          await validateServiceWorkerRuntime({
+            swFile, expectedMethodCalls: {
+              precacheAndRoute: [[[
+                {
+                  revision: '0fae6a991467bd40263a3ba8cd82835d',
+                  url: 'entry1-534729ef1c2ff611b64f.js',
+                },
+              ], {}]],
+            },
+          });
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+
     it(`should add maximumFileSizeToCacheInBytes warnings to compilation.warnings`, function(done) {
       const outputDir = tempy.directory();
       const config = {
@@ -853,7 +854,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
 
   describe(`[workbox-webpack-plugin] WASM Code`, function() {
     // See https://github.com/GoogleChrome/workbox/issues/1916
-    it(`•should support projects that bundle WASM code`, function(done) {
+    it(`should support projects that bundle WASM code`, function(done) {
       const outputDir = tempy.directory();
       const srcDir = path.join(__dirname, '..', 'static', 'wasm-project');
       const config = {
@@ -883,6 +884,224 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           // only be true if the build was successful.
           const files = await globby(outputDir);
           expect(files).to.have.length(6);
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+  });
+
+  describe(`[workbox-webpack-plugin] Rollup plugin configuration options`, function() {
+    it(`should support inlining the Workbox runtime`, function(done) {
+      const outputDir = tempy.directory();
+      const config = {
+        mode: 'production',
+        entry: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        output: {
+          filename: '[name].[hash:6].js',
+          path: outputDir,
+          publicPath: '/public/',
+        },
+        plugins: [
+          new GenerateSW({
+            inlineWorkboxRuntime: true,
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError, stats) => {
+        try {
+          webpackBuildCheck(webpackError, stats);
+
+          // We can't really mock evaluation of the service worker script when
+          // the Workbox runtime is inlined, so just check to make sure the
+          // correct files are output.
+          const files = await globby(outputDir);
+          expect(files).to.have.length(2);
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+
+    it(`should support inlining the Workbox runtime and generating sourcemaps`, function(done) {
+      const outputDir = tempy.directory();
+      const config = {
+        mode: 'production',
+        entry: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        output: {
+          filename: '[name].[hash:6].js',
+          path: outputDir,
+          publicPath: '/public/',
+        },
+        plugins: [
+          new GenerateSW({
+            inlineWorkboxRuntime: true,
+            sourcemap: true,
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError, stats) => {
+        try {
+          webpackBuildCheck(webpackError, stats);
+
+          // We can't really mock evaluation of the service worker script when
+          // the Workbox runtime is inlined, so just check to make sure the
+          // correct files are output.
+          const files = await globby(outputDir);
+          expect(files).to.have.length(3);
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+  });
+
+  describe(`[workbox-webpack-plugin] Manifest transformations`, function() {
+    it(`should use dontCacheBustURLsMatching`, function(done) {
+      const outputDir = tempy.directory();
+      const config = {
+        mode: 'production',
+        entry: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        output: {
+          filename: '[name].[hash:6].js',
+          path: outputDir,
+        },
+        plugins: [
+          new GenerateSW({
+            dontCacheBustURLsMatching: /\.[0-9a-f]{6}\./,
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError, stats) => {
+        const swFile = path.join(outputDir, 'service-worker.js');
+        try {
+          webpackBuildCheck(webpackError, stats);
+
+          const files = await globby(outputDir);
+          expect(files).to.have.length(3);
+
+          await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
+            importScripts: [],
+            precacheAndRoute: [[[{
+              url: 'main.f70b1e.js',
+            }], {}]],
+          }});
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+
+    it(`should use modifyURLPrefix`, function(done) {
+      const outputDir = tempy.directory();
+      const config = {
+        mode: 'production',
+        entry: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        output: {
+          filename: '[name].[hash:6].js',
+          path: outputDir,
+          publicPath: '/public/',
+        },
+        plugins: [
+          new GenerateSW({
+            modifyURLPrefix: {
+              '/public/': 'https://example.org/',
+            },
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError, stats) => {
+        const swFile = path.join(outputDir, 'service-worker.js');
+        try {
+          webpackBuildCheck(webpackError, stats);
+
+          const files = await globby(outputDir);
+          expect(files).to.have.length(3);
+
+          await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
+            importScripts: [],
+            precacheAndRoute: [[[{
+              revision: 'eeb107dbf9e69f1a6184e616f38bab47',
+              url: 'https://example.org/main.a3c534.js',
+            }], {}]],
+          }});
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+
+    it(`should use manifestTransforms`, function(done) {
+      const outputDir = tempy.directory();
+      const warningMessage = 'test warning';
+      const config = {
+        mode: 'production',
+        entry: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        output: {
+          filename: '[name].[hash:6].js',
+          path: outputDir,
+        },
+        plugins: [
+          new GenerateSW({
+            manifestTransforms: [(manifest, compilation) => {
+              expect(manifest).to.eql([{
+                revision: '0fae6a991467bd40263a3ba8cd82835d',
+                size: 930,
+                url: 'main.f70b1e.js',
+              }]);
+              expect(compilation).to.exist;
+
+              manifest = manifest.map((entry) => {
+                entry.url += '-suffix';
+                delete entry.revision;
+                return entry;
+              });
+
+              return {
+                manifest,
+                warnings: [warningMessage],
+              };
+            }],
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError, stats) => {
+        const swFile = path.join(outputDir, 'service-worker.js');
+        try {
+          expect(webpackError).not.to.exist;
+          const statsJson = stats.toJson();
+          expect(statsJson.errors).to.be.empty;
+          expect(statsJson.warnings).to.have.members([warningMessage]);
+
+          const files = await globby(outputDir);
+          expect(files).to.have.length(3);
+
+          await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
+            importScripts: [],
+            precacheAndRoute: [[[{
+              url: 'main.f70b1e.js-suffix',
+            }], {}]],
+          }});
 
           done();
         } catch (error) {
