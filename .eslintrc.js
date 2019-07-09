@@ -90,7 +90,7 @@ module.exports = {
     },
   }, {
     files: [
-      'test/workbox-*/static/**/*.js',
+      'test/*/static/**/*.js',
     ],
     rules: {
       'no-console': 0,
