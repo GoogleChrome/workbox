@@ -34,11 +34,10 @@ import './_version.js';
  *
  * @memberof workbox.expiration
  */
-class Plugin {
+class Plugin implements WorkboxPlugin {
   private _config: object;
   private _maxAgeSeconds?: number;
   private _cacheExpirations: Map<string, CacheExpiration>;
-
 
   /**
    * @param {Object} config
