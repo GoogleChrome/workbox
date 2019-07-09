@@ -8,8 +8,8 @@
 
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
 import {assert} from 'workbox-core/_private/assert.js';
-
 import '../_version.js';
+
 
 /**
  * @param {string} rangeHeader A Range: header value.
@@ -19,9 +19,9 @@ import '../_version.js';
  *
  * @private
  */
-function parseRangeHeader(rangeHeader) {
+function parseRangeHeader(rangeHeader: string): {start?: number, end?: number} {
   if (process.env.NODE_ENV !== 'production') {
-    assert.isType(rangeHeader, 'string', {
+    assert!.isType(rangeHeader, 'string', {
       moduleName: 'workbox-range-requests',
       funcName: 'parseRangeHeader',
       paramName: 'rangeHeader',
@@ -42,13 +42,13 @@ function parseRangeHeader(rangeHeader) {
 
   const rangeParts = /(\d*)-(\d*)/.exec(normalizedRangeHeader);
   // We need either at least one of the start or end values.
-  if (rangeParts === null || !(rangeParts[1] || rangeParts[2])) {
+  if (!rangeParts || !(rangeParts[1] || rangeParts[2])) {
     throw new WorkboxError('invalid-range-values', {normalizedRangeHeader});
   }
 
   return {
-    start: rangeParts[1] === '' ? null : Number(rangeParts[1]),
-    end: rangeParts[2] === '' ? null : Number(rangeParts[2]),
+    start: rangeParts[1] === '' ? undefined : Number(rangeParts[1]),
+    end: rangeParts[2] === '' ? undefined : Number(rangeParts[2]),
   };
 }
 

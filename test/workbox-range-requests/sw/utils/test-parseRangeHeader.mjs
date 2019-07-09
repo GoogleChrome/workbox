@@ -61,8 +61,8 @@ describe(`parseRangeHeader()`, function() {
   it(`should return the expected start and end values when it's is called with a valid rangeHeader`, function() {
     const testCases = [
       ['bytes=100-200', {start: 100, end: 200}],
-      ['bytes=-200', {start: null, end: 200}],
-      ['bytes=100-', {start: 100, end: null}],
+      ['bytes=-200', {start: undefined, end: 200}],
+      ['bytes=100-', {start: 100, end: undefined}],
     ];
 
     for (const [rangeHeader, expectedValue] of testCases) {

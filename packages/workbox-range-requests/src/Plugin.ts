@@ -6,9 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
+import {WorkboxPlugin} from 'workbox-core/utils/pluginUtils.js';
 import {createPartialResponse} from './createPartialResponse.js';
-
 import './_version.js';
+
 
 /**
  * The range request plugin makes it easy for a request with a 'Range' header to
@@ -19,7 +20,7 @@ import './_version.js';
  *
  * @memberof workbox.rangeRequests
  */
-class Plugin {
+class Plugin implements WorkboxPlugin {
   /**
    * @param {Object} options
    * @param {Request} options.request The original request, which may or may not
@@ -31,7 +32,8 @@ class Plugin {
    *
    * @private
    */
-  async cachedResponseWillBeUsed({request, cachedResponse}) {
+  cachedResponseWillBeUsed: WorkboxPlugin['cachedResponseWillBeUsed'] =
+      async ({request, cachedResponse}) => {
     // Only return a sliced response if there's something valid in the cache,
     // and there's a Range: header in the request.
     if (cachedResponse && request.headers.has('range')) {

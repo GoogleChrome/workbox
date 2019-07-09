@@ -27,8 +27,9 @@
     "browserNamespace": "workbox.rangeRequests",
     "packageType": "browser"
   },
-  "main": "build/workbox-range-requests.prod.js",
+  "main": "index.js",
   "module": "index.mjs",
+  "types": "index.d.ts",
   "dependencies": {
     "workbox-core": "^4.3.1"
   }
