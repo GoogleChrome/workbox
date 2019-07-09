@@ -518,7 +518,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
                 revision: '35ecfdff688561581ddd68a107ef1c46',
                 url: 'webpackEntry.js',
               }], {}]],
-            }
+            },
           });
 
           done();
@@ -678,7 +678,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
                 revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
                 url: 'page-2.html',
               }], {}]],
-            }
+            },
           });
 
           done();
@@ -874,7 +874,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
                   url: 'webpackEntry.js',
                 },
               ], {}]],
-            }
+            },
           });
 
           done();
@@ -926,7 +926,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
                   url: '/testing/entry1-4357f117964871c288d9.js',
                 },
               ], {}]],
-            }
+            },
           });
 
           done();
