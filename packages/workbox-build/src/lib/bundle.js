@@ -62,7 +62,9 @@ module.exports = async ({
   // Rollup will inline the runtime by default. If we don't want that, we need
   // to add in some additional config.
   if (!inlineWorkboxRuntime) {
-    rollupConfig.plugins.unshift(loadz0r());
+    rollupConfig.plugins.unshift(loadz0r({
+      loader: require('./loadz0r-loader'),
+    }));
     rollupConfig.manualChunks = (id) => {
       return id.includes('workbox') ? 'workbox' : undefined;
     };
@@ -92,7 +94,7 @@ module.exports = async ({
 
         files.push({
           name: sourceMapFile,
-          contents: chunkOrAsset.map,
+          contents: chunkOrAsset.map.toString(),
         });
       }
 

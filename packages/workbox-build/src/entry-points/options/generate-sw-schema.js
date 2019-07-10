@@ -13,12 +13,9 @@ const defaults = require('./defaults');
 
 // Define some additional constraints.
 module.exports = commonGenerateSchema.keys({
-  babelPresetEnvTargets: joi.array().items(joi.string())
-      .default(defaults.babelPresetEnvTargets),
   globDirectory: joi.string().required(),
-  importScripts: joi.array().items(joi.string()),
-  inlineWorkboxRuntime: joi.boolean().default(defaults.inlineWorkboxRuntime),
-  mode: joi.string().default(process.env.NODE_ENV || defaults.mode),
-  sourcemap: joi.boolean().default(defaults.sourcemap),
-  swDest: joi.string().required().regex(/\.js$/),
+  globFollow: joi.boolean().default(defaults.globFollow),
+  globIgnores: joi.array().items(joi.string()).default(defaults.globIgnores),
+  globPatterns: joi.array().items(joi.string()).default(defaults.globPatterns),
+  globStrict: joi.boolean().default(defaults.globStrict),
 });

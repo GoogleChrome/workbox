@@ -7,7 +7,7 @@
 */
 
 const ol = require('common-tags').oneLine;
-const path = require('path');
+const upath = require('upath');
 
 /**
  * Class for keeping track of which Workbox modules are used by the generated
@@ -19,7 +19,7 @@ class ModuleRegistry {
    */
   constructor() {
     this.modulesUsed = new Map();
-    this.nodeModulesPath = path.posix.resolve(
+    this.nodeModulesPath = upath.resolve(
         __dirname, '..', '..', 'node_modules');
   }
 

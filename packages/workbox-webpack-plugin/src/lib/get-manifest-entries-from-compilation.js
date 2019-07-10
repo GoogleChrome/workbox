@@ -6,183 +6,186 @@
   https://opensource.org/licenses/MIT.
 */
 
-const ModuleFilenameHelpers = require('webpack/lib/ModuleFilenameHelpers');
+const {matchPart} = require('webpack/lib/ModuleFilenameHelpers');
+const transformManifest = require('workbox-build/build/lib/transform-manifest');
 
 const getAssetHash = require('./get-asset-hash');
 const resolveWebpackURL = require('./resolve-webpack-url');
 
 /**
- * A single manifest entry that Workbox can precache.
- * When possible, we leave out the revision information, which tells Workbox
- * that the URL contains enough info to uniquely version the asset.
+ * For a given asset, checks whether at least one of the conditions matches.
  *
- * @param {Array<string>} knownHashes All of the hashes that are associated
- * with this webpack build.
- * @param {string} url webpack asset url path
- * @param {string} [revision] A revision hash for the entry
- * @return {module:workbox-build.ManifestEntry} A single manifest entry
- *
+ * @param {Asset} asset The webpack asset in question. This will be passed
+ * to any functions that are listed as conditions.
+ * @param {Compilation} compilation The webpack compilation. This will be passed
+ * to any functions that are listed as conditions.
+ * @param {Array<string|RegExp|Function>} conditions
+ * @return {boolean} Whether or not at least one condition matches.
  * @private
  */
-function getEntry(knownHashes, url, revision) {
-  // We're assuming that if the URL contains any of the known hashes
-  // (either the short or full chunk hash or compilation hash) then it's
-  // already revisioned, and we don't need additional out-of-band revisioning.
-  if (!revision || knownHashes.some((hash) => url.includes(hash))) {
-    return {url};
-  }
-  return {revision, url};
-}
-
-/**
- * Filter to narrow down the asset list to chunks that:
- * - have a name.
- * - if there's a whitelist, the chunk's name is in the whitelist.
- * - if there's a blacklist, the chunk's name is not in the blacklist.
- *
- * TODO:
- *  Filter files by size:
- *    https://github.com/GoogleChrome/workbox/pull/808#discussion_r139606242
- *  Filter files that match `staticFileGlobsIgnorePatterns` (or something)
- *  but filter for [/\.map$/, /asset-manifest\.json$/] by default:
- *    https://github.com/GoogleChrome/workbox/pull/808#discussion_r140565156
- *
- * @param {Object<string, Object>} assetMetadata Metadata about the assets.
- * @param {Array<string>} [whitelist] Chunk names to include.
- * @param {Array<string>} [blacklist] Chunk names to exclude.
- * @return {Object<string, Object>} Filtered asset metadata.
- *
- * @private
- */
-function filterAssets(assetMetadata, whitelist, blacklist) {
-  const filteredMapping = {};
-
-  for (const [file, metadata] of Object.entries(assetMetadata)) {
-    const chunkName = metadata.chunkName;
-    // This file is whitelisted if:
-    // - Trivially, if there is no whitelist defined.
-    // - There is a whitelist and our file is associated with a chunk whose name
-    // is listed.
-    const isWhitelisted = whitelist.length === 0 ||
-      whitelist.includes(chunkName);
-
-    // This file is blacklisted if our file is associated with a chunk whose
-    // name is listed.
-    const isBlacklisted = blacklist.includes(chunkName);
-
-    // Only include this entry in the filtered mapping if we're whitelisted and
-    // not blacklisted.
-    if (isWhitelisted && !isBlacklisted) {
-      filteredMapping[file] = metadata;
+function checkConditions(asset, compilation, conditions = []) {
+  for (const condition of conditions) {
+    if (typeof condition === 'function') {
+      if (condition({asset, compilation})) {
+        return true;
+      }
+    } else {
+      // See https://github.com/webpack/webpack/blob/bf3e869a423a60581dcb64e215b8d14403e997f2/lib/ModuleFilenameHelpers.js#L151-L159
+      if (matchPart(asset.name, condition)) {
+        return true;
+      }
     }
   }
 
-  return filteredMapping;
+  // We'll only get here if none of the conditions applied.
+  return false;
 }
 
 /**
- * Takes in compilation.assets and compilation.chunks, and assigns metadata
- * to each file listed in assets:
+ * Creates a mapping of an asset name to an Set of zero or more chunk names
+ * that the asset is associated with.
  *
- * - If the asset was created by a chunk, it assigns the existing chunk name and
- * chunk hash.
- * - If the asset was created outside of a chunk, it assigns a chunk name of ''
- * and generates a hash of the asset.
+ * Those chunk names come from a combination of the `chunkName` property on the
+ * asset, as well as the `stats.namedChunkGroups` property. That is the only
+ * way to find out if an asset has an implicit descendent relationship with a
+ * chunk, if it was, e.g., created by `SplitChunksPlugin`.
  *
- * @param {Object} assets The compilation.assets
- * @param {Array<Object>} chunks The compilation.chunks
- * @return {Object<string, Object>} Mapping of asset paths to chunk name and
- * hash metadata.
+ * See https://github.com/GoogleChrome/workbox/issues/1859
+ * See https://github.com/webpack/webpack/issues/7073
  *
+ * @param {Object} stats The webpack compilation stats.
+ * @return {Object<string,Set<string>>}
  * @private
  */
-function generateMetadataForAssets(assets, chunks) {
+function assetToChunkNameMapping(stats) {
   const mapping = {};
 
-  // Start out by getting metadata for all the assets associated with a chunk.
-  for (const chunk of chunks) {
-    for (const file of chunk.files) {
-      mapping[file] = {
-        chunkName: chunk.name,
-        hash: chunk.renderedHash,
-      };
-    }
+  for (const asset of stats.assets) {
+    mapping[asset.name] = new Set(asset.chunkNames);
   }
 
-  // Next, loop through the total list of assets and find anything that isn't
-  // associated with a chunk.
-  for (const [file, asset] of Object.entries(assets)) {
-    if (file in mapping) {
-      continue;
+  for (const [chunkName, {assets}] of Object.entries(stats.namedChunkGroups)) {
+    for (const assetName of assets) {
+      mapping[assetName].add(chunkName);
     }
-
-    mapping[file] = {
-      // Just use an empty string to denote the lack of chunk association.
-      chunkName: '',
-      hash: getAssetHash(asset),
-    };
   }
 
   return mapping;
 }
 
 /**
- * Given an assetMetadata mapping, returns a Set of all of the hashes that
- * are associated with at least one asset.
+ * Filters the set of assets out, based on the configuration options provided:
+ * - chunks and excludeChunks, for chunkName-based criteria.
+ * - include and exclude, for more general criteria.
  *
- * @param {Object<string, Object>} assetMetadata Mapping of asset paths to chunk
- * name and hash metadata.
- * @return {Set} The known hashes associated with an asset.
- *
+ * @param {Compilation} compilation The webpack compilation.
+ * @param {Object} config The validated configuration, obtained from the plugin.
+ * @return {Set<Asset>} The assets that should be included in the manifest,
+ * based on the criteria provided.
  * @private
  */
-function getKnownHashesFromAssets(assetMetadata) {
-  const knownHashes = new Set();
-  for (const metadata of Object.values(assetMetadata)) {
-    knownHashes.add(metadata.hash);
+function filterAssets(compilation, config) {
+  const filteredAssets = new Set();
+  const stats = compilation.getStats().toJson();
+
+  const assetNameToChunkNames = assetToChunkNameMapping(stats);
+
+  // See https://github.com/GoogleChrome/workbox/issues/1287
+  if (Array.isArray(config.chunks)) {
+    for (const chunk of config.chunks) {
+      if (!(chunk in stats.namedChunkGroups)) {
+        compilation.warnings.push(`The chunk '${chunk}' was provided in ` +
+          `your Workbox chunks config, but was not found in the compilation.`);
+      }
+    }
   }
-  return knownHashes;
-}
 
-/**
- * Generate an array of manifest entries using webpack's compilation data.
- *
- * @param {Object} compilation webpack compilation
- * @param {Object} config
- * @return {Array<workbox.build.ManifestEntry>}
- *
- * @private
- */
-function getManifestEntriesFromCompilation(compilation, config) {
-  const blacklistedChunkNames = config.excludeChunks;
-  const whitelistedChunkNames = config.chunks;
-  const {assets, chunks} = compilation;
-  const {publicPath} = compilation.options.output;
-
-  const assetMetadata = generateMetadataForAssets(assets, chunks);
-  const filteredAssetMetadata = filterAssets(assetMetadata,
-      whitelistedChunkNames, blacklistedChunkNames);
-
-  const knownHashes = [
-    compilation.hash,
-    compilation.fullHash,
-    ...getKnownHashesFromAssets(filteredAssetMetadata),
-  ].filter((hash) => !!hash);
-
-  const manifestEntries = [];
-  for (const [file, metadata] of Object.entries(filteredAssetMetadata)) {
-    // Filter based on test/include/exclude options set in the config,
-    // following webpack's conventions.
-    // This matches the behavior of, e.g., UglifyJS's webpack plugin.
-    if (!ModuleFilenameHelpers.matchObject(config, file)) {
+  // See https://webpack.js.org/api/stats/#asset-objects
+  for (const asset of stats.assets) {
+    // chunkName based filtering is funky because:
+    // - Each asset might belong to one or more chunkNames.
+    // - If *any* of those chunk names match our config.excludeChunks,
+    //   then we skip that asset.
+    // - If the config.chunks is defined *and* there's no match
+    //   between at least one of the chunkNames and one entry, then
+    //   we skip that assets as well.
+    const isExcludedChunk = Array.isArray(config.excludeChunks) &&
+      config.excludeChunks.some((chunkName) => {
+        return assetNameToChunkNames[asset.name].has(chunkName);
+      });
+    if (isExcludedChunk) {
       continue;
     }
 
-    const publicURL = resolveWebpackURL(publicPath, file);
-    const manifestEntry = getEntry(knownHashes, publicURL, metadata.hash);
-    manifestEntries.push(manifestEntry);
+    const isIncludedChunk = !Array.isArray(config.chunks) ||
+      config.chunks.some((chunkName) => {
+        return assetNameToChunkNames[asset.name].has(chunkName);
+      });
+    if (!isIncludedChunk) {
+      continue;
+    }
+
+    // Next, check asset-level checks via includes/excludes:
+    const isExcluded = checkConditions(asset, compilation, config.exclude);
+    if (isExcluded) {
+      continue;
+    }
+
+    // Treat an empty config.includes as an implicit inclusion.
+    const isIncluded = !Array.isArray(config.include) ||
+        checkConditions(asset, compilation, config.include);
+    if (!isIncluded) {
+      continue;
+    }
+
+    // If we've gotten this far, then add the asset.
+    filteredAssets.add(asset);
   }
-  return manifestEntries;
+
+  return filteredAssets;
 }
 
-module.exports = getManifestEntriesFromCompilation;
+module.exports = (compilation, config) => {
+  const filteredAssets = filterAssets(compilation, config);
+
+  const {publicPath} = compilation.options.output;
+  const fileDetails = [];
+
+  for (const asset of filteredAssets) {
+    // Not sure why this would be false, but checking just in case, since
+    // our original list of assets comes from compilation.getStats().toJson(),
+    // not from compilation.assets.
+    if (asset.name in compilation.assets) {
+      // This matches the format expected by transformManifest().
+      fileDetails.push({
+        file: resolveWebpackURL(publicPath, asset.name),
+        hash: getAssetHash(compilation.assets[asset.name]),
+        size: asset.size || 0,
+      });
+    } else {
+      compilation.warnings.push(`Could not precache ${asset.name}, as it's ` +
+        `missing from compilation.assets. Please open a bug against Workbox ` +
+        `with details about your webpack config.`);
+    }
+  }
+
+  // We also get back `size` and `count`, and it would be nice to log that
+  // somewhere, but... webpack doesn't offer info-level logs?
+  // https://github.com/webpack/webpack/issues/3996
+  const {manifestEntries, warnings} = transformManifest({
+    dontCacheBustURLsMatching: config.dontCacheBustURLsMatching,
+    manifestTransforms: config.manifestTransforms,
+    maximumFileSizeToCacheInBytes: config.maximumFileSizeToCacheInBytes,
+    modifyURLPrefix: config.modifyURLPrefix,
+    transformParam: compilation,
+    fileDetails,
+  });
+
+  compilation.warnings = compilation.warnings.concat(warnings || []);
+
+  // Ensure that the entries are properly sorted by URL.
+  const sortedEntries = manifestEntries.sort(
+      (a, b) => a.url === b.url ? 0 : (a.url > b.url ? 1 : -1));
+
+  return sortedEntries;
+};

@@ -13,7 +13,7 @@ const path = require('path');
  * @param {string} swDest The original swDest value.
  *
  * @return {string} If swDest was not absolute, the returns swDest as-is.
- * Otheriwse, returns swDest relative to the compilation's output path.
+ * Otherwise, returns swDest relative to the compilation's output path.
  *
  * @private
  */
