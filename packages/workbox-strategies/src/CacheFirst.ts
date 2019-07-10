@@ -6,16 +6,16 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.mjs';
-import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
-import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.mjs';
-import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.mjs';
-import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
+import {assert} from 'workbox-core/_private/assert.js';
+import {cacheNames} from 'workbox-core/_private/cacheNames.js';
+import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.js';
+import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.js';
+import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
+import {logger} from 'workbox-core/_private/logger.js';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
 
-import {messages} from './utils/messages.mjs';
-import './_version.mjs';
+import {messages} from './utils/messages.js';
+import './_version.js';
 
 /**
  * An implementation of a [cache-first]{@link https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#cache-falling-back-to-network}

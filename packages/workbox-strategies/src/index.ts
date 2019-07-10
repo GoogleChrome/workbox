@@ -6,13 +6,13 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {logger} from 'workbox-core/_private/logger.mjs';
-import {CacheFirst} from './CacheFirst.mjs';
-import {CacheOnly} from './CacheOnly.mjs';
-import {NetworkFirst} from './NetworkFirst.mjs';
-import {NetworkOnly} from './NetworkOnly.mjs';
-import {StaleWhileRevalidate} from './StaleWhileRevalidate.mjs';
-import './_version.mjs';
+import {logger} from 'workbox-core/_private/logger.js';
+import {CacheFirst} from './CacheFirst.js';
+import {CacheOnly} from './CacheOnly.js';
+import {NetworkFirst} from './NetworkFirst.js';
+import {NetworkOnly} from './NetworkOnly.js';
+import {StaleWhileRevalidate} from './StaleWhileRevalidate.js';
+import './_version.js';
 
 
 const mapping = {

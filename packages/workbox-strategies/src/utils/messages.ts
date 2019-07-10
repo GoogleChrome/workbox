@@ -6,8 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {logger} from 'workbox-core/_private/logger.mjs';
-import '../_version.mjs';
+import {logger} from 'workbox-core/_private/logger.js';
+import '../_version.js';
 
 const getFriendlyURL = (url) => {
   const urlObj = new URL(url, location);
