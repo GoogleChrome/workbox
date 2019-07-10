@@ -10,7 +10,7 @@ const assert = require('assert');
 const path = require('path');
 
 const errors = require('./errors');
-const filterFiles = require('./filter-files');
+const transformManifest = require('./transform-manifest');
 const getCompositeDetails = require('./get-composite-details');
 const getFileDetails = require('./get-file-details');
 const getStringDetails = require('./get-string-details');
@@ -30,7 +30,7 @@ module.exports = async ({
 }) => {
   const warnings = [];
   // Initialize to an empty array so that we can still pass something to
-  // filterFiles() and get a normalized output.
+  // transformManifest() and get a normalized output.
   let fileDetails = [];
   const fileSet = new Set();
 
@@ -107,13 +107,17 @@ module.exports = async ({
     }
   }
 
-  const filteredFiles = filterFiles({fileDetails,
-    maximumFileSizeToCacheInBytes, modifyURLPrefix, dontCacheBustURLsMatching,
-    manifestTransforms});
+  const transformedManifest = transformManifest({
+    dontCacheBustURLsMatching,
+    fileDetails,
+    manifestTransforms,
+    maximumFileSizeToCacheInBytes,
+    modifyURLPrefix,
+  });
 
   if (warnings.length > 0) {
-    filteredFiles.warnings.push(...warnings);
+    transformedManifest.warnings.push(...warnings);
   }
 
-  return filteredFiles;
+  return transformedManifest;
 };

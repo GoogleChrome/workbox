@@ -8,10 +8,10 @@
 
 const expect = require('chai').expect;
 const fse = require('fs-extra');
-const globby = require('globby');
 const path = require('path');
 const tempy = require('tempy');
 
+const confirmDirectoryContains = require('../../../../infra/testing/confirm-directory-contains');
 const errors = require('../../../../packages/workbox-build/src/lib/errors');
 const generateSW = require('../../../../packages/workbox-build/src/entry-points/generate-sw');
 const validateServiceWorkerRuntime = require('../../../../infra/testing/validator/service-worker-runtime');
@@ -121,8 +121,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
 
-      const globbedFiles = await globby(outputDir);
-      expect(globbedFiles).to.have.members(filePaths);
+      confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [['./workbox-9eb92ebe']],
@@ -162,8 +161,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
 
-      const globbedFiles = await globby(outputDir);
-      expect(globbedFiles).to.have.members(filePaths);
+      confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [['./workbox-9eb92ebe'], [...importScripts]],
@@ -209,8 +207,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
 
-      const globbedFiles = await globby(outputDir);
-      expect(globbedFiles).to.have.members(filePaths);
+      confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [['./workbox-4a41d90a']],
@@ -255,8 +252,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
 
-      const globbedFiles = await globby(outputDir);
-      expect(globbedFiles).to.have.members(filePaths);
+      confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [['./workbox-9eb92ebe']],
@@ -305,8 +301,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
 
-      const globbedFiles = await globby(outputDir);
-      expect(globbedFiles).to.have.members(filePaths);
+      confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         getCacheKeyForURL: [[navigateFallback]],
@@ -353,8 +348,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
 
-      const globbedFiles = await globby(outputDir);
-      expect(globbedFiles).to.have.members(filePaths);
+      confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [['./workbox-9eb92ebe']],
@@ -393,18 +387,12 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
         swDest,
       });
 
-      const {count, size, warnings} = await generateSW(options);
+      const {count, filePaths, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(4);
       expect(size).to.eql(2535);
 
-      const files = await globby('**', {cwd: outputDir});
-      expect(files).to.have.members([
-        'sw.js.map',
-        'sw.js',
-        'workbox-b3503050.js.map',
-        'workbox-b3503050.js',
-      ]);
+      confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [['./workbox-9eb92ebe']],
@@ -437,8 +425,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
 
-      const globbedFiles = await globby(outputDir);
-      expect(globbedFiles).to.have.members(filePaths);
+      confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [['./workbox-76e7a865']],
@@ -482,8 +469,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
 
-      const globbedFiles = await globby(outputDir);
-      expect(globbedFiles).to.have.members(filePaths);
+      confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [['./workbox-76e7a865']],
@@ -527,9 +513,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
 
-      const globbedFiles = await globby(outputDir);
-      expect(globbedFiles).to.have.members(filePaths);
-
+      confirmDirectoryContains(outputDir, filePaths);
       // We can't validate the generated sw.js file, unfortunately.
     });
   });

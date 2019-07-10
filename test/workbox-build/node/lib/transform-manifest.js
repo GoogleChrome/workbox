@@ -8,9 +8,9 @@
 
 const expect = require('chai').expect;
 
-const filterFiles = require('../../../../packages/workbox-build/src/lib/filter-files');
+const transformManifest = require('../../../../packages/workbox-build/src/lib/transform-manifest');
 
-describe(`[workbox-build] lib/filter-files.js`, function() {
+describe(`[workbox-build] lib/transform-manifest.js`, function() {
   const MAXIMUM_FILE_SIZE = 1234;
   const ENTRY1 = {
     file: 'file1.txt',
@@ -30,7 +30,7 @@ describe(`[workbox-build] lib/filter-files.js`, function() {
   const FILE_DETAILS = [ENTRY1, ENTRY2, ENTRY3];
 
   it(`should filter out files above maximumFileSizeToCacheInBytes`, async function() {
-    const {size, count, manifestEntries} = filterFiles({
+    const {size, count, manifestEntries} = transformManifest({
       maximumFileSizeToCacheInBytes: MAXIMUM_FILE_SIZE,
       fileDetails: FILE_DETAILS,
     });
@@ -47,7 +47,7 @@ describe(`[workbox-build] lib/filter-files.js`, function() {
   });
 
   it(`should remove revision info based on dontCacheBustURLsMatching`, async function() {
-    const {size, count, manifestEntries} = filterFiles({
+    const {size, count, manifestEntries} = transformManifest({
       dontCacheBustURLsMatching: new RegExp(ENTRY1.file),
       fileDetails: FILE_DETAILS,
     });
@@ -68,7 +68,7 @@ describe(`[workbox-build] lib/filter-files.js`, function() {
   it(`should modify the URLs based on modifyURLPrefix`, async function() {
     const prefix = 'prefix/';
 
-    const {size, count, manifestEntries} = filterFiles({
+    const {size, count, manifestEntries} = transformManifest({
       modifyURLPrefix: {
         '': prefix,
       },
@@ -96,14 +96,21 @@ describe(`[workbox-build] lib/filter-files.js`, function() {
     const warning1 = 'test warning 1';
     const warning2 = 'test warning 1';
 
-    const transform1 = (files) => {
+    const transformParam = 'test param';
+
+    const transform1 = (files, param) => {
+      expect(param).to.eql(transformParam);
+
       const manifest = files.map((file) => {
         file.url = prefix1 + file.url;
         return file;
       });
       return {manifest, warnings: [warning1]};
     };
-    const transform2 = (files) => {
+
+    const transform2 = (files, param) => {
+      expect(param).to.eql(transformParam);
+
       const manifest = files.map((file) => {
         file.url = prefix2 + file.url;
         return file;
@@ -111,9 +118,10 @@ describe(`[workbox-build] lib/filter-files.js`, function() {
       return {manifest, warnings: [warning2]};
     };
 
-    const {size, count, manifestEntries, warnings} = filterFiles({
+    const {size, count, manifestEntries, warnings} = transformManifest({
       fileDetails: FILE_DETAILS,
       manifestTransforms: [transform1, transform2],
+      transformParam,
     });
 
     expect(warnings).to.eql([warning1, warning2]);

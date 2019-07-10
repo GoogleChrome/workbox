@@ -32,11 +32,8 @@ describe(`[workbox-build] entry-points/options/validate.js`, function() {
     const options = validate({}, baseSchema);
 
     expect(options).to.eql({
-      globFollow: true,
-      globIgnores: ['**/node_modules/**/*'],
-      globPatterns: ['**/*.{js,css,html}'],
-      globStrict: true,
       maximumFileSizeToCacheInBytes: 2097152,
+      mode: process.env.NODE_ENV,
     });
   });
 
@@ -45,11 +42,8 @@ describe(`[workbox-build] entry-points/options/validate.js`, function() {
     const options = validate({maximumFileSizeToCacheInBytes}, baseSchema);
 
     expect(options).to.eql({
-      globFollow: true,
-      globIgnores: ['**/node_modules/**/*'],
-      globPatterns: ['**/*.{js,css,html}'],
-      globStrict: true,
       maximumFileSizeToCacheInBytes,
+      mode: process.env.NODE_ENV,
     });
   });
 
@@ -59,11 +53,8 @@ describe(`[workbox-build] entry-points/options/validate.js`, function() {
 
     expect(options).to.eql({
       dontCacheBustURLsMatching,
-      globFollow: true,
-      globIgnores: ['**/node_modules/**/*'],
-      globPatterns: ['**/*.{js,css,html}'],
-      globStrict: true,
       maximumFileSizeToCacheInBytes: 2097152,
+      mode: process.env.NODE_ENV,
     });
   });
 });

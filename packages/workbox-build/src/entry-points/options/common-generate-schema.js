@@ -14,11 +14,15 @@ const regExpObject = require('./reg-exp-object');
 
 // Add some constraints that apply to both generateSW and generateSWString.
 module.exports = baseSchema.keys({
+  babelPresetEnvTargets: joi.array().items(joi.string())
+      .default(defaults.babelPresetEnvTargets),
   cacheId: joi.string(),
   cleanupOutdatedCaches: joi.boolean().default(defaults.cleanupOutdatedCaches),
   clientsClaim: joi.boolean().default(defaults.clientsClaim),
   directoryIndex: joi.string(),
   ignoreURLParametersMatching: joi.array().items(regExpObject),
+  importScripts: joi.array().items(joi.string()),
+  inlineWorkboxRuntime: joi.boolean().default(defaults.inlineWorkboxRuntime),
   navigateFallback: joi.string().default(defaults.navigateFallback),
   navigateFallbackBlacklist: joi.array().items(regExpObject),
   navigateFallbackWhitelist: joi.array().items(regExpObject),
@@ -73,4 +77,6 @@ module.exports = baseSchema.keys({
     then: joi.required(),
   }),
   skipWaiting: joi.boolean().default(defaults.skipWaiting),
+  sourcemap: joi.boolean().default(defaults.sourcemap),
+  swDest: joi.string().required().regex(/\.js$/),
 });

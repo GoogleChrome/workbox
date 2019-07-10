@@ -10,6 +10,10 @@ module.exports = {
   babelPresetEnvTargets: ['chrome >= 56'],
   cleanupOutdatedCaches: false,
   clientsClaim: false,
+  exclude: [
+    /\.map$/,
+    /^manifest.*\.js$/,
+  ],
   globFollow: true,
   globIgnores: ['**/node_modules/**/*'],
   globPatterns: ['**/*.{js,css,html}'],
@@ -24,4 +28,5 @@ module.exports = {
   purgeOnQuotaError: true,
   skipWaiting: false,
   sourcemap: true,
+  swDestFilename: 'service-worker.js',
 };

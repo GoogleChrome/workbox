@@ -101,4 +101,7 @@ module.exports = {
     must set the handler to 'NetworkFirst'.`,
   'no-module-name': ol`You must provide a moduleName parameter when calling
     getModuleURL().`,
+  'bad-manifest-transforms-return-value': ol`The return value from a
+    manifestTransform should be an object with 'manifest' and optionally
+    'warnings' properties.`,
 };

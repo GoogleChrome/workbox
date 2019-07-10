@@ -80,7 +80,7 @@
     "gzip-size": "^5.0.0",
     "html-webpack-plugin": "^3.2.0",
     "jsdoc": "^3.5.5",
-    "jsdoc-baseline": "https://github.com/hegemonic/baseline/tarball/master",
+    "jsdoc-baseline": "git://github.com/hegemonic/baseline.git#c492ee17",
     "lerna": "^3.4.0",
     "minimist": "^1.2.0",
     "mocha": "^5.2.0",
