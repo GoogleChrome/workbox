@@ -6,9 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {getOrCreateDefaultRouter} from './utils/getOrCreateDefaultRouter.mjs';
+import {getOrCreateDefaultRouter} from './utils/getOrCreateDefaultRouter.js';
+import {handlerCallback} from './_types.js';
+import './_version.js';
 
-import './_version.mjs';
 
 /**
  * If a Route throws an error while handling a request, this `handler`
@@ -19,7 +20,7 @@ import './_version.mjs';
  *
  * @alias workbox.routing.setCatchHandler
  */
-export const setCatchHandler = (handler) => {
+export const setCatchHandler = (handler: handlerCallback) => {
   const defaultRouter = getOrCreateDefaultRouter();
   defaultRouter.setCatchHandler(handler);
 };

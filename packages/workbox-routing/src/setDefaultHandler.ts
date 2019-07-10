@@ -6,9 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {getOrCreateDefaultRouter} from './utils/getOrCreateDefaultRouter.mjs';
+import {getOrCreateDefaultRouter} from './utils/getOrCreateDefaultRouter.js';
+import {handlerCallback} from './_types.js';
+import './_version.js';
 
-import './_version.mjs';
 
 /**
  * Define a default `handler` that's called when no routes explicitly
@@ -22,7 +23,7 @@ import './_version.mjs';
  *
  * @alias workbox.routing.setDefaultHandler
  */
-export const setDefaultHandler = (handler) => {
+export const setDefaultHandler = (handler: handlerCallback) => {
   const defaultRouter = getOrCreateDefaultRouter();
   defaultRouter.setDefaultHandler(handler);
 };

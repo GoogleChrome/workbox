@@ -6,7 +6,17 @@
   https://opensource.org/licenses/MIT.
 */
 
-import './_version.mjs';
+import './_version.js';
+
+export interface MatchCallbackOptions {
+  url: URL;
+  request?: Request;
+  event?: ExtendableEvent;
+}
+
+export interface HandlerCallbackOptions extends MatchCallbackOptions {
+  params?: string[] | {[paramName: string]: string};
+}
 
 /**
  * The "match" callback is used to determine if a `Route` should apply for a
@@ -23,7 +33,7 @@ import './_version.mjs';
  * @callback Route~matchCallback
  * @param {Object} context
  * @param {URL} context.url The request's URL.
- * @param {FetchEvent} [context.request] The corresponding request,
+ * @param {Request} [context.request] The corresponding request,
  *     if available.
  * @param {FetchEvent} [context.event] The corresponding event that triggered
  *     the request, if available.
@@ -31,6 +41,7 @@ import './_version.mjs';
  *
  * @memberof workbox.routing
  */
+export type matchCallback = ({url, request, event}: MatchCallbackOptions) => any;
 
 /**
  * The "handler" callback is invoked whenever a `Router` matches a URL to a
@@ -45,7 +56,7 @@ import './_version.mjs';
  * @callback Route~handlerCallback
  * @param {Object} context
  * @param {URL} context.url The URL that matched.
- * @param {FetchEvent} [context.request] The corresponding request,
+ * @param {Request} [context.request] The corresponding request,
  *     if available.
  * @param {FetchEvent} [context.event] The corresponding event that triggered
  *     the request, if available.
@@ -56,3 +67,6 @@ import './_version.mjs';
  *
  * @memberof workbox.routing
  */
+export type handlerCallback =
+    ({url, request, event, params}: HandlerCallbackOptions) =>
+        Promise<Response>;

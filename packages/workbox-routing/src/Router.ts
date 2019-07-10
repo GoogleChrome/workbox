@@ -6,13 +6,26 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
-import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
+import {assert} from 'workbox-core/_private/assert.js';
+import {logger} from 'workbox-core/_private/logger.js';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
+import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
+import {Route} from './Route.js';
+import {HTTPMethod} from './utils/constants.js';
+import {normalizeHandler, NormalizedHandlerCallback} from './utils/normalizeHandler.js';
+import {HandlerCallbackOptions, handlerCallback} from './_types.js';
+import './_version.js';
 
-import {normalizeHandler} from './utils/normalizeHandler.mjs';
-import './_version.mjs';
+
+type RequestArgs = string | [string, RequestInit?];
+
+
+interface CacheURLsMessageData {
+  type: string;
+  payload: {
+    urlsToCache: RequestArgs[],
+  };
+}
 
 /**
  * The Router can be used to process a FetchEvent through one or more
@@ -32,6 +45,10 @@ import './_version.mjs';
  * @memberof workbox.routing
  */
 class Router {
+  private _routes: Map<HTTPMethod, Route[]>;
+  private _defaultHandler: NormalizedHandlerCallback;
+  private _catchHandler: NormalizedHandlerCallback;
+
   /**
    * Initializes a new Router.
    */
@@ -53,7 +70,7 @@ class Router {
    * the event's request.
    */
   addFetchListener() {
-    self.addEventListener('fetch', (event) => {
+    self.addEventListener('fetch', (event: FetchEvent) => {
       const {request} = event;
       const responsePromise = this.handleRequest({request, event});
       if (responsePromise) {
@@ -85,22 +102,27 @@ class Router {
    * ```
    */
   addCacheListener() {
-    self.addEventListener('message', async (event) => {
+    self.addEventListener('message', async (event: ExtendableMessageEvent) => {
       if (event.data && event.data.type === 'CACHE_URLS') {
-        const {payload} = event.data;
+        const {payload}: CacheURLsMessageData = event.data;
 
         if (process.env.NODE_ENV !== 'production') {
           logger.debug(`Caching URLs from the window`, payload.urlsToCache);
         }
 
-        const requestPromises = Promise.all(payload.urlsToCache.map((entry) => {
+        const requestPromises = Promise.all(payload.urlsToCache.map(
+            (entry: string | [string, RequestInit?]) => {
           if (typeof entry === 'string') {
             entry = [entry];
           }
 
           const request = new Request(...entry);
           return this.handleRequest({request});
-        }));
+
+        // TODO(philipwalton): Typescript errors without this typecast for
+        // some reason (probably a bug). The real type here should work but
+        // doesn't: `Array<Promise<Response> | undefined>`.
+        }) as any[]); // Typescript
 
         event.waitUntil(requestPromises);
 
@@ -126,9 +148,12 @@ class Router {
    *     registered route can handle the request. If there is no matching
    *     route and there's no `defaultHandler`, `undefined` is returned.
    */
-  handleRequest({request, event}) {
+  handleRequest({request, event}: {
+    request: Request,
+    event?: ExtendableEvent,
+  }): Promise<Response> | undefined {
     if (process.env.NODE_ENV !== 'production') {
-      assert.isInstance(request, Request, {
+      assert!.isInstance(request, Request, {
         moduleName: 'workbox-routing',
         className: 'Router',
         funcName: 'handleRequest',
@@ -136,7 +161,7 @@ class Router {
       });
     }
 
-    const url = new URL(request.url, location);
+    const url = new URL(request.url, location.href);
     if (!url.protocol.startsWith('http')) {
       if (process.env.NODE_ENV !== 'production') {
         logger.debug(
@@ -169,9 +194,6 @@ class Router {
       if (process.env.NODE_ENV !== 'production') {
         debugMessages.push(`Failed to find a matching route. Falling ` +
           `back to the default handler.`);
-
-        // This is used for debugging in logs in the case of an error.
-        route = '[Default Handler]';
       }
       handler = this._defaultHandler;
     }
@@ -226,7 +248,7 @@ class Router {
           logger.error(err);
           logger.groupEnd();
         }
-        return this._catchHandler.handle({url, event, err});
+        return this._catchHandler.handle({url, event});
       });
     }
 
@@ -241,20 +263,24 @@ class Router {
    * @param {Object} options
    * @param {URL} options.url
    * @param {Request} options.request The request to match.
-   * @param {FetchEvent} [options.event] The corresponding event (unless N/A).
+   * @param {Event} [options.event] The corresponding event (unless N/A).
    * @return {Object} An object with `route` and `params` properties.
    *     They are populated if a matching route was found or `undefined`
    *     otherwise.
    */
-  findMatchingRoute({url, request, event}) {
+  findMatchingRoute({url, request, event}: {
+    url: URL,
+    request: Request,
+    event?: ExtendableEvent
+  }): {route?: Route, params?: HandlerCallbackOptions['params']} {
     if (process.env.NODE_ENV !== 'production') {
-      assert.isInstance(url, URL, {
+      assert!.isInstance(url, URL, {
         moduleName: 'workbox-routing',
         className: 'Router',
         funcName: 'findMatchingRoute',
         paramName: 'options.url',
       });
-      assert.isInstance(request, Request, {
+      assert!.isInstance(request, Request, {
         moduleName: 'workbox-routing',
         className: 'Router',
         funcName: 'findMatchingRoute',
@@ -262,7 +288,7 @@ class Router {
       });
     }
 
-    const routes = this._routes.get(request.method) || [];
+    const routes = this._routes.get(request.method as HTTPMethod) || [];
     for (const route of routes) {
       let params;
       let matchResult = route.match({url, request, event});
@@ -294,7 +320,7 @@ class Router {
    * @param {workbox.routing.Route~handlerCallback} handler A callback
    * function that returns a Promise resulting in a Response.
    */
-  setDefaultHandler(handler) {
+  setDefaultHandler(handler: handlerCallback) {
     this._defaultHandler = normalizeHandler(handler);
   }
 
@@ -305,7 +331,7 @@ class Router {
    * @param {workbox.routing.Route~handlerCallback} handler A callback
    * function that returns a Promise resulting in a Response.
    */
-  setCatchHandler(handler) {
+  setCatchHandler(handler: handlerCallback) {
     this._catchHandler = normalizeHandler(handler);
   }
 
@@ -314,37 +340,37 @@ class Router {
    *
    * @param {workbox.routing.Route} route The route to register.
    */
-  registerRoute(route) {
+  registerRoute(route: Route) {
     if (process.env.NODE_ENV !== 'production') {
-      assert.isType(route, 'object', {
+      assert!.isType(route, 'object', {
         moduleName: 'workbox-routing',
         className: 'Router',
         funcName: 'registerRoute',
         paramName: 'route',
       });
 
-      assert.hasMethod(route, 'match', {
+      assert!.hasMethod(route, 'match', {
         moduleName: 'workbox-routing',
         className: 'Router',
         funcName: 'registerRoute',
         paramName: 'route',
       });
 
-      assert.isType(route.handler, 'object', {
+      assert!.isType(route.handler, 'object', {
         moduleName: 'workbox-routing',
         className: 'Router',
         funcName: 'registerRoute',
         paramName: 'route',
       });
 
-      assert.hasMethod(route.handler, 'handle', {
+      assert!.hasMethod(route.handler, 'handle', {
         moduleName: 'workbox-routing',
         className: 'Router',
         funcName: 'registerRoute',
         paramName: 'route.handler',
       });
 
-      assert.isType(route.method, 'string', {
+      assert!.isType(route.method, 'string', {
         moduleName: 'workbox-routing',
         className: 'Router',
         funcName: 'registerRoute',
@@ -358,7 +384,7 @@ class Router {
 
     // Give precedence to all of the earlier routes by adding this additional
     // route to the end of the array.
-    this._routes.get(route.method).push(route);
+    this._routes.get(route.method)!.push(route);
   }
 
   /**
@@ -366,7 +392,7 @@ class Router {
    *
    * @param {workbox.routing.Route} route The route to unregister.
    */
-  unregisterRoute(route) {
+  unregisterRoute(route: Route) {
     if (!this._routes.has(route.method)) {
       throw new WorkboxError(
           'unregister-route-but-not-found-with-method', {
@@ -375,9 +401,9 @@ class Router {
       );
     }
 
-    const routeIndex = this._routes.get(route.method).indexOf(route);
+    const routeIndex = this._routes.get(route.method)!.indexOf(route);
     if (routeIndex > -1) {
-      this._routes.get(route.method).splice(routeIndex, 1);
+      this._routes.get(route.method)!.splice(routeIndex, 1);
     } else {
       throw new WorkboxError('unregister-route-route-not-registered');
     }

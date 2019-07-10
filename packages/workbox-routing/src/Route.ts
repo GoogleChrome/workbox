@@ -6,11 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.mjs';
-
-import {defaultMethod, validMethods} from './utils/constants.mjs';
-import {normalizeHandler} from './utils/normalizeHandler.mjs';
-import './_version.mjs';
+import {assert} from 'workbox-core/_private/assert.js';
+import {HTTPMethod, defaultMethod, validMethods} from './utils/constants.js';
+import {normalizeHandler} from './utils/normalizeHandler.js';
+import {handlerCallback, matchCallback} from './_types.js';
+import './_version.js';
 
 /**
  * A `Route` consists of a pair of callback functions, "match" and "handler".
@@ -22,6 +22,10 @@ import './_version.mjs';
  * @memberof workbox.routing
  */
 class Route {
+  handler: {handle: handlerCallback};
+  match: matchCallback;
+  method: HTTPMethod;
+
   /**
    * Constructor for Route class.
    *
@@ -33,9 +37,12 @@ class Route {
    * @param {string} [method='GET'] The HTTP method to match the Route
    * against.
    */
-  constructor(match, handler, method) {
+  constructor(
+      match: matchCallback,
+      handler: handlerCallback,
+      method: HTTPMethod = defaultMethod) {
     if (process.env.NODE_ENV !== 'production') {
-      assert.isType(match, 'function', {
+      assert!.isType(match, 'function', {
         moduleName: 'workbox-routing',
         className: 'Route',
         funcName: 'constructor',
@@ -43,7 +50,7 @@ class Route {
       });
 
       if (method) {
-        assert.isOneOf(method, validMethods, {paramName: 'method'});
+        assert!.isOneOf(method, validMethods, {paramName: 'method'});
       }
     }
 
@@ -51,7 +58,7 @@ class Route {
     // altered by minifification.
     this.handler = normalizeHandler(handler);
     this.match = match;
-    this.method = method || defaultMethod;
+    this.method = method;
   }
 }
 

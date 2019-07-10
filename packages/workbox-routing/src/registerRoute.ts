@@ -6,12 +6,14 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {logger} from 'workbox-core/_private/logger.mjs';
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
-import {Route} from './Route.mjs';
-import {RegExpRoute} from './RegExpRoute.mjs';
-import {getOrCreateDefaultRouter} from './utils/getOrCreateDefaultRouter.mjs';
-import './_version.mjs';
+import {logger} from 'workbox-core/_private/logger.js';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
+import {Route} from './Route.js';
+import {RegExpRoute} from './RegExpRoute.js';
+import {HTTPMethod} from './utils/constants.js';
+import {getOrCreateDefaultRouter} from './utils/getOrCreateDefaultRouter.js';
+import {matchCallback, handlerCallback} from './_types.js';
+import './_version.js';
 
 
 /**
@@ -29,8 +31,9 @@ import './_version.mjs';
  * workbox.routing.Route
  * } capture
  * If the capture param is a `Route`, all other arguments will be ignored.
- * @param {workbox.routing.Route~handlerCallback} handler A callback
- * function that returns a Promise resulting in a Response.
+ * @param {workbox.routing.Route~handlerCallback} [handler] A callback
+ * function that returns a Promise resulting in a Response. This parameter
+ * is required if `capture` is not a `Route` object.
  * @param {string} [method='GET'] The HTTP method to match the Route
  * against.
  * @return {workbox.routing.Route} The generated `Route`(Useful for
@@ -38,11 +41,14 @@ import './_version.mjs';
  *
  * @alias workbox.routing.registerRoute
  */
-export const registerRoute = (capture, handler, method = 'GET') => {
+export const registerRoute = (
+    capture: RegExp | string | matchCallback | Route,
+    handler?: handlerCallback,
+    method?: HTTPMethod): Route => {
   let route;
 
   if (typeof capture === 'string') {
-    const captureUrl = new URL(capture, location);
+    const captureUrl = new URL(capture, location.href);
 
     if (process.env.NODE_ENV !== 'production') {
       if (!(capture.startsWith('/') || capture.startsWith('http'))) {
@@ -69,7 +75,7 @@ export const registerRoute = (capture, handler, method = 'GET') => {
       }
     }
 
-    const matchCallback = ({url}) => {
+    const matchCallback: matchCallback = ({url}) => {
       if (process.env.NODE_ENV !== 'production') {
         if ((url.pathname === captureUrl.pathname) &&
             (url.origin !== captureUrl.origin)) {
@@ -83,11 +89,14 @@ export const registerRoute = (capture, handler, method = 'GET') => {
       return url.href === captureUrl.href;
     };
 
-    route = new Route(matchCallback, handler, method);
+    // If `capture` is a string then `handler` and `method` must be present.
+    route = new Route(matchCallback, handler!, method);
   } else if (capture instanceof RegExp) {
-    route = new RegExpRoute(capture, handler, method);
+    // If `capture` is a `RegExp` then `handler` and `method` must be present.
+    route = new RegExpRoute(capture, handler!, method);
   } else if (typeof capture === 'function') {
-    route = new Route(capture, handler, method);
+    // If `capture` is a function then `handler` and `method` must be present.
+    route = new Route(capture, handler!, method);
   } else if (capture instanceof Route) {
     route = capture;
   } else {

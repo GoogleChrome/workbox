@@ -6,13 +6,17 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.mjs';
-import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
-import {NavigationRoute} from './NavigationRoute.mjs';
-import {getOrCreateDefaultRouter} from './utils/getOrCreateDefaultRouter.mjs';
-import './_version.mjs';
+import {assert} from 'workbox-core/_private/assert.js';
+import {cacheNames} from 'workbox-core/_private/cacheNames.js';
+import {logger} from 'workbox-core/_private/logger.js';
+import {NavigationRoute, NavigationRouteMatchOptions} from './NavigationRoute.js';
+import {getOrCreateDefaultRouter} from './utils/getOrCreateDefaultRouter.js';
+import './_version.js';
 
+
+interface NavigationRouteOptions extends NavigationRouteMatchOptions {
+  cacheName?: string;
+}
 
 /**
  * Registers a route that will return a precached file for a navigation
@@ -46,9 +50,10 @@ import './_version.mjs';
  *
  * @alias workbox.routing.registerNavigationRoute
  */
-export const registerNavigationRoute = (cachedAssetUrl, options = {}) => {
+export const registerNavigationRoute = (cachedAssetUrl: string,
+    options: NavigationRouteOptions = {}): NavigationRoute => {
   if (process.env.NODE_ENV !== 'production') {
-    assert.isType(cachedAssetUrl, 'string', {
+    assert!.isType(cachedAssetUrl, 'string', {
       moduleName: 'workbox-routing',
       funcName: 'registerNavigationRoute',
       paramName: 'cachedAssetUrl',

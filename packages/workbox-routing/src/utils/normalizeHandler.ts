@@ -6,8 +6,14 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.mjs';
-import '../_version.mjs';
+import {assert} from 'workbox-core/_private/assert.js';
+import {handlerCallback} from '../_types.js';
+import '../_version.js';
+
+
+export interface NormalizedHandlerCallback {
+  handle: handlerCallback;
+}
 
 /**
  * @param {function()|Object} handler Either a function, or an object with a
@@ -16,10 +22,11 @@ import '../_version.mjs';
  *
  * @private
  */
-export const normalizeHandler = (handler) => {
+export const normalizeHandler = (handler: handlerCallback |
+    {handle: handlerCallback}): {handle: handlerCallback} => {
   if (handler && typeof handler === 'object') {
     if (process.env.NODE_ENV !== 'production') {
-      assert.hasMethod(handler, 'handle', {
+      assert!.hasMethod(handler, 'handle', {
         moduleName: 'workbox-routing',
         className: 'Route',
         funcName: 'constructor',
@@ -29,7 +36,7 @@ export const normalizeHandler = (handler) => {
     return handler;
   } else {
     if (process.env.NODE_ENV !== 'production') {
-      assert.isType(handler, 'function', {
+      assert!.isType(handler, 'function', {
         moduleName: 'workbox-routing',
         className: 'Route',
         funcName: 'constructor',
