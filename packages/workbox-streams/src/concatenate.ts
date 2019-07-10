@@ -6,10 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {logger} from 'workbox-core/_private/logger.mjs';
-import {assert} from 'workbox-core/_private/assert.mjs';
+import {logger} from 'workbox-core/_private/logger.js';
+import {assert} from 'workbox-core/_private/assert.js';
 
-import './_version.mjs';
+import './_version.js';
 
 /**
  * Takes either a Response, a ReadableStream, or a

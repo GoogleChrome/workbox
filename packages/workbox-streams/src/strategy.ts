@@ -6,13 +6,13 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {logger} from 'workbox-core/_private/logger.mjs';
+import {logger} from 'workbox-core/_private/logger.js';
 
-import {createHeaders} from './utils/createHeaders.mjs';
-import {concatenateToResponse} from './concatenateToResponse.mjs';
-import {isSupported} from './isSupported.mjs';
+import {createHeaders} from './utils/createHeaders.js';
+import {concatenateToResponse} from './concatenateToResponse.js';
+import {isSupported} from './isSupported.js';
 
-import './_version.mjs';
+import './_version.js';
 
 /**
  * A shortcut to create a strategy that could be dropped-in to Workbox's router.

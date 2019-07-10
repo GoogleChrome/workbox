@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import './_version.mjs';
+import './_version.js';
 
 /**
  * @typedef {Response|ReadableStream|BodyInit} StreamSource

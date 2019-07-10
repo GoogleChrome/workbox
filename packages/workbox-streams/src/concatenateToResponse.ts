@@ -6,10 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {createHeaders} from './utils/createHeaders.mjs';
-import {concatenate} from './concatenate.mjs';
+import {createHeaders} from './utils/createHeaders.js';
+import {concatenate} from './concatenate.js';
 
-import './_version.mjs';
+import './_version.js';
 
 /**
  * Takes multiple source Promises, each of which could resolve to a Response, a
