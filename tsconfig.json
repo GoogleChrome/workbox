@@ -29,6 +29,7 @@
     { "path": "./packages/workbox-precaching/" },
     { "path": "./packages/workbox-range-requests/" },
     { "path": "./packages/workbox-routing/" },
+    { "path": "./packages/workbox-strategies/" },
     { "path": "./packages/workbox-window/" }
   ]
 }

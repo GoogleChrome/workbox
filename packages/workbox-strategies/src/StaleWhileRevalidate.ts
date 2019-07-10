@@ -13,10 +13,21 @@ import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.js';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
 import {logger} from 'workbox-core/_private/logger.js';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
-
+import {WorkboxPlugin} from 'workbox-core/utils/pluginUtils.js';
 import {messages} from './utils/messages.js';
 import {cacheOkAndOpaquePlugin} from './plugins/cacheOkAndOpaquePlugin.js';
+import {WorkboxStrategy, WorkboxStrategyHandleOptions} from './_types.js';
 import './_version.js';
+
+
+
+interface StaleWhileRevalidateOptions {
+  cacheName?: string;
+  plugins?: WorkboxPlugin[];
+  fetchOptions?: RequestInit;
+  matchOptions?: CacheQueryOptions;
+}
+
 
 /**
  * An implementation of a
@@ -38,7 +49,12 @@ import './_version.js';
  *
  * @memberof workbox.strategies
  */
-class StaleWhileRevalidate {
+class StaleWhileRevalidate implements WorkboxStrategy {
+  private _cacheName: string;
+  private _plugins: WorkboxPlugin[];
+  private _fetchOptions?: RequestInit;
+  private _matchOptions?: CacheQueryOptions;
+
   /**
    * @param {Object} options
    * @param {string} options.cacheName Cache name to store and retrieve
@@ -51,7 +67,7 @@ class StaleWhileRevalidate {
    * of all fetch() requests made by this strategy.
    * @param {Object} options.matchOptions [`CacheQueryOptions`](https://w3c.github.io/ServiceWorker/#dictdef-cachequeryoptions)
    */
-  constructor(options = {}) {
+  constructor(options: StaleWhileRevalidateOptions = {}) {
     this._cacheName = cacheNames.getRuntimeName(options.cacheName);
     this._plugins = options.plugins || [];
 
@@ -65,8 +81,8 @@ class StaleWhileRevalidate {
       this._plugins = [cacheOkAndOpaquePlugin];
     }
 
-    this._fetchOptions = options.fetchOptions || null;
-    this._matchOptions = options.matchOptions || null;
+    this._fetchOptions = options.fetchOptions;
+    this._matchOptions = options.matchOptions;
   }
 
   /**
@@ -79,10 +95,10 @@ class StaleWhileRevalidate {
    * @param {Event} [options.event] The event that triggered the request.
    * @return {Promise<Response>}
    */
-  async handle({event, request}) {
+  async handle({event, request}: WorkboxStrategyHandleOptions) {
     return this.makeRequest({
       event,
-      request: request || event.request,
+      request: request || (event as FetchEvent).request,
     });
   }
   /**
@@ -100,7 +116,7 @@ class StaleWhileRevalidate {
    *     be called automatically to extend the service worker's lifetime.
    * @return {Promise<Response>}
    */
-  async makeRequest({event, request}) {
+  async makeRequest({event, request}: WorkboxStrategyHandleOptions) {
     const logs = [];
 
     if (typeof request === 'string') {
@@ -108,7 +124,7 @@ class StaleWhileRevalidate {
     }
 
     if (process.env.NODE_ENV !== 'production') {
-      assert.isInstance(request, Request, {
+      assert!.isInstance(request, Request, {
         moduleName: 'workbox-strategies',
         className: 'StaleWhileRevalidate',
         funcName: 'handle',
@@ -178,7 +194,10 @@ class StaleWhileRevalidate {
    *
    * @private
    */
-  async _getFromNetwork({request, event}) {
+  async _getFromNetwork({request, event}: {
+    request: Request,
+    event?: ExtendableEvent,
+  }): Promise<Response> {
     const response = await fetchWrapper.fetch({
       request,
       event,

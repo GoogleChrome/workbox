@@ -13,10 +13,20 @@ import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.js';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
 import {logger} from 'workbox-core/_private/logger.js';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
-
+import {WorkboxPlugin} from 'workbox-core/utils/pluginUtils.js';
 import {messages} from './utils/messages.js';
 import {cacheOkAndOpaquePlugin} from './plugins/cacheOkAndOpaquePlugin.js';
+import {WorkboxStrategy, WorkboxStrategyHandleOptions} from './_types.js';
 import './_version.js';
+
+
+interface NetworkFirstOptions {
+  cacheName?: string;
+  plugins?: WorkboxPlugin[];
+  fetchOptions?: RequestInit;
+  matchOptions?: CacheQueryOptions;
+  networkTimeoutSeconds?: number;
+}
 
 /**
  * An implementation of a
@@ -33,7 +43,13 @@ import './_version.js';
  *
  * @memberof workbox.strategies
  */
-class NetworkFirst {
+class NetworkFirst implements WorkboxStrategy {
+  private _cacheName: string;
+  private _plugins: WorkboxPlugin[];
+  private _fetchOptions?: RequestInit;
+  private _matchOptions?: CacheQueryOptions;
+  private _networkTimeoutSeconds: number;
+
   /**
    * @param {Object} options
    * @param {string} options.cacheName Cache name to store and retrieve
@@ -52,7 +68,7 @@ class NetworkFirst {
    * "[lie-fi]{@link https://developers.google.com/web/fundamentals/performance/poor-connectivity/#lie-fi}"
    * scenarios.
    */
-  constructor(options = {}) {
+  constructor(options: NetworkFirstOptions = {}) {
     this._cacheName = cacheNames.getRuntimeName(options.cacheName);
 
     if (options.plugins) {
@@ -65,10 +81,10 @@ class NetworkFirst {
       this._plugins = [cacheOkAndOpaquePlugin];
     }
 
-    this._networkTimeoutSeconds = options.networkTimeoutSeconds;
+    this._networkTimeoutSeconds = options.networkTimeoutSeconds || 0;
     if (process.env.NODE_ENV !== 'production') {
       if (this._networkTimeoutSeconds) {
-        assert.isType(this._networkTimeoutSeconds, 'number', {
+        assert!.isType(this._networkTimeoutSeconds, 'number', {
           moduleName: 'workbox-strategies',
           className: 'NetworkFirst',
           funcName: 'constructor',
@@ -77,8 +93,8 @@ class NetworkFirst {
       }
     }
 
-    this._fetchOptions = options.fetchOptions || null;
-    this._matchOptions = options.matchOptions || null;
+    this._fetchOptions = options.fetchOptions;
+    this._matchOptions = options.matchOptions;
   }
 
   /**
@@ -91,10 +107,10 @@ class NetworkFirst {
    * @param {Event} [options.event] The event that triggered the request.
    * @return {Promise<Response>}
    */
-  async handle({event, request}) {
+  async handle({event, request}: WorkboxStrategyHandleOptions) {
     return this.makeRequest({
       event,
-      request: request || event.request,
+      request: request || (event as FetchEvent).request,
     });
   }
 
@@ -113,15 +129,15 @@ class NetworkFirst {
    *     be called automatically to extend the service worker's lifetime.
    * @return {Promise<Response>}
    */
-  async makeRequest({event, request}) {
-    const logs = [];
+  async makeRequest({event, request}: WorkboxStrategyHandleOptions) {
+    const logs: any[] = [];
 
     if (typeof request === 'string') {
       request = new Request(request);
     }
 
     if (process.env.NODE_ENV !== 'production') {
-      assert.isInstance(request, Request, {
+      assert!.isInstance(request, Request, {
         moduleName: 'workbox-strategies',
         className: 'NetworkFirst',
         funcName: 'handle',
@@ -130,7 +146,7 @@ class NetworkFirst {
     }
 
     const promises = [];
-    let timeoutId;
+    let timeoutId: number | undefined;
 
     if (this._networkTimeoutSeconds) {
       const {id, promise} = this._getTimeoutPromise({request, event, logs});
@@ -178,9 +194,13 @@ class NetworkFirst {
    *
    * @private
    */
-  _getTimeoutPromise({request, logs, event}) {
+  _getTimeoutPromise({request, logs, event}: {
+    request: Request,
+    logs: any[],
+    event?: ExtendableEvent,
+  }): {promise: Promise<Response | undefined>, id?: number} {
     let timeoutId;
-    const timeoutPromise = new Promise((resolve) => {
+    const timeoutPromise: Promise<Response | undefined> = new Promise((resolve) => {
       const onNetworkTimeout = async () => {
         if (process.env.NODE_ENV !== 'production') {
           logs.push(`Timing out the network response at ` +
@@ -212,7 +232,12 @@ class NetworkFirst {
    *
    * @private
    */
-  async _getNetworkPromise({timeoutId, request, logs, event}) {
+  async _getNetworkPromise({timeoutId, request, logs, event}: {
+    request: Request,
+    logs: any[],
+    timeoutId?: number,
+    event?: ExtendableEvent,
+  }): Promise<Response> {
     let error;
     let response;
     try {
@@ -287,7 +312,10 @@ class NetworkFirst {
    *
    * @private
    */
-  _respondFromCache({event, request}) {
+  _respondFromCache({event, request}: {
+    request: Request,
+    event?: ExtendableEvent,
+  }): Promise<Response | undefined> {
     return cacheWrapper.match({
       cacheName: this._cacheName,
       request,

@@ -7,23 +7,17 @@
 */
 
 import {logger} from 'workbox-core/_private/logger.js';
+import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
 import '../_version.js';
 
-const getFriendlyURL = (url) => {
-  const urlObj = new URL(url, location);
-  if (urlObj.origin === location.origin) {
-    return urlObj.pathname;
-  }
-  return urlObj.href;
-};
 
 export const messages = {
-  strategyStart: (strategyName, request) => `Using ${strategyName} to ` +
-    `respond to '${getFriendlyURL(request.url)}'`,
-  printFinalResponse: (response) => {
+  strategyStart: (strategyName: string, request: Request) =>
+    `Using ${strategyName} to respond to '${getFriendlyURL(request.url)}'`,
+  printFinalResponse: (response?: Response) => {
     if (response) {
       logger.groupCollapsed(`View the final response here.`);
-      logger.log(response);
+      logger.log(response || '[No response returned]');
       logger.groupEnd();
     }
   },

@@ -13,9 +13,18 @@ import {NetworkFirst} from './NetworkFirst.js';
 import {NetworkOnly} from './NetworkOnly.js';
 import {StaleWhileRevalidate} from './StaleWhileRevalidate.js';
 import './_version.js';
+import { WorkboxStrategy } from './_types.js';
 
 
-const mapping = {
+interface Strategy {
+  new({}: object): WorkboxStrategy
+}
+
+interface StrategyDeprecationMap {
+  [strategyName: string]: Strategy;
+}
+
+const mapping: StrategyDeprecationMap = {
   cacheFirst: CacheFirst,
   cacheOnly: CacheOnly,
   networkFirst: NetworkFirst,
@@ -23,10 +32,10 @@ const mapping = {
   staleWhileRevalidate: StaleWhileRevalidate,
 };
 
-const deprecate = (strategy) => {
+const deprecate = (strategy: string) => {
   const StrategyCtr = mapping[strategy];
 
-  return (options) => {
+  return (options: object) => {
     if (process.env.NODE_ENV !== 'production') {
       const strategyCtrName = strategy[0].toUpperCase() + strategy.slice(1);
       logger.warn(`The 'workbox.strategies.${strategy}()' function has been ` +

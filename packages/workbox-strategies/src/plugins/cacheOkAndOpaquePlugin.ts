@@ -6,9 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
+import {WorkboxPlugin} from 'workbox-core/utils/pluginUtils.js';
 import '../_version.js';
 
-export const cacheOkAndOpaquePlugin = {
+
+export const cacheOkAndOpaquePlugin: WorkboxPlugin = {
   /**
    * Returns a valid response (to allow caching) if the status is 200 (OK) or
    * 0 (opaque).
@@ -19,7 +21,7 @@ export const cacheOkAndOpaquePlugin = {
    *
    * @private
    */
-  cacheWillUpdate: ({response}) => {
+  cacheWillUpdate: async ({response}) => {
     if (response.status === 200 || response.status === 0) {
       return response;
     }

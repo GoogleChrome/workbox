@@ -13,19 +13,19 @@ import {generateUniqueResponse} from '../../../../infra/testing/helpers/generate
 
 describe(`cacheOkAndOpaquePlugin`, function() {
   for (const status of [206, 404]) {
-    it(`should return null when status is ${status}`, function() {
+    it(`should return null when status is ${status}`, async function() {
       const response = generateUniqueResponse({status});
-      expect(cacheOkAndOpaquePlugin.cacheWillUpdate({response})).to.equal(null);
+      expect(await cacheOkAndOpaquePlugin.cacheWillUpdate({response})).to.equal(null);
     });
   }
 
   it(`should return Response if status is opaque`, async function() {
     const response = await generateOpaqueResponse();
-    expect(cacheOkAndOpaquePlugin.cacheWillUpdate({response})).to.equal(response);
+    expect(await cacheOkAndOpaquePlugin.cacheWillUpdate({response})).to.equal(response);
   });
 
-  it(`should return Response if status is 200`, function() {
+  it(`should return Response if status is 200`, async function() {
     const response = generateUniqueResponse();
-    expect(cacheOkAndOpaquePlugin.cacheWillUpdate({response})).to.equal(response);
+    expect(await cacheOkAndOpaquePlugin.cacheWillUpdate({response})).to.equal(response);
   });
 });

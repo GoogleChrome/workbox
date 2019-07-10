@@ -16,10 +16,10 @@ import '../_version.js';
 
 
 interface WrappedFetchOptions {
-  request: Request | string,
-  event?: FetchEvent | Event,
-  plugins?: WorkboxPlugin[],
-  fetchOptions?: {}
+  request: Request | string;
+  event?: FetchEvent | Event;
+  plugins?: WorkboxPlugin[];
+  fetchOptions?: RequestInit;
 }
 
 /**

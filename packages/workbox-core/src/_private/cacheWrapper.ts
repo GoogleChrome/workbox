@@ -17,11 +17,11 @@ import '../_version.js';
 
 
 interface MatchWrapperOptions {
-  cacheName: string,
-  request: Request,
-  event?: Event,
-  plugins?: WorkboxPlugin[],
-  matchOptions?: {},
+  cacheName: string;
+  request: Request;
+  event?: Event;
+  plugins?: WorkboxPlugin[];
+  matchOptions?: CacheQueryOptions;
 }
 
 interface PutWrapperOptions extends MatchWrapperOptions {

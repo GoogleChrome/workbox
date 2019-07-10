@@ -11,10 +11,17 @@ import {cacheNames} from 'workbox-core/_private/cacheNames.js';
 import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.js';
 import {logger} from 'workbox-core/_private/logger.js';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
-
+import {WorkboxPlugin} from 'workbox-core/utils/pluginUtils.js';
 import {messages} from './utils/messages.js';
+import {WorkboxStrategy, WorkboxStrategyHandleOptions} from './_types.js';
 import './_version.js';
 
+
+interface CacheOnlyOptions {
+  cacheName?: string;
+  plugins?: WorkboxPlugin[];
+  matchOptions?: CacheQueryOptions;
+}
 
 /**
  * An implementation of a
@@ -28,7 +35,11 @@ import './_version.js';
  *
  * @memberof workbox.strategies
  */
-class CacheOnly {
+class CacheOnly implements WorkboxStrategy {
+  private _cacheName: string;
+  private _plugins: WorkboxPlugin[];
+  private _matchOptions?: CacheQueryOptions;
+
   /**
    * @param {Object} options
    * @param {string} options.cacheName Cache name to store and retrieve
@@ -38,10 +49,10 @@ class CacheOnly {
    * to use in conjunction with this caching strategy.
    * @param {Object} options.matchOptions [`CacheQueryOptions`](https://w3c.github.io/ServiceWorker/#dictdef-cachequeryoptions)
    */
-  constructor(options = {}) {
+  constructor(options: CacheOnlyOptions = {}) {
     this._cacheName = cacheNames.getRuntimeName(options.cacheName);
     this._plugins = options.plugins || [];
-    this._matchOptions = options.matchOptions || null;
+    this._matchOptions = options.matchOptions;
   }
 
   /**
@@ -54,10 +65,10 @@ class CacheOnly {
    * @param {Event} [options.event] The event that triggered the request.
    * @return {Promise<Response>}
    */
-  async handle({event, request}) {
+  async handle({event, request}: WorkboxStrategyHandleOptions) {
     return this.makeRequest({
       event,
-      request: request || event.request,
+      request: request || (event as FetchEvent).request,
     });
   }
 
@@ -76,13 +87,13 @@ class CacheOnly {
    *     be called automatically to extend the service worker's lifetime.
    * @return {Promise<Response>}
    */
-  async makeRequest({event, request}) {
+  async makeRequest({event, request}: WorkboxStrategyHandleOptions) {
     if (typeof request === 'string') {
       request = new Request(request);
     }
 
     if (process.env.NODE_ENV !== 'production') {
-      assert.isInstance(request, Request, {
+      assert!.isInstance(request, Request, {
         moduleName: 'workbox-strategies',
         className: 'CacheOnly',
         funcName: 'makeRequest',

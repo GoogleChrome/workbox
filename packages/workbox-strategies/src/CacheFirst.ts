@@ -13,9 +13,18 @@ import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.js';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
 import {logger} from 'workbox-core/_private/logger.js';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
-
+import {WorkboxPlugin} from 'workbox-core/utils/pluginUtils.js';
 import {messages} from './utils/messages.js';
+import {WorkboxStrategy, WorkboxStrategyHandleOptions} from './_types.js';
 import './_version.js';
+
+
+interface CacheFirstOptions {
+  cacheName?: string;
+  plugins?: WorkboxPlugin[];
+  fetchOptions?: RequestInit;
+  matchOptions?: CacheQueryOptions;
+}
 
 /**
  * An implementation of a [cache-first]{@link https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#cache-falling-back-to-network}
@@ -30,7 +39,12 @@ import './_version.js';
  *
  * @memberof workbox.strategies
  */
-class CacheFirst {
+class CacheFirst implements WorkboxStrategy {
+  private _cacheName: string;
+  private _plugins: WorkboxPlugin[];
+  private _fetchOptions?: RequestInit;
+  private _matchOptions?: CacheQueryOptions;
+
   /**
    * @param {Object} options
    * @param {string} options.cacheName Cache name to store and retrieve
@@ -43,11 +57,11 @@ class CacheFirst {
    * of all fetch() requests made by this strategy.
    * @param {Object} options.matchOptions [`CacheQueryOptions`](https://w3c.github.io/ServiceWorker/#dictdef-cachequeryoptions)
    */
-  constructor(options = {}) {
+  constructor(options: CacheFirstOptions = {}) {
     this._cacheName = cacheNames.getRuntimeName(options.cacheName);
     this._plugins = options.plugins || [];
-    this._fetchOptions = options.fetchOptions || null;
-    this._matchOptions = options.matchOptions || null;
+    this._fetchOptions = options.fetchOptions;
+    this._matchOptions = options.matchOptions;
   }
 
   /**
@@ -60,10 +74,10 @@ class CacheFirst {
    * @param {Event} [options.event] The event that triggered the request.
    * @return {Promise<Response>}
    */
-  async handle({event, request}) {
+  async handle({event, request}: WorkboxStrategyHandleOptions) {
     return this.makeRequest({
       event,
-      request: request || event.request,
+      request: request || (event as FetchEvent).request,
     });
   }
 
@@ -78,11 +92,11 @@ class CacheFirst {
    * @param {Request|string} options.request Either a
    *     [`Request`]{@link https://developer.mozilla.org/en-US/docs/Web/API/Request}
    *     object, or a string URL, corresponding to the request to be made.
-   * @param {FetchEvent} [options.event] If provided, `event.waitUntil()` will
+   * @param {Event} [options.event] If provided, `event.waitUntil()` will
          be called automatically to extend the service worker's lifetime.
    * @return {Promise<Response>}
    */
-  async makeRequest({event, request}) {
+  async makeRequest({event, request}: WorkboxStrategyHandleOptions) {
     const logs = [];
 
     if (typeof request === 'string') {
@@ -90,7 +104,7 @@ class CacheFirst {
     }
 
     if (process.env.NODE_ENV !== 'production') {
-      assert.isInstance(request, Request, {
+      assert!.isInstance(request, Request, {
         moduleName: 'workbox-strategies',
         className: 'CacheFirst',
         funcName: 'makeRequest',
@@ -153,12 +167,12 @@ class CacheFirst {
    * Handles the network and cache part of CacheFirst.
    *
    * @param {Request} request
-   * @param {FetchEvent} [event]
+   * @param {Event} [event]
    * @return {Promise<Response>}
    *
    * @private
    */
-  async _getFromNetwork(request, event) {
+  async _getFromNetwork(request: Request, event?: ExtendableEvent) {
     const response = await fetchWrapper.fetch({
       request,
       event,
