@@ -37,7 +37,10 @@ class Route {
    * @param {string} [method='GET'] The HTTP method to match the Route
    * against.
    */
-  constructor(match: matchCallback, handler: handlerCallback, method?: HTTPMethod) {
+  constructor(
+      match: matchCallback,
+      handler: handlerCallback,
+      method: HTTPMethod = defaultMethod) {
     if (process.env.NODE_ENV !== 'production') {
       assert!.isType(match, 'function', {
         moduleName: 'workbox-routing',
@@ -55,7 +58,7 @@ class Route {
     // altered by minifification.
     this.handler = normalizeHandler(handler);
     this.match = match;
-    this.method = method || defaultMethod;
+    this.method = method;
   }
 }
 

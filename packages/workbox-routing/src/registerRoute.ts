@@ -31,8 +31,9 @@ import './_version.js';
  * workbox.routing.Route
  * } capture
  * If the capture param is a `Route`, all other arguments will be ignored.
- * @param {workbox.routing.Route~handlerCallback} handler A callback
- * function that returns a Promise resulting in a Response.
+ * @param {workbox.routing.Route~handlerCallback} [handler] A callback
+ * function that returns a Promise resulting in a Response. This parameter
+ * is required if `capture` is not a `Route` object.
  * @param {string} [method='GET'] The HTTP method to match the Route
  * against.
  * @return {workbox.routing.Route} The generated `Route`(Useful for
@@ -42,8 +43,8 @@ import './_version.js';
  */
 export const registerRoute = (
     capture: RegExp | string | matchCallback | Route,
-    handler: handlerCallback,
-    method: HTTPMethod = 'GET'): Route => {
+    handler?: handlerCallback,
+    method?: HTTPMethod): Route => {
   let route;
 
   if (typeof capture === 'string') {
@@ -88,11 +89,14 @@ export const registerRoute = (
       return url.href === captureUrl.href;
     };
 
-    route = new Route(matchCallback, handler, method);
+    // If `capture` is a string then `handler` and `method` must be present.
+    route = new Route(matchCallback, handler!, method);
   } else if (capture instanceof RegExp) {
-    route = new RegExpRoute(capture, handler, method);
+    // If `capture` is a `RegExp` then `handler` and `method` must be present.
+    route = new RegExpRoute(capture, handler!, method);
   } else if (typeof capture === 'function') {
-    route = new Route(capture, handler, method);
+    // If `capture` is a function then `handler` and `method` must be present.
+    route = new Route(capture, handler!, method);
   } else if (capture instanceof Route) {
     route = capture;
   } else {

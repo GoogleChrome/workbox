@@ -13,6 +13,7 @@ import {Route} from './Route.js';
 import {MatchCallbackOptions, handlerCallback, matchCallback} from './_types.js';
 import './_version.js';
 
+
 /**
  * RegExpRoute makes it easy to create a regular expression based
  * [Route]{@link workbox.routing.Route}.
@@ -40,7 +41,7 @@ class RegExpRoute extends Route {
    * @param {string} [method='GET'] The HTTP method to match the Route
    * against.
    */
-  constructor(regExp: RegExp, handler: handlerCallback, method: HTTPMethod) {
+  constructor(regExp: RegExp, handler: handlerCallback, method?: HTTPMethod) {
     if (process.env.NODE_ENV !== 'production') {
       assert!.isInstance(regExp, RegExp, {
         moduleName: 'workbox-routing',
