@@ -10,7 +10,9 @@ import {logger} from 'workbox-core/_private/logger.js';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
 import {Route} from './Route.js';
 import {RegExpRoute} from './RegExpRoute.js';
+import {HTTPMethod} from './utils/constants.js';
 import {getOrCreateDefaultRouter} from './utils/getOrCreateDefaultRouter.js';
+import {matchCallback, handlerCallback} from './_types.js';
 import './_version.js';
 
 
@@ -38,11 +40,14 @@ import './_version.js';
  *
  * @alias workbox.routing.registerRoute
  */
-export const registerRoute = (capture, handler, method = 'GET') => {
+export const registerRoute = (
+    capture: RegExp | string | matchCallback | Route,
+    handler: handlerCallback,
+    method: HTTPMethod = 'GET'): Route => {
   let route;
 
   if (typeof capture === 'string') {
-    const captureUrl = new URL(capture, location);
+    const captureUrl = new URL(capture, location.href);
 
     if (process.env.NODE_ENV !== 'production') {
       if (!(capture.startsWith('/') || capture.startsWith('http'))) {
@@ -69,7 +74,7 @@ export const registerRoute = (capture, handler, method = 'GET') => {
       }
     }
 
-    const matchCallback = ({url}) => {
+    const matchCallback: matchCallback = ({url}) => {
       if (process.env.NODE_ENV !== 'production') {
         if ((url.pathname === captureUrl.pathname) &&
             (url.origin !== captureUrl.origin)) {

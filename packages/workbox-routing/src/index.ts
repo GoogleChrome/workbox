@@ -20,7 +20,7 @@ import {setDefaultHandler} from './setDefaultHandler.js';
 import './_version.js';
 
 if (process.env.NODE_ENV !== 'production') {
-  assert.isSWEnv('workbox-routing');
+  assert!.isSWEnv('workbox-routing');
 }
 
 /**

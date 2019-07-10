@@ -7,8 +7,9 @@
 */
 
 import {getOrCreateDefaultRouter} from './utils/getOrCreateDefaultRouter.js';
-
+import {handlerCallback} from './_types.js';
 import './_version.js';
+
 
 /**
  * If a Route throws an error while handling a request, this `handler`
@@ -19,7 +20,7 @@ import './_version.js';
  *
  * @alias workbox.routing.setCatchHandler
  */
-export const setCatchHandler = (handler) => {
+export const setCatchHandler = (handler: handlerCallback) => {
   const defaultRouter = getOrCreateDefaultRouter();
   defaultRouter.setCatchHandler(handler);
 };

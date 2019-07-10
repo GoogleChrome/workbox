@@ -11,6 +11,12 @@ interface IDBObjectStore {
   openKeyCursor(query?: IDBValidKey | IDBKeyRange | null, direction?: IDBCursorDirection): IDBRequest<IDBCursor | null>;
 }
 
+// Service Worker
+// ------------------------------------------------------------------------- //
+interface CacheQueryOptions {
+  cacheName?: string;
+}
+
 // DOM
 // ------------------------------------------------------------------------- //
 

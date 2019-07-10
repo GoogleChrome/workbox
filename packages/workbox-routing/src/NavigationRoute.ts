@@ -9,7 +9,13 @@
 import {assert} from 'workbox-core/_private/assert.js';
 import {logger} from 'workbox-core/_private/logger.js';
 import {Route} from './Route.js';
+import {handlerCallback, MatchCallbackOptions} from './_types.js';
 import './_version.js';
+
+export interface NavigationRouteMatchOptions {
+  whitelist?: RegExp[],
+  blacklist?: RegExp[],
+}
 
 /**
  * NavigationRoute makes it easy to create a [Route]{@link
@@ -27,6 +33,9 @@ import './_version.js';
  * @extends workbox.routing.Route
  */
 class NavigationRoute extends Route {
+  private _whitelist: RegExp[];
+  private _blacklist: RegExp[];
+
   /**
    * If both `blacklist` and `whiltelist` are provided, the `blacklist` will
    * take precedence and the request will not match this route.
@@ -46,15 +55,16 @@ class NavigationRoute extends Route {
    * match the URL's pathname and search parameter, the route will handle the
    * request (assuming the blacklist doesn't match).
    */
-  constructor(handler, {whitelist = [/./], blacklist = []} = {}) {
+  constructor(handler: handlerCallback,
+      {whitelist = [/./], blacklist = []}: NavigationRouteMatchOptions = {}) {
     if (process.env.NODE_ENV !== 'production') {
-      assert.isArrayOfClass(whitelist, RegExp, {
+      assert!.isArrayOfClass(whitelist, RegExp, {
         moduleName: 'workbox-routing',
         className: 'NavigationRoute',
         funcName: 'constructor',
         paramName: 'options.whitelist',
       });
-      assert.isArrayOfClass(blacklist, RegExp, {
+      assert!.isArrayOfClass(blacklist, RegExp, {
         moduleName: 'workbox-routing',
         className: 'NavigationRoute',
         funcName: 'constructor',
@@ -62,7 +72,7 @@ class NavigationRoute extends Route {
       });
     }
 
-    super((options) => this._match(options), handler);
+    super((options: MatchCallbackOptions) => this._match(options), handler);
 
     this._whitelist = whitelist;
     this._blacklist = blacklist;
@@ -78,8 +88,8 @@ class NavigationRoute extends Route {
    *
    * @private
    */
-  _match({url, request}) {
-    if (request.mode !== 'navigate') {
+  _match({url, request}: MatchCallbackOptions): boolean {
+    if (request && request.mode !== 'navigate') {
       return false;
     }
 

@@ -8,8 +8,8 @@
 
 import '../_version.js';
 
-const getFriendlyURL = (url: string) => {
-  const urlObj = new URL(url, location.href);
+const getFriendlyURL = (url: URL | string) => {
+  const urlObj = new URL(String(url), location.href);
   if (urlObj.origin === location.origin) {
     return urlObj.pathname;
   }

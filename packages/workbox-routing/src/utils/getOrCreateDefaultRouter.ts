@@ -9,7 +9,7 @@
 import {Router} from '../Router.js';
 import '../_version.js';
 
-let defaultRouter;
+let defaultRouter: Router;
 
 /**
  * Creates a new, singleton Router instance if one does not exist. If one
@@ -18,7 +18,7 @@ let defaultRouter;
  * @private
  * @return {Router}
  */
-export const getOrCreateDefaultRouter = () => {
+export const getOrCreateDefaultRouter = (): Router => {
   if (!defaultRouter) {
     defaultRouter = new Router();
 

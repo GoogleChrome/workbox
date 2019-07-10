@@ -8,6 +8,9 @@
 
 import '../_version.js';
 
+
+export type HTTPMethod = 'DELETE' | 'GET' | 'HEAD' | 'PATCH' | 'POST' | 'PUT';
+
 /**
  * The default HTTP method, 'GET', used when there's no specific method
  * configured for a route.
@@ -16,7 +19,7 @@ import '../_version.js';
  *
  * @private
  */
-export const defaultMethod = 'GET';
+export const defaultMethod: HTTPMethod = 'GET';
 
 /**
  * The list of valid HTTP methods associated with requests that could be routed.
@@ -25,7 +28,7 @@ export const defaultMethod = 'GET';
  *
  * @private
  */
-export const validMethods = [
+export const validMethods: HTTPMethod[] = [
   'DELETE',
   'GET',
   'HEAD',

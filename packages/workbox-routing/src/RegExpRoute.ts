@@ -8,7 +8,9 @@
 
 import {assert} from 'workbox-core/_private/assert.js';
 import {logger} from 'workbox-core/_private/logger.js';
+import {HTTPMethod} from './utils/constants.js';
 import {Route} from './Route.js';
+import {MatchCallbackOptions, handlerCallback, matchCallback} from './_types.js';
 import './_version.js';
 
 /**
@@ -38,9 +40,9 @@ class RegExpRoute extends Route {
    * @param {string} [method='GET'] The HTTP method to match the Route
    * against.
    */
-  constructor(regExp, handler, method) {
+  constructor(regExp: RegExp, handler: handlerCallback, method: HTTPMethod) {
     if (process.env.NODE_ENV !== 'production') {
-      assert.isInstance(regExp, RegExp, {
+      assert!.isInstance(regExp, RegExp, {
         moduleName: 'workbox-routing',
         className: 'RegExpRoute',
         funcName: 'constructor',
@@ -48,12 +50,12 @@ class RegExpRoute extends Route {
       });
     }
 
-    const match = ({url}) => {
+    const match: matchCallback = ({url}: MatchCallbackOptions) => {
       const result = regExp.exec(url.href);
 
-      // Return null immediately if there's no match.
+      // Return immediately if there's no match.
       if (!result) {
-        return null;
+        return;
       }
 
       // Require that the match start at the first character in the URL string
@@ -69,7 +71,7 @@ class RegExpRoute extends Route {
           );
         }
 
-        return null;
+        return;
       }
 
       // If the route matches, but there aren't any capture groups defined, then

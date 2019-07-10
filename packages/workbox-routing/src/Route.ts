@@ -7,9 +7,9 @@
 */
 
 import {assert} from 'workbox-core/_private/assert.js';
-
-import {defaultMethod, validMethods} from './utils/constants.js';
+import {HTTPMethod, defaultMethod, validMethods} from './utils/constants.js';
 import {normalizeHandler} from './utils/normalizeHandler.js';
+import {handlerCallback, matchCallback} from './_types.js';
 import './_version.js';
 
 /**
@@ -22,6 +22,10 @@ import './_version.js';
  * @memberof workbox.routing
  */
 class Route {
+  handler: {handle: handlerCallback};
+  match: matchCallback;
+  method: HTTPMethod;
+
   /**
    * Constructor for Route class.
    *
@@ -33,9 +37,9 @@ class Route {
    * @param {string} [method='GET'] The HTTP method to match the Route
    * against.
    */
-  constructor(match, handler, method) {
+  constructor(match: matchCallback, handler: handlerCallback, method?: HTTPMethod) {
     if (process.env.NODE_ENV !== 'production') {
-      assert.isType(match, 'function', {
+      assert!.isType(match, 'function', {
         moduleName: 'workbox-routing',
         className: 'Route',
         funcName: 'constructor',
@@ -43,7 +47,7 @@ class Route {
       });
 
       if (method) {
-        assert.isOneOf(method, validMethods, {paramName: 'method'});
+        assert!.isOneOf(method, validMethods, {paramName: 'method'});
       }
     }
 
