@@ -6,9 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
-import './_version.mjs';
+import './_version.js';
 
 /**
  * @typedef {Response|ReadableStream|BodyInit} StreamSource
  * @memberof workbox.streams
  */
+
+export type StreamSource = Response | ReadableStream | BodyInit;

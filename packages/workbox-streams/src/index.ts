@@ -6,11 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {concatenate} from './concatenate.mjs';
-import {concatenateToResponse} from './concatenateToResponse.mjs';
-import {isSupported} from './isSupported.mjs';
-import {strategy} from './strategy.mjs';
-import './_version.mjs';
+import {concatenate} from './concatenate.js';
+import {concatenateToResponse} from './concatenateToResponse.js';
+import {isSupported} from './isSupported.js';
+import {strategy} from './strategy.js';
+import './_version.js';
 
 
 /**

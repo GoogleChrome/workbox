@@ -30,6 +30,7 @@
     { "path": "./packages/workbox-range-requests/" },
     { "path": "./packages/workbox-routing/" },
     { "path": "./packages/workbox-strategies/" },
+    { "path": "./packages/workbox-streams/" },
     { "path": "./packages/workbox-window/" }
   ]
 }

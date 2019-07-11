@@ -6,28 +6,33 @@
   https://opensource.org/licenses/MIT.
 */
 
-import '../_version.mjs';
+import './_version.js';
+
+let cachedIsSupported: boolean | undefined;
 
 /**
  * This is a utility method that determines whether the current browser supports
  * the features required to create streamed responses. Currently, it checks if
  * [`ReadableStream`](https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream/ReadableStream)
- * is available.
+ * can be created.
  *
- * @param {HeadersInit} [headersInit] If there's no `Content-Type` specified,
- * `'text/html'` will be used by default.
  * @return {boolean} `true`, if the current browser meets the requirements for
  * streaming responses, and `false` otherwise.
  *
  * @memberof workbox.streams
  */
-function createHeaders(headersInit = {}) {
-  // See https://github.com/GoogleChrome/workbox/issues/1461
-  const headers = new Headers(headersInit);
-  if (!headers.has('content-type')) {
-    headers.set('content-type', 'text/html');
+function isSupported(): boolean {
+  if (cachedIsSupported === undefined) {
+    // See https://github.com/GoogleChrome/workbox/issues/1473
+    try {
+      new ReadableStream({start() {}});
+      cachedIsSupported = true;
+    } catch (error) {
+      cachedIsSupported = false;
+    }
   }
-  return headers;
+
+  return cachedIsSupported;
 }
 
-export {createHeaders};
+export {isSupported};

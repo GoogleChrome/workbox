@@ -6,10 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {logger} from 'workbox-core/_private/logger.mjs';
-import {assert} from 'workbox-core/_private/assert.mjs';
-
-import './_version.mjs';
+import {logger} from 'workbox-core/_private/logger.js';
+import {assert} from 'workbox-core/_private/assert.js';
+import {Deferred} from 'workbox-core/_private/Deferred.js';
+import {StreamSource} from './_types.js';
+import './_version.js';
 
 /**
  * Takes either a Response, a ReadableStream, or a
@@ -20,19 +21,14 @@ import './_version.mjs';
  * @return {ReadableStreamReader}
  * @private
  */
-function _getReaderFromSource(source) {
-  if (source.body && source.body.getReader) {
-    return source.body.getReader();
+function _getReaderFromSource(source: StreamSource): ReadableStreamReader {
+  if (source instanceof Response) {
+    return source.body!.getReader();
   }
-
-  if (source.getReader) {
+  if (source instanceof ReadableStream) {
     return source.getReader();
   }
-
-  // TODO: This should be possible to do by constructing a ReadableStream, but
-  // I can't get it to work. As a hack, construct a new Response, and use the
-  // reader associated with its body.
-  return new Response(source).body.getReader();
+  return new Response(source as BodyInit).body!.getReader();
 }
 
 /**
@@ -48,9 +44,12 @@ function _getReaderFromSource(source) {
  *
  * @memberof workbox.streams
  */
-function concatenate(sourcePromises) {
+function concatenate(sourcePromises: Promise<StreamSource>[]): {
+  done: Promise<void>,
+  stream: ReadableStream,
+} {
   if (process.env.NODE_ENV !== 'production') {
-    assert.isArray(sourcePromises, {
+    assert!.isArray(sourcePromises, {
       moduleName: 'workbox-streams',
       funcName: 'concatenate',
       paramName: 'sourcePromises',
@@ -63,15 +62,10 @@ function concatenate(sourcePromises) {
     });
   });
 
-  let fullyStreamedResolve;
-  let fullyStreamedReject;
-  const done = new Promise((resolve, reject) => {
-    fullyStreamedResolve = resolve;
-    fullyStreamedReject = reject;
-  });
+  const streamDeferred:Deferred<void> = new Deferred();
 
   let i = 0;
-  const logMessages = [];
+  const logMessages: any[] = [];
   const stream = new ReadableStream({
     pull(controller) {
       return readerPromises[i]
@@ -101,11 +95,12 @@ function concatenate(sourcePromises) {
                 }
 
                 controller.close();
-                fullyStreamedResolve();
+                streamDeferred.resolve();
                 return;
               }
 
-              return this.pull(controller);
+              // The `pull` method is defined because we're inside it.
+              return this.pull!(controller);
             } else {
               controller.enqueue(result.value);
             }
@@ -113,7 +108,7 @@ function concatenate(sourcePromises) {
             if (process.env.NODE_ENV !== 'production') {
               logger.error('An error occurred:', error);
             }
-            fullyStreamedReject(error);
+            streamDeferred.reject(error);
             throw error;
           });
     },
@@ -123,11 +118,11 @@ function concatenate(sourcePromises) {
         logger.warn('The ReadableStream was cancelled.');
       }
 
-      fullyStreamedResolve();
+      streamDeferred.resolve();
     },
   });
 
-  return {done, stream};
+  return {done: streamDeferred.promise, stream};
 }
 
 export {concatenate};
