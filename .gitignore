@@ -35,4 +35,5 @@ packages/workbox-precaching/**/*.mjs
 packages/workbox-range-requests/**/*.mjs
 packages/workbox-routing/**/*.mjs
 packages/workbox-strategies/**/*.mjs
+packages/workbox-streams/**/*.mjs
 packages/workbox-window/**/*.mjs

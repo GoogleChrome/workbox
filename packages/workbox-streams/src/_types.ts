@@ -12,3 +12,5 @@ import './_version.js';
  * @typedef {Response|ReadableStream|BodyInit} StreamSource
  * @memberof workbox.streams
  */
+
+export type StreamSource = Response | ReadableStream | BodyInit;

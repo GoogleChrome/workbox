@@ -8,7 +8,7 @@
 
 import './_version.js';
 
-let cachedIsSupported = undefined;
+let cachedIsSupported: boolean | undefined;
 
 /**
  * This is a utility method that determines whether the current browser supports
@@ -21,7 +21,7 @@ let cachedIsSupported = undefined;
  *
  * @memberof workbox.streams
  */
-function isSupported() {
+function isSupported(): boolean {
   if (cachedIsSupported === undefined) {
     // See https://github.com/GoogleChrome/workbox/issues/1473
     try {
