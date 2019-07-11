@@ -11,9 +11,8 @@ import {cacheNames} from 'workbox-core/_private/cacheNames.js';
 import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.js';
 import {logger} from 'workbox-core/_private/logger.js';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
-import {WorkboxPlugin} from 'workbox-core/utils/pluginUtils.js';
+import {RouteHandler, RouteHandlerCallbackOptions, WorkboxPlugin} from 'workbox-core/types.js';
 import {messages} from './utils/messages.js';
-import {WorkboxStrategy, WorkboxStrategyHandleOptions} from './_types.js';
 import './_version.js';
 
 
@@ -35,7 +34,7 @@ interface CacheOnlyOptions {
  *
  * @memberof workbox.strategies
  */
-class CacheOnly implements WorkboxStrategy {
+class CacheOnly implements RouteHandler {
   private _cacheName: string;
   private _plugins: WorkboxPlugin[];
   private _matchOptions?: CacheQueryOptions;
@@ -65,7 +64,7 @@ class CacheOnly implements WorkboxStrategy {
    * @param {Event} [options.event] The event that triggered the request.
    * @return {Promise<Response>}
    */
-  async handle({event, request}: WorkboxStrategyHandleOptions) {
+  async handle({event, request}: RouteHandlerCallbackOptions): Promise<Response> {
     return this.makeRequest({
       event,
       request: request || (event as FetchEvent).request,
@@ -87,7 +86,10 @@ class CacheOnly implements WorkboxStrategy {
    *     be called automatically to extend the service worker's lifetime.
    * @return {Promise<Response>}
    */
-  async makeRequest({event, request}: WorkboxStrategyHandleOptions) {
+  async makeRequest({event, request}: {
+    request: Request,
+    event?: ExtendableEvent
+  }): Promise<Response> {
     if (typeof request === 'string') {
       request = new Request(request);
     }

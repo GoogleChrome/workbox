@@ -11,7 +11,7 @@ import {cacheNames} from 'workbox-core/_private/cacheNames.js';
 import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.js';
 import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.js';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
-import {WorkboxPlugin} from 'workbox-core/utils/pluginUtils.js';
+import {WorkboxPlugin} from 'workbox-core/types.js';
 
 import {cleanRedirect} from './utils/cleanRedirect.js';
 import {createCacheKey} from './utils/createCacheKey.js';

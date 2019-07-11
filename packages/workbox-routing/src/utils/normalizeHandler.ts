@@ -7,13 +7,9 @@
 */
 
 import {assert} from 'workbox-core/_private/assert.js';
-import {handlerCallback} from '../_types.js';
+import {Handler, HandlerCallback} from '../_types.js';
 import '../_version.js';
 
-
-export interface NormalizedHandlerCallback {
-  handle: handlerCallback;
-}
 
 /**
  * @param {function()|Object} handler Either a function, or an object with a
@@ -22,8 +18,9 @@ export interface NormalizedHandlerCallback {
  *
  * @private
  */
-export const normalizeHandler = (handler: handlerCallback |
-    {handle: handlerCallback}): {handle: handlerCallback} => {
+export const normalizeHandler = (
+  handler: Handler | HandlerCallback
+): Handler => {
   if (handler && typeof handler === 'object') {
     if (process.env.NODE_ENV !== 'production') {
       assert!.hasMethod(handler, 'handle', {

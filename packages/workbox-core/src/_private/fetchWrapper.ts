@@ -11,7 +11,8 @@ import {logger} from './logger.js';
 import {assert} from './assert.js';
 import {getFriendlyURL} from '../_private/getFriendlyURL.js';
 import {pluginEvents} from '../models/pluginEvents.js';
-import {pluginUtils, WorkboxPlugin} from '../utils/pluginUtils.js';
+import {WorkboxPlugin} from '../types.js';
+import {pluginUtils} from '../utils/pluginUtils.js';
 import '../_version.js';
 
 

@@ -7,9 +7,11 @@
 */
 
 import {Plugin} from 'workbox-background-sync/Plugin.js';
+import {Queue} from 'workbox-background-sync/Queue.js';
 import {cacheNames} from 'workbox-core/_private/cacheNames.js';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
 import {logger} from 'workbox-core/_private/logger.js';
+import {RouteMatchCallbackOptions} from 'workbox-core/types.js';
 import {Route} from 'workbox-routing/Route.js';
 import {Router} from 'workbox-routing/Router.js';
 import {NetworkFirst} from 'workbox-strategies/NetworkFirst.js';
@@ -26,6 +28,13 @@ import {
 } from './utils/constants.js';
 import './_version.js';
 
+
+interface GoogleAnalyticsInitializeOptions {
+  cacheName?: string;
+  parameterOverrides?: {[paramName: string]: string},
+  hitFilter?: (params: URLSearchParams) => void;
+}
+
 /**
  * Creates the requestWillDequeue callback to be used with the background
  * sync queue plugin. The callback takes the failed request and adds the
@@ -37,8 +46,8 @@ import './_version.js';
  *
  * @private
  */
-const createOnSyncCallback = (config) => {
-  return async ({queue}) => {
+const createOnSyncCallback = (config: GoogleAnalyticsInitializeOptions) => {
+  return async ({queue}: {queue: Queue}) => {
     let entry;
     while (entry = await queue.shiftRequest()) {
       const {request, timestamp} = entry;
@@ -53,11 +62,11 @@ const createOnSyncCallback = (config) => {
 
         // Calculate the qt param, accounting for the fact that an existing
         // qt param may be present and should be updated rather than replaced.
-        const originalHitTime = timestamp - (Number(params.get('qt')) || 0);
+        const originalHitTime = timestamp! - (Number(params.get('qt')) || 0);
         const queueTime = Date.now() - originalHitTime;
 
         // Set the qt param prior to applying hitFilter or parameterOverrides.
-        params.set('qt', queueTime);
+        params.set('qt', String(queueTime));
 
         // Apply `paramterOverrideds`, if set.
         if (config.parameterOverrides) {
@@ -112,8 +121,9 @@ const createOnSyncCallback = (config) => {
  *
  * @private
  */
-const createCollectRoutes = (queuePlugin) => {
-  const match = ({url}) => url.hostname === GOOGLE_ANALYTICS_HOST &&
+const createCollectRoutes = (queuePlugin: Plugin) => {
+  const match = ({url}: RouteMatchCallbackOptions) =>
+      url.hostname === GOOGLE_ANALYTICS_HOST &&
       COLLECT_PATHS_REGEX.test(url.pathname);
 
   const handler = new NetworkOnly({
@@ -134,9 +144,11 @@ const createCollectRoutes = (queuePlugin) => {
  *
  * @private
  */
-const createAnalyticsJsRoute = (cacheName) => {
-  const match = ({url}) => url.hostname === GOOGLE_ANALYTICS_HOST &&
+const createAnalyticsJsRoute = (cacheName: string) => {
+  const match = ({url}: RouteMatchCallbackOptions) =>
+      url.hostname === GOOGLE_ANALYTICS_HOST &&
       url.pathname === ANALYTICS_JS_PATH;
+
   const handler = new NetworkFirst({cacheName});
 
   return new Route(match, handler, 'GET');
@@ -150,9 +162,11 @@ const createAnalyticsJsRoute = (cacheName) => {
  *
  * @private
  */
-const createGtagJsRoute = (cacheName) => {
-  const match = ({url}) => url.hostname === GTM_HOST &&
+const createGtagJsRoute = (cacheName: string) => {
+  const match = ({url}: RouteMatchCallbackOptions) =>
+      url.hostname === GTM_HOST &&
       url.pathname === GTAG_JS_PATH;
+
   const handler = new NetworkFirst({cacheName});
 
   return new Route(match, handler, 'GET');
@@ -166,9 +180,11 @@ const createGtagJsRoute = (cacheName) => {
  *
  * @private
  */
-const createGtmJsRoute = (cacheName) => {
-  const match = ({url}) => url.hostname === GTM_HOST &&
+const createGtmJsRoute = (cacheName: string) => {
+  const match = ({url}: RouteMatchCallbackOptions) =>
+      url.hostname === GTM_HOST &&
       url.pathname === GTM_JS_PATH;
+
   const handler = new NetworkFirst({cacheName});
 
   return new Route(match, handler, 'GET');
@@ -190,7 +206,7 @@ const createGtmJsRoute = (cacheName) => {
  *
  * @memberof workbox.googleAnalytics
  */
-const initialize = (options = {}) => {
+const initialize = (options: GoogleAnalyticsInitializeOptions = {}) => {
   const cacheName = cacheNames.getGoogleAnalyticsName(options.cacheName);
 
   const queuePlugin = new Plugin(QUEUE_NAME, {

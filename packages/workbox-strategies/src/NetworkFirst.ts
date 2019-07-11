@@ -13,10 +13,9 @@ import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.js';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
 import {logger} from 'workbox-core/_private/logger.js';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
-import {WorkboxPlugin} from 'workbox-core/utils/pluginUtils.js';
+import {RouteHandler, RouteHandlerCallbackOptions, WorkboxPlugin} from 'workbox-core/types.js';
 import {messages} from './utils/messages.js';
 import {cacheOkAndOpaquePlugin} from './plugins/cacheOkAndOpaquePlugin.js';
-import {WorkboxStrategy, WorkboxStrategyHandleOptions} from './_types.js';
 import './_version.js';
 
 
@@ -43,7 +42,7 @@ interface NetworkFirstOptions {
  *
  * @memberof workbox.strategies
  */
-class NetworkFirst implements WorkboxStrategy {
+class NetworkFirst implements RouteHandler {
   private _cacheName: string;
   private _plugins: WorkboxPlugin[];
   private _fetchOptions?: RequestInit;
@@ -107,7 +106,7 @@ class NetworkFirst implements WorkboxStrategy {
    * @param {Event} [options.event] The event that triggered the request.
    * @return {Promise<Response>}
    */
-  async handle({event, request}: WorkboxStrategyHandleOptions) {
+  async handle({event, request}: RouteHandlerCallbackOptions): Promise<Response> {
     return this.makeRequest({
       event,
       request: request || (event as FetchEvent).request,
@@ -129,8 +128,11 @@ class NetworkFirst implements WorkboxStrategy {
    *     be called automatically to extend the service worker's lifetime.
    * @return {Promise<Response>}
    */
-  async makeRequest({event, request}: WorkboxStrategyHandleOptions) {
-    const logs: any[] = [];
+  async makeRequest({event, request}: {
+    request: Request,
+    event?: ExtendableEvent
+  }): Promise<Response> {
+   const logs: any[] = [];
 
     if (typeof request === 'string') {
       request = new Request(request);

@@ -7,17 +7,17 @@
 */
 
 import {logger} from 'workbox-core/_private/logger.js';
+import {RouteHandlerCallback, RouteHandlerCallbackOptions} from 'workbox-core/types.js';
 import {createHeaders} from './utils/createHeaders.js';
 import {concatenateToResponse} from './concatenateToResponse.js';
 import {isSupported} from './isSupported.js';
-import {handlerCallback, HandlerCallbackOptions} from 'workbox-routing/_types.js';
 import {StreamSource} from './_types.js';
 import './_version.js';
 
 
-type streamsHandlerCallback =
-    ({url, request, event, params}: HandlerCallbackOptions) =>
-        Promise<StreamSource> | StreamSource;
+interface StreamsHandlerCallback {
+  ({url, request, event, params}: RouteHandlerCallbackOptions): Promise<StreamSource> | StreamSource;
+}
 
 /**
  * A shortcut to create a strategy that could be dropped-in to Workbox's router.
@@ -37,10 +37,10 @@ type streamsHandlerCallback =
  * @memberof workbox.streams
  */
 function strategy(
-  sourceFunctions: streamsHandlerCallback[],
+  sourceFunctions: StreamsHandlerCallback[],
   headersInit: HeadersInit,
-): handlerCallback {
-  return async ({event, request, url, params}: HandlerCallbackOptions) => {
+): RouteHandlerCallback {
+  return async ({event, request, url, params}: RouteHandlerCallbackOptions) => {
     const sourcePromises = sourceFunctions.map((fn) => {
       // Ensure the return value of the function is always a promise.
       return Promise.resolve(fn({event, request, url, params}));

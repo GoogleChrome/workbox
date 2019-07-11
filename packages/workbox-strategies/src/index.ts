@@ -7,21 +7,21 @@
 */
 
 import {logger} from 'workbox-core/_private/logger.js';
+import {RouteHandler} from 'workbox-core/types.js';
 import {CacheFirst} from './CacheFirst.js';
 import {CacheOnly} from './CacheOnly.js';
 import {NetworkFirst} from './NetworkFirst.js';
 import {NetworkOnly} from './NetworkOnly.js';
 import {StaleWhileRevalidate} from './StaleWhileRevalidate.js';
 import './_version.js';
-import { WorkboxStrategy } from './_types.js';
 
 
-interface Strategy {
-  new({}: object): WorkboxStrategy
+interface StrategyClass {
+  new({}: object): RouteHandler
 }
 
 interface StrategyDeprecationMap {
-  [strategyName: string]: Strategy;
+  [strategyName: string]: StrategyClass;
 }
 
 const mapping: StrategyDeprecationMap = {

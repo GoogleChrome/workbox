@@ -6,17 +6,14 @@
   https://opensource.org/licenses/MIT.
 */
 
+import {
+  RouteHandler,
+  RouteHandlerCallback,
+  RouteHandlerCallbackOptions,
+  RouteMatchCallback,
+  RouteMatchCallbackOptions
+} from 'workbox-core/types.js';
 import './_version.js';
-
-export interface MatchCallbackOptions {
-  url: URL;
-  request?: Request;
-  event?: ExtendableEvent;
-}
-
-export interface HandlerCallbackOptions extends MatchCallbackOptions {
-  params?: string[] | {[paramName: string]: string};
-}
 
 /**
  * The "match" callback is used to determine if a `Route` should apply for a
@@ -41,7 +38,6 @@ export interface HandlerCallbackOptions extends MatchCallbackOptions {
  *
  * @memberof workbox.routing
  */
-export type matchCallback = ({url, request, event}: MatchCallbackOptions) => any;
 
 /**
  * The "handler" callback is invoked whenever a `Router` matches a URL to a
@@ -67,6 +63,11 @@ export type matchCallback = ({url, request, event}: MatchCallbackOptions) => any
  *
  * @memberof workbox.routing
  */
-export type handlerCallback =
-    ({url, request, event, params}: HandlerCallbackOptions) =>
-        Promise<Response>;
+
+ export {
+  RouteHandler as Handler,
+  RouteHandlerCallback as HandlerCallback,
+  RouteHandlerCallbackOptions as HandlerCallbackOptions,
+  RouteMatchCallback as MatchCallback,
+  RouteMatchCallbackOptions as MatchCallbackOptions,
+}
