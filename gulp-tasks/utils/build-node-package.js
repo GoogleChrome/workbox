@@ -31,7 +31,7 @@ module.exports = (packagePath) => {
       ['@babel/preset-env', {
         targets: {
           // Change this when our minimum required node version changes.
-          node: '6.0',
+          node: '8.0',
         },
       }],
     ],
