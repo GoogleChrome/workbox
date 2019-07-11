@@ -6,14 +6,20 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.mjs';
-import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
-import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
+import {assert} from 'workbox-core/_private/assert.js';
+import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.js';
+import {logger} from 'workbox-core/_private/logger.js';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
+import {WorkboxPlugin} from 'workbox-core/utils/pluginUtils.js';
+import {messages} from './utils/messages.js';
+import {WorkboxStrategy, WorkboxStrategyHandleOptions} from './_types.js';
+import './_version.js';
 
-import {messages} from './utils/messages.mjs';
-import './_version.mjs';
+
+interface NetworkFirstOptions {
+  plugins?: WorkboxPlugin[];
+  fetchOptions?: RequestInit;
+}
 
 /**
  * An implementation of a
@@ -27,7 +33,10 @@ import './_version.mjs';
  *
  * @memberof workbox.strategies
  */
-class NetworkOnly {
+class NetworkOnly implements WorkboxStrategy {
+  private _plugins: WorkboxPlugin[];
+  private _fetchOptions?: RequestInit;
+
   /**
    * @param {Object} options
    * @param {string} options.cacheName Cache name to store and retrieve
@@ -39,10 +48,9 @@ class NetworkOnly {
    * [`init`](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch#Parameters)
    * of all fetch() requests made by this strategy.
    */
-  constructor(options = {}) {
-    this._cacheName = cacheNames.getRuntimeName(options.cacheName);
+  constructor(options: NetworkFirstOptions = {}) {
     this._plugins = options.plugins || [];
-    this._fetchOptions = options.fetchOptions || null;
+    this._fetchOptions = options.fetchOptions;
   }
 
   /**
@@ -55,10 +63,10 @@ class NetworkOnly {
    * @param {Event} [options.event] The event that triggered the request.
    * @return {Promise<Response>}
    */
-  async handle({event, request}) {
+  async handle({event, request}: WorkboxStrategyHandleOptions) {
     return this.makeRequest({
       event,
-      request: request || event.request,
+      request: request || (event as FetchEvent).request,
     });
   }
 
@@ -77,13 +85,13 @@ class NetworkOnly {
    *     be called automatically to extend the service worker's lifetime.
    * @return {Promise<Response>}
    */
-  async makeRequest({event, request}) {
+  async makeRequest({event, request}: WorkboxStrategyHandleOptions) {
     if (typeof request === 'string') {
       request = new Request(request);
     }
 
     if (process.env.NODE_ENV !== 'production') {
-      assert.isInstance(request, Request, {
+      assert!.isInstance(request, Request, {
         moduleName: 'workbox-strategies',
         className: 'NetworkOnly',
         funcName: 'handle',

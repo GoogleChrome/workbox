@@ -6,31 +6,55 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.mjs';
-import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
-import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.mjs';
-import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.mjs';
-import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.mjs';
+import {assert} from 'workbox-core/_private/assert.js';
+import {cacheNames} from 'workbox-core/_private/cacheNames.js';
+import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.js';
+import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.js';
+import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
+import {logger} from 'workbox-core/_private/logger.js';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
+import {WorkboxPlugin} from 'workbox-core/utils/pluginUtils.js';
+import {messages} from './utils/messages.js';
+import {cacheOkAndOpaquePlugin} from './plugins/cacheOkAndOpaquePlugin.js';
+import {WorkboxStrategy, WorkboxStrategyHandleOptions} from './_types.js';
+import './_version.js';
 
-import {messages} from './utils/messages.mjs';
-import './_version.mjs';
+
+
+interface StaleWhileRevalidateOptions {
+  cacheName?: string;
+  plugins?: WorkboxPlugin[];
+  fetchOptions?: RequestInit;
+  matchOptions?: CacheQueryOptions;
+}
+
 
 /**
- * An implementation of a [cache-first]{@link https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#cache-falling-back-to-network}
+ * An implementation of a
+ * [stale-while-revalidate]{@link https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#stale-while-revalidate}
  * request strategy.
  *
- * A cache first strategy is useful for assets that have been revisioned,
- * such as URLs like `/styles/example.a8f5f1.css`, since they
- * can be cached for long periods of time.
+ * Resources are requested from both the cache and the network in parallel.
+ * The strategy will respond with the cached version if available, otherwise
+ * wait for the network response. The cache is updated with the network response
+ * with each successful request.
+ *
+ * By default, this strategy will cache responses with a 200 status code as
+ * well as [opaque responses]{@link https://developers.google.com/web/tools/workbox/guides/handle-third-party-requests}.
+ * Opaque responses are are cross-origin requests where the response doesn't
+ * support [CORS]{@link https://enable-cors.org/}.
  *
  * If the network request fails, and there is no cache match, this will throw
  * a `WorkboxError` exception.
  *
  * @memberof workbox.strategies
  */
-class CacheFirst {
+class StaleWhileRevalidate implements WorkboxStrategy {
+  private _cacheName: string;
+  private _plugins: WorkboxPlugin[];
+  private _fetchOptions?: RequestInit;
+  private _matchOptions?: CacheQueryOptions;
+
   /**
    * @param {Object} options
    * @param {string} options.cacheName Cache name to store and retrieve
@@ -43,11 +67,22 @@ class CacheFirst {
    * of all fetch() requests made by this strategy.
    * @param {Object} options.matchOptions [`CacheQueryOptions`](https://w3c.github.io/ServiceWorker/#dictdef-cachequeryoptions)
    */
-  constructor(options = {}) {
+  constructor(options: StaleWhileRevalidateOptions = {}) {
     this._cacheName = cacheNames.getRuntimeName(options.cacheName);
     this._plugins = options.plugins || [];
-    this._fetchOptions = options.fetchOptions || null;
-    this._matchOptions = options.matchOptions || null;
+
+    if (options.plugins) {
+      let isUsingCacheWillUpdate =
+        options.plugins.some((plugin) => !!plugin.cacheWillUpdate);
+      this._plugins = isUsingCacheWillUpdate ?
+        options.plugins : [cacheOkAndOpaquePlugin, ...options.plugins];
+    } else {
+      // No plugins passed in, use the default plugin.
+      this._plugins = [cacheOkAndOpaquePlugin];
+    }
+
+    this._fetchOptions = options.fetchOptions;
+    this._matchOptions = options.matchOptions;
   }
 
   /**
@@ -60,13 +95,12 @@ class CacheFirst {
    * @param {Event} [options.event] The event that triggered the request.
    * @return {Promise<Response>}
    */
-  async handle({event, request}) {
+  async handle({event, request}: WorkboxStrategyHandleOptions) {
     return this.makeRequest({
       event,
-      request: request || event.request,
+      request: request || (event as FetchEvent).request,
     });
   }
-
   /**
    * This method can be used to perform a make a standalone request outside the
    * context of the [Workbox Router]{@link workbox.routing.Router}.
@@ -79,10 +113,10 @@ class CacheFirst {
    *     [`Request`]{@link https://developer.mozilla.org/en-US/docs/Web/API/Request}
    *     object, or a string URL, corresponding to the request to be made.
    * @param {FetchEvent} [options.event] If provided, `event.waitUntil()` will
-         be called automatically to extend the service worker's lifetime.
+   *     be called automatically to extend the service worker's lifetime.
    * @return {Promise<Response>}
    */
-  async makeRequest({event, request}) {
+  async makeRequest({event, request}: WorkboxStrategyHandleOptions) {
     const logs = [];
 
     if (typeof request === 'string') {
@@ -90,13 +124,15 @@ class CacheFirst {
     }
 
     if (process.env.NODE_ENV !== 'production') {
-      assert.isInstance(request, Request, {
+      assert!.isInstance(request, Request, {
         moduleName: 'workbox-strategies',
-        className: 'CacheFirst',
-        funcName: 'makeRequest',
+        className: 'StaleWhileRevalidate',
+        funcName: 'handle',
         paramName: 'request',
       });
     }
+
+    const fetchAndCachePromise = this._getFromNetwork({request, event});
 
     let response = await cacheWrapper.match({
       cacheName: this._cacheName,
@@ -105,37 +141,38 @@ class CacheFirst {
       matchOptions: this._matchOptions,
       plugins: this._plugins,
     });
-
     let error;
-    if (!response) {
+    if (response) {
       if (process.env.NODE_ENV !== 'production') {
-        logs.push(
-            `No response found in the '${this._cacheName}' cache. ` +
-          `Will respond with a network request.`);
-      }
-      try {
-        response = await this._getFromNetwork(request, event);
-      } catch (err) {
-        error = err;
+        logs.push(`Found a cached response in the '${this._cacheName}'` +
+          ` cache. Will update with the network response in the background.`);
       }
 
-      if (process.env.NODE_ENV !== 'production') {
-        if (response) {
-          logs.push(`Got response from network.`);
-        } else {
-          logs.push(`Unable to get a response from the network.`);
+      if (event) {
+        try {
+          event.waitUntil(fetchAndCachePromise);
+        } catch (error) {
+          if (process.env.NODE_ENV !== 'production') {
+            logger.warn(`Unable to ensure service worker stays alive when ` +
+              `updating cache for '${getFriendlyURL(request.url)}'.`);
+          }
         }
       }
     } else {
       if (process.env.NODE_ENV !== 'production') {
-        logs.push(
-            `Found a cached response in the '${this._cacheName}' cache.`);
+        logs.push(`No response found in the '${this._cacheName}' cache. ` +
+          `Will wait for the network response.`);
+      }
+      try {
+        response = await fetchAndCachePromise;
+      } catch (err) {
+        error = err;
       }
     }
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
-          messages.strategyStart('CacheFirst', request));
+          messages.strategyStart('StaleWhileRevalidate', request));
       for (let log of logs) {
         logger.log(log);
       }
@@ -150,15 +187,17 @@ class CacheFirst {
   }
 
   /**
-   * Handles the network and cache part of CacheFirst.
-   *
-   * @param {Request} request
-   * @param {FetchEvent} [event]
+   * @param {Object} options
+   * @param {Request} options.request
+   * @param {Event} [options.event]
    * @return {Promise<Response>}
    *
    * @private
    */
-  async _getFromNetwork(request, event) {
+  async _getFromNetwork({request, event}: {
+    request: Request,
+    event?: ExtendableEvent,
+  }): Promise<Response> {
     const response = await fetchWrapper.fetch({
       request,
       event,
@@ -166,12 +205,10 @@ class CacheFirst {
       plugins: this._plugins,
     });
 
-    // Keep the service worker while we put the request to the cache
-    const responseClone = response.clone();
     const cachePutPromise = cacheWrapper.put({
       cacheName: this._cacheName,
       request,
-      response: responseClone,
+      response: response.clone(),
       event,
       plugins: this._plugins,
     });
@@ -191,4 +228,4 @@ class CacheFirst {
   }
 }
 
-export {CacheFirst};
+export {StaleWhileRevalidate};
