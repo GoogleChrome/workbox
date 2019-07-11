@@ -6,8 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {initialize} from './initialize.mjs';
-import './_version.mjs';
+import {initialize} from './initialize.js';
+import './_version.js';
 
 
 /**

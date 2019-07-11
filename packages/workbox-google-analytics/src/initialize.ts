@@ -6,14 +6,14 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {Plugin} from 'workbox-background-sync/Plugin.mjs';
-import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
-import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.mjs';
-import {logger} from 'workbox-core/_private/logger.mjs';
-import {Route} from 'workbox-routing/Route.mjs';
-import {Router} from 'workbox-routing/Router.mjs';
-import {NetworkFirst} from 'workbox-strategies/NetworkFirst.mjs';
-import {NetworkOnly} from 'workbox-strategies/NetworkOnly.mjs';
+import {Plugin} from 'workbox-background-sync/Plugin.js';
+import {cacheNames} from 'workbox-core/_private/cacheNames.js';
+import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
+import {logger} from 'workbox-core/_private/logger.js';
+import {Route} from 'workbox-routing/Route.js';
+import {Router} from 'workbox-routing/Router.js';
+import {NetworkFirst} from 'workbox-strategies/NetworkFirst.js';
+import {NetworkOnly} from 'workbox-strategies/NetworkOnly.js';
 import {
   QUEUE_NAME,
   MAX_RETENTION_TIME,
@@ -23,8 +23,8 @@ import {
   GTAG_JS_PATH,
   GTM_JS_PATH,
   COLLECT_PATHS_REGEX,
-} from './utils/constants.mjs';
-import './_version.mjs';
+} from './utils/constants.js';
+import './_version.js';
 
 /**
  * Creates the requestWillDequeue callback to be used with the background
