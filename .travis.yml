@@ -8,7 +8,7 @@ cache:
     - ~/.selenium-assistant
 
 node_js:
-  - '10'
+  - '8'
 
 # Read more here: https://docs.travis-ci.com/user/gui-and-headless-browsers/#Using-xvfb-to-Run-Tests-That-Require-a-GUI
 before_script:
