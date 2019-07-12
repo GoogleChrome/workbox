@@ -7,18 +7,16 @@
 */
 
 const expect = require('chai').expect;
-const proxyquire = require('proxyquire');
+const ModuleRegistry = require('../../../../packages/workbox-build/src/lib/module-registry');
+const upath = require('upath');
 
 describe(`[workbox-build] lib/module-registry.js`, function() {
-  const MODULE_PATH = '../../../../packages/workbox-build/src/lib/module-registry';
   let moduleRegistry;
+  // We can't use proxyquire to override require.resolve(), so let's get the
+  // actual expected base path that will be used in the test cases.
+  const basePath = upath.resolve(__dirname, '..', '..', '..', '..');
 
   beforeEach(() => {
-    const ModuleRegistry = proxyquire(MODULE_PATH, {
-      upath: {
-        resolve: () => '/path/to/node_modules',
-      },
-    });
     moduleRegistry = new ModuleRegistry();
   });
 
@@ -28,16 +26,16 @@ describe(`[workbox-build] lib/module-registry.js`, function() {
     });
 
     it(`return the expected output given multiple calls to use()`, function() {
-      const module1Name = moduleRegistry.use('a-b-c', 'd');
+      const module1Name = moduleRegistry.use('workbox-core', 'index');
       // Multiple use()s should result in only one entry.
-      moduleRegistry.use('a-b-c', 'd');
-      const module2Name = moduleRegistry.use('x-y', 'z');
+      moduleRegistry.use('workbox-core', 'index');
+      const module2Name = moduleRegistry.use('workbox-routing', 'index');
 
       const importStatements = moduleRegistry.getImportStatements();
 
       expect(importStatements).to.have.members([
-        `import {d as a_b_c_d} from '/path/to/node_modules/a-b-c/d.mjs';`,
-        `import {z as x_y_z} from '/path/to/node_modules/x-y/z.mjs';`,
+        `import {index as workbox_core_index} from '${basePath}/packages/workbox-core/index.mjs';`,
+        `import {index as workbox_routing_index} from '${basePath}/packages/workbox-routing/index.mjs';`,
       ]);
 
       expect(importStatements[0]).to.contain(module1Name);

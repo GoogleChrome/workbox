@@ -19,8 +19,6 @@ class ModuleRegistry {
    */
   constructor() {
     this.modulesUsed = new Map();
-    this.nodeModulesPath = upath.resolve(
-        __dirname, '..', '..', 'node_modules');
   }
 
   /**
@@ -31,8 +29,14 @@ class ModuleRegistry {
     const workboxModuleImports = [];
 
     for (const [localName, {moduleName, pkg}] of this.modulesUsed) {
+      // By default require.resolve returns the resolved path of the 'main'
+      // field, which might be deeper than the package root. To work around
+      // this, we can find the package's root by resolving its package.json and
+      // strip the '/package.json' from the resolved path.
+      const pkgJsonPath = require.resolve(`${pkg}/package.json`);
+      const pkgRoot = upath.dirname(pkgJsonPath);
       const importStatement = ol`import {${moduleName} as ${localName}} from
-        '${this.nodeModulesPath}/${pkg}/${moduleName}.mjs';`;
+        '${pkgRoot}/${moduleName}.mjs';`;
 
       workboxModuleImports.push(importStatement);
     }
