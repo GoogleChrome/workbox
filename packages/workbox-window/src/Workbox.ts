@@ -480,7 +480,11 @@ class Workbox extends WorkboxEventTarget {
   _onControllerChange = (originalEvent: Event) => {
     const sw = this._sw;
     if (sw === navigator.serviceWorker.controller) {
-      this.dispatchEvent(new WorkboxEvent('controlling', {sw, originalEvent}));
+      this.dispatchEvent(new WorkboxEvent('controlling', {
+        sw,
+        originalEvent,
+        isUpdate: this._isUpdate,
+      }));
       if (process.env.NODE_ENV !== 'production') {
         logger.log('Registered service worker now controlling this page.');
       }
