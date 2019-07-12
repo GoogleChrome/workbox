@@ -1,1 +1,1 @@
-try{self['workbox:routing:4.3.1']&&_()}catch(e){}// eslint-disable-line
+try{self['workbox:routing:5.0.0-alpha.0']&&_()}catch(e){}// eslint-disable-line
