@@ -34,6 +34,10 @@ module.exports = async ({
     resolve(),
     replace({'process.env.NODE_ENV': JSON.stringify(mode)}),
     babel({
+      // Disable the logic that checks for local Babel config files:
+      // https://github.com/GoogleChrome/workbox/issues/2111
+      babelrc: false,
+      configFile: false,
       presets: [[presetEnv, {
         targets: {
           browsers: babelPresetEnvTargets,
