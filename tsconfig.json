@@ -33,5 +33,5 @@
     { "path": "./packages/workbox-strategies/" },
     { "path": "./packages/workbox-streams/" },
     { "path": "./packages/workbox-window/" }
-  ],
+  ]
 }
