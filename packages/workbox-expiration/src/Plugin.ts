@@ -12,7 +12,7 @@ import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
 import {logger} from 'workbox-core/_private/logger.js';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
 import {registerQuotaErrorCallback} from 'workbox-core/registerQuotaErrorCallback.js';
-import {WorkboxPlugin} from 'workbox-core/utils/pluginUtils.js';
+import {WorkboxPlugin} from 'workbox-core/types.js';
 import {CacheExpiration} from './CacheExpiration.js';
 import './_version.js';
 

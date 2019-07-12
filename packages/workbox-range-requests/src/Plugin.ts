@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {WorkboxPlugin} from 'workbox-core/utils/pluginUtils.js';
+import {WorkboxPlugin} from 'workbox-core/types.js';
 import {createPartialResponse} from './createPartialResponse.js';
 import './_version.js';
 

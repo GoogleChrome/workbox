@@ -18,7 +18,6 @@ local-builds/
 firebase-debug.log
 .firebase
 
-
 # Generated TypeScript files and build data
 tsconfig.tsbuildinfo
 packages/workbox-*/**/*.d.ts
@@ -30,6 +29,7 @@ packages/workbox-broadcast-update/**/*.mjs
 packages/workbox-cacheable-response/**/*.mjs
 packages/workbox-core/**/*.mjs
 packages/workbox-expiration/**/*.mjs
+packages/workbox-google-analytics/**/*.mjs
 packages/workbox-navigation-preload/**/*.mjs
 packages/workbox-precaching/**/*.mjs
 packages/workbox-range-requests/**/*.mjs

@@ -26,8 +26,9 @@
     "outputFilename": "workbox-offline-ga",
     "packageType": "browser"
   },
-  "main": "build/workbox-offline-ga.prod.js",
+  "main": "index.js",
   "module": "index.mjs",
+  "types": "index.d.ts",
   "dependencies": {
     "workbox-background-sync": "^4.3.1",
     "workbox-core": "^4.3.1",

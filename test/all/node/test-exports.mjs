@@ -64,7 +64,7 @@ describe(`[all] Window and SW packages`, function() {
       // Inspect the package directory to get a list of top-level, public
       // module basenames.
       const topLevelFiles = glob.sync(`*.${ext}`, {
-        ignore: ['index', '_types', '_version'].map((file) => `${file}.${ext}`),
+        ignore: ['index', 'types', '_types', '_version'].map((file) => `${file}.${ext}`),
         cwd: packagePath,
       }).map((file) => path.basename(file, `.${ext}`));
 

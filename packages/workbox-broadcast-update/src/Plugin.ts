@@ -7,7 +7,7 @@
 */
 
 import {assert} from 'workbox-core/_private/assert.js';
-import {WorkboxPlugin} from 'workbox-core/utils/pluginUtils.js';
+import {WorkboxPlugin} from 'workbox-core/types.js';
 import {BroadcastCacheUpdate, BroadcastCacheUpdateOptions} from './BroadcastCacheUpdate.js';
 import './_version.js';
 

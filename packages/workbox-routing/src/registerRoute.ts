@@ -12,7 +12,7 @@ import {Route} from './Route.js';
 import {RegExpRoute} from './RegExpRoute.js';
 import {HTTPMethod} from './utils/constants.js';
 import {getOrCreateDefaultRouter} from './utils/getOrCreateDefaultRouter.js';
-import {matchCallback, handlerCallback} from './_types.js';
+import {MatchCallback, HandlerCallback} from './_types.js';
 import './_version.js';
 
 
@@ -42,8 +42,8 @@ import './_version.js';
  * @alias workbox.routing.registerRoute
  */
 export const registerRoute = (
-    capture: RegExp | string | matchCallback | Route,
-    handler?: handlerCallback,
+    capture: RegExp | string | MatchCallback | Route,
+    handler?: HandlerCallback,
     method?: HTTPMethod): Route => {
   let route;
 
@@ -75,7 +75,7 @@ export const registerRoute = (
       }
     }
 
-    const matchCallback: matchCallback = ({url}) => {
+    const matchCallback: MatchCallback = ({url}) => {
       if (process.env.NODE_ENV !== 'production') {
         if ((url.pathname === captureUrl.pathname) &&
             (url.origin !== captureUrl.origin)) {

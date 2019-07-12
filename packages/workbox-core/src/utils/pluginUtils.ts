@@ -6,54 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
+import {WorkboxPlugin} from '../types.js';
 import '../_version.js';
 
-
-export interface WorkboxPlugin {
-  cacheDidUpdate?: ({
-    cacheName,
-    oldResponse,
-    newResponse,
-    request,
-    event
-  }: {
-    cacheName: string,
-    oldResponse?: Response,
-    newResponse: Response,
-    request: Request,
-    event?: FetchEvent
-  }) => Promise<void>;
-  cacheKeyWillBeUsed?: Function;
-  cacheWillUpdate?: ({
-    response,
-    request,
-    event,
-  }: {
-    response: Response,
-    request?: Request,
-    event?: ExtendableEvent,
-  }) => Promise<Response | null | undefined>;
-  cachedResponseWillBeUsed?: ({
-    cacheName,
-    request,
-    matchOptions,
-    cachedResponse,
-    event
-  }: {
-    cacheName: string,
-    request: Request,
-    matchOptions?: CacheQueryOptions,
-    cachedResponse?: Response,
-    event?: ExtendableEvent,
-  }) => Promise<Response | null | undefined>;
-  fetchDidFail?: ({
-    request
-  }: {
-    request: Request
-  }) => Promise<void>;
-  fetchDidSucceed?: Function;
-  requestWillFetch?: Function;
-}
 
 export const pluginUtils = {
   filter: (plugins: WorkboxPlugin[], callbackName: string) => {

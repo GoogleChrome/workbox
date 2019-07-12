@@ -10,9 +10,8 @@ import {assert} from 'workbox-core/_private/assert.js';
 import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.js';
 import {logger} from 'workbox-core/_private/logger.js';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
-import {WorkboxPlugin} from 'workbox-core/utils/pluginUtils.js';
+import {RouteHandler, RouteHandlerCallbackOptions, WorkboxPlugin} from 'workbox-core/types.js';
 import {messages} from './utils/messages.js';
-import {WorkboxStrategy, WorkboxStrategyHandleOptions} from './_types.js';
 import './_version.js';
 
 
@@ -33,7 +32,7 @@ interface NetworkFirstOptions {
  *
  * @memberof workbox.strategies
  */
-class NetworkOnly implements WorkboxStrategy {
+class NetworkOnly implements RouteHandler {
   private _plugins: WorkboxPlugin[];
   private _fetchOptions?: RequestInit;
 
@@ -63,7 +62,7 @@ class NetworkOnly implements WorkboxStrategy {
    * @param {Event} [options.event] The event that triggered the request.
    * @return {Promise<Response>}
    */
-  async handle({event, request}: WorkboxStrategyHandleOptions) {
+  async handle({event, request}: RouteHandlerCallbackOptions): Promise<Response> {
     return this.makeRequest({
       event,
       request: request || (event as FetchEvent).request,
@@ -85,8 +84,11 @@ class NetworkOnly implements WorkboxStrategy {
    *     be called automatically to extend the service worker's lifetime.
    * @return {Promise<Response>}
    */
-  async makeRequest({event, request}: WorkboxStrategyHandleOptions) {
-    if (typeof request === 'string') {
+  async makeRequest({event, request}: {
+    request: Request,
+    event?: ExtendableEvent
+  }): Promise<Response> {
+   if (typeof request === 'string') {
       request = new Request(request);
     }
 

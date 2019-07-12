@@ -13,7 +13,8 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "preserveConstEnums": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "tsBuildInfoFile": "./tsconfig.tsbuildinfo"
   },
   "files": [
     "./infra/type-overrides.d.ts",
