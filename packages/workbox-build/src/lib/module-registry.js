@@ -19,8 +19,6 @@ class ModuleRegistry {
    */
   constructor() {
     this.modulesUsed = new Map();
-    this.nodeModulesPath = upath.resolve(
-        __dirname, '..', '..', 'node_modules');
   }
 
   /**
@@ -31,8 +29,10 @@ class ModuleRegistry {
     const workboxModuleImports = [];
 
     for (const [localName, {moduleName, pkg}] of this.modulesUsed) {
+      const pkgJsonPath = require.resolve(`${pkg}/package.json`);
+      const pkgRoot = upath.dirname(pkgJsonPath);
       const importStatement = ol`import {${moduleName} as ${localName}} from
-        '${this.nodeModulesPath}/${pkg}/${moduleName}.mjs';`;
+      '${pkgRoot}/${moduleName}.mjs';`;
 
       workboxModuleImports.push(importStatement);
     }
