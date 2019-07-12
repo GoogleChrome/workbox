@@ -46,13 +46,17 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     populateSWTemplate({});
 
     expect(outerStub.alwaysCalledWith(swTemplate)).to.be.true;
+
+    // Doing a strict comparison with functions isn't easy.
+    expect(innerStub.args[0][0].use).to.be.a('function');
+    delete(innerStub.args[0][0].use);
+
     expect(innerStub.args[0]).to.eql([{
       cacheId: undefined,
       cleanupOutdatedCaches: undefined,
       clientsClaim: undefined,
       importScripts: undefined,
       manifestEntries: undefined,
-      modulePathPrefix: undefined,
       navigateFallback: undefined,
       navigateFallbackBlacklist: undefined,
       navigateFallbackWhitelist: undefined,
@@ -61,7 +65,6 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
       precacheOptionsString,
       runtimeCaching: runtimeCachingPlaceholder,
       skipWaiting: undefined,
-      workboxSWImport: undefined,
     }]);
   });
 
@@ -74,7 +77,6 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     const ignoreURLParametersMatching = [/a/, /b/];
     const importScripts = ['test.js'];
     const manifestEntries = [{url: '/path/to/index.html', revision: '1234'}];
-    const modulePathPrefix = 'testing';
     const navigateFallback = '/shell.html';
     const navigateFallbackBlacklist = [/another-test/];
     const navigateFallbackWhitelist = [/test/];
@@ -86,7 +88,6 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     const skipWaiting = true;
     const swTemplate = 'template';
     const precacheOptionsString = '{\n  "directoryIndex": "index.html",\n  "ignoreURLParametersMatching": [/a/, /b/]\n}';
-    const workboxSWImport = 'workbox-sw.js';
 
     // There are two stages in templating: creating the active template function
     // from an initial string, and passing variables to that template function
@@ -109,7 +110,6 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
       ignoreURLParametersMatching,
       importScripts,
       manifestEntries,
-      modulePathPrefix,
       navigateFallback,
       navigateFallbackBlacklist,
       navigateFallbackWhitelist,
@@ -117,17 +117,20 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
       offlineGoogleAnalytics,
       runtimeCaching,
       skipWaiting,
-      workboxSWImport,
     });
 
     expect(templateCreationStub.alwaysCalledWith(swTemplate)).to.be.true;
+
+    // Doing a strict comparison with functions isn't easy.
+    expect(templatePopulationStub.args[0][0].use).to.be.a('function');
+    delete(templatePopulationStub.args[0][0].use);
+
     expect(templatePopulationStub.args[0]).to.eql([{
       cacheId,
       cleanupOutdatedCaches,
       clientsClaim,
       importScripts,
       manifestEntries,
-      modulePathPrefix,
       navigateFallback,
       navigateFallbackBlacklist,
       navigateFallbackWhitelist,
@@ -136,7 +139,6 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
       runtimeCaching: runtimeCachingPlaceholder,
       precacheOptionsString,
       skipWaiting,
-      workboxSWImport,
     }]);
   });
 
@@ -166,13 +168,17 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     populateSWTemplate({offlineGoogleAnalytics});
 
     expect(outerStub.alwaysCalledWith(swTemplate)).to.be.true;
+
+    // Doing a strict comparison with functions isn't easy.
+    expect(innerStub.args[0][0].use).to.be.a('function');
+    delete(innerStub.args[0][0].use);
+
     expect(innerStub.args[0]).to.eql([{
       cacheId: undefined,
       cleanupOutdatedCaches: undefined,
       clientsClaim: undefined,
       importScripts: undefined,
       manifestEntries: undefined,
-      modulePathPrefix: undefined,
       navigateFallback: undefined,
       navigateFallbackBlacklist: undefined,
       navigateFallbackWhitelist: undefined,
@@ -181,7 +187,6 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
       precacheOptionsString,
       runtimeCaching: runtimeCachingPlaceholder,
       skipWaiting: undefined,
-      workboxSWImport: undefined,
     }]);
   });
 });

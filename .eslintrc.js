@@ -90,9 +90,10 @@ module.exports = {
     },
   }, {
     files: [
-      'test/workbox-build/static/**/*.js',
+      'test/*/static/**/*.js',
     ],
     rules: {
+      'no-console': 0,
       'no-unused-vars': 0,
       'no-undef': 0,
     },

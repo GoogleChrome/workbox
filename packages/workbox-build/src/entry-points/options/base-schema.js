@@ -14,13 +14,10 @@ const regExpObject = require('./reg-exp-object');
 // Define some common constraints used by all methods.
 module.exports = joi.object().keys({
   dontCacheBustURLsMatching: regExpObject,
-  globFollow: joi.boolean().default(defaults.globFollow),
-  globIgnores: joi.array().items(joi.string()).default(defaults.globIgnores),
-  globPatterns: joi.array().items(joi.string()).default(defaults.globPatterns),
-  globStrict: joi.boolean().default(defaults.globStrict),
-  manifestTransforms: joi.array().items(joi.func().arity(1)),
+  manifestTransforms: joi.array().items(joi.func().minArity(1).maxArity(2)),
   maximumFileSizeToCacheInBytes: joi.number().min(1)
       .default(defaults.maximumFileSizeToCacheInBytes),
+  mode: joi.string().default(process.env.NODE_ENV || defaults.mode),
   modifyURLPrefix: joi.object(),
   // templatedURLs is an object where any property name is valid, and the values
   // can be either a string or an array of strings.

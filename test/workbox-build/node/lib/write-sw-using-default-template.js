@@ -66,6 +66,10 @@ describe(`[workbox-build] lib/write-sw-using-default-template.js`, function() {
         readFile: () => Promise.resolve(),
         writeFile: () => Promise.reject(eisdirError),
       },
+      './bundle': async () => [{
+        name: 'ignored',
+        contents: 'ignored',
+      }],
     });
 
     try {
@@ -79,7 +83,10 @@ describe(`[workbox-build] lib/write-sw-using-default-template.js`, function() {
   it(`should call fs-extra.writeFile() with the expected parameters when everything succeeds`, async function() {
     const expectedPath = path.join('expected', 'path');
     const swDest = path.join(expectedPath, 'sw.js');
-    const populatedTemplate = 'populated-template';
+    const file1 = 'file1.js';
+    const file2 = 'file2.js';
+    const contents1 = 'contents1';
+    const contents2 = 'contents2';
 
     const writeFileStub = sinon.stub().returns(Promise.resolve());
     const writeSWUsingDefaultTemplate = proxyquire(MODULE_PATH, {
@@ -90,10 +97,25 @@ describe(`[workbox-build] lib/write-sw-using-default-template.js`, function() {
         readFile: () => Promise.resolve(),
         writeFile: writeFileStub,
       },
-      './populate-sw-template': () => populatedTemplate,
+      './bundle': async () => [{
+        name: file1,
+        contents: contents1,
+      }, {
+        name: file2,
+        contents: contents2,
+      }],
+      './populate-sw-template': () => '',
     });
 
     await writeSWUsingDefaultTemplate({swDest});
-    expect(writeFileStub.alwaysCalledWith(swDest, populatedTemplate)).to.be.true;
+
+    // There should be exactly two calls to fs-extra.writeFile().
+    expect(writeFileStub.args).to.eql([[
+      path.join(expectedPath, file1),
+      contents1,
+    ], [
+      path.join(expectedPath, file2),
+      contents2,
+    ]]);
   });
 });

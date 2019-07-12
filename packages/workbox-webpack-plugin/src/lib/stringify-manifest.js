@@ -8,31 +8,14 @@
 
 const stringify = require('json-stable-stringify');
 
-/**
- * The variable name that workbox-sw expects manifest entries to be assigned.
- * @type {String}
- * @private
- */
-const PRECACHE_MANIFEST_VAR = '__precacheManifest';
-
-/**
- * Generates a template string from an array of manifest entries that can be
- * written to a manifest file.
- *
- * @function generateManifestWithWebpack
- * @param {Array<module:workbox-build.ManifestEntry>} manifestEntries
- * @return {string} service worker manifest file string
- *
- * @private
- */
-module.exports = (manifestEntries) => {
-  const sortedEntries = manifestEntries.sort((a, b) =>
-        a.url === b.url ? 0 : (a.url > b.url ? 1 : -1));
+module.exports = (manifestEntries, injectionPoint, prettyPrint) => {
   // json-stable-stringify ensures that we get a consistent output, with all
   // the properties of each object sorted.
   // There's a hash created of the serialized JSON data, and we want the hash to
   // be the same if the data is the same, without any sort-order variation.
-  const entriesJson = stringify(sortedEntries, {space: 2});
-  return `self.${PRECACHE_MANIFEST_VAR} = (self.${PRECACHE_MANIFEST_VAR} || ` +
-      `[]).concat(${entriesJson});`;
+  const entriesJson = stringify(
+      manifestEntries,
+      prettyPrint ? {space: 2} : {}
+  );
+  return `${injectionPoint} = ${entriesJson};`;
 };

@@ -10,7 +10,7 @@ const assert = require('assert');
 const path = require('path');
 
 const errors = require('./errors');
-const filterFiles = require('./filter-files');
+const transformManifest = require('./transform-manifest');
 const getCompositeDetails = require('./get-composite-details');
 const getFileDetails = require('./get-file-details');
 const getStringDetails = require('./get-string-details');
@@ -30,7 +30,7 @@ module.exports = async ({
 }) => {
   const warnings = [];
   // Initialize to an empty array so that we can still pass something to
-  // filterFiles() and get a normalized output.
+  // transformManifest() and get a normalized output.
   let fileDetails = [];
   const fileSet = new Set();
 
@@ -42,13 +42,17 @@ module.exports = async ({
 
     try {
       fileDetails = globPatterns.reduce((accumulated, globPattern) => {
-        const globbedFileDetails = getFileDetails({
+        const {globbedFileDetails, warning} = getFileDetails({
           globDirectory,
           globFollow,
           globIgnores,
           globPattern,
           globStrict,
         });
+
+        if (warning) {
+          warnings.push(warning);
+        }
 
         globbedFileDetails.forEach((fileDetails) => {
           if (fileSet.has(fileDetails.file)) {
@@ -75,13 +79,18 @@ module.exports = async ({
       if (Array.isArray(dependencies)) {
         const details = dependencies.reduce((previous, globPattern) => {
           try {
-            const globbedFileDetails = getFileDetails({
+            const {globbedFileDetails, warning} = getFileDetails({
               globDirectory,
               globFollow,
               globIgnores,
               globPattern,
               globStrict,
             });
+
+            if (warning) {
+              warnings.push(warning);
+            }
+
             return previous.concat(globbedFileDetails);
           } catch (error) {
             const debugObj = {};
@@ -98,13 +107,17 @@ module.exports = async ({
     }
   }
 
-  const filteredFiles = filterFiles({fileDetails,
-    maximumFileSizeToCacheInBytes, modifyURLPrefix, dontCacheBustURLsMatching,
-    manifestTransforms});
+  const transformedManifest = transformManifest({
+    dontCacheBustURLsMatching,
+    fileDetails,
+    manifestTransforms,
+    maximumFileSizeToCacheInBytes,
+    modifyURLPrefix,
+  });
 
   if (warnings.length > 0) {
-    filteredFiles.warnings.push(...warnings);
+    transformedManifest.warnings.push(...warnings);
   }
 
-  return filteredFiles;
+  return transformedManifest;
 };

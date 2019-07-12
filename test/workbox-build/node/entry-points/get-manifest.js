@@ -300,23 +300,30 @@ describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function()
     });
   });
 
-  describe(`[workbox-build] deprecated options`, function() {
+  describe(`[workbox-build] removed options`, function() {
+    // These were deprecated in v4, and formally removed in v5.
     const oldOptionsToValue = {
       dontCacheBustUrlsMatching: /ignored/,
+      ignoreUrlParametersMatching: [/ignored/],
       modifyUrlPrefix: {
-        'ignored': 'ignored',
+        ignored: 'ignored',
       },
       templatedUrls: {},
     };
 
     for (const [option, value] of Object.entries(oldOptionsToValue)) {
-      it(`should return a warning when ${option} is used`, async function() {
+      it(`should fail validation when ${option} is used`, async function() {
         const options = Object.assign({}, BASE_OPTIONS, {
           [option]: value,
         });
 
-        const {warnings} = await getManifest(options);
-        expect(warnings).to.have.length(1);
+        try {
+          await getManifest(options);
+          throw new Error('Unexpected success.');
+        } catch (error) {
+          expect(error.name).to.eql('ValidationError');
+          expect(error.details[0].context.key).to.eql(option);
+        }
       });
     }
   });

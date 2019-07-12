@@ -9,8 +9,13 @@
 const joi = require('@hapi/joi');
 
 const baseSchema = require('./base-schema');
+const defaults = require('./defaults');
 
 // Define some additional constraints.
 module.exports = baseSchema.keys({
-  globDirectory: joi.string(),
+  globDirectory: joi.string().required(),
+  globFollow: joi.boolean().default(defaults.globFollow),
+  globIgnores: joi.array().items(joi.string()).default(defaults.globIgnores),
+  globPatterns: joi.array().items(joi.string()).default(defaults.globPatterns),
+  globStrict: joi.boolean().default(defaults.globStrict),
 });

@@ -26,14 +26,25 @@ const runWizard = require('./lib/run-wizard');
  */
 async function runBuildCommand({command, config, watch}) {
   try {
-    const {size, count, warnings} = await workboxBuild[command](config);
+    const {count, filePaths, size, warnings} =
+        await workboxBuild[command](config);
 
     for (const warning of warnings) {
       logger.warn(warning);
     }
 
-    logger.log(`The service worker was written to ${config.swDest}\n` +
-      `${count} files will be precached, totalling ${prettyBytes(size)}.`);
+    if (filePaths.length === 1) {
+      logger.log(`The service worker file was written to ${config.swDest}`);
+    } else {
+      const message = filePaths
+          .sort()
+          .map((filePath) => `  • ${filePath}`)
+          .join(`\n`);
+      logger.log(`The service worker files were written to:\n${message}`);
+    }
+
+    logger.log(`The service worker will precache ${count} URLs, ` +
+        `totaling ${prettyBytes(size)}.`);
 
     if (watch) {
       logger.log(`\nWatching for changes...`);

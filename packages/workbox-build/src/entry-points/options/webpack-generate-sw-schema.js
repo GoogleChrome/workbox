@@ -9,11 +9,9 @@
 const joi = require('@hapi/joi');
 
 const commonGenerateSchema = require('./common-generate-schema');
+const defaults = require('./defaults');
+const webpackCommon = require('./webpack-common');
 
-// Define some additional constraints.
-module.exports = commonGenerateSchema.keys({
-  globDirectory: joi.string(),
-  importScripts: joi.array().items(joi.string()).required(),
-  modulePathPrefix: joi.string(),
-  workboxSWImport: joi.string(),
-});
+module.exports = commonGenerateSchema.keys(Object.assign({
+  swDest: joi.string().default(defaults.swDestFilename),
+}, webpackCommon));

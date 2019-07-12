@@ -10,10 +10,8 @@ const assert = require('assert');
 const fse = require('fs-extra');
 const path = require('path');
 
-const checkForDeprecatedOptions =
-    require('../lib/check-for-deprecated-options');
-const defaults = require('./options/defaults');
 const errors = require('../lib/errors');
+const escapeRegexp = require('../lib/escape-regexp');
 const getFileManifestEntries = require('../lib/get-file-manifest-entries');
 const injectManifestSchema = require('./options/inject-manifest-schema');
 const validate = require('./options/validate');
@@ -22,35 +20,31 @@ const validate = require('./options/validate');
  * This method creates a list of URLs to precache, referred to as a "precache
  * manifest", based on the options you provide.
  *
- * The manifest is injected into the `swSrc` file, and the regular expression
- * `injectionPointRegexp` determines where in the file the manifest should go.
+ * The manifest is injected into the `swSrc` file, and the placeholder string
+ * `injectionPoint` determines where in the file the manifest should go.
  *
  * The final service worker file, with the manifest injected, is written to
  * disk at `swDest`.
  *
  * @param {Object} config Please refer to the
  * [configuration guide](https://developers.google.com/web/tools/workbox/modules/workbox-build#full_injectmanifest_config).
- * @return {Promise<{count: number, size: number, warnings: Array<string>}>}
- * A promise that resolves once the service worker file has been written to
- * `swDest`. The `size` property contains the aggregate size of all the
- * precached entries, in bytes, and the `count` property contains the total
- * number of precached entries. Any non-fatal warning messages will be returned
- * via `warnings`.
+ * @return {Promise<{count: number, filePaths: Array<string>, size: number, warnings: Array<string>}>}
+ * A promise that resolves once the service worker and related files
+ * (indicated by `filePaths`) has been written to `swDest`. The `size` property
+ * contains the aggregate size of all the precached entries, in bytes, and the
+ * `count` property contains the total number of precached entries. Any
+ * non-fatal warning messages will be returned via `warnings`.
  *
  * @memberof module:workbox-build
  */
 async function injectManifest(config) {
-  // This check needs to be done before validation, since the deprecated options
-  // will be renamed.
-  const deprecationWarnings = checkForDeprecatedOptions(config);
-
   const options = validate(config, injectManifestSchema);
 
-  if (path.normalize(config.swSrc) === path.normalize(config.swDest)) {
+  if (path.resolve(config.swSrc) === path.resolve(config.swDest)) {
     throw new Error(errors['same-src-and-dest']);
   }
 
-  const globalRegexp = new RegExp(options.injectionPointRegexp, 'g');
+  const globalRegexp = new RegExp(escapeRegexp(options.injectionPoint), 'g');
 
   const {count, size, manifestEntries, warnings} =
     await getFileManifestEntries(options);
@@ -63,18 +57,12 @@ async function injectManifest(config) {
 
   const injectionResults = swFileContents.match(globalRegexp);
   assert(injectionResults, errors['injection-point-not-found'] +
-    // Customize the error message when this happens:
-    // - If the default RegExp is used, then include the expected string that
-    //   matches as a hint to the developer.
-    // - If a custom RegExp is used, then just include the raw RegExp.
-    (options.injectionPointRegexp === defaults.injectionPointRegexp ?
-      'workbox.precaching.precacheAndRoute([])' :
-      options.injectionPointRegexp));
+    options.injectionPoint);
   assert(injectionResults.length === 1, errors['multiple-injection-points'] +
-    ` ${options.injectionPointRegexp}`);
+    options.injectionPoint);
 
   const entriesString = JSON.stringify(manifestEntries, null, 2);
-  swFileContents = swFileContents.replace(globalRegexp, `$1${entriesString}$2`);
+  swFileContents = swFileContents.replace(globalRegexp, entriesString);
 
   try {
     await fse.mkdirp(path.dirname(options.swDest));
@@ -85,10 +73,11 @@ async function injectManifest(config) {
 
   await fse.writeFile(config.swDest, swFileContents);
 
-  // Add in any deprecation warnings.
-  warnings.push(...deprecationWarnings);
+  // Wrap the single output file in an array to make the return value consistent
+  // with generateSW.
+  const filePaths = [config.swDest];
 
-  return {count, size, warnings};
+  return {count, filePaths, size, warnings};
 }
 
 module.exports = injectManifest;

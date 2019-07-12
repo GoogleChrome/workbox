@@ -7,5 +7,5 @@
 */
 
 import('./add.wasm').then(({add}) => {
-  return add(10, 20);
+  console.log(add(10, 20));
 });

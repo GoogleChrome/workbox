@@ -14,11 +14,8 @@ const defaults = require('./defaults');
 // Define some additional constraints.
 module.exports = commonGenerateSchema.keys({
   globDirectory: joi.string().required(),
-  importScripts: joi.array().items(joi.string()),
-  importWorkboxFrom: joi.string().default(defaults.importWorkboxFrom).valid(
-      'cdn',
-      'local',
-      'disabled'
-  ),
-  swDest: joi.string().required(),
+  globFollow: joi.boolean().default(defaults.globFollow),
+  globIgnores: joi.array().items(joi.string()).default(defaults.globIgnores),
+  globPatterns: joi.array().items(joi.string()).default(defaults.globPatterns),
+  globStrict: joi.boolean().default(defaults.globStrict),
 });

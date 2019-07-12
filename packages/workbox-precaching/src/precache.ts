@@ -51,7 +51,7 @@ const activateListener = (event: ExtendableEvent) => {
  * If you have a single array of files to precache, you can just call
  * [precacheAndRoute()]{@link module:workbox-precaching.precacheAndRoute}.
  *
- * @param {Array<Object|string>} entries Array of entries to precache.
+ * @param {Array<Object|string>} [entries=[]] Array of entries to precache.
  *
  * @alias workbox.precaching.precache
  */

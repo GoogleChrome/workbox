@@ -6,12 +6,6 @@
   https://opensource.org/licenses/MIT.
 */
 
-const path = require('path');
-
-const cdnUtils = require('../lib/cdn-utils');
-const checkForDeprecatedOptions =
-    require('../lib/check-for-deprecated-options');
-const copyWorkboxLibraries = require('../lib/copy-workbox-libraries');
 const generateSWSchema = require('./options/generate-sw-schema');
 const getFileManifestEntries = require('../lib/get-file-manifest-entries');
 const validate = require('./options/validate');
@@ -30,56 +24,26 @@ const writeServiceWorkerUsingDefaultTemplate =
  *
  * @param {Object} config Please refer to the
  * [configuration guide](https://developers.google.com/web/tools/workbox/modules/workbox-build#full_generatesw_config).
- * @return {Promise<{count: number, size: number, warnings: Array<string>}>}
- * A promise that resolves once the service worker file has been written to
- * `swDest`. The `size` property contains the aggregate size of all the
- * precached entries, in bytes, and the `count` property contains the total
- * number of precached entries. Any non-fatal warning messages will be returned
- * via `warnings`.
+ * @return {Promise<{count: number, filePaths: Array<string>, size: number, warnings: Array<string>}>}
+ * A promise that resolves once the service worker and related files
+ * (indicated by `filePaths`) has been written to `swDest`. The `size` property
+ * contains the aggregate size of all the precached entries, in bytes, and the
+ * `count` property contains the total number of precached entries. Any
+ * non-fatal warning messages will be returned via `warnings`.
  *
  * @memberof module:workbox-build
  */
 async function generateSW(config) {
-  // This check needs to be done before validation, since the deprecated options
-  // will be renamed.
-  const deprecationWarnings = checkForDeprecatedOptions(config);
-
   const options = validate(config, generateSWSchema);
-
-  const destDirectory = path.dirname(options.swDest);
-
-  // Do nothing if importWorkboxFrom is set to 'disabled'. Otherwise, check:
-  if (options.importWorkboxFrom === 'cdn') {
-    const cdnURL = cdnUtils.getModuleURL('workbox-sw');
-    options.workboxSWImport = cdnURL;
-  } else if (options.importWorkboxFrom === 'local') {
-    // Copy over the dev + prod version of all of the core libraries.
-    const workboxDirectoryName = await copyWorkboxLibraries(destDirectory);
-
-    // The Workbox library files should not be precached, since they're cached
-    // automatically by virtue of being used with importScripts().
-    options.globIgnores = [
-      `**/${workboxDirectoryName}/*.+(js|mjs)*`,
-    ].concat(options.globIgnores || []);
-
-    const workboxSWPkg = require(`workbox-sw/package.json`);
-    const workboxSWFilename = path.basename(workboxSWPkg.main);
-
-    options.workboxSWImport = `${workboxDirectoryName}/${workboxSWFilename}`;
-    options.modulePathPrefix = workboxDirectoryName;
-  }
 
   const {count, size, manifestEntries, warnings} =
     await getFileManifestEntries(options);
 
-  await writeServiceWorkerUsingDefaultTemplate(Object.assign({
+  const filePaths = await writeServiceWorkerUsingDefaultTemplate(Object.assign({
     manifestEntries,
   }, options));
 
-  // Add in any deprecation warnings.
-  warnings.push(...deprecationWarnings);
-
-  return {count, size, warnings};
+  return {count, filePaths, size, warnings};
 }
 
 module.exports = generateSW;
