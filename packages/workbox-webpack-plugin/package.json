@@ -34,9 +34,9 @@
     "workbox-build": "^5.0.0-alpha.0"
   },
   "peerDependencies": {
-    "webpack": "^2.0.0 || ^3.0.0 || ^4.0.0"
+    "webpack": "^4.0.0"
   },
-  "author": "Will Farley <a.will.farley@gmail.com> (http://www.willfarley.org/)",
+  "author": "Google's Web DevRel Team",
   "license": "MIT",
   "repository": "googlechrome/workbox",
   "bugs": "https://github.com/GoogleChrome/workbox/issues",
