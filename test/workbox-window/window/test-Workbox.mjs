@@ -719,6 +719,7 @@ describe(`[workbox-window] Workbox`, function() {
           target: wb1,
           sw: await wb1.getSW(),
           originalEvent: {type: 'controllerchange'},
+          isUpdate: true,
         });
 
         expect(controlling2Spy.callCount).to.equal(0);
