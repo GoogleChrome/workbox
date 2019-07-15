@@ -68,6 +68,8 @@ describe(`[workbox-build] lib/bundle.js`, function() {
     });
 
     expect(stubs['rollup-plugin-babel'].args).to.eql([[{
+      babelrc: false,
+      configFile: false,
       presets: [[stubs['@babel/preset-env'], {
         targets: {
           browsers: babelPresetEnvTargets,
