@@ -22,13 +22,13 @@ import './_version.js';
  * [addRoute()]{@link module:workbox-precaching.addRoute} in a single call.
  *
  * @param {Array<Object|string>} entries Array of entries to precache.
- * @param {Object} options See
+ * @param {Object} [options] See
  * [addRoute() options]{@link module:workbox-precaching.addRoute}.
  *
  * @alias workbox.precaching.precacheAndRoute
  */
 export const precacheAndRoute =
-    (entries: Array<PrecacheEntry|string>, options: FetchListenerOptions) => {
+    (entries: Array<PrecacheEntry|string>, options?: FetchListenerOptions) => {
   precache(entries);
   addRoute(options);
 };

@@ -36,7 +36,7 @@ export interface FetchListenerOptions {
  * of tests.
  *
  * @private
- * @param {Object} options
+ * @param {Object} [options]
  * @param {string} [options.directoryIndex=index.html] The `directoryIndex` will
  * check cache entries for a URLs ending with '/' to see if there is a hit when
  * appending the `directoryIndex` value.
@@ -46,7 +46,7 @@ export interface FetchListenerOptions {
  * check the cache for the URL with a `.html` added to the end of the end.
  * @param {workbox.precaching~urlManipulation} [options.urlManipulation]
  * This is a function that should take a URL and return an array of
- * alternative URL's that should be checked for precache matches.
+ * alternative URLs that should be checked for precache matches.
  */
 export const addFetchListener = ({
   ignoreURLParametersMatching = [/^utm_/],

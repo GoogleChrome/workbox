@@ -22,7 +22,7 @@ let listenerAdded = false;
  * responded to, allowing the event to fall through to other `fetch` event
  * listeners.
  *
- * @param {Object} options
+ * @param {Object} [options]
  * @param {string} [options.directoryIndex=index.html] The `directoryIndex` will
  * check cache entries for a URLs ending with '/' to see if there is a hit when
  * appending the `directoryIndex` value.
@@ -32,11 +32,11 @@ let listenerAdded = false;
  * check the cache for the URL with a `.html` added to the end of the end.
  * @param {workbox.precaching~urlManipulation} [options.urlManipulation]
  * This is a function that should take a URL and return an array of
- * alternative URL's that should be checked for precache matches.
+ * alternative URLs that should be checked for precache matches.
  *
  * @alias workbox.precaching.addRoute
  */
-export const addRoute = (options: FetchListenerOptions) => {
+export const addRoute = (options?: FetchListenerOptions) => {
   if (!listenerAdded) {
     addFetchListener(options);
     listenerAdded = true;
