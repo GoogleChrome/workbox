@@ -1140,4 +1140,37 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       });
     });
   });
+
+  describe(`[workbox-webpack-plugin] TypeScript compilation`, function() {
+    it(`should rename a swSrc with a .ts extension to .js`, function(done) {
+      const outputDir = tempy.directory();
+      const config = {
+        mode: 'production',
+        entry: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        output: {
+          filename: '[name].[hash:6].js',
+          path: outputDir,
+        },
+        plugins: [
+          new InjectManifest({
+            swSrc: path.join(__dirname, '..', 'static', 'sw.ts'),
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError, stats) => {
+        try {
+          webpackBuildCheck(webpackError, stats);
+
+          const files = await globby('*', {cwd: outputDir});
+          expect(files).to.contain('sw.js');
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+  });
 });
