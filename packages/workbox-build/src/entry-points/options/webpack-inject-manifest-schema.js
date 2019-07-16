@@ -14,7 +14,11 @@ const defaults = require('./defaults');
 const webpackCommon = require('./webpack-common');
 
 // See https://github.com/hapijs/joi/blob/v16.0.0-rc2/API.md#anydefaultvalue-description
-const swSrcBasename = (context) => upath.basename(context.swSrc);
+const swSrcBasename = (context) => {
+  const {name} = upath.parse(context.swSrc);
+  // Always use the .js extension when generating a default filename.
+  return name + '.js';
+};
 swSrcBasename.description = 'derived from the swSrc file name';
 
 module.exports = baseSchema.keys(Object.assign({
