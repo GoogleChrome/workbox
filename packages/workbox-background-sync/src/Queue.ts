@@ -339,7 +339,7 @@ class Queue {
    *
    * @private
    */
-  _addSyncListener() {
+  private _addSyncListener() {
     if ('sync' in self.registration) {
       self.addEventListener('sync', (event: SyncEvent) => {
         if (event.tag === `${TAG_PREFIX}:${this._name}`) {

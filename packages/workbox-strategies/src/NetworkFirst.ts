@@ -196,7 +196,7 @@ class NetworkFirst implements RouteHandler {
    *
    * @private
    */
-  _getTimeoutPromise({request, logs, event}: {
+  private _getTimeoutPromise({request, logs, event}: {
     request: Request,
     logs: any[],
     event?: ExtendableEvent,
@@ -314,7 +314,7 @@ class NetworkFirst implements RouteHandler {
    *
    * @private
    */
-  _respondFromCache({event, request}: {
+  private _respondFromCache({event, request}: {
     request: Request,
     event?: ExtendableEvent,
   }): Promise<Response | undefined> {

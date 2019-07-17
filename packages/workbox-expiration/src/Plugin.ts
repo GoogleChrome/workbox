@@ -99,7 +99,7 @@ class Plugin implements WorkboxPlugin {
    *
    * @private
    */
-  _getCacheExpiration(cacheName: string): CacheExpiration {
+  private _getCacheExpiration(cacheName: string): CacheExpiration {
     if (cacheName === cacheNames.getRuntimeName()) {
       throw new WorkboxError('expire-custom-caches-only');
     }
@@ -173,7 +173,7 @@ class Plugin implements WorkboxPlugin {
    *
    * @private
    */
-  _isResponseDateFresh(cachedResponse: Response): boolean {
+  private _isResponseDateFresh(cachedResponse: Response): boolean {
     if (!this._maxAgeSeconds) {
       // We aren't expiring by age, so return true, it's fresh
       return true;
@@ -203,7 +203,7 @@ class Plugin implements WorkboxPlugin {
    *
    * @private
    */
-  _getDateHeaderTimestamp(cachedResponse: Response): number | null {
+  private _getDateHeaderTimestamp(cachedResponse: Response): number | null {
     if (!cachedResponse.headers.has('date')) {
       return null;
     }

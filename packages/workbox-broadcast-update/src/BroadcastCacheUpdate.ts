@@ -174,7 +174,7 @@ class BroadcastCacheUpdate {
    *
    * @private
    */
-  _getChannel() {
+  private _getChannel() {
     if (('BroadcastChannel' in self) && !this._channel) {
       this._channel = new BroadcastChannel(this._channelName);
     }
@@ -190,7 +190,7 @@ class BroadcastCacheUpdate {
    * @return {Promise}
    * @private
    */
-  _windowReadyOrTimeout(event: Event) {
+  private _windowReadyOrTimeout(event: Event) {
     if (!this._navigationEventsDeferreds!.has(event)) {
       const deferred = new Deferred();
 
@@ -225,7 +225,7 @@ class BroadcastCacheUpdate {
    *
    * @private
    */
-  _initWindowReadyDeferreds() {
+  private _initWindowReadyDeferreds() {
     // A mapping between navigation events and their deferreds.
     this._navigationEventsDeferreds = new Map();
 

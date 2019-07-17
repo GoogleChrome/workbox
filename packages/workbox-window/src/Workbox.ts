@@ -265,12 +265,12 @@ class Workbox extends WorkboxEventTarget {
 
   /**
    * Checks for a service worker already controlling the page and returns
-   * it if its script URL matchs.
+   * it if its script URL matches.
    *
    * @private
    * @return {ServiceWorker|undefined}
    */
-  _getControllingSWIfCompatible() {
+  private _getControllingSWIfCompatible() {
     const controller = navigator.serviceWorker.controller;
     if (controller && urlsMatch(controller.scriptURL, this._scriptURL)) {
       return controller;
@@ -285,7 +285,7 @@ class Workbox extends WorkboxEventTarget {
    *
    * @private
    */
-  async _registerScript() {
+  private async _registerScript() {
     try {
       const reg = await navigator.serviceWorker.register(
           this._scriptURL, this._registerOptions);
@@ -312,7 +312,7 @@ class Workbox extends WorkboxEventTarget {
    * @param {ServiceWorker} sw
    * @private
    */
-  _reportWindowReady(sw: ServiceWorker) {
+  private _reportWindowReady(sw: ServiceWorker) {
     messageSW(sw, {
       type: 'WINDOW_READY',
       meta: 'workbox-window',
@@ -322,7 +322,7 @@ class Workbox extends WorkboxEventTarget {
   /**
    * @private
    */
-  _onUpdateFound = () => {
+  private _onUpdateFound = () => {
     // `this._registration` will never be `undefined` after an update is found.
     const registration = this._registration!;
     const installingSW = <ServiceWorker> registration.installing;
@@ -391,7 +391,7 @@ class Workbox extends WorkboxEventTarget {
    * @private
    * @param {Event} originalEvent
    */
-  _onStateChange = (originalEvent: Event) => {
+  private _onStateChange = (originalEvent: Event) => {
     // `this._registration` will never be `undefined` after an update is found.
     const registration = this._registration!;
     const sw = <ServiceWorker>originalEvent.target;
@@ -477,7 +477,7 @@ class Workbox extends WorkboxEventTarget {
    * @private
    * @param {Event} originalEvent
    */
-  _onControllerChange = (originalEvent: Event) => {
+  private _onControllerChange = (originalEvent: Event) => {
     const sw = this._sw;
     if (sw === navigator.serviceWorker.controller) {
       this.dispatchEvent(new WorkboxEvent('controlling', {
@@ -496,7 +496,7 @@ class Workbox extends WorkboxEventTarget {
    * @private
    * @param {Event} originalEvent
    */
-  _onMessage = (originalEvent: MessageEvent) => {
+  private _onMessage = (originalEvent: MessageEvent) => {
     const {data} = originalEvent;
     this.dispatchEvent(new WorkboxEvent('message', {data, originalEvent}));
   }
