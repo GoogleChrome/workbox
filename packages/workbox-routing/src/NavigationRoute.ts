@@ -88,7 +88,7 @@ class NavigationRoute extends Route {
    *
    * @private
    */
-  _match({url, request}: MatchCallbackOptions): boolean {
+  private _match({url, request}: MatchCallbackOptions): boolean {
     if (request && request.mode !== 'navigate') {
       return false;
     }

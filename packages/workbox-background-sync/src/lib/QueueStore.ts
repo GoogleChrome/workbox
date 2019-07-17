@@ -202,7 +202,7 @@ export class QueueStore {
    * @param {Event} event
    * @private
    */
-  _upgradeDb(event: IDBVersionChangeEvent) {
+  private _upgradeDb(event: IDBVersionChangeEvent) {
     const db = (<IDBOpenDBRequest> event.target).result;
 
     if (event.oldVersion > 0 && event.oldVersion < DB_VERSION) {

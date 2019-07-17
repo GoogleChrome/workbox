@@ -59,7 +59,7 @@ class CacheTimestampsModel {
    *
    * @private
    */
-  _handleUpgrade(event: IDBVersionChangeEvent) {
+  private _handleUpgrade(event: IDBVersionChangeEvent) {
     const db = (<IDBOpenDBRequest> event.target).result;
 
     // TODO(philipwalton): EdgeHTML doesn't support arrays as a keyPath, so we
@@ -188,7 +188,7 @@ class CacheTimestampsModel {
    *
    * @private
    */
-  _getId(url: string): string {
+  private _getId(url: string): string {
     // Creating an ID from the URL and cache name won't be necessary once
     // Edge switches to Chromium and all browsers we support work with
     // array keyPaths.

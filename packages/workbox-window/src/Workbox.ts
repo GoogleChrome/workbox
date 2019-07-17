@@ -496,7 +496,7 @@ class Workbox extends WorkboxEventTarget {
    * @private
    * @param {Event} originalEvent
    */
-  _onMessage = (originalEvent: MessageEvent) => {
+  private _onMessage = (originalEvent: MessageEvent) => {
     const {data} = originalEvent;
     this.dispatchEvent(new WorkboxEvent('message', {data, originalEvent}));
   }
