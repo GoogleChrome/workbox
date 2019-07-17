@@ -26,41 +26,13 @@ describe(`NetworkOnly`, function() {
     sandbox.restore();
   });
 
-  describe(`makeRequest()`, function() {
-    it(`should return a response without adding anything to the cache when the network request is successful, when passed a URL string`, async function() {
-      sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
-
-      const url = 'http://example.io/test/';
-      const networkOnly = new NetworkOnly();
-
-      const handleResponse = await networkOnly.makeRequest({
-        request: url,
-      });
-      expect(handleResponse).to.be.instanceOf(Response);
-
-      const cache = await caches.open(cacheNames.getRuntimeName());
-      const keys = await cache.keys();
-      expect(keys).to.be.empty;
-    });
-
-    it(`should return a response without adding anything to the cache when the network request is successful, when passed a Request object`, async function() {
-      sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
-
-      const request = new Request('http://example.io/test/');
-      const networkOnly = new NetworkOnly();
-
-      const handleResponse = await networkOnly.makeRequest({
-        request,
-      });
-      expect(handleResponse).to.be.instanceOf(Response);
-
-      const cache = await caches.open(cacheNames.getRuntimeName());
-      const keys = await cache.keys();
-      expect(keys).to.be.empty;
-    });
-  });
-
   describe(`handle()`, function() {
+    it(`should be able to make a request without an event`, async function() {
+      // TODO(philipwalton): Implement once this feature is added, so we can
+      // await the completion of the strategy without needing an event:
+      // https://github.com/GoogleChrome/workbox/issues/2115
+    });
+
     it(`should return a response without adding anything to the cache when the network request is successful`, async function() {
       sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
 
@@ -69,7 +41,10 @@ describe(`NetworkOnly`, function() {
 
       const networkOnly = new NetworkOnly();
 
-      const handleResponse = await networkOnly.handle({event});
+      const handleResponse = await networkOnly.handle({
+        request,
+        event,
+      });
       expect(handleResponse).to.be.instanceOf(Response);
 
       const cache = await caches.open(cacheNames.getRuntimeName());
@@ -87,7 +62,10 @@ describe(`NetworkOnly`, function() {
 
       const networkOnly = new NetworkOnly();
       await expectError(
-          () => networkOnly.handle({event}),
+          () => networkOnly.handle({
+            request,
+            event,
+          }),
           'no-response'
       );
     });
@@ -113,7 +91,10 @@ describe(`NetworkOnly`, function() {
         ],
       });
 
-      const handleResponse = await networkOnly.handle({event});
+      const handleResponse = await networkOnly.handle({
+        request,
+        event,
+      });
       expect(handleResponse).to.be.instanceOf(Response);
 
       const cache = await caches.open(cacheNames.getRuntimeName());
@@ -129,7 +110,10 @@ describe(`NetworkOnly`, function() {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
 
-      await networkOnly.handle({event});
+      await networkOnly.handle({
+        request,
+        event,
+      });
 
       expect(fetchStub.calledOnce).to.be.true;
       expect(fetchStub.calledWith(request, fetchOptions)).to.be.true;

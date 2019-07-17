@@ -93,35 +93,7 @@ class StaleWhileRevalidate implements RouteHandler {
    * @return {Promise<Response>}
    */
   async handle({event, request}: RouteHandlerCallbackOptions): Promise<Response> {
-    return this.makeRequest({
-      event,
-      request: request || (event as FetchEvent).request,
-    });
-  }
-  /**
-   * This method can be used to perform a make a standalone request outside the
-   * context of the [Workbox Router]{@link workbox.routing.Router}.
-   *
-   * See "[Advanced Recipes](https://developers.google.com/web/tools/workbox/guides/advanced-recipes#make-requests)"
-   * for more usage information.
-   *
-   * @param {Object} options
-   * @param {Request|string} options.request Either a
-   *     [`Request`]{@link https://developer.mozilla.org/en-US/docs/Web/API/Request}
-   *     object, or a string URL, corresponding to the request to be made.
-   * @param {FetchEvent} [options.event] If provided, `event.waitUntil()` will
-   *     be called automatically to extend the service worker's lifetime.
-   * @return {Promise<Response>}
-   */
-  async makeRequest({event, request}: {
-    request: Request,
-    event?: ExtendableEvent
-  }): Promise<Response> {
    const logs = [];
-
-    if (typeof request === 'string') {
-      request = new Request(request);
-    }
 
     if (process.env.NODE_ENV !== 'production') {
       assert!.isInstance(request, Request, {

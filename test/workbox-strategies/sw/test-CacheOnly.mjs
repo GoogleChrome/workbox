@@ -27,45 +27,23 @@ describe(`CacheOnly`, function() {
     sandbox.restore();
   });
 
-  describe(`makeRequest()`, function() {
-    it(`should return the cached response when the cache is populated, when passed a URL string`, async function() {
-      const url = 'http://example.io/test/';
-      const request = new Request(url);
-
-      const injectedResponse = generateUniqueResponse();
-      const cache = await caches.open(cacheNames.getRuntimeName());
-      await cache.put(request, injectedResponse.clone());
-
-      const cacheOnly = new CacheOnly();
-      const handleResponse = await cacheOnly.makeRequest({
-        request: url,
-      });
-      await compareResponses(injectedResponse, handleResponse, true);
-    });
-
-    it(`should be able to make a request when passed a Request object`, async function() {
-      const request = new Request('http://example.io/test/');
-
-      const injectedResponse = generateUniqueResponse();
-      const cache = await caches.open(cacheNames.getRuntimeName());
-      await cache.put(request, injectedResponse.clone());
-
-      const cacheOnly = new CacheOnly();
-      const handleResponse = await cacheOnly.makeRequest({
-        request,
-      });
-      await compareResponses(injectedResponse, handleResponse, true);
-    });
-  });
-
   describe(`handle()`, function() {
+    it(`should be able to make a request without an event`, async function() {
+      // TODO(philipwalton): Implement once this feature is added, so we can
+      // await the completion of the strategy without needing an event:
+      // https://github.com/GoogleChrome/workbox/issues/2115
+    });
+
     it(`should not return a response when the cache isn't populated`, async function() {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
 
       const cacheOnly = new CacheOnly();
       await expectError(
-          () => cacheOnly.handle({event}),
+          () => cacheOnly.handle({
+            request,
+            event,
+          }),
           'no-response'
       );
     });
@@ -79,7 +57,10 @@ describe(`CacheOnly`, function() {
       await cache.put(request, injectedResponse.clone());
 
       const cacheOnly = new CacheOnly();
-      const handleResponse = await cacheOnly.handle({event});
+      const handleResponse = await cacheOnly.handle({
+        request,
+        event,
+      });
       await compareResponses(injectedResponse, handleResponse, true);
     });
 
@@ -93,7 +74,10 @@ describe(`CacheOnly`, function() {
 
       const cacheOnly = new CacheOnly({cacheName: 'test-cache-name'});
       await expectError(
-          () => cacheOnly.handle({event}),
+          () => cacheOnly.handle({
+            request,
+            event,
+          }),
           'no-response'
       );
     });
@@ -107,7 +91,10 @@ describe(`CacheOnly`, function() {
       await cache.put(request, injectedResponse.clone());
 
       const cacheOnly = new CacheOnly({cacheName: 'test-cache-name'});
-      const handleResponse = await cacheOnly.handle({event});
+      const handleResponse = await cacheOnly.handle({
+        request,
+        event,
+      });
       await compareResponses(injectedResponse, handleResponse, true);
     });
 
@@ -129,7 +116,10 @@ describe(`CacheOnly`, function() {
           },
         ],
       });
-      const handleResponse = await cacheOnly.handle({event});
+      const handleResponse = await cacheOnly.handle({
+        request,
+        event,
+      });
       await compareResponses(pluginResponse, handleResponse, true);
     });
 
@@ -142,7 +132,10 @@ describe(`CacheOnly`, function() {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
 
-      await cacheOnly.handle({event});
+      await cacheOnly.handle({
+        request,
+        event,
+      });
 
       expect(matchStub.calledOnce).to.be.true;
       expect(matchStub.calledWith(request, matchOptions)).to.be.true;

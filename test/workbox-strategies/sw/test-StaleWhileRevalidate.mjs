@@ -29,52 +29,13 @@ describe(`StaleWhileRevalidate`, function() {
     sandbox.restore();
   });
 
-  describe(`makeRequest()`, function() {
-    it(`should add the initial response to the cache, when passed a URL string`, async function() {
-      sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
-
-      const url = 'http://example.io/test/';
-      const request = new Request(url);
-      const event = new FetchEvent('fetch', {request});
-      spyOnEvent(event);
-
-      const staleWhileRevalidate = new StaleWhileRevalidate();
-      const handleResponse = await staleWhileRevalidate.makeRequest({
-        event,
-        request: url,
-      });
-
-      await eventDoneWaiting(event);
-
-      const cache = await caches.open(cacheNames.getRuntimeName());
-      const cachedResponse = await cache.match(request);
-
-      await compareResponses(cachedResponse, handleResponse, true);
-    });
-
-    it(`should add the initial response to the cache, when passed a Request object`, async function() {
-      sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
-
-      const request = new Request('http://example.io/test/');
-      const event = new FetchEvent('fetch', {request});
-      spyOnEvent(event);
-
-      const staleWhileRevalidate = new StaleWhileRevalidate();
-      const handleResponse = await staleWhileRevalidate.makeRequest({
-        event,
-        request,
-      });
-
-      await eventDoneWaiting(event);
-
-      const cache = await caches.open(cacheNames.getRuntimeName());
-      const cachedResponse = await cache.match(request);
-
-      await compareResponses(cachedResponse, handleResponse, true);
-    });
-  });
-
   describe(`handle()`, function() {
+    it(`should be able to make a request without an event`, async function() {
+      // TODO(philipwalton): Implement once this feature is added, so we can
+      // await the completion of the strategy without needing an event:
+      // https://github.com/GoogleChrome/workbox/issues/2115
+    });
+
     it(`should add the initial response to the cache`, async function() {
       sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
 
@@ -83,7 +44,10 @@ describe(`StaleWhileRevalidate`, function() {
       spyOnEvent(event);
 
       const staleWhileRevalidate = new StaleWhileRevalidate();
-      const handleResponse = await staleWhileRevalidate.handle({event});
+      const handleResponse = await staleWhileRevalidate.handle({
+        request,
+        event,
+      });
 
       await eventDoneWaiting(event);
 
@@ -105,7 +69,10 @@ describe(`StaleWhileRevalidate`, function() {
       await cache.put(request, firstCachedResponse.clone());
 
       const staleWhileRevalidate = new StaleWhileRevalidate();
-      const handleResponse = await staleWhileRevalidate.handle({event});
+      const handleResponse = await staleWhileRevalidate.handle({
+        request,
+        event,
+      });
 
       let fetchThrewInWaitUntil = false;
       try {
@@ -135,7 +102,10 @@ describe(`StaleWhileRevalidate`, function() {
 
 
       const staleWhileRevalidate = new StaleWhileRevalidate();
-      const handleResponse = await staleWhileRevalidate.handle({event});
+      const handleResponse = await staleWhileRevalidate.handle({
+        request,
+        event,
+      });
 
       await eventDoneWaiting(event);
 
@@ -153,7 +123,10 @@ describe(`StaleWhileRevalidate`, function() {
       sandbox.stub(self, 'fetch').resolves(fetchResponse);
 
       const staleWhileRevalidate = new StaleWhileRevalidate();
-      const handleResponse = await staleWhileRevalidate.handle({event});
+      const handleResponse = await staleWhileRevalidate.handle({
+        request,
+        event,
+      });
 
       await eventDoneWaiting(event);
 
@@ -184,7 +157,10 @@ describe(`StaleWhileRevalidate`, function() {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
 
-      await staleWhileRevalidate.handle({event});
+      await staleWhileRevalidate.handle({
+        request,
+        event,
+      });
 
       expect(fetchStub.calledOnce).to.be.true;
       expect(fetchStub.calledWith(request, fetchOptions)).to.be.true;
@@ -201,7 +177,10 @@ describe(`StaleWhileRevalidate`, function() {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
 
-      await staleWhileRevalidate.handle({event});
+      await staleWhileRevalidate.handle({
+        request,
+        event,
+      });
 
       expect(matchStub.calledOnce).to.be.true;
       expect(matchStub.calledWith(request, matchOptions)).to.be.true;
@@ -215,7 +194,10 @@ describe(`StaleWhileRevalidate`, function() {
 
       const staleWhileRevalidate = new StaleWhileRevalidate();
       await expectError(
-          () => staleWhileRevalidate.handle({event}),
+          () => staleWhileRevalidate.handle({
+            request,
+            event,
+          }),
           'no-response'
       );
     });

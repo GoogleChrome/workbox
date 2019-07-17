@@ -30,56 +30,13 @@ describe(`NetworkFirst`, function() {
     sandbox.restore();
   });
 
-  describe(`makeRequest()`, function() {
-    it(`should add the network response to the cache, when passed a URL string`, async function() {
-      const url = 'http://example.io/test/';
-      const request = new Request(url);
-      const event = new FetchEvent('fetch', {request});
-      spyOnEvent(event);
-
-      const fetchResponse = generateOpaqueResponse();
-      sandbox.stub(self, 'fetch').resolves(fetchResponse);
-
-      const networkFirst = new NetworkFirst();
-      const handleResponse = await networkFirst.makeRequest({
-        event,
-        request: url,
-      });
-
-      // Wait until cache.put is finished.
-      await eventDoneWaiting(event);
-
-      const cache = await caches.open(cacheNames.getRuntimeName());
-      const cachedResponse = await cache.match(request);
-
-      await compareResponses(cachedResponse, handleResponse, true);
-    });
-
-    it(`should add the network response to the cache, when passed a Request object`, async function() {
-      const request = new Request('http://example.io/test/');
-      const event = new FetchEvent('fetch', {request});
-      spyOnEvent(event);
-
-      const fetchResponse = generateOpaqueResponse();
-      sandbox.stub(self, 'fetch').resolves(fetchResponse);
-
-      const networkFirst = new NetworkFirst();
-      const handleResponse = await networkFirst.makeRequest({
-        event,
-        request,
-      });
-
-      // Wait until cache.put is finished.
-      await eventDoneWaiting(event);
-
-      const cache = await caches.open(cacheNames.getRuntimeName());
-      const cachedResponse = await cache.match(request);
-
-      await compareResponses(cachedResponse, handleResponse, true);
-    });
-  });
-
   describe(`handle()`, function() {
+    it(`should be able to make a request without an event`, async function() {
+      // TODO(philipwalton): Implement once this feature is added, so we can
+      // await the completion of the strategy without needing an event:
+      // https://github.com/GoogleChrome/workbox/issues/2115
+    });
+
     it(`should add the network response to the cache`, async function() {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
@@ -89,7 +46,10 @@ describe(`NetworkFirst`, function() {
       sandbox.stub(self, 'fetch').resolves(fetchResponse);
 
       const networkFirst = new NetworkFirst();
-      const handleResponse = await networkFirst.handle({event});
+      const handleResponse = await networkFirst.handle({
+        request,
+        event,
+      });
 
       // Wait until cache.put is finished.
       await eventDoneWaiting(event);
@@ -108,7 +68,10 @@ describe(`NetworkFirst`, function() {
 
       const networkFirst = new NetworkFirst();
       await expectError(
-          () => networkFirst.handle({event}),
+          () => networkFirst.handle({
+            request,
+            event,
+          }),
           'no-response'
       );
 
@@ -116,10 +79,16 @@ describe(`NetworkFirst`, function() {
       const cache = await caches.open(cacheNames.getRuntimeName());
       await cache.put(request, injectedResponse.clone());
 
-      const cachedResponse = await networkFirst.handle({event});
+      const cachedResponse = await networkFirst.handle({
+        request,
+        event,
+      });
       await compareResponses(cachedResponse, injectedResponse, true);
 
-      const secondCachedResponse = await networkFirst.handle({event});
+      const secondCachedResponse = await networkFirst.handle({
+        request,
+        event,
+      });
       await compareResponses(cachedResponse, secondCachedResponse, true);
     });
 
@@ -143,7 +112,10 @@ describe(`NetworkFirst`, function() {
       const cache = await caches.open(cacheNames.getRuntimeName());
       await cache.put(request, injectedResponse.clone());
 
-      const handlePromise = networkFirst.handle({event});
+      const handlePromise = networkFirst.handle({
+        request,
+        event,
+      });
 
       // Tick for a shorter time than the network timeout to ensure the
       // cached version is used.
@@ -174,7 +146,10 @@ describe(`NetworkFirst`, function() {
       });
 
       const networkFirst = new NetworkFirst({networkTimeoutSeconds});
-      let handlePromise = networkFirst.handle({event});
+      let handlePromise = networkFirst.handle({
+        request,
+        event,
+      });
 
       // Tick for a longer time than the network timeout to ensure the
       // network request can finish.
@@ -214,7 +189,10 @@ describe(`NetworkFirst`, function() {
 
       const networkFirst = new NetworkFirst();
 
-      const handleResponse = await networkFirst.handle({event});
+      const handleResponse = await networkFirst.handle({
+        request,
+        event,
+      });
 
       // wait for cache.put
       await eventDoneWaiting(event);
@@ -234,7 +212,10 @@ describe(`NetworkFirst`, function() {
       sandbox.stub(self, 'fetch').resolves(fetchResponse);
 
       const networkFirst = new NetworkFirst();
-      const handleResponse = await networkFirst.handle({event});
+      const handleResponse = await networkFirst.handle({
+        request,
+        event,
+      });
       expect(handleResponse.status).to.equal(0);
 
       await eventDoneWaiting(event);
@@ -263,7 +244,10 @@ describe(`NetworkFirst`, function() {
         ],
       });
 
-      const handleResponse = await networkFirst.handle({event});
+      const handleResponse = await networkFirst.handle({
+        request,
+        event,
+      });
       expect(handleResponse.status).to.equal(0);
 
       await eventDoneWaiting(event);
@@ -281,7 +265,10 @@ describe(`NetworkFirst`, function() {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
 
-      await networkFirst.handle({event});
+      await networkFirst.handle({
+        request,
+        event,
+      });
 
       expect(fetchStub.calledOnce).to.be.true;
       expect(fetchStub.calledWith(request, fetchOptions)).to.be.true;
@@ -297,7 +284,10 @@ describe(`NetworkFirst`, function() {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
 
-      await networkFirst.handle({event});
+      await networkFirst.handle({
+        request,
+        event,
+      });
 
       expect(matchStub.calledWith(request, matchOptions)).to.be.true;
     });
@@ -345,7 +335,10 @@ describe(`NetworkFirst`, function() {
         return networkPromise;
       });
 
-      const handlePromise = networkFirst.handle({event});
+      const handlePromise = networkFirst.handle({
+        request,
+        event,
+      });
 
       // Let timer run
       fakeTimer.tick(1001);
