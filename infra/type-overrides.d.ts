@@ -1,5 +1,5 @@
-// IndexedDB
-// ------------------------------------------------------------------------- //
+// TODO(philipwalton): remove these once this PR makes its way to a release:
+// https://github.com/microsoft/TSJS-lib-generator/pull/701
 
 interface IDBIndex {
   openCursor(range?: IDBValidKey | IDBKeyRange | null, direction?: IDBCursorDirection): IDBRequest<IDBCursorWithValue | null>;
@@ -11,17 +11,15 @@ interface IDBObjectStore {
   openKeyCursor(query?: IDBValidKey | IDBKeyRange | null, direction?: IDBCursorDirection): IDBRequest<IDBCursor | null>;
 }
 
-// Service Worker
-// ------------------------------------------------------------------------- //
-interface CacheQueryOptions {
-  cacheName?: string;
+// TODO(philipwalton): remove these once this PR makes its way to a release:
+// https://github.com/microsoft/TSJS-lib-generator/pull/740
+
+interface CacheStorage {
+  match(request: RequestInfo, options?: MultiCacheQueryOptions): Promise<Response | undefined>;
 }
 
-// DOM
-// ------------------------------------------------------------------------- //
-
-// Copied from lib.dom.iterable.d.ts for code that doesn't include DOM typings:
-// https://github.com/microsoft/TypeScript/blob/00bf32ca3967b07e8663d0cd2b3e2bbf572da88b/lib/lib.dom.iterable.d.ts
+// TODO(philipwalton): remove these once this bug is fixed:
+// https://github.com/microsoft/TypeScript/issues/32435
 
 interface Headers {
   [Symbol.iterator](): IterableIterator<[string, string]>;
