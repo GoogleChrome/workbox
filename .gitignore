@@ -22,6 +22,10 @@ firebase-debug.log
 tsconfig.tsbuildinfo
 packages/workbox-*/**/*.d.ts
 packages/workbox-*/**/*.js
+!packages/workbox-build/**/*.js
+!packages/workbox-cli/**/*.js
+!packages/workbox-webpack-plugin/**/*.js
+
 
 # Individual package ignores during TypeScript migration
 packages/workbox-background-sync/**/*.mjs
