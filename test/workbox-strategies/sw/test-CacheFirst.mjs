@@ -29,82 +29,13 @@ describe(`CacheFirst`, function() {
     sandbox.restore();
   });
 
-  describe(`makeRequest()`, function() {
-    it(`should be able to make a request when passed a URL string`, async function() {
-      const url = 'http://example.io/test/';
-      const request = new Request(url);
-      const event = new FetchEvent('fetch', {request});
-      spyOnEvent(event);
-
-      const fetchResponse = generateUniqueResponse();
-      sandbox.stub(self, 'fetch').resolves(fetchResponse);
-
-      const cacheFirst = new CacheFirst();
-      const firstResponse = await cacheFirst.makeRequest({
-        event,
-        request: url,
-      });
-
-      // Wait until cache.put is finished.
-      await eventDoneWaiting(event);
-
-      const cache = await caches.open(cacheNames.getRuntimeName());
-      const firstCachedResponse = await cache.match(request);
-
-      await compareResponses(firstCachedResponse, fetchResponse, true);
-      await compareResponses(firstResponse, fetchResponse, true);
-
-      // Reset spy state so we can check fetch wasn't called.
-      self.fetch.resetHistory();
-
-      const secondResponse = await cacheFirst.makeRequest({
-        request: url,
-      });
-
-      const secondCachedResponse = await cache.match(request);
-      await compareResponses(firstCachedResponse, secondResponse, true);
-      await compareResponses(firstCachedResponse, secondCachedResponse, true);
-      expect(fetch.callCount).to.equal(0);
-    });
-
-    it(`should be able to make a request when passed a Request object`, async function() {
-      const request = new Request('http://example.io/test/');
-      const event = new FetchEvent('fetch', {request});
-      spyOnEvent(event);
-
-      const fetchResponse = generateUniqueResponse();
-      sandbox.stub(self, 'fetch').resolves(fetchResponse);
-
-      const cacheFirst = new CacheFirst();
-      const firstResponse = await cacheFirst.makeRequest({
-        event,
-        request,
-      });
-
-      // Wait until cache.put is finished.
-      await eventDoneWaiting(event);
-
-      const cache = await caches.open(cacheNames.getRuntimeName());
-      const firstCachedResponse = await cache.match(request);
-
-      await compareResponses(firstCachedResponse, fetchResponse, true);
-      await compareResponses(firstResponse, fetchResponse, true);
-
-      // Reset spy state so we can check fetch wasn't called.
-      self.fetch.resetHistory();
-
-      const secondResponse = await cacheFirst.makeRequest({
-        request,
-      });
-
-      const secondCachedResponse = await cache.match(request);
-      await compareResponses(firstCachedResponse, secondResponse, true);
-      await compareResponses(firstCachedResponse, secondCachedResponse, true);
-      expect(fetch.callCount).to.equal(0);
-    });
-  });
-
   describe(`handle()`, function() {
+    it(`should be able to make a request without an event`, async function() {
+      // TODO(philipwalton): Implement once this feature is added, so we can
+      // await the completion of the strategy without needing an event:
+      // https://github.com/GoogleChrome/workbox/issues/2115
+    });
+
     it(`should be able to fetch and cache a request to default cache`, async function() {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
@@ -114,7 +45,10 @@ describe(`CacheFirst`, function() {
       sandbox.stub(self, 'fetch').resolves(fetchResponse);
 
       const cacheFirst = new CacheFirst();
-      const firstHandleResponse = await cacheFirst.handle({event});
+      const firstHandleResponse = await cacheFirst.handle({
+        request,
+        event,
+      });
 
       // Wait until cache.put is finished.
       await eventDoneWaiting(event);
@@ -125,7 +59,10 @@ describe(`CacheFirst`, function() {
       await compareResponses(firstCachedResponse, fetchResponse, true);
       await compareResponses(firstHandleResponse, fetchResponse, true);
 
-      const secondHandleResponse = await cacheFirst.handle({event});
+      const secondHandleResponse = await cacheFirst.handle({
+        request,
+        event,
+      });
 
       // Reset spy state so we can check fetch wasn't called.
       self.fetch.resetHistory();
@@ -148,7 +85,10 @@ describe(`CacheFirst`, function() {
       const cacheFirst = new CacheFirst({
         cacheName,
       });
-      const firstHandleResponse = await cacheFirst.handle({event});
+      const firstHandleResponse = await cacheFirst.handle({
+        request,
+        event,
+      });
 
       // Wait until cache.put is finished.
       await eventDoneWaiting(event);
@@ -168,7 +108,10 @@ describe(`CacheFirst`, function() {
       sandbox.stub(self, 'fetch').resolves(fetchResponse);
 
       const cacheFirst = new CacheFirst();
-      const firstHandleResponse = await cacheFirst.handle({event});
+      const firstHandleResponse = await cacheFirst.handle({
+        request,
+        event,
+      });
 
       // Wait until cache.put is finished.
       await eventDoneWaiting(event);
@@ -197,7 +140,10 @@ describe(`CacheFirst`, function() {
           },
         ],
       });
-      const firstHandleResponse = await cacheFirst.handle({event});
+      const firstHandleResponse = await cacheFirst.handle({
+        request,
+        event,
+      });
 
       // Wait until cache.put is finished.
       await eventDoneWaiting(event);
@@ -226,7 +172,10 @@ describe(`CacheFirst`, function() {
           },
         ],
       });
-      const firstHandleResponse = await cacheFirst.handle({event});
+      const firstHandleResponse = await cacheFirst.handle({
+        request,
+        event,
+      });
 
       await compareResponses(firstHandleResponse, pluginResponse, true);
     });
@@ -252,7 +201,10 @@ describe(`CacheFirst`, function() {
           },
         ],
       });
-      const firstHandleResponse = await cacheFirst.handle({event});
+      const firstHandleResponse = await cacheFirst.handle({
+        request,
+        event,
+      });
 
       // Wait until cache.put is finished.
       await eventDoneWaiting(event);
@@ -273,7 +225,10 @@ describe(`CacheFirst`, function() {
 
       const cacheFirst = new CacheFirst();
       await expectError(
-          () => cacheFirst.handle({event}),
+          () => cacheFirst.handle({
+            request,
+            event,
+          }),
           'no-response'
       );
     });
@@ -286,7 +241,10 @@ describe(`CacheFirst`, function() {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
 
-      await cacheFirst.handle({event});
+      await cacheFirst.handle({
+        request,
+        event,
+      });
 
       expect(fetchStub.calledOnce).to.be.true;
       expect(fetchStub.calledWith(request, fetchOptions)).to.be.true;
@@ -301,7 +259,10 @@ describe(`CacheFirst`, function() {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
 
-      await cacheFirst.handle({event});
+      await cacheFirst.handle({
+        request,
+        event,
+      });
 
       expect(matchStub.calledOnce).to.be.true;
       expect(matchStub.calledWith(request, matchOptions)).to.be.true;
