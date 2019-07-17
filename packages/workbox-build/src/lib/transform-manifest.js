@@ -7,6 +7,8 @@
 */
 
 const errors = require('./errors');
+const additionalManifestEntriesTransform =
+  require('./additional-manifest-entries-transform');
 const maximumSizeTransform = require('./maximum-size-transform');
 const modifyURLPrefixTransform = require('./modify-url-prefix-transform');
 const noRevisionForURLsMatchingTransform =
@@ -65,6 +67,7 @@ const noRevisionForURLsMatchingTransform =
  */
 
 module.exports = ({
+  additionalManifestEntries,
   dontCacheBustURLsMatching,
   fileDetails,
   manifestTransforms,
@@ -99,8 +102,16 @@ module.exports = ({
         noRevisionForURLsMatchingTransform(dontCacheBustURLsMatching));
   }
 
-  // Any additional manifestTransforms that were passed will be applied last.
-  transformsToApply = transformsToApply.concat(manifestTransforms || []);
+  // Run any manifestTransforms functions second-to-last.
+  if (manifestTransforms) {
+    transformsToApply.push(...manifestTransforms);
+  }
+
+  // Run additionalManifestEntriesTransform last.
+  if (additionalManifestEntries) {
+    transformsToApply.push(
+        additionalManifestEntriesTransform(additionalManifestEntries));
+  }
 
   let transformedManifest = normalizedManifest;
   for (const transform of transformsToApply) {
@@ -118,7 +129,7 @@ module.exports = ({
   const count = transformedManifest.length;
   let size = 0;
   for (const manifestEntry of transformedManifest) {
-    size += manifestEntry.size;
+    size += manifestEntry.size || 0;
     delete manifestEntry.size;
   }
 

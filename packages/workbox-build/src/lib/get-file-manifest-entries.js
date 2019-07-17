@@ -16,6 +16,7 @@ const getFileDetails = require('./get-file-details');
 const getStringDetails = require('./get-string-details');
 
 module.exports = async ({
+  additionalManifestEntries,
   dontCacheBustURLsMatching,
   globDirectory,
   globFollow,
@@ -108,6 +109,7 @@ module.exports = async ({
   }
 
   const transformedManifest = transformManifest({
+    additionalManifestEntries,
     dontCacheBustURLsMatching,
     fileDetails,
     manifestTransforms,
