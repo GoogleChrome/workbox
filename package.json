@@ -106,7 +106,7 @@
     "service-worker-mock": "^1.9.3",
     "sinon": "^6.3.4",
     "tempy": "^0.2.1",
-    "typescript": "^3.4.5",
+    "typescript": "^3.5.3",
     "upath": "^1.1.2",
     "url-search-params": "^1.1.0",
     "webpack": "^4.19.1",
