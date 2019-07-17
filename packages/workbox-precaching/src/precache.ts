@@ -13,8 +13,8 @@ import {PrecacheEntry} from './_types.js';
 import './_version.js';
 
 declare global {
-  interface ServiceWorkerGlobalScope {
-    '__WB_MANIFEST': Array<PrecacheEntry|string>;
+  interface WorkerGlobalScope {
+    __WB_MANIFEST: Array<PrecacheEntry|string>;
   }
 }
 
