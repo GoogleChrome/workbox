@@ -12,8 +12,10 @@ import {precache} from './precache.js';
 import {PrecacheEntry} from './_types.js';
 import './_version.js';
 
-export interface WorkboxGlobalScope extends ServiceWorkerGlobalScope {
-  '__WB_MANIFEST': Array<PrecacheEntry|string>;
+declare global {
+  interface ServiceWorkerGlobalScope {
+    '__WB_MANIFEST': Array<PrecacheEntry|string>;
+  }
 }
 
 /**

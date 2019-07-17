@@ -12,8 +12,10 @@ import {precachePlugins} from './utils/precachePlugins.js';
 import {PrecacheEntry} from './_types.js';
 import './_version.js';
 
-export interface WorkboxGlobalScope extends ServiceWorkerGlobalScope {
-  '__WB_MANIFEST': Array<PrecacheEntry|string>;
+declare global {
+  interface ServiceWorkerGlobalScope {
+    '__WB_MANIFEST': Array<PrecacheEntry|string>;
+  }
 }
 
 const installListener = (event: ExtendableEvent) => {
