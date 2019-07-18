@@ -104,4 +104,10 @@ module.exports = {
   'bad-manifest-transforms-return-value': ol`The return value from a
     manifestTransform should be an object with 'manifest' and optionally
     'warnings' properties.`,
+  'string-entry-warning': ol`Some URLs were passed to additionalManifestEntries
+    as strings. Please ensure that these URLs contain versioning info
+    (e.g. 'https://example.com/v1.0/index.js'), as Workbox cannot maintain
+    its own revision info for them. To disable this warning, pass in an
+    object with a 'url' property, and a 'revision' property set to null
+    (e.g. {url: 'https://example.com/v1.0/index.js', revision: null}).`,
 };

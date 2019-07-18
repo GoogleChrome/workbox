@@ -9,10 +9,13 @@
 const joi = require('@hapi/joi');
 
 const defaults = require('./defaults');
+const manifestEntryObject = require('./manifest-entry-object');
 const regExpObject = require('./reg-exp-object');
 
 // Define some common constraints used by all methods.
 module.exports = joi.object().keys({
+  additionalManifestEntries: joi.array()
+      .items(joi.string(), manifestEntryObject),
   dontCacheBustURLsMatching: regExpObject,
   manifestTransforms: joi.array().items(joi.func().minArity(1).maxArity(2)),
   maximumFileSizeToCacheInBytes: joi.number().min(1)

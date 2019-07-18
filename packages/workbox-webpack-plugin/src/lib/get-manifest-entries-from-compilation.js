@@ -173,12 +173,13 @@ module.exports = (compilation, config) => {
   // somewhere, but... webpack doesn't offer info-level logs?
   // https://github.com/webpack/webpack/issues/3996
   const {manifestEntries, warnings} = transformManifest({
+    fileDetails,
+    additionalManifestEntries: config.additionalManifestEntries,
     dontCacheBustURLsMatching: config.dontCacheBustURLsMatching,
     manifestTransforms: config.manifestTransforms,
     maximumFileSizeToCacheInBytes: config.maximumFileSizeToCacheInBytes,
     modifyURLPrefix: config.modifyURLPrefix,
     transformParam: compilation,
-    fileDetails,
   });
 
   compilation.warnings = compilation.warnings.concat(warnings || []);

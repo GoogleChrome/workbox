@@ -105,6 +105,69 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
       });
     });
 
+    it(`should work when called with additionalManifestEntries`, function(done) {
+      const outputDir = tempy.directory();
+      const config = {
+        mode: 'production',
+        entry: {
+          entry1: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+          entry2: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        },
+        output: {
+          filename: '[name]-[chunkhash].js',
+          path: outputDir,
+        },
+        plugins: [
+          new GenerateSW({
+            additionalManifestEntries: [
+              '/one',
+              {url: '/two', revision: null},
+              {url: '/three', revision: '333'},
+            ],
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError, stats) => {
+        const swFile = path.join(outputDir, 'service-worker.js');
+        try {
+          const statsJson = stats.toJson();
+          expect(webpackError).not.to.exist;
+          expect(statsJson.errors).to.be.empty;
+          // The string additionalManifestEntries entry should lead to one warning.
+          expect(statsJson.warnings).to.have.length(1);
+
+          const files = await globby(outputDir);
+          expect(files).to.have.length(4);
+
+          await validateServiceWorkerRuntime({
+            swFile, expectedMethodCalls: {
+              precacheAndRoute: [[[
+                {
+                  revision: '0fae6a991467bd40263a3ba8cd82835d',
+                  url: 'entry1-43ba396bf52f8419e349.js',
+                }, {
+                  revision: '0fae6a991467bd40263a3ba8cd82835d',
+                  url: 'entry2-aa21f43434f29ed0c946.js',
+                }, '/one', {
+                  revision: '333',
+                  url: '/three',
+                }, {
+                  revision: null,
+                  url: '/two',
+                },
+              ], {}]],
+            },
+          });
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+
     it(`should honor the 'chunks' whitelist config`, function(done) {
       const outputDir = tempy.directory();
       const config = {

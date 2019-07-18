@@ -28,6 +28,7 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
     'swSrc',
   ];
   const SUPPORTED_PARAMS = [
+    'additionalManifestEntries',
     'dontCacheBustURLsMatching',
     'globFollow',
     'globIgnores',
