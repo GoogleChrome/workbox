@@ -121,7 +121,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           new GenerateSW({
             additionalManifestEntries: [
               '/one',
-              {url: '/two'},
+              {url: '/two', revision: null},
               {url: '/three', revision: '333'},
             ],
           }),
@@ -151,8 +151,10 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
                   revision: '0fae6a991467bd40263a3ba8cd82835d',
                   url: 'entry2-aa21f43434f29ed0c946.js',
                 }, '/one', {
-                  url: '/three', revision: '333',
+                  revision: '333',
+                  url: '/three',
                 }, {
+                  revision: null,
                   url: '/two',
                 },
               ], {}]],

@@ -246,7 +246,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       const options = Object.assign({}, BASE_OPTIONS, {
         additionalManifestEntries: [
           '/one',
-          {url: '/two'},
+          {url: '/two', revision: null},
           {url: '/three', revision: '333'},
         ],
         swDest,
@@ -281,9 +281,11 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           url: 'webpackEntry.js',
           revision: '5b652181a25e96f255d0490203d3c47e',
         }, '/one', {
+          revision: null,
           url: '/two',
         }, {
-          url: '/three', revision: '333',
+          revision: '333',
+          url: '/three',
         }], {}]],
       }});
     });

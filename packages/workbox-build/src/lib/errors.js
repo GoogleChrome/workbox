@@ -108,6 +108,6 @@ module.exports = {
     as strings. Please ensure that these URLs contain versioning info
     (e.g. 'https://example.com/v1.0/index.js'), as Workbox cannot maintain
     its own revision info for them. To disable this warning, pass in an
-    object with a 'url' property instead of a string
-    (e.g. {url: 'https://example.com/v1.0/index.js'}).`,
+    object with a 'url' property, and a 'revision' property set to null
+    (e.g. {url: 'https://example.com/v1.0/index.js', revision: null}).`,
 };
