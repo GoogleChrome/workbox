@@ -12,6 +12,11 @@ import {precachePlugins} from './utils/precachePlugins.js';
 import {PrecacheEntry} from './_types.js';
 import './_version.js';
 
+declare global {
+  interface WorkerGlobalScope {
+    __WB_MANIFEST: Array<PrecacheEntry|string>;
+  }
+}
 
 const installListener = (event: ExtendableEvent) => {
   const precacheController = getOrCreatePrecacheController();

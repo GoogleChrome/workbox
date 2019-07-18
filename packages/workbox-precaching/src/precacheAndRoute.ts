@@ -12,6 +12,11 @@ import {precache} from './precache.js';
 import {PrecacheEntry} from './_types.js';
 import './_version.js';
 
+declare global {
+  interface WorkerGlobalScope {
+    __WB_MANIFEST: Array<PrecacheEntry|string>;
+  }
+}
 
 /**
  * This method will add entries to the precache list and add a route to
