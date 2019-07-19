@@ -86,7 +86,12 @@ function assetToChunkNameMapping(stats) {
  */
 function filterAssets(compilation, config) {
   const filteredAssets = new Set();
-  const stats = compilation.getStats().toJson();
+  // See https://webpack.js.org/configuration/stats/#stats
+  // We only need assets and chunkGroups here.
+  const stats = compilation.getStats().toJson({
+    assets: true,
+    chunkGroups: true,
+  });
 
   const assetNameToChunkNames = assetToChunkNameMapping(stats);
 

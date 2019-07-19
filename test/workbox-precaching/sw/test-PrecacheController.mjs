@@ -614,7 +614,7 @@ describe(`PrecacheController`, function() {
       }
 
       const cleanupDetailsTwo = await precacheControllerTwo.activate();
-      expect(cleanupDetailsTwo.deletedURLs).to.deep.equal([
+      expect(cleanupDetailsTwo.deletedURLs).to.have.members([
         `${location.origin}/index.1234.html`,
         `${location.origin}/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=1234`,
       ]);
