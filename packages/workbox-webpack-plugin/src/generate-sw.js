@@ -14,6 +14,7 @@ const validate = require('workbox-build/build/entry-points/options/validate');
 const webpackGenerateSWSchema = require(
     'workbox-build/build/entry-points/options/webpack-generate-sw-schema');
 
+const getScriptFilesForChunks = require('./lib/get-script-files-for-chunks');
 const getManifestEntriesFromCompilation =
   require('./lib/get-manifest-entries-from-compilation');
 const relativeToOutputPath = require('./lib/relative-to-output-path');
@@ -80,6 +81,19 @@ class GenerateSW {
     } catch (error) {
       throw new Error(`Please check your ${this.constructor.name} plugin ` +
         `configuration:\n${error.message}`);
+    }
+
+    if (this.config.importScriptsViaChunks) {
+      // Anything loaded via importScripts() is implicitly cached by the service
+      // worker, and should not be added to the precache manifest.
+      this.config.excludeChunks = (this.config.excludeChunks || [])
+          .concat(this.config.importScriptsViaChunks);
+
+      const scripts = getScriptFilesForChunks(
+          compilation, this.config.importScriptsViaChunks);
+
+      this.config.importScripts = (this.config.importScripts || [])
+          .concat(scripts);
     }
 
     this.config.manifestEntries = getManifestEntriesFromCompilation(
