@@ -13,5 +13,6 @@ const defaults = require('./defaults');
 const webpackCommon = require('./webpack-common');
 
 module.exports = commonGenerateSchema.keys(Object.assign({
+  importScriptsViaChunks: joi.array().items(joi.string()),
   swDest: joi.string().default(defaults.swDestFilename),
 }, webpackCommon));

@@ -125,7 +125,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [['./workbox-9eb92ebe']],
+        importScripts: [],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -165,7 +165,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [['./workbox-9eb92ebe'], [...importScripts]],
+        importScripts: [[...importScripts]],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -211,7 +211,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [['./workbox-4a41d90a']],
+        importScripts: [],
         clientsClaim: [[]],
         skipWaiting: [[]],
         setCacheNameDetails: [[{prefix: cacheId}]],
@@ -261,7 +261,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [['./workbox-4a41d90a']],
+        importScripts: [],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -306,7 +306,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [['./workbox-9eb92ebe']],
+        importScripts: [],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -356,7 +356,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         getCacheKeyForURL: [[navigateFallback]],
-        importScripts: [['./workbox-808eb12e']],
+        importScripts: [],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -402,7 +402,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [['./workbox-9eb92ebe']],
+        importScripts: [],
         precacheAndRoute: [[[{
           url: 'link/index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -446,7 +446,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [['./workbox-9eb92ebe']],
+        importScripts: [],
         precacheAndRoute: [[[{
           url: 'link/index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -479,7 +479,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [['./workbox-76e7a865']],
+        importScripts: [],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -523,7 +523,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [['./workbox-76e7a865']],
+        importScripts: [],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -641,7 +641,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [STRING_HANDLER]: [[]],
-        importScripts: [['./workbox-b880c8c0']],
+        importScripts: [],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -682,7 +682,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [STRING_HANDLER]: [[]],
-        importScripts: [['./workbox-b880c8c0']],
+        importScripts: [],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -756,7 +756,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
         }]],
         Plugin: [[firstRuntimeCachingOptions.expiration]],
         Plugin$1: [[secondRuntimeCachingOptions.cacheableResponse]],
-        importScripts: [['./workbox-aad11b65']],
+        importScripts: [],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -831,7 +831,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [handler]: [[runtimeCachingOptions]],
-        importScripts: [['./workbox-44e55206']],
+        importScripts: [],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
@@ -927,7 +927,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [handler]: [[]],
-        importScripts: [['./workbox-1229ecdd']],
+        importScripts: [],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '3883c45b119c9d7e9ad75a1b4a4672ac',

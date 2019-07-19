@@ -106,6 +106,7 @@ function setupSpiesAndContextForGenerateSW() {
   const importScripts = sinon.spy();
 
   const workboxContext = {
+    importScripts,
     CacheFirst: sinon.stub().returns({name: 'CacheFirst'}),
     clientsClaim: sinon.spy(),
     enable: sinon.spy(),
@@ -137,6 +138,16 @@ function setupSpiesAndContextForGenerateSW() {
 function validateMethodCalls({methodsToSpies, expectedMethodCalls}) {
   for (const [method, spy] of Object.entries(methodsToSpies)) {
     if (spy.called) {
+      // Special-case handling for importScripts(), as the first call may be
+      // to load in the workbox runtime. We don't want to have to hardcode the
+      // unique hash associated with the runtime into our test suite.
+      if (method === 'importScripts') {
+        if (spy.args[0] && spy.args[0][0].startsWith('./workbox-')) {
+          // Remove the first call.
+          spy.args.shift();
+        }
+      }
+
       const args = spy.args.map(
           (arg) => Array.isArray(arg) ? stringifyFunctionsInArray(arg) : arg);
       expect(args).to.deep.equal(expectedMethodCalls[method],
