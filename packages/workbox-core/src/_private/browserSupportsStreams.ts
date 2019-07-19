@@ -1,14 +1,15 @@
 /*
-  Copyright 2018 Google LLC
+  Copyright 2019 Google LLC
 
   Use of this source code is governed by an MIT-style
   license that can be found in the LICENSE file or at
   https://opensource.org/licenses/MIT.
 */
 
-import {browserSupportsStreams} from 'workbox-core/_private/browserSupportsStreams.js';
-import './_version.js';
+import '../_version.js';
 
+
+let isSupported: boolean | undefined;
 
 /**
  * This is a utility method that determines whether the current browser supports
@@ -19,8 +20,18 @@ import './_version.js';
  * @return {boolean} `true`, if the current browser meets the requirements for
  * streaming responses, and `false` otherwise.
  */
-function isSupported() {
-  return browserSupportsStreams();
+function browserSupportsStreams(): boolean {
+  if (isSupported === undefined) {
+    // See https://github.com/GoogleChrome/workbox/issues/1473
+    try {
+      new ReadableStream({start() {}});
+      isSupported = true;
+    } catch (error) {
+      isSupported = false;
+    }
+  }
+
+  return isSupported;
 }
 
-export {isSupported}
+export {browserSupportsStreams};

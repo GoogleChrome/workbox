@@ -6,6 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
+import {browserSupportsStreams} from 'workbox-core/_private/browserSupportsStreams.js';
 import '../_version.js';
 
 /**
@@ -20,9 +21,9 @@ export async function cleanRedirect(response: Response) {
 
   // Not all browsers support the Response.body stream, so fall back
   // to reading the entire body into memory as a blob.
-  const bodyPromise = 'body' in clonedResponse ?
+  const bodyPromise = browserSupportsStreams() ?
     Promise.resolve(clonedResponse.body) :
-    clonedResponse!.blob();
+    clonedResponse.blob();
 
   const body = await bodyPromise;
 
