@@ -119,10 +119,10 @@ class Router {
           const request = new Request(...entry);
           return this.handleRequest({request});
 
-        // TODO(philipwalton): Typescript errors without this typecast for
+        // TODO(philipwalton): TypeScript errors without this typecast for
         // some reason (probably a bug). The real type here should work but
         // doesn't: `Array<Promise<Response> | undefined>`.
-        }) as any[]); // Typescript
+        }) as any[]); // TypeScript
 
         event.waitUntil(requestPromises);
 
