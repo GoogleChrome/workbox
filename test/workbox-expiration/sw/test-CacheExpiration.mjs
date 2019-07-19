@@ -74,13 +74,13 @@ describe(`CacheExpiration`, function() {
 
       const timestampModel = new CacheTimestampsModel(cacheName);
       await timestampModel.setTimestamp('/one', Date.now());
-      cache.put(`${location.origin}/one`, new Response('Injected request'));
+      await cache.put(`${location.origin}/one`, new Response('Injected request'));
 
       clock.tick(5000);
 
       // Add another entry after 5 seconds.
       await timestampModel.setTimestamp('/two', Date.now());
-      cache.put(`${location.origin}/two`, new Response('Injected request'));
+      await cache.put(`${location.origin}/two`, new Response('Injected request'));
 
       // Ensure both entries are still present after an initial expire.
       await expirationManager.expireEntries();
@@ -129,7 +129,7 @@ describe(`CacheExpiration`, function() {
 
       const timestampModel = new CacheTimestampsModel(cacheName);
       await timestampModel.setTimestamp('/first', currentTimestamp);
-      cache.put(`${location.origin}/first`, new Response('Injected request'));
+      await cache.put(`${location.origin}/first`, new Response('Injected request'));
 
       const expirationManager = new CacheExpiration(cacheName, {maxEntries});
 
@@ -137,7 +137,7 @@ describe(`CacheExpiration`, function() {
 
       // Add entry and ensure it is removed
       await timestampModel.setTimestamp('/second', currentTimestamp - 1000);
-      cache.put(`${location.origin}/second`, new Response('Injected request'));
+      await cache.put(`${location.origin}/second`, new Response('Injected request'));
 
       await expirationManager.expireEntries();
 
@@ -153,7 +153,7 @@ describe(`CacheExpiration`, function() {
       expect(cachedRequests.map((req) => req.url)).to.deep.equal([`${location.origin}/first`]);
 
       await timestampModel.setTimestamp('/third', currentTimestamp + 1000);
-      cache.put(`${location.origin}/third`, new Response('Injected request'));
+      await cache.put(`${location.origin}/third`, new Response('Injected request'));
 
       await expirationManager.expireEntries();
 
@@ -201,8 +201,8 @@ describe(`CacheExpiration`, function() {
       const timestampModel = new CacheTimestampsModel(cacheName);
       await timestampModel.setTimestamp('/1', currentTimestamp);
       await timestampModel.setTimestamp('/2', currentTimestamp);
-      cache.put(`${location.origin}/1`, new Response('Injected request'));
-      cache.put(`${location.origin}/2`, new Response('Injected request'));
+      await cache.put(`${location.origin}/1`, new Response('Injected request'));
+      await cache.put(`${location.origin}/2`, new Response('Injected request'));
 
       const expirationManager = new CacheExpiration(cacheName, {maxAgeSeconds});
 
