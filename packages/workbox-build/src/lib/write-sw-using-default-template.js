@@ -7,7 +7,7 @@
 */
 
 const fse = require('fs-extra');
-const path = require('path');
+const upath = require('upath');
 
 const bundle = require('./bundle');
 const errors = require('./errors');
@@ -34,7 +34,7 @@ module.exports = async ({
   sourcemap,
   swDest,
 }) => {
-  const outputDir = path.dirname(swDest);
+  const outputDir = upath.dirname(swDest);
   try {
     await fse.mkdirp(outputDir);
   } catch (error) {
@@ -72,7 +72,7 @@ module.exports = async ({
     const filePaths = [];
 
     for (const file of files) {
-      const filePath = path.join(outputDir, file.name);
+      const filePath = upath.resolve(outputDir, file.name);
       filePaths.push(filePath);
       await fse.writeFile(filePath, file.contents);
     }

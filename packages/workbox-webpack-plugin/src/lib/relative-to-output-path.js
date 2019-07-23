@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-const path = require('path');
+const upath = require('upath');
 
 /**
  * @param {Object} compilation The webpack compilation.
@@ -19,8 +19,8 @@ const path = require('path');
  */
 module.exports = (compilation, swDest) => {
   // See https://github.com/jantimon/html-webpack-plugin/pull/266/files#diff-168726dbe96b3ce427e7fedce31bb0bcR38
-  if (path.resolve(swDest) === path.normalize(swDest)) {
-    return path.relative(compilation.options.output.path, swDest);
+  if (upath.resolve(swDest) === upath.normalize(swDest)) {
+    return upath.relative(compilation.options.output.path, swDest);
   }
 
   // Otherwise, return swDest as-is.

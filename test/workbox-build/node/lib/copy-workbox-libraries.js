@@ -7,7 +7,7 @@
 */
 
 const expect = require('chai').expect;
-const path = require('path');
+const upath = require('upath');
 const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 
@@ -15,8 +15,8 @@ const errors = require('../../../../packages/workbox-build/src/lib/errors');
 
 describe(`[workbox-build] lib/copy-workbox-libraries.js`, function() {
   const MODULE_PATH = '../../../../packages/workbox-build/src/lib/copy-workbox-libraries';
-  const ABSOLUTE_DEST_DIRECTORY = path.join(path.sep, 'test-dir');
-  const RELATIVE_DEST_DIRECTORY = path.join('.', 'test-dir');
+  const ABSOLUTE_DEST_DIRECTORY = upath.join('/', 'test-dir');
+  const RELATIVE_DEST_DIRECTORY = upath.join('.', 'test-dir');
 
   it(`should reject with an error when the copy fails`, async function() {
     const copyWorkboxLibraries = proxyquire(MODULE_PATH, {
@@ -48,8 +48,8 @@ describe(`[workbox-build] lib/copy-workbox-libraries.js`, function() {
 
       const workboxDirectory = await copyWorkboxLibraries(destDir);
       // The workboxDirectory value is a relative path from destDir to the
-      // new directory. We check if ensureDir was called with the combined path.
-      const expectedPath = path.join(destDir, workboxDirectory);
+      // new directory. We check if ensureDir was called with the combined upath.
+      const expectedPath = upath.join(destDir, workboxDirectory);
       expect(expectedPath).to.eql(ensureDirStub.args[0][0]);
 
       // The total number of package build directories that were copied:

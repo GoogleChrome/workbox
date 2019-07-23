@@ -11,7 +11,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const WorkerPlugin = require('worker-plugin');
 const expect = require('chai').expect;
 const globby = require('globby');
-const path = require('path');
+const upath = require('upath');
 const tempy = require('tempy');
 const webpack = require('webpack');
 
@@ -22,8 +22,8 @@ const {InjectManifest} = require('../../../packages/workbox-webpack-plugin/src/i
 
 describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
   const WEBPACK_ENTRY_FILENAME = 'webpackEntry.js';
-  const SRC_DIR = path.join(__dirname, '..', 'static', 'example-project-1');
-  const SW_SRC = path.join(__dirname, '..', 'static', 'sw-src.js');
+  const SRC_DIR = upath.join(__dirname, '..', 'static', 'example-project-1');
+  const SW_SRC = upath.join(__dirname, '..', 'static', 'sw-src.js');
 
   describe(`[workbox-webpack-plugin] Runtime errors`, function() {
     it(`should lead to a webpack compilation error when passed invalid config`, function(done) {
@@ -31,7 +31,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       const config = {
         mode: 'production',
         entry: {
-          entry1: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+          entry1: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
         },
         output: {
           filename: '[name]-[chunkhash].js',
@@ -65,8 +65,8 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       const config = {
         mode: 'production',
         entry: {
-          entry1: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
-          entry2: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+          entry1: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+          entry2: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
         },
         output: {
           filename: '[name]-[chunkhash].js',
@@ -82,7 +82,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
       const compiler = webpack(config);
       compiler.run(async (webpackError, stats) => {
-        const swFile = path.join(outputDir, 'service-worker.js');
+        const swFile = upath.join(outputDir, 'service-worker.js');
         try {
           webpackBuildCheck(webpackError, stats);
 
@@ -117,9 +117,9 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       const config = {
         mode: 'production',
         entry: {
-          entry1: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
-          entry2: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
-          entry3: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+          entry1: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+          entry2: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+          entry3: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
         },
         output: {
           filename: '[name]-[chunkhash].js',
@@ -136,7 +136,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
       const compiler = webpack(config);
       compiler.run(async (webpackError, stats) => {
-        const swFile = path.join(outputDir, 'service-worker.js');
+        const swFile = upath.join(outputDir, 'service-worker.js');
         try {
           webpackBuildCheck(webpackError, stats);
 
@@ -171,7 +171,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       const config = {
         mode: 'production',
         entry: {
-          main: path.join(SRC_DIR, 'splitChunksEntry.js'),
+          main: upath.join(SRC_DIR, 'splitChunksEntry.js'),
         },
         output: {
           chunkFilename: '[name].js',
@@ -194,7 +194,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
       const compiler = webpack(config);
       compiler.run(async (webpackError, stats) => {
-        const swFile = path.join(outputDir, 'service-worker.js');
+        const swFile = upath.join(outputDir, 'service-worker.js');
         try {
           webpackBuildCheck(webpackError, stats);
 
@@ -229,9 +229,9 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       const config = {
         mode: 'production',
         entry: {
-          entry1: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
-          entry2: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
-          entry3: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+          entry1: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+          entry2: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+          entry3: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
         },
         output: {
           filename: '[name]-[chunkhash].js',
@@ -248,7 +248,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
       const compiler = webpack(config);
       compiler.run(async (webpackError, stats) => {
-        const swFile = path.join(outputDir, 'service-worker.js');
+        const swFile = upath.join(outputDir, 'service-worker.js');
         try {
           webpackBuildCheck(webpackError, stats);
 
@@ -283,9 +283,9 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       const config = {
         mode: 'production',
         entry: {
-          entry1: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
-          entry2: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
-          entry3: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+          entry1: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+          entry2: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+          entry3: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
         },
         output: {
           filename: '[name]-[chunkhash].js',
@@ -303,7 +303,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
       const compiler = webpack(config);
       compiler.run(async (webpackError, stats) => {
-        const swFile = path.join(outputDir, 'service-worker.js');
+        const swFile = upath.join(outputDir, 'service-worker.js');
         try {
           webpackBuildCheck(webpackError, stats);
 
@@ -337,8 +337,8 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       const config = {
         mode: 'production',
         entry: {
-          entry1: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
-          entry2: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+          entry1: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+          entry2: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
         },
         output: {
           filename: '[name]-[chunkhash].js',
@@ -355,7 +355,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
       const compiler = webpack(config);
       compiler.run(async (webpackError, stats) => {
-        const swFile = path.join(outputDir, 'service-worker.js');
+        const swFile = upath.join(outputDir, 'service-worker.js');
         try {
           webpackBuildCheck(webpackError, stats);
 
@@ -394,7 +394,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
-        entry: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
         output: {
           filename: WEBPACK_ENTRY_FILENAME,
           path: outputDir,
@@ -413,7 +413,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
       const compiler = webpack(config);
       compiler.run(async (webpackError, stats) => {
-        const swFile = path.join(outputDir, 'service-worker.js');
+        const swFile = upath.join(outputDir, 'service-worker.js');
         try {
           webpackBuildCheck(webpackError, stats);
 
@@ -478,7 +478,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
-        entry: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
         output: {
           filename: WEBPACK_ENTRY_FILENAME,
           path: outputDir,
@@ -497,7 +497,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
       const compiler = webpack(config);
       compiler.run(async (webpackError, stats) => {
-        const swFile = path.join(outputDir, 'service-worker.js');
+        const swFile = upath.join(outputDir, 'service-worker.js');
         try {
           webpackBuildCheck(webpackError, stats);
 
@@ -532,7 +532,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
-        entry: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
         output: {
           filename: WEBPACK_ENTRY_FILENAME,
           path: outputDir,
@@ -549,7 +549,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
       const compiler = webpack(config);
       compiler.run(async (webpackError, stats) => {
-        const swFile = path.join(outputDir, 'service-worker.js');
+        const swFile = upath.join(outputDir, 'service-worker.js');
         try {
           webpackBuildCheck(webpackError, stats);
 
@@ -584,7 +584,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
-        entry: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
         output: {
           filename: WEBPACK_ENTRY_FILENAME,
           path: outputDir,
@@ -604,7 +604,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
       const compiler = webpack(config);
       compiler.run(async (webpackError, stats) => {
-        const swFile = path.join(outputDir, 'service-worker.js');
+        const swFile = upath.join(outputDir, 'service-worker.js');
         try {
           webpackBuildCheck(webpackError, stats);
 
@@ -639,7 +639,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
-        entry: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
         output: {
           filename: WEBPACK_ENTRY_FILENAME,
           path: outputDir,
@@ -660,7 +660,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
       const compiler = webpack(config);
       compiler.run(async (webpackError, stats) => {
-        const swFile = path.join(outputDir, 'service-worker.js');
+        const swFile = upath.join(outputDir, 'service-worker.js');
         try {
           webpackBuildCheck(webpackError, stats);
 
@@ -694,7 +694,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
-        entry: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
         output: {
           filename: WEBPACK_ENTRY_FILENAME,
           path: outputDir,
@@ -702,14 +702,14 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         plugins: [
           new InjectManifest({
             swSrc: SW_SRC,
-            swDest: path.resolve(path.join(outputDir, 'service-worker.js')),
+            swDest: upath.resolve(upath.join(outputDir, 'service-worker.js')),
           }),
         ],
       };
 
       const compiler = webpack(config);
       compiler.run(async (webpackError, stats) => {
-        const swFile = path.join(outputDir, 'service-worker.js');
+        const swFile = upath.join(outputDir, 'service-worker.js');
         try {
           webpackBuildCheck(webpackError, stats);
 
@@ -741,7 +741,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       const config = {
         mode: 'production',
         entry: {
-          entry1: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+          entry1: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
         },
         output: {
           filename: '[name]-[chunkhash].js',
@@ -758,7 +758,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
       const compiler = webpack(config);
       compiler.run(async (webpackError, stats) => {
-        const swFile = path.join(outputDir, 'service-worker.js');
+        const swFile = upath.join(outputDir, 'service-worker.js');
         try {
           expect(webpackError).not.to.exist;
           const statsJson = stats.toJson();
@@ -795,7 +795,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       const config = {
         mode: 'production',
         entry: {
-          entry1: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+          entry1: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
         },
         output: {
           filename: '[name]-[chunkhash].js',
@@ -827,7 +827,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
             `images/example-jpeg.jpg is 15.3 kB, and won't be precached. Configure maximumFileSizeToCacheInBytes to change this limit.`,
           ]);
 
-          const swFile = path.join(outputDir, 'service-worker.js');
+          const swFile = upath.join(outputDir, 'service-worker.js');
 
           const files = await globby(outputDir);
           expect(files).to.have.length(11);
@@ -892,7 +892,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       const config = {
         mode: 'production',
         entry: {
-          entry1: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+          entry1: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
         },
         output: {
           publicPath,
@@ -909,7 +909,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
       const compiler = webpack(config);
       compiler.run(async (webpackError, stats) => {
-        const swFile = path.join(outputDir, 'service-worker.js');
+        const swFile = upath.join(outputDir, 'service-worker.js');
         try {
           webpackBuildCheck(webpackError, stats);
 
@@ -941,11 +941,11 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     // See https://github.com/GoogleChrome/workbox/issues/1916
     it(`should support projects that bundle WASM code`, function(done) {
       const outputDir = tempy.directory();
-      const srcDir = path.join(__dirname, '..', 'static', 'wasm-project');
+      const srcDir = upath.join(__dirname, '..', 'static', 'wasm-project');
       const config = {
         mode: 'production',
         entry: {
-          index: path.join(srcDir, 'index.js'),
+          index: upath.join(srcDir, 'index.js'),
         },
         output: {
           filename: '[name].js',
@@ -986,7 +986,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
-        entry: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
         output: {
           filename: '[name].[hash:6].js',
           path: outputDir,
@@ -1002,7 +1002,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
       const compiler = webpack(config);
       compiler.run(async (webpackError, stats) => {
-        const swFile = path.join(outputDir, 'service-worker.js');
+        const swFile = upath.join(outputDir, 'service-worker.js');
         try {
           webpackBuildCheck(webpackError, stats);
 
@@ -1030,7 +1030,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
-        entry: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
         output: {
           filename: '[name].[hash:6].js',
           path: outputDir,
@@ -1049,7 +1049,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
       const compiler = webpack(config);
       compiler.run(async (webpackError, stats) => {
-        const swFile = path.join(outputDir, 'service-worker.js');
+        const swFile = upath.join(outputDir, 'service-worker.js');
         try {
           webpackBuildCheck(webpackError, stats);
 
@@ -1079,7 +1079,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       const warningMessage = 'test warning';
       const config = {
         mode: 'production',
-        entry: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
         output: {
           filename: '[name].[hash:6].js',
           path: outputDir,
@@ -1113,7 +1113,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
       const compiler = webpack(config);
       compiler.run(async (webpackError, stats) => {
-        const swFile = path.join(outputDir, 'service-worker.js');
+        const swFile = upath.join(outputDir, 'service-worker.js');
         try {
           expect(webpackError).not.to.exist;
           const statsJson = stats.toJson();
@@ -1146,14 +1146,14 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
-        entry: path.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
         output: {
           filename: '[name].[hash:6].js',
           path: outputDir,
         },
         plugins: [
           new InjectManifest({
-            swSrc: path.join(__dirname, '..', 'static', 'sw.ts'),
+            swSrc: upath.join(__dirname, '..', 'static', 'sw.ts'),
           }),
         ],
       };

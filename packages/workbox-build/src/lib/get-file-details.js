@@ -7,7 +7,7 @@
 */
 
 const glob = require('glob');
-const path = require('path');
+const upath = require('upath');
 
 const errors = require('./errors');
 const getFileSize = require('./get-file-size');
@@ -40,7 +40,7 @@ module.exports = ({
   }
 
   const fileDetails = globbedFiles.map((file) => {
-    const fullPath = path.join(globDirectory, file);
+    const fullPath = upath.join(globDirectory, file);
     const fileSize = getFileSize(fullPath);
     if (fileSize === null) {
       return null;
@@ -48,7 +48,7 @@ module.exports = ({
 
     const fileHash = getFileHash(fullPath);
     return {
-      file: `${path.relative(globDirectory, fullPath)}`,
+      file: `${upath.relative(globDirectory, fullPath)}`,
       hash: fileHash,
       size: fileSize,
     };

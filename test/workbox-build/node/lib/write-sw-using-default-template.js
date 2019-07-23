@@ -7,7 +7,7 @@
 */
 
 const expect = require('chai').expect;
-const path = require('path');
+const upath = require('upath');
 const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 
@@ -18,7 +18,7 @@ describe(`[workbox-build] lib/write-sw-using-default-template.js`, function() {
 
   it(`should reject with an error when fs-extra.mkdirp() fails`, async function() {
     const writeSWUsingDefaultTemplate = proxyquire(MODULE_PATH, {
-      'path': {
+      'upath': {
         dirname: () => 'ignored',
       },
       'fs-extra': {
@@ -36,7 +36,7 @@ describe(`[workbox-build] lib/write-sw-using-default-template.js`, function() {
 
   it(`should reject with an error when fs-extra.writeFile() fails`, async function() {
     const writeSWUsingDefaultTemplate = proxyquire(MODULE_PATH, {
-      'path': {
+      'upath': {
         dirname: () => 'ignored',
       },
       'fs-extra': {
@@ -58,7 +58,7 @@ describe(`[workbox-build] lib/write-sw-using-default-template.js`, function() {
     eisdirError.code = 'EISDIR';
 
     const writeSWUsingDefaultTemplate = proxyquire(MODULE_PATH, {
-      'path': {
+      'upath': {
         dirname: () => 'ignored',
       },
       'fs-extra': {
@@ -81,8 +81,8 @@ describe(`[workbox-build] lib/write-sw-using-default-template.js`, function() {
   });
 
   it(`should call fs-extra.writeFile() with the expected parameters when everything succeeds`, async function() {
-    const expectedPath = path.join('expected', 'path');
-    const swDest = path.join(expectedPath, 'sw.js');
+    const expectedPath = upath.join('expected', 'path');
+    const swDest = upath.join(expectedPath, 'sw.js');
     const file1 = 'file1.js';
     const file2 = 'file2.js';
     const contents1 = 'contents1';
@@ -111,10 +111,10 @@ describe(`[workbox-build] lib/write-sw-using-default-template.js`, function() {
 
     // There should be exactly two calls to fs-extra.writeFile().
     expect(writeFileStub.args).to.eql([[
-      path.join(expectedPath, file1),
+      upath.resolve(expectedPath, file1),
       contents1,
     ], [
-      path.join(expectedPath, file2),
+      upath.resolve(expectedPath, file2),
       contents2,
     ]]);
   });

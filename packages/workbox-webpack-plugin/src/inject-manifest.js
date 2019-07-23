@@ -8,7 +8,7 @@
 
 const {ConcatSource} = require('webpack-sources');
 const SingleEntryPlugin = require('webpack/lib/SingleEntryPlugin');
-const path = require('path');
+const upath = require('upath');
 const validate = require('workbox-build/build/entry-points/options/validate');
 const webpackInjectManifestSchema = require(
     'workbox-build/build/entry-points/options/webpack-inject-manifest-schema');
@@ -135,7 +135,7 @@ class InjectManifest {
    */
   async handleEmit(compilation) {
     // See https://webpack.js.org/contribute/plugin-patterns/#monitoring-the-watch-graph
-    const absoluteSwSrc = path.resolve(this.config.swSrc);
+    const absoluteSwSrc = upath.resolve(this.config.swSrc);
     compilation.fileDependencies.add(absoluteSwSrc);
 
     const swAsset = compilation.assets[this.config.swDest];

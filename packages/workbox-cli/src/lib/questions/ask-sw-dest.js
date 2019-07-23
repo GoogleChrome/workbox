@@ -8,7 +8,7 @@
 
 const assert = require('assert');
 const inquirer = require('inquirer');
-const path = require('path');
+const upath = require('upath');
 
 const errors = require('../errors');
 
@@ -24,7 +24,7 @@ function askQuestion(defaultDir) {
     name,
     message: `Where would you like your service worker file to be saved?`,
     type: 'input',
-    default: path.join(defaultDir, 'sw.js'),
+    default: upath.join(defaultDir, 'sw.js'),
   }]);
 }
 

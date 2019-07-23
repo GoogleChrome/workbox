@@ -8,7 +8,7 @@
 
 const assert = require('assert');
 const fse = require('fs-extra');
-const path = require('path');
+const upath = require('upath');
 
 const errors = require('../lib/errors');
 const escapeRegexp = require('../lib/escape-regexp');
@@ -40,7 +40,7 @@ const validate = require('./options/validate');
 async function injectManifest(config) {
   const options = validate(config, injectManifestSchema);
 
-  if (path.resolve(config.swSrc) === path.resolve(config.swDest)) {
+  if (upath.resolve(config.swSrc) === upath.resolve(config.swDest)) {
     throw new Error(errors['same-src-and-dest']);
   }
 
@@ -65,7 +65,7 @@ async function injectManifest(config) {
   swFileContents = swFileContents.replace(globalRegexp, entriesString);
 
   try {
-    await fse.mkdirp(path.dirname(options.swDest));
+    await fse.mkdirp(upath.dirname(options.swDest));
   } catch (error) {
     throw new Error(errors['unable-to-make-injection-directory'] +
       ` '${error.message}'`);

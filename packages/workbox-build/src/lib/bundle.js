@@ -11,7 +11,7 @@ const {terser} = require('rollup-plugin-terser');
 const {writeFile} = require('fs-extra');
 const babel = require('rollup-plugin-babel');
 const omt = require('rollup-plugin-off-main-thread');
-const path = require('path');
+const upath = require('upath');
 const presetEnv = require('@babel/preset-env');
 const replace = require('rollup-plugin-replace');
 const resolve = require('rollup-plugin-node-resolve');
@@ -27,7 +27,9 @@ module.exports = async ({
 }) => {
   // We need to write this to the "real" file system, as Rollup won't read from
   // a custom file system.
-  const temporaryFile = tempy.file({name: path.basename(swDest)});
+  const {dir, base} = upath.parse(swDest);
+
+  const temporaryFile = tempy.file({name: base});
   await writeFile(temporaryFile, unbundledCode);
 
   const plugins = [
@@ -107,5 +109,13 @@ module.exports = async ({
     }
   }
 
-  return files;
+  // Make sure that if there was a directory portion included in swDest, it's
+  // preprended to all of the generated files.
+  return files.map((file) => {
+    file.name = upath.format({
+      dir,
+      base: file.name,
+    });
+    return file;
+  });
 };
