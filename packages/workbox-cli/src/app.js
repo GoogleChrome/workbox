@@ -8,7 +8,7 @@
 
 const assert = require('assert');
 const ol = require('common-tags').oneLine;
-const path = require('path');
+const upath = require('upath');
 const prettyBytes = require('pretty-bytes');
 const watch = require('glob-watcher');
 const workboxBuild = require('workbox-build');
@@ -75,10 +75,10 @@ module.exports = async (params = {}) => {
 
     case 'copyLibraries': {
       assert(option, errors['missing-dest-dir-param']);
-      const parentDirectory = path.resolve(process.cwd(), option);
+      const parentDirectory = upath.resolve(process.cwd(), option);
 
       const dirName = await workboxBuild.copyWorkboxLibraries(parentDirectory);
-      const fullPath = path.join(parentDirectory, dirName);
+      const fullPath = upath.join(parentDirectory, dirName);
 
       logger.log(`The Workbox libraries were copied to ${fullPath}`);
       logger.log(ol`Add a call to workbox.setConfig({modulePathPrefix: '...'})
@@ -89,7 +89,7 @@ module.exports = async (params = {}) => {
 
     case 'generateSW':
     case 'injectManifest': {
-      const configPath = path.resolve(process.cwd(),
+      const configPath = upath.resolve(process.cwd(),
           option || constants.defaultConfigFile);
 
       let config;

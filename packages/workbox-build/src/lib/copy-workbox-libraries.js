@@ -7,7 +7,7 @@
 */
 
 const fse = require('fs-extra');
-const path = require('path');
+const upath = require('upath');
 const errors = require('./errors');
 
 
@@ -43,7 +43,7 @@ module.exports = async (destDirectory) => {
   // pkg.version whenever one of the dependent libraries gets bumped, and we
   // care about versioning the dependent libraries.
   const workboxDirectoryName = `workbox-v${thisPkg.version}`;
-  const workboxDirectoryPath = path.join(destDirectory, workboxDirectoryName);
+  const workboxDirectoryPath = upath.join(destDirectory, workboxDirectoryName);
   await fse.ensureDir(workboxDirectoryPath);
 
   const copyPromises = [];
@@ -53,10 +53,10 @@ module.exports = async (destDirectory) => {
   for (const library of librariesToCopy) {
     // Get the path to the package on the user's filesystem by require-ing
     // the package's `package.json` file via the node resolution algorithm.
-    const libraryPath = path.dirname(
+    const libraryPath = upath.dirname(
         require.resolve(`${library}/package.json`));
 
-    const buildPath = path.join(libraryPath, BUILD_DIR);
+    const buildPath = upath.join(libraryPath, BUILD_DIR);
 
     // fse.copy() copies all the files in a directory, not the directory itself.
     // See https://github.com/jprichardson/node-fs-extra/blob/master/docs/copy.md#copysrc-dest-options-callback

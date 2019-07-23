@@ -7,7 +7,7 @@
 */
 
 const expect = require('chai').expect;
-const path = require('path');
+const upath = require('upath');
 const proxyquire = require('proxyquire');
 
 const errors = require('../../../../packages/workbox-build/src/lib/errors');
@@ -65,13 +65,13 @@ describe(`[workbox-build] lib/get-file-details.js`, function() {
         },
       },
       './get-file-size': (value) => {
-        if (path.normalize(value) === path.normalize(DIRECTORY)) {
+        if (upath.normalize(value) === upath.normalize(DIRECTORY)) {
           return null;
         }
         return SIZE;
       },
       './get-file-hash': (value) => {
-        if (path.normalize(value) === path.normalize(DIRECTORY)) {
+        if (upath.normalize(value) === upath.normalize(DIRECTORY)) {
           throw new Error(`getFileHash(${DIRECTORY}) shouldn't have been called.`);
         }
         return HASH;

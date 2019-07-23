@@ -7,7 +7,7 @@
 */
 
 const expect = require('chai').expect;
-const path = require('path');
+const upath = require('upath');
 const tempy = require('tempy');
 
 const errors = require('../../../../packages/workbox-build/src/lib/errors');
@@ -15,12 +15,12 @@ const injectManifest = require('../../../../packages/workbox-build/src/entry-poi
 const validateServiceWorkerRuntime = require('../../../../infra/testing/validator/service-worker-runtime');
 
 describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, function() {
-  const GLOB_DIR = path.join(__dirname, '..', '..', 'static', 'example-project-1');
-  const SW_SRC_DIR = path.join(__dirname, '..', '..', 'static', 'sw-injections');
+  const GLOB_DIR = upath.join(__dirname, '..', '..', 'static', 'example-project-1');
+  const SW_SRC_DIR = upath.join(__dirname, '..', '..', 'static', 'sw-injections');
   const BASE_OPTIONS = {
     globDirectory: GLOB_DIR,
     swDest: tempy.file({extension: 'js'}),
-    swSrc: path.join(SW_SRC_DIR, 'basic.js'),
+    swSrc: upath.join(SW_SRC_DIR, 'basic.js'),
   };
   const REQUIRED_PARAMS = [
     'globDirectory',
@@ -135,7 +135,7 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
 
     it(`should throw the expected error when a relative 'swSrc' and absolute 'swDest' are the same path`, async function() {
       const swSrc = 'same.js';
-      const swDest = path.join(process.cwd(), 'same.js');
+      const swDest = upath.join(process.cwd(), 'same.js');
 
       const options = Object.assign({}, BASE_OPTIONS, {
         swSrc,
@@ -152,7 +152,7 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
 
     it(`should throw the expected error when there is no match for 'injectionPoint'`, async function() {
       const options = Object.assign({}, BASE_OPTIONS, {
-        swSrc: path.join(SW_SRC_DIR, 'bad-no-injection.js'),
+        swSrc: upath.join(SW_SRC_DIR, 'bad-no-injection.js'),
       });
 
       try {
@@ -165,7 +165,7 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
 
     it(`should throw the expected error when there are multiple matches for 'injectionPoint'`, async function() {
       const options = Object.assign({}, BASE_OPTIONS, {
-        swSrc: path.join(SW_SRC_DIR, 'bad-multiple-injection.js'),
+        swSrc: upath.join(SW_SRC_DIR, 'bad-multiple-injection.js'),
       });
 
       try {
@@ -219,7 +219,7 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
       const swDest = tempy.file({extension: 'js'});
       const options = Object.assign({}, BASE_OPTIONS, {
         swDest,
-        swSrc: path.join(SW_SRC_DIR, 'multiple-calls.js'),
+        swSrc: upath.join(SW_SRC_DIR, 'multiple-calls.js'),
       });
 
       const {count, filePaths, size, warnings} = await injectManifest(options);
@@ -264,7 +264,7 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
       const options = Object.assign({}, BASE_OPTIONS, {
         swDest,
         injectionPoint: 'self.__custom_injection_point',
-        swSrc: path.join(SW_SRC_DIR, 'custom-injection-point.js'),
+        swSrc: upath.join(SW_SRC_DIR, 'custom-injection-point.js'),
       });
 
       const {count, filePaths, size, warnings} = await injectManifest(options);
@@ -304,7 +304,7 @@ describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, functio
       const swDest = tempy.file({extension: 'js'});
       const options = Object.assign({}, BASE_OPTIONS, {
         swDest,
-        swSrc: path.join(SW_SRC_DIR, 'precache-and-route-options.js'),
+        swSrc: upath.join(SW_SRC_DIR, 'precache-and-route-options.js'),
       });
 
       const {count, filePaths, size, warnings} = await injectManifest(options);

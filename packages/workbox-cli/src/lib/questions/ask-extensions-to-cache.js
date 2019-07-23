@@ -10,7 +10,7 @@ const assert = require('assert');
 const glob = require('glob');
 const inquirer = require('inquirer');
 const ora = require('ora');
-const path = require('path');
+const upath = require('upath');
 
 const errors = require('../errors');
 const {ignoredDirectories, ignoredFileExtensions} = require('../constants');
@@ -45,7 +45,7 @@ async function getAllFileExtensions(globDirectory) {
 
   const extensions = new Set();
   for (const file of files) {
-    const extension = path.extname(file);
+    const extension = upath.extname(file);
     if (extension) {
       // Get rid of the leading . character.
       extensions.add(extension.replace(/^\./, ''));

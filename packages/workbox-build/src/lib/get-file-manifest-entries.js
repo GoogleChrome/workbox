@@ -7,7 +7,7 @@
 */
 
 const assert = require('assert');
-const path = require('path');
+const upath = require('upath');
 
 const errors = require('./errors');
 const transformManifest = require('./transform-manifest');
@@ -38,7 +38,7 @@ module.exports = async ({
   if (globDirectory) {
     if (swDest) {
       // Ensure that we ignore the SW file we're eventually writing to disk.
-      globIgnores.push(`**/${path.basename(swDest)}`);
+      globIgnores.push(`**/${upath.basename(swDest)}`);
     }
 
     try {

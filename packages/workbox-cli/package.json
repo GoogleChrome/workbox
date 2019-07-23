@@ -39,6 +39,7 @@
     "meow": "^5.0.0",
     "ora": "^3.4.0",
     "pretty-bytes": "^5.2.0",
+    "upath": "^1.1.2",
     "update-notifier": "^3.0.1",
     "workbox-build": "^5.0.0-alpha.1"
   },

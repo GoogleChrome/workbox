@@ -6,13 +6,13 @@
   https://opensource.org/licenses/MIT.
 */
 
-const path = require('path');
+const upath = require('upath');
 const depcheck = require('depcheck');
 
 describe(`[workbox-build] Test Dependencies`, function() {
   it(`should have required dependencies`, function() {
     return new Promise((resolve, reject) => {
-      depcheck(path.join(__dirname, '..', '..', '..', 'packages', 'workbox-build'), {
+      depcheck(upath.join(__dirname, '..', '..', '..', 'packages', 'workbox-build'), {
         ignoreDirs: [
           'test',
           'build',

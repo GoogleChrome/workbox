@@ -7,12 +7,12 @@
 */
 
 const depcheck = require('depcheck');
-const path = require('path');
+const upath = require('upath');
 
 describe(`[workbox-webpack-plugin] Test Dependencies`, function() {
   it(`should have required dependencies`, function() {
     return new Promise((resolve, reject) => {
-      depcheck(path.join(__dirname, '..', '..', '..', 'packages', 'workbox-webpack-plugin'), {
+      depcheck(upath.join(__dirname, '..', '..', '..', 'packages', 'workbox-webpack-plugin'), {
         ignoreDirs: [
           'test',
           'build',

@@ -39,8 +39,8 @@ describe(`[workbox-build] lib/bundle.js`, function() {
       'fs-extra': {
         writeFile: sinon.stub().resolves(),
       },
-      'path': {
-        basename: sinon.stub().returns('sw.js'),
+      'upath': {
+        parse: sinon.stub().returns({base: 'sw.js', dir: ''}),
       },
       'tempy': {
         file: sinon.stub().returns('sw.js'),

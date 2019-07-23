@@ -8,7 +8,7 @@
 
 const expect = require('chai').expect;
 const fse = require('fs-extra');
-const path = require('path');
+const upath = require('upath');
 const tempy = require('tempy');
 
 const confirmDirectoryContains = require('../../../../infra/testing/confirm-directory-contains');
@@ -17,7 +17,7 @@ const generateSW = require('../../../../packages/workbox-build/src/entry-points/
 const validateServiceWorkerRuntime = require('../../../../infra/testing/validator/service-worker-runtime');
 
 describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() {
-  const GLOB_DIR = path.join(__dirname, '..', '..', 'static', 'example-project-1');
+  const GLOB_DIR = upath.join(__dirname, '..', '..', 'static', 'example-project-1');
   const BASE_OPTIONS = {
     globDirectory: GLOB_DIR,
     inlineWorkboxRuntime: false,
@@ -114,7 +114,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
   describe(`[workbox-build] writing a service worker file`, function() {
     it(`should use defaults when all the required parameters are present`, async function() {
       const outputDir = tempy.directory();
-      const swDest = path.join(outputDir, 'sw.js');
+      const swDest = upath.join(outputDir, 'sw.js');
       const options = Object.assign({}, BASE_OPTIONS, {swDest});
 
       const {count, filePaths, size, warnings} = await generateSW(options);
@@ -150,7 +150,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
 
     it(`should use defaults when all the required parameters are present, with additional importScripts`, async function() {
       const outputDir = tempy.directory();
-      const swDest = path.join(outputDir, 'sw.js');
+      const swDest = upath.join(outputDir, 'sw.js');
       const importScripts = ['manifest.js'];
       const options = Object.assign({}, BASE_OPTIONS, {
         importScripts,
@@ -190,7 +190,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
 
     it(`should use defaults when all the required parameters are present, with additional configuration`, async function() {
       const outputDir = tempy.directory();
-      const swDest = path.join(outputDir, 'sw.js');
+      const swDest = upath.join(outputDir, 'sw.js');
       const directoryIndex = 'test.html';
       const ignoreURLParametersMatching = [/test1/, /test2/];
       const cacheId = 'test';
@@ -242,7 +242,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
 
     it(`should use defaults when all the required parameters are present, with additionalManifestEntries`, async function() {
       const outputDir = tempy.directory();
-      const swDest = path.join(outputDir, 'sw.js');
+      const swDest = upath.join(outputDir, 'sw.js');
       const options = Object.assign({}, BASE_OPTIONS, {
         additionalManifestEntries: [
           '/one',
@@ -292,7 +292,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
 
     it(`should add a 'message' event listener when 'skipWaiting: false'`, async function() {
       const outputDir = tempy.directory();
-      const swDest = path.join(outputDir, 'sw.js');
+      const swDest = upath.join(outputDir, 'sw.js');
       const additionalOptions = {
         skipWaiting: false,
       };
@@ -338,7 +338,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
 
     it(`should use defaults when all the required parameters are present, with 'navigateFallback' and 'navigateFallbackWhitelist'`, async function() {
       const outputDir = tempy.directory();
-      const swDest = path.join(outputDir, 'sw.js');
+      const swDest = upath.join(outputDir, 'sw.js');
       const navigateFallback = 'test.html';
       const navigateFallbackWhitelist = [/test1/, /test2/];
       const options = Object.assign({}, BASE_OPTIONS, {
@@ -384,10 +384,10 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
 
     it(`should use defaults when all the required parameters are present, with symlinks`, async function() {
       const outputDir = tempy.directory();
-      const swDest = path.join(outputDir, 'sw.js');
+      const swDest = upath.join(outputDir, 'sw.js');
       const globDirectory = tempy.directory();
 
-      await fse.ensureSymlink(GLOB_DIR, path.join(globDirectory, 'link'));
+      await fse.ensureSymlink(GLOB_DIR, upath.join(globDirectory, 'link'));
 
       const options = Object.assign({}, BASE_OPTIONS, {
         globDirectory,
@@ -427,10 +427,10 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
 
     it(`should use defaults when all the required parameters are present, with 'globFollow' and  symlinks`, async function() {
       const outputDir = tempy.directory();
-      const swDest = path.join(outputDir, 'sw.js');
+      const swDest = upath.join(outputDir, 'sw.js');
       const globDirectory = tempy.directory();
 
-      await fse.ensureSymlink(GLOB_DIR, path.join(globDirectory, 'link'));
+      await fse.ensureSymlink(GLOB_DIR, upath.join(globDirectory, 'link'));
 
       const options = Object.assign({}, BASE_OPTIONS, {
         globDirectory,
@@ -465,7 +465,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
 
     it(`should use defaults when all the required parameters are present, with 'offlineGoogleAnalytics' set to true`, async function() {
       const outputDir = tempy.directory();
-      const swDest = path.join(outputDir, 'sw.js');
+      const swDest = upath.join(outputDir, 'sw.js');
       const options = Object.assign({}, BASE_OPTIONS, {
         swDest,
         offlineGoogleAnalytics: true,
@@ -505,7 +505,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
 
     it(`should use defaults when all the required parameters are present, with 'offlineGoogleAnalytics' set to a config`, async function() {
       const outputDir = tempy.directory();
-      const swDest = path.join(outputDir, 'sw.js');
+      const swDest = upath.join(outputDir, 'sw.js');
       const options = Object.assign({}, BASE_OPTIONS, {
         swDest,
         offlineGoogleAnalytics: {
@@ -551,9 +551,24 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       }});
     });
 
+    it(`should support using a swDest that includes a subdirectory`, async function() {
+      const outputDir = tempy.directory();
+      const swDest = upath.join(outputDir, 'sub', 'directory', 'sw.js');
+      const options = Object.assign({}, BASE_OPTIONS, {
+        swDest,
+      });
+
+      const {count, filePaths, size, warnings} = await generateSW(options);
+      expect(warnings).to.be.empty;
+      expect(count).to.eql(6);
+      expect(size).to.eql(2604);
+
+      confirmDirectoryContains(outputDir, filePaths);
+    });
+
     it(`should inline the Workbox runtime when 'inlineWorkboxRuntime' is true`, async function() {
       const outputDir = tempy.directory();
-      const swDest = path.join(outputDir, 'sw.js');
+      const swDest = upath.join(outputDir, 'sw.js');
       const options = Object.assign({}, BASE_OPTIONS, {
         swDest,
         inlineWorkboxRuntime: true,

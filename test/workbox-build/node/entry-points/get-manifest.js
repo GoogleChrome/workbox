@@ -8,13 +8,13 @@
 
 const expect = require('chai').expect;
 const fse = require('fs-extra');
-const path = require('path');
+const upath = require('upath');
 const tempy = require('tempy');
 
 const getManifest = require('../../../../packages/workbox-build/src/entry-points/get-manifest');
 
 describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function() {
-  const SRC_DIR = path.join(__dirname, '..', '..', 'static', 'example-project-1');
+  const SRC_DIR = upath.join(__dirname, '..', '..', 'static', 'example-project-1');
   const BASE_OPTIONS = {
     globDirectory: SRC_DIR,
   };
@@ -273,7 +273,7 @@ describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function()
     it(`should use defaults when all the required parameters are present, with 'globFollow' and symlinks`, async function() {
       const globDirectory = tempy.directory();
 
-      await fse.ensureSymlink(SRC_DIR, path.join(globDirectory, 'link'));
+      await fse.ensureSymlink(SRC_DIR, upath.join(globDirectory, 'link'));
 
       const options = Object.assign({}, BASE_OPTIONS, {
         globDirectory,

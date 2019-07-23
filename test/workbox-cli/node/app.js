@@ -7,7 +7,7 @@
 */
 
 const expect = require('chai').expect;
-const path = require('path');
+const upath = require('upath');
 const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 
@@ -16,11 +16,11 @@ const errors = require('../../../packages/workbox-cli/src/lib/errors');
 
 describe(`[workbox-cli] app.js`, function() {
   const MODULE_PATH = '../../../packages/workbox-cli/src/app';
-  const PROXIED_CONFIG_FILE = path.resolve(process.cwd(), '/will/be/proxied');
-  const PROXIED_DEST_DIR = path.resolve(process.cwd(), 'build');
+  const PROXIED_CONFIG_FILE = upath.resolve(process.cwd(), '/will/be/proxied');
+  const PROXIED_DEST_DIR = upath.resolve(process.cwd(), 'build');
   const PROXIED_ERROR = new Error('proxied error message');
   const PROXIED_CONFIG = {};
-  const INVALID_CONFIG_FILE = path.resolve(process.cwd(), path.join('does', 'not', 'exist'));
+  const INVALID_CONFIG_FILE = upath.resolve(process.cwd(), upath.join('does', 'not', 'exist'));
   const UNKNOWN_COMMAND = 'unknown-command';
   const WORKBOX_BUILD_COMMANDS = [
     'generateSW',
@@ -209,7 +209,7 @@ describe(`[workbox-cli] app.js`, function() {
         const loggerLogStub = sinon.stub();
         const app = proxyquire(MODULE_PATH, {
           './lib/read-config': (options) => {
-            const defaultConfigPath = path.join(process.cwd(), constants.defaultConfigFile);
+            const defaultConfigPath = upath.join(process.cwd(), constants.defaultConfigFile);
             expect(options).to.eql(defaultConfigPath);
             return PROXIED_CONFIG;
           },
@@ -237,7 +237,7 @@ describe(`[workbox-cli] app.js`, function() {
         'workbox-build': {
           copyWorkboxLibraries: (destDir) => {
             expect(destDir).to.eql(PROXIED_DEST_DIR);
-            return path.join(destDir, 'workbox');
+            return upath.join(destDir, 'workbox');
           },
         },
       });
