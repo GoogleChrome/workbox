@@ -51,7 +51,7 @@ class Plugin implements WorkboxPlugin {
    * @param {string} options.cacheName Name of the cache being updated.
    * @param {Response} [options.oldResponse] The previous cached value, if any.
    * @param {Response} options.newResponse The new value in the cache.
-   * @param {Request} options.request The request that triggered the udpate.
+   * @param {Request} options.request The request that triggered the update.
    * @param {Request} [options.event] The event that triggered the update.
    */
   cacheDidUpdate: WorkboxPlugin['cacheDidUpdate'] = async ({

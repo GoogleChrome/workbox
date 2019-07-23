@@ -32,7 +32,7 @@ const packagesDir = path.join(__dirname, '..', 'packages');
  */
 const transpilePackage = async (packageName) => {
   try {
-    // Compile Typescript for the given project.
+    // Compile TypeScript for the given project.
     // Reference the local `node_modules` version of `tsc` since on Windows
     // it will call the version in `Microsoft SDKs/TypeScript`.
     await exec(`npm run local-tsc -- -b packages/${packageName}`);

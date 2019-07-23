@@ -117,7 +117,7 @@ export const messages : MessageMap = {
     }
 
     return `You must provide a name containing at least one character for ` +
-      `setCacheDeatils({${cacheNameId}: '...'}). Received a value of ` +
+      `setCacheDetails({${cacheNameId}: '...'}). Received a value of ` +
       `'${JSON.stringify(value)}'`;
   },
 

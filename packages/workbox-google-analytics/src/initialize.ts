@@ -68,7 +68,7 @@ const createOnSyncCallback = (config: GoogleAnalyticsInitializeOptions) => {
         // Set the qt param prior to applying hitFilter or parameterOverrides.
         params.set('qt', String(queueTime));
 
-        // Apply `paramterOverrideds`, if set.
+        // Apply `parameterOverrides`, if set.
         if (config.parameterOverrides) {
           for (const param of Object.keys(config.parameterOverrides)) {
             const value = config.parameterOverrides[param];
