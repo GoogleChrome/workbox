@@ -552,60 +552,22 @@ describe(`Router`, function() {
       expect(handler.secondCall.args[0].params).to.deep.equal([1, 2, 3]);
     });
 
-    it(`should result in params in handler`, function() {
-      const expectedParams = {
-        test: 'hello',
-      };
+    const matchCallbackReturnValues = [{a: 'b'}, [1, 2], 'test'];
+    generateTestVariants(`should pass the matchCallback return value to handlerCallback as params`, matchCallbackReturnValues, async function(returnValue) {
+      const handlerCallbackStub = sinon.stub().resolves(new Response());
       const router = new Router();
       const route = new Route(
-          () => expectedParams,
-          ({params}) => {
-            expect(params).to.equal(expectedParams);
-            return new Response();
-          },
+          sinon.stub().returns(returnValue),
+          handlerCallbackStub,
       );
       router.registerRoute(route);
 
-      // route.match() always returns false, so the Request details don't matter.
       const request = new Request(location);
       const event = new FetchEvent('fetch', {request});
-      router.handleRequest({request, event});
-    });
+      await router.handleRequest({request, event});
 
-    it(`should result in no params in handler`, function() {
-      const router = new Router();
-      const route = new Route(
-          () => {
-            return {};
-          },
-          ({params}) => {
-            expect(params).to.equal(undefined);
-            return new Response();
-          },
-      );
-      router.registerRoute(route);
-
-      // route.match() always returns false, so the Request details don't matter.
-      const request = new Request(location);
-      const event = new FetchEvent('fetch', {request});
-      router.handleRequest({request, event});
-    });
-
-    it(`should result in no params in handler for 'true'`, function() {
-      const router = new Router();
-      const route = new Route(
-          () => true,
-          ({params}) => {
-            expect(params).to.equal(undefined);
-            return new Response();
-          },
-      );
-      router.registerRoute(route);
-
-      // route.match() always returns false, so the Request details don't matter.
-      const request = new Request(location);
-      const event = new FetchEvent('fetch', {request});
-      router.handleRequest({request, event});
+      expect(handlerCallbackStub.calledOnce).to.be.true;
+      expect(handlerCallbackStub.firstCall.args[0].params).to.eql(returnValue);
     });
 
     it(`should not throw for router with no-routes set`, function() {
@@ -737,7 +699,7 @@ describe(`Router`, function() {
 
       const result2 = router.findMatchingRoute({url, request, event});
       expect(result2.route).to.equal(route);
-      expect(result2.params).to.equal(undefined);
+      expect(result2.params).to.equal('truthy');
 
       const result3 = router.findMatchingRoute({url, request, event});
       expect(result3.route).to.equal(route);

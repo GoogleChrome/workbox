@@ -293,13 +293,20 @@ class Router {
       let params;
       let matchResult = route.match({url, request, event});
       if (matchResult) {
-        if (Array.isArray(matchResult) && matchResult.length > 0) {
+        // See https://github.com/GoogleChrome/workbox/issues/2079
+        params = matchResult;
+        if (Array.isArray(matchResult) && matchResult.length === 0) {
           // Instead of passing an empty array in as params, use undefined.
-          params = matchResult;
+          params = undefined;
         } else if ((matchResult.constructor === Object &&
-            Object.keys(matchResult).length > 0)) {
+            Object.keys(matchResult).length === 0)) {
           // Instead of passing an empty object in as params, use undefined.
-          params = matchResult;
+          params = undefined;
+        } else if (typeof matchResult === 'boolean') {
+          // For the boolean value true (rather than just something truth-y),
+          // don't set params.
+          // See https://github.com/GoogleChrome/workbox/pull/2134#issuecomment-513924353
+          params = undefined;
         }
 
         // Return early if have a match.
