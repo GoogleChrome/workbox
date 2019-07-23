@@ -544,7 +544,7 @@ describe(`Router`, function() {
       expect(handler.firstCall.args[0].url).to.deep.equal(url);
       expect(handler.firstCall.args[0].request).to.equal(request);
       expect(handler.firstCall.args[0].event).to.equal(undefined);
-      expect(handler.firstCall.args[0].params).to.equal(true);
+      expect(handler.firstCall.args[0].params).to.equal(undefined);
 
       expect(handler.secondCall.args[0].url).to.deep.equal(url);
       expect(handler.secondCall.args[0].request).to.equal(request);
@@ -552,7 +552,7 @@ describe(`Router`, function() {
       expect(handler.secondCall.args[0].params).to.deep.equal([1, 2, 3]);
     });
 
-    const matchCallbackReturnValues = [{a: 'b'}, [1, 2], true, 'test'];
+    const matchCallbackReturnValues = [{a: 'b'}, [1, 2], 'test'];
     generateTestVariants(`should pass the matchCallback return value to handlerCallback as params`, matchCallbackReturnValues, async function(returnValue) {
       const handlerCallbackStub = sinon.stub().resolves(new Response());
       const router = new Router();
@@ -695,7 +695,7 @@ describe(`Router`, function() {
 
       const result1 = router.findMatchingRoute({url, request, event});
       expect(result1.route).to.equal(route);
-      expect(result1.params).to.equal(true);
+      expect(result1.params).to.equal(undefined);
 
       const result2 = router.findMatchingRoute({url, request, event});
       expect(result2.route).to.equal(route);

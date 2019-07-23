@@ -302,6 +302,11 @@ class Router {
             Object.keys(matchResult).length === 0)) {
           // Instead of passing an empty object in as params, use undefined.
           params = undefined;
+        } else if (typeof matchResult === 'boolean') {
+          // For thee boolean value true (rather than just something truth-y),
+          // don't set params.
+          // See https://github.com/GoogleChrome/workbox/pull/2134#issuecomment-513924353
+          params = undefined;
         }
 
         // Return early if have a match.
