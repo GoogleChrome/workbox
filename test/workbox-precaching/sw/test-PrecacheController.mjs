@@ -13,7 +13,6 @@ import {logger} from 'workbox-core/_private/logger.mjs';
 import {PrecacheController} from 'workbox-precaching/PrecacheController.mjs';
 import generateTestVariants from '../../../infra/testing/generate-variant-tests';
 
-
 describe(`PrecacheController`, function() {
   const sandbox = sinon.createSandbox();
 
@@ -504,36 +503,17 @@ describe(`PrecacheController`, function() {
       expect(fetchSpy.secondCall.args[0].request.integrity).to.eql('sha256-second');
     });
 
-    it(`it should use the last-specified integrity value when making requests`, async function() {
-      const fetchSpy = sandbox.spy(fetchWrapper, 'fetch');
-
-      const precacheController = new PrecacheController();
-      const cacheList = [
-        {url: '/test', integrity: 'sha256-one'},
-        {url: '/test', integrity: 'sha256-two'},
-      ];
-      precacheController.addToCacheList(cacheList);
-
-      await precacheController.install();
-
-      expect(fetchSpy.calledOnce).to.be.true;
-      expect(fetchSpy.firstCall.args[0].request.integrity).to.eql('sha256-two');
-    });
-
-    it(`it should omit the integrity value when making requests if a later-specified entry omits it`, async function() {
-      const fetchSpy = sandbox.spy(fetchWrapper, 'fetch');
-
-      const precacheController = new PrecacheController();
-      const cacheList = [
-        {url: '/test', integrity: 'sha256-one'},
-        {url: '/test'},
-      ];
-      precacheController.addToCacheList(cacheList);
-
-      await precacheController.install();
-
-      expect(fetchSpy.calledOnce).to.be.true;
-      expect(fetchSpy.firstCall.args[0].request.integrity).to.eql('');
+    it(`it should fail when entries have the same url but different integrity`, function() {
+      return expectError(() => {
+        const precacheController = new PrecacheController();
+        const cacheList = [
+          {url: '/test', integrity: 'sha256-one'},
+          {url: '/test', integrity: 'sha256-two'},
+        ];
+        precacheController.addToCacheList(cacheList);
+      }, 'add-to-cache-list-conflicting-integrities', (err) => {
+        expect(err.details.url).to.eql(`${location.origin}/test`);
+      });
     });
 
     it(`it should fail installation when a response with a status of 400 is received`, async function() {

@@ -13,14 +13,14 @@ import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.js';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
 import {WorkboxPlugin} from 'workbox-core/types.js';
 
+import {PrecacheEntry} from './_types.js';
 import {cleanRedirect} from './utils/cleanRedirect.js';
 import {createCacheKey} from './utils/createCacheKey.js';
-import {PrecacheEntry} from './_types.js';
 import {printCleanupDetails} from './utils/printCleanupDetails.js';
 import {printInstallDetails} from './utils/printInstallDetails.js';
 
 import './_version.js';
-
+ 
 /**
  * Performs efficient precaching of assets.
  *
@@ -29,7 +29,7 @@ import './_version.js';
 class PrecacheController {
   private _cacheName: string;
   private _urlsToCacheKeys: Map<string, string>;
-  private _urlsToIntegrity: Map<string, string>;
+  private _cacheKeysToIntegrities: Map<string, string>;
 
   /**
    * Create a new PrecacheController.
@@ -40,7 +40,7 @@ class PrecacheController {
   constructor(cacheName?: string) {
     this._cacheName = cacheNames.getPrecacheName(cacheName);
     this._urlsToCacheKeys = new Map();
-    this._urlsToIntegrity = new Map();
+    this._cacheKeysToIntegrities = new Map();
   }
 
   /**
@@ -73,11 +73,13 @@ class PrecacheController {
       }
 
       if (typeof entry !== 'string' && entry.integrity) {
-        this._urlsToIntegrity.set(cacheKey, entry.integrity);
-      } else {
-        // If we don't have an integrity value, then clear things out, just in
-        // case addToCacheList() was called multiple times: last call wins.
-        this._urlsToIntegrity.delete(cacheKey);
+        if (this._cacheKeysToIntegrities.has(cacheKey) &&
+            this._cacheKeysToIntegrities.get(cacheKey) !== entry.integrity) {
+          throw new WorkboxError('add-to-cache-list-conflicting-integrities', {
+            url,
+          });
+        }
+        this._cacheKeysToIntegrities.set(cacheKey, entry.integrity);
       }
 
       this._urlsToCacheKeys.set(url, cacheKey);
@@ -126,7 +128,7 @@ class PrecacheController {
     }
 
     const precacheRequests = urlsToPrecache.map((url) => {
-      const integrity = this._urlsToIntegrity.get(url);
+      const integrity = this._cacheKeysToIntegrities.get(url);
       return this._addURLToCache({event, plugins, url, integrity});
     });
     await Promise.all(precacheRequests);
