@@ -486,6 +486,56 @@ describe(`PrecacheController`, function() {
       const {request} = fetchWrapper.fetch.args[0][0];
       expect(request.credentials).to.eql('same-origin');
     });
+
+    it(`it should use the integrity value when making requests`, async function() {
+      const fetchSpy = sandbox.spy(fetchWrapper, 'fetch');
+
+      const precacheController = new PrecacheController();
+      const cacheList = [
+        {url: '/first'},
+        {url: '/second', integrity: 'sha256-second'},
+      ];
+      precacheController.addToCacheList(cacheList);
+
+      await precacheController.install();
+
+      expect(fetchSpy.calledTwice).to.be.true;
+      expect(fetchSpy.firstCall.args[0].request.integrity).to.eql('');
+      expect(fetchSpy.secondCall.args[0].request.integrity).to.eql('sha256-second');
+    });
+
+    it(`it should use the last-specified integrity value when making requests`, async function() {
+      const fetchSpy = sandbox.spy(fetchWrapper, 'fetch');
+
+      const precacheController = new PrecacheController();
+      const cacheList = [
+        {url: '/test', integrity: 'sha256-one'},
+        {url: '/test', integrity: 'sha256-two'},
+      ];
+      precacheController.addToCacheList(cacheList);
+
+      await precacheController.install();
+
+      expect(fetchSpy.calledOnce).to.be.true;
+      expect(fetchSpy.firstCall.args[0].request.integrity).to.eql('sha256-two');
+    });
+
+    it(`it should omit the integrity value when making requests if a later-specified entry omits it`, async function() {
+      const fetchSpy = sandbox.spy(fetchWrapper, 'fetch');
+
+      const precacheController = new PrecacheController();
+      const cacheList = [
+        {url: '/test', integrity: 'sha256-one'},
+        {url: '/test'},
+      ];
+      precacheController.addToCacheList(cacheList);
+
+      await precacheController.install();
+
+      expect(fetchSpy.calledOnce).to.be.true;
+      expect(fetchSpy.firstCall.args[0].request.integrity).to.eql('');
+    });
+
     it(`it should fail installation when a response with a status of 400 is received`, async function() {
       sandbox.stub(fetchWrapper, 'fetch').resolves(new Response('', {
         status: 400,
