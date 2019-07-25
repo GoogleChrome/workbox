@@ -47,6 +47,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     'mode',
     'modifyURLPrefix',
     'navigateFallback',
+    'navigateFallbackBlacklist',
     'navigateFallbackWhitelist',
     'navigationPreload',
     'offlineGoogleAnalytics',
@@ -336,13 +337,15 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       }});
     });
 
-    it(`should use defaults when all the required parameters are present, with 'navigateFallback' and 'navigateFallbackWhitelist'`, async function() {
+    it(`should use defaults when all the required parameters are present, with 'navigateFallback'`, async function() {
       const outputDir = tempy.directory();
       const swDest = upath.join(outputDir, 'sw.js');
       const navigateFallback = 'test.html';
-      const navigateFallbackWhitelist = [/test1/, /test2/];
+      const navigateFallbackBlacklist = [/test1/, /test2/];
+      const navigateFallbackWhitelist = [/test3/, /test4/];
       const options = Object.assign({}, BASE_OPTIONS, {
         navigateFallback,
+        navigateFallbackBlacklist,
         navigateFallbackWhitelist,
         swDest,
       });
@@ -355,7 +358,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        getCacheKeyForURL: [[navigateFallback]],
+        createHandlerForURL: [[navigateFallback]],
         importScripts: [],
         precacheAndRoute: [[[{
           url: 'index.html',
@@ -376,7 +379,9 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           url: 'webpackEntry.js',
           revision: '5b652181a25e96f255d0490203d3c47e',
         }], {}]],
-        registerNavigationRoute: [['/urlWithCacheKey', {
+        registerRoute: [[{name: 'NavigationRoute'}]],
+        NavigationRoute: [['/urlWithCacheKey', {
+          blacklist: navigateFallbackBlacklist,
           whitelist: navigateFallbackWhitelist,
         }]],
       }});

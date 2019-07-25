@@ -10,6 +10,7 @@ import {assert} from 'workbox-core/_private/assert.js';
 import {addPlugins} from './addPlugins.js';
 import {addRoute} from './addRoute.js';
 import {cleanupOutdatedCaches} from './cleanupOutdatedCaches.js';
+import {createHandlerForURL} from './createHandlerForURL.js';
 import {getCacheKeyForURL} from './getCacheKeyForURL.js';
 import {precache} from './precache.js';
 import {precacheAndRoute} from './precacheAndRoute.js';
@@ -38,6 +39,7 @@ export {
   addPlugins,
   addRoute,
   cleanupOutdatedCaches,
+  createHandlerForURL,
   getCacheKeyForURL,
   precache,
   precacheAndRoute,

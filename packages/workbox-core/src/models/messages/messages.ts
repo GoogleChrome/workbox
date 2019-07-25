@@ -256,4 +256,9 @@ export const messages : MessageMap = {
     return `The precaching request for '${url}' failed with an HTTP ` +
       `status of ${status}.`;
   },
+
+  'non-precached-url': ({url}) => {
+    return `createHandlerForURL('${url}') was called, but that URL is not ` +
+      `precached. Please pass in a URL that is precached instead.`;
+  },
 };
