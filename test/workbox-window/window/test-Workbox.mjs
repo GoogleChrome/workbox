@@ -313,7 +313,7 @@ describe(`[workbox-window] Workbox`, function() {
       const controllerBeforeTest = navigator.serviceWorker.controller;
       const scriptURL = controllerBeforeTest.scriptURL;
       const wb = new Workbox(scriptURL);
-     
+
       const reg = await wb.register();
       const newReg = await wb.update();
 
