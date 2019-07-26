@@ -10,6 +10,8 @@ import {assert} from 'workbox-core/_private/assert.js';
 import {cacheNames} from 'workbox-core/_private/cacheNames.js';
 import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.js';
 import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.js';
+import {logger} from 'workbox-core/_private/logger.js';
+import {RouteHandlerCallback} from 'workbox-core/types.js';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
 import {WorkboxPlugin} from 'workbox-core/types.js';
 
@@ -279,6 +281,60 @@ class PrecacheController {
     const urlObject = new URL(url, location.href);
     return this._urlsToCacheKeys.get(urlObject.href);
   }
+
+  /**
+   * Returns a function that looks up `url` in the precache (taking into
+   * account revision information), and returns the corresponding `Response`.
+   * 
+   * If for an unexpected reason there is a cache miss when looking up `url`,
+   * this will fall back to retrieving the `Response` via `fetch()`.
+   *
+   * @param {string} url The precached URL which will be used to lookup the
+   * `Response`.
+   * @return {workbox.routing.Route~handlerCallback}
+   */
+  createHandlerForURL(url: string): RouteHandlerCallback {
+    if (process.env.NODE_ENV !== 'production') {
+      assert!.isType(url, 'string', {
+        moduleName: 'workbox-precaching',
+        funcName: 'createHandlerForURL',
+        paramName: 'url',
+      });
+    }
+  
+    const cacheKey = this.getCacheKeyForURL(url);
+    if (!cacheKey) {
+      throw new WorkboxError('non-precached-url', {url});
+    }
+  
+    return async () => {
+      try {
+        const cache = await caches.open(this._cacheName);
+        const response = await cache.match(cacheKey);
+  
+        if (response) {
+          return response;
+        }
+  
+        // This shouldn't normally happen, but there are edge cases:
+        // https://github.com/GoogleChrome/workbox/issues/1441
+        throw new Error(`The cache ${this._cacheName} did not have an entry ` +
+            `for ${cacheKey}.`);
+      } catch (error) {
+        // If there's either a cache miss, or the caches.match() call threw
+        // an exception, then attempt to fulfill the navigation request with
+        // a response from the network rather than leaving the user with a
+        // failed navigation.
+        if (process.env.NODE_ENV !== 'production') {
+          logger.debug(`Unable to respond to navigation request with ` +
+              `cached response. Falling back to network.`, error);
+        }
+  
+        // This might still fail if the browser is offline...
+        return fetch(cacheKey);
+      }
+    };
+  };
 }
 
 export {PrecacheController};

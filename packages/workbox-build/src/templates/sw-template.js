@@ -53,10 +53,10 @@ if (Array.isArray(self.__precacheManifest)) {
 }
 <% } %>
 <% if (cleanupOutdatedCaches) { %><%= use('workbox-precaching', 'cleanupOutdatedCaches') %>();<% } %>
-<% if (navigateFallback) { %><%= use('workbox-routing', 'registerNavigationRoute') %>(<%= use('workbox-precaching', 'getCacheKeyForURL') %>(<%= JSON.stringify(navigateFallback) %>)<% if (navigateFallbackWhitelist || navigateFallbackBlacklist) { %>, {
+<% if (navigateFallback) { %><%= use('workbox-routing', 'registerRoute') %>(new <%= use('workbox-routing', 'NavigationRoute') %>(<%= use('workbox-precaching', 'createHandlerForURL') %>(<%= JSON.stringify(navigateFallback) %>)<% if (navigateFallbackWhitelist || navigateFallbackBlacklist) { %>, {
   <% if (navigateFallbackWhitelist) { %>whitelist: [<%= navigateFallbackWhitelist %>],<% } %>
   <% if (navigateFallbackBlacklist) { %>blacklist: [<%= navigateFallbackBlacklist %>],<% } %>
-}<% } %>);<% } %>
+}<% } %>));<% } %>
 
 <% if (runtimeCaching) { runtimeCaching.forEach(runtimeCachingString => {%><%= runtimeCachingString %><% });} %>
 

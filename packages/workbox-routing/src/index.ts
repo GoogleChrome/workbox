@@ -10,7 +10,6 @@ import {assert} from 'workbox-core/_private/assert.js';
 
 import {NavigationRoute} from './NavigationRoute.js';
 import {RegExpRoute} from './RegExpRoute.js';
-import {registerNavigationRoute} from './registerNavigationRoute.js';
 import {registerRoute} from './registerRoute.js';
 import {Route} from './Route.js';
 import {Router} from './Router.js';
@@ -30,7 +29,6 @@ if (process.env.NODE_ENV !== 'production') {
 export {
   NavigationRoute,
   RegExpRoute,
-  registerNavigationRoute,
   registerRoute,
   Route,
   Router,
