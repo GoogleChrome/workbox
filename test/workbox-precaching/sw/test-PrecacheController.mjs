@@ -13,7 +13,6 @@ import {logger} from 'workbox-core/_private/logger.mjs';
 import {PrecacheController} from 'workbox-precaching/PrecacheController.mjs';
 import generateTestVariants from '../../../infra/testing/generate-variant-tests';
 
-
 describe(`PrecacheController`, function() {
   const sandbox = sinon.createSandbox();
 
@@ -486,6 +485,37 @@ describe(`PrecacheController`, function() {
       const {request} = fetchWrapper.fetch.args[0][0];
       expect(request.credentials).to.eql('same-origin');
     });
+
+    it(`it should use the integrity value when making requests`, async function() {
+      const fetchSpy = sandbox.spy(fetchWrapper, 'fetch');
+
+      const precacheController = new PrecacheController();
+      const cacheList = [
+        {url: '/first'},
+        {url: '/second', integrity: 'sha256-second'},
+      ];
+      precacheController.addToCacheList(cacheList);
+
+      await precacheController.install();
+
+      expect(fetchSpy.calledTwice).to.be.true;
+      expect(fetchSpy.firstCall.args[0].request.integrity).to.eql('');
+      expect(fetchSpy.secondCall.args[0].request.integrity).to.eql('sha256-second');
+    });
+
+    it(`it should fail when entries have the same url but different integrity`, function() {
+      return expectError(() => {
+        const precacheController = new PrecacheController();
+        const cacheList = [
+          {url: '/test', integrity: 'sha256-one'},
+          {url: '/test', integrity: 'sha256-two'},
+        ];
+        precacheController.addToCacheList(cacheList);
+      }, 'add-to-cache-list-conflicting-integrities', (err) => {
+        expect(err.details.url).to.eql(`${location.origin}/test`);
+      });
+    });
+
     it(`it should fail installation when a response with a status of 400 is received`, async function() {
       sandbox.stub(fetchWrapper, 'fetch').resolves(new Response('', {
         status: 400,

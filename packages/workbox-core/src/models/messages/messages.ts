@@ -256,4 +256,10 @@ export const messages : MessageMap = {
     return `The precaching request for '${url}' failed with an HTTP ` +
       `status of ${status}.`;
   },
+
+  'add-to-cache-list-conflicting-integrities': ({url}) => {
+    return `Two of the entries passed to ` +
+      `'workbox-precaching.PrecacheController.addToCacheList()' had the URL ` +
+      `${url} with different integrity values. Please remove one of them.`;
+  },
 };
