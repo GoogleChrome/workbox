@@ -15,15 +15,14 @@ import {RouteHandlerCallback} from 'workbox-core/types.js';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
 import {WorkboxPlugin} from 'workbox-core/types.js';
 
+import {PrecacheEntry} from './_types.js';
 import {cleanRedirect} from './utils/cleanRedirect.js';
 import {createCacheKey} from './utils/createCacheKey.js';
 import {printCleanupDetails} from './utils/printCleanupDetails.js';
 import {printInstallDetails} from './utils/printInstallDetails.js';
 
 import './_version.js';
-import { PrecacheEntry } from './_types.js';
-
-
+ 
 /**
  * Performs efficient precaching of assets.
  *
@@ -32,6 +31,7 @@ import { PrecacheEntry } from './_types.js';
 class PrecacheController {
   private _cacheName: string;
   private _urlsToCacheKeys: Map<string, string>;
+  private _cacheKeysToIntegrities: Map<string, string>;
 
   /**
    * Create a new PrecacheController.
@@ -42,6 +42,7 @@ class PrecacheController {
   constructor(cacheName?: string) {
     this._cacheName = cacheNames.getPrecacheName(cacheName);
     this._urlsToCacheKeys = new Map();
+    this._cacheKeysToIntegrities = new Map();
   }
 
   /**
@@ -64,6 +65,7 @@ class PrecacheController {
 
     for (const entry of entries) {
       const {cacheKey, url} = createCacheKey(entry);
+
       if (this._urlsToCacheKeys.has(url) &&
           this._urlsToCacheKeys.get(url) !== cacheKey) {
         throw new WorkboxError('add-to-cache-list-conflicting-entries', {
@@ -71,6 +73,17 @@ class PrecacheController {
           secondEntry: cacheKey,
         });
       }
+
+      if (typeof entry !== 'string' && entry.integrity) {
+        if (this._cacheKeysToIntegrities.has(cacheKey) &&
+            this._cacheKeysToIntegrities.get(cacheKey) !== entry.integrity) {
+          throw new WorkboxError('add-to-cache-list-conflicting-integrities', {
+            url,
+          });
+        }
+        this._cacheKeysToIntegrities.set(cacheKey, entry.integrity);
+      }
+
       this._urlsToCacheKeys.set(url, cacheKey);
     }
   }
@@ -117,7 +130,8 @@ class PrecacheController {
     }
 
     const precacheRequests = urlsToPrecache.map((url) => {
-      return this._addURLToCache({event, plugins, url});
+      const integrity = this._cacheKeysToIntegrities.get(url);
+      return this._addURLToCache({event, plugins, url, integrity});
     });
     await Promise.all(precacheRequests);
 
@@ -173,12 +187,17 @@ class PrecacheController {
    * @param {Array<Object>} [options.plugins] An array of plugins to apply to
    * fetch and caching.
    */
-  async _addURLToCache({url, event, plugins}: {
+  async _addURLToCache({url, event, plugins, integrity}: {
     url: string,
     event?: ExtendableEvent,
     plugins?: WorkboxPlugin[],
+    integrity?: string,
   }) {
-    const request = new Request(url, {credentials: 'same-origin'});
+    const request = new Request(url, {
+      integrity,
+      credentials: 'same-origin',
+    });
+
     let response = await fetchWrapper.fetch({
       event,
       plugins,

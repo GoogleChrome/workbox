@@ -261,4 +261,10 @@ export const messages : MessageMap = {
     return `createHandlerForURL('${url}') was called, but that URL is not ` +
       `precached. Please pass in a URL that is precached instead.`;
   },
+
+  'add-to-cache-list-conflicting-integrities': ({url}) => {
+    return `Two of the entries passed to ` +
+      `'workbox-precaching.PrecacheController.addToCacheList()' had the URL ` +
+      `${url} with different integrity values. Please remove one of them.`;
+  },
 };

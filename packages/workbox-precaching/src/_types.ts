@@ -37,10 +37,13 @@ export interface CleanupResult {
  * @typedef {Object} PrecacheEntry
  * @property {string} url URL to precache.
  * @property {string} [revision] Revision information for the URL.
+ * @property {string} [integrity] Integrity metadata that will be used when
+ * making the network request for the URL.
  *
  * @memberof workbox.precaching
  */
 export interface PrecacheEntry {
+  integrity?: string;
   url: string;
   revision?: string;
 }
