@@ -314,7 +314,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
                 revision: '112b1ad19c141f739a7ef2b803e83a6d',
                 url: 'main.js',
               }, {
-                revision: 'dbbbfa8b60f4f49cb7a2e8448842ad19',
+                revision: '279ad728ece4fb6ea9c9e884bb3179a3',
                 url: 'vendors~main.js',
               },
             ], {}]],
