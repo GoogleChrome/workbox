@@ -6,12 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {WorkboxEvent} from './WorkboxEvent.js';
-import '../_version.js';
+import {WorkboxEvent, WorkboxEventMap} from './WorkboxEvent.js';
 
 
-export type ListenerCallback = (event: WorkboxEvent) => void;
-
+export type ListenerCallback = (event: WorkboxEvent) => any;
 
 /**
  * A minimal `EventTarget` shim.
@@ -20,15 +18,16 @@ export type ListenerCallback = (event: WorkboxEvent) => void;
  * @private
  */
 export class WorkboxEventTarget {
-  private _eventListenerRegistry: {[type: string]: Set<ListenerCallback>} = {};
+  private _eventListenerRegistry: Map<keyof WorkboxEventMap, Set<ListenerCallback>> = new Map();
 
   /**
    * @param {string} type
    * @param {Function} listener
    * @private
    */
-  addEventListener(type: string, listener: ListenerCallback) {
-    this._getEventListenersByType(type).add(listener);
+  addEventListener<K extends keyof WorkboxEventMap>(type: K, listener: (event: WorkboxEventMap[K]) => any) {
+    const foo = this._getEventListenersByType(type)
+    foo.add(listener);
   }
 
   /**
@@ -36,7 +35,7 @@ export class WorkboxEventTarget {
    * @param {Function} listener
    * @private
    */
-  removeEventListener(type: string, listener: ListenerCallback) {
+  removeEventListener<K extends keyof WorkboxEventMap>(type: K, listener: (event: WorkboxEventMap[K]) => any) {
     this._getEventListenersByType(type).delete(listener);
   }
 
@@ -61,8 +60,10 @@ export class WorkboxEventTarget {
    * @return {Set<ListenerCallback>} An array of handler functions.
    * @private
    */
-  private _getEventListenersByType(type: string) {
-    return this._eventListenerRegistry[type] =
-        (this._eventListenerRegistry[type] || new Set());
+  private _getEventListenersByType(type: keyof WorkboxEventMap) {
+    if (!this._eventListenerRegistry.has(type)) {
+      this._eventListenerRegistry.set(type, new Set());
+    }
+    return this._eventListenerRegistry.get(type)!;
   }
 }
