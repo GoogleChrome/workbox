@@ -19,6 +19,8 @@ export interface WorkboxEventProps {
   wasWaitingBeforeRegister?: boolean;
 }
 
+export interface WorkboxEvent extends WorkboxEventProps {}
+
 /**
  * A minimal `Event` subclass shim.
  * This doesn't *actually* subclass `Event` because not all browsers support
