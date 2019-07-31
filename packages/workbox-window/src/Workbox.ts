@@ -11,10 +11,8 @@ import {logger} from 'workbox-core/_private/logger.js';
 import {messageSW} from './messageSW.js';
 import {WorkboxEventTarget} from './utils/WorkboxEventTarget.js';
 import {urlsMatch} from './utils/urlsMatch.js';
-import {WorkboxEvent} from './utils/WorkboxEvent.js';
+import {WorkboxEvent, WorkboxLifecycleEventMap} from './utils/WorkboxEvent.js';
 import './_version.js';
-
-import {WorkboxEventProps} from './utils/WorkboxEvent.js';
 
 
 // The time a SW must be in the waiting phase before we can conclude
@@ -399,13 +397,13 @@ class Workbox extends WorkboxEventTarget {
     const isExternal = sw === this._externalSW;
     const eventPrefix = isExternal ? 'external' : '';
 
-    const eventProps = <WorkboxEventProps> {sw, originalEvent};
+    const eventProps: any = {sw, originalEvent};
     if (!isExternal && this._isUpdate) {
       eventProps.isUpdate = true;
     }
 
     this.dispatchEvent(new WorkboxEvent(
-        eventPrefix + state, eventProps));
+        eventPrefix + state as keyof WorkboxLifecycleEventMap, eventProps));
 
     if (state === 'installed') {
       // This timeout is used to ignore cases where the service worker calls
@@ -420,7 +418,7 @@ class Workbox extends WorkboxEventTarget {
         // Ensure the SW is still waiting (it may now be redundant).
         if (state === 'installed' && registration.waiting === sw) {
           this.dispatchEvent(new WorkboxEvent(
-              eventPrefix + 'waiting', eventProps));
+              eventPrefix + 'waiting' as keyof WorkboxLifecycleEventMap, eventProps));
 
           if (process.env.NODE_ENV !== 'production') {
             if (isExternal) {
@@ -485,6 +483,7 @@ class Workbox extends WorkboxEventTarget {
         originalEvent,
         isUpdate: this._isUpdate,
       }));
+
       if (process.env.NODE_ENV !== 'production') {
         logger.log('Registered service worker now controlling this page.');
       }
@@ -496,9 +495,13 @@ class Workbox extends WorkboxEventTarget {
    * @private
    * @param {Event} originalEvent
    */
-  private _onMessage = (originalEvent: MessageEvent) => {
+  private _onMessage = async (originalEvent: MessageEvent) => {
     const {data} = originalEvent;
-    this.dispatchEvent(new WorkboxEvent('message', {data, originalEvent}));
+    this.dispatchEvent(new WorkboxEvent('message', {
+      data,
+      sw: await this.getSW(),
+      originalEvent,
+    }));
   }
 }
 
@@ -552,7 +555,10 @@ class Workbox extends WorkboxEventTarget {
  * @event module:workbox-window.Workbox#waiting
  * @type {WorkboxEvent}
  * @property {ServiceWorker} sw The service worker instance.
- * @property {Event} originalEvent The native `controllerchange` event
+ * @property {Event|undefined} originalEvent The original
+ *    [`statechange`]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker/onstatechange}
+ *     event, or `undefined` in the case where the service worker was waiting
+ *     to before `.register()` was called.
  * @property {boolean|undefined} isUpdate True if a service worker was already
  *     controlling when this `Workbox` instance called `register()`.
  * @property {boolean|undefined} wasWaitingBeforeRegister True if a service worker with
@@ -638,7 +644,7 @@ class Workbox extends WorkboxEventTarget {
  * @event module:workbox-window.Workbox#externalwaiting
  * @type {WorkboxEvent}
  * @property {ServiceWorker} sw The service worker instance.
- * @property {Event|undefined} originalEvent The original [`statechange`]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker/onstatechange}
+ * @property {Event} originalEvent The original [`statechange`]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker/onstatechange}
  *     event.
  * @property {string} type `externalwaiting`.
  * @property {Workbox} target The `Workbox` instance.
