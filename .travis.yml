@@ -1,24 +1,28 @@
-sudo: required
-dist: trusty
 language: node_js
+
+sudo: required
+
+os:
+  - osx
+
+# See https://docs.travis-ci.com/user/reference/osx/#macos-version
+# This implies macOS 10.14
+osx_image: xcode11
 
 cache:
   directories:
-    - "$HOME/.npm"
     - ~/.selenium-assistant
 
 node_js:
-  - '8'
-
-# Read more here: https://docs.travis-ci.com/user/gui-and-headless-browsers/#Using-xvfb-to-Run-Tests-That-Require-a-GUI
-before_script:
-  - npm install -g gulp-cli
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start || echo \"Unable to start virtual display.\""
-  - sleep 3 # give xvfb some time to start
+  - 8
 
 install:
   - npm ci
+
+before_script:
+  - npm install -g gulp-cli
+  - sudo /usr/bin/safaridriver --enable
+  - sudo defaults write com.apple.Safari AllowRemoteAutomation 1
 
 script:
   - gulp test

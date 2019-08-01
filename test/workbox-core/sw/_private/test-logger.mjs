@@ -104,7 +104,8 @@ describe(`logger`, function() {
       expect(stub.callCount).to.equal(1);
     });
 
-    it(`should work with several inputs`, function() {
+    // TODO: https://github.com/GoogleChrome/workbox/issues/2149
+    it.skip(`should work with several inputs`, function() {
       if (process.env.NODE_ENV === 'production') this.skip();
 
       const stub = sandbox.stub(console, 'groupCollapsed');
@@ -120,7 +121,8 @@ describe(`logger`, function() {
       validateStub(stub, args, true);
     });
 
-    it(`should not prefix log message until after .groupEnd() is called`, function() {
+    // TODO: https://github.com/GoogleChrome/workbox/issues/2149
+    it.skip(`should not prefix log message until after .groupEnd() is called`, function() {
       if (process.env.NODE_ENV === 'production') this.skip();
 
       const debugStub = sandbox.stub(console, 'debug');

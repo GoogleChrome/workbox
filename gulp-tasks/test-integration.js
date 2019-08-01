@@ -6,16 +6,18 @@
   https://opensource.org/licenses/MIT.
 */
 
+const clearRequire = require('clear-require');
+const glob = require('glob');
 const gulp = require('gulp');
 const oneLine = require('common-tags').oneLine;
-const glob = require('glob');
-const seleniumAssistant = require('selenium-assistant');
 const path = require('path');
-const clearRequire = require('clear-require');
+const seleniumAssistant = require('selenium-assistant');
 
 const constants = require('./utils/constants');
+const getNpmCmd = require('./utils/get-npm-cmd');
 const logHelper = require('../infra/utils/log-helper');
 const server = require('../infra/testing/server/index');
+const spawn = require('./utils/spawn-promise-wrapper');
 
 const runFiles = (filePaths) => {
   // Mocha can't be run multiple times, which we need for NODE_ENV.
@@ -85,7 +87,12 @@ const runIntegrationForBrowser = async (browser) => {
   for (const buildKey of Object.keys(constants.BUILD_TYPES)) {
     const webdriver = await browser.getSeleniumDriver();
     // Safari Tech Preview can take a long time when working with SW APIs
-    webdriver.manage().timeouts().setScriptTimeout(2 * 60 * 1000);
+    const timeout = 2 * 60 * 1000;
+    webdriver.manage().setTimeouts({
+      implicit: timeout,
+      pageLoad: timeout,
+      script: timeout,
+    });
 
     for (const packageToTest of packagesToTest) {
       const nodeEnv = constants.BUILD_TYPES[buildKey];
@@ -107,6 +114,11 @@ gulp.task('test-integration', async () => {
     logHelper.warn(`Skipping integration tests on Windows.`);
     return;
   }
+
+  // Install the latest Chrome and Firefox webdrivers without referencing
+  // package-lock.json, to ensure that they're up to date.
+  await spawn(getNpmCmd(),
+      `install --no-save chromedriver geckodriver`.split(' '));
 
   logHelper.log(`Downloading browsers......`);
   const expiration = 24;
@@ -148,7 +160,4 @@ gulp.task('test-integration', async () => {
     await server.stop();
     throw err;
   }
-
-  // TODO Saucelabs browsers for latest - 1 browser
-  // TODO Saucelabs browsers for latest - 2 browser
 });
