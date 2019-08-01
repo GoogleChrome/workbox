@@ -6,18 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
-
 import {WorkboxEventTarget} from './WorkboxEventTarget.js';
 import '../_version.js';
 
-
-export interface WorkboxEventProps {
-  sw?: ServiceWorker;
-  data?: any;
-  originalEvent?: Event;
-  isUpdate?: boolean;
-  wasWaitingBeforeRegister?: boolean;
-}
 
 /**
  * A minimal `Event` subclass shim.
@@ -25,10 +16,43 @@ export interface WorkboxEventProps {
  * constructable `EventTarget`, and using a real `Event` will error.
  * @private
  */
-export class WorkboxEvent {
-  target: WorkboxEventTarget;
+export class WorkboxEvent<K extends keyof WorkboxEventMap> {
+  target?: WorkboxEventTarget;
+  sw: ServiceWorker;
+  originalEvent?: Event;
 
-  constructor(public type: string, props: WorkboxEventProps) {
+  constructor(public type: K, props: Omit<WorkboxEventMap[K], 'target' | 'type'>) {
     Object.assign(this, props);
   }
+}
+
+export interface WorkboxMessageEvent extends WorkboxEvent<'message'> {
+  originalEvent: Event;
+  data: any;
+}
+
+export interface WorkboxLifecycleEvent extends WorkboxEvent<keyof WorkboxLifecycleEventMap> {
+  isUpdate?: boolean;
+}
+
+export interface WorkboxLifecycleWaitingEvent extends WorkboxLifecycleEvent {
+  wasWaitingBeforeRegister?: boolean;
+}
+
+export interface WorkboxLifecycleEventMap {
+  'installing': WorkboxLifecycleEvent;
+  'installed': WorkboxLifecycleEvent;
+  'waiting': WorkboxLifecycleWaitingEvent;
+  'activating': WorkboxLifecycleEvent;
+  'activated': WorkboxLifecycleEvent;
+  'controlling': WorkboxLifecycleEvent;
+  'externalinstalling': WorkboxLifecycleEvent;
+  'externalinstalled': WorkboxLifecycleEvent;
+  'externalwaiting': WorkboxLifecycleWaitingEvent;
+  'externalactivating': WorkboxLifecycleEvent;
+  'externalactivated': WorkboxLifecycleEvent;
+}
+
+export interface WorkboxEventMap extends WorkboxLifecycleEventMap {
+  'message': WorkboxMessageEvent;
 }
