@@ -308,6 +308,31 @@ describe(`[workbox-window] Workbox`, function() {
     });
   });
 
+  describe(`update`, function() {
+    it(`updates service worker and resolves with the new registration`, async function() {
+      const controllerBeforeTest = navigator.serviceWorker.controller;
+      const scriptURL = controllerBeforeTest.scriptURL;
+      const wb = new Workbox(scriptURL);
+
+      const reg = await wb.register();
+      const newReg = await wb.update();
+
+      expect(reg).not.to.equal(newReg);
+    });
+
+    describe(`logs in development-only`, function() {
+      it(`(error) if calling without registration`, async function() {
+        if (!isDev()) this.skip();
+
+        const wb = new Workbox(uniq('sw-clients-claim.js.njk'));
+
+        await wb.update();
+        expect(console.error.callCount).to.equal(1);
+        expect(console.error.args[0][2]).to.match(/cannot update/i);
+      });
+    });
+  });
+
   describe(`active`, function() {
     it(`resolves as soon as the registered SW is active`, async function() {
       const controllerBeforeTest = navigator.serviceWorker.controller;

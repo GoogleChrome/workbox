@@ -194,6 +194,22 @@ class Workbox extends WorkboxEventTarget {
   }
 
   /**
+   * Checks for updates of the registered service worker.
+   */
+  async update() {
+    if (!this._registration) {
+      if (process.env.NODE_ENV !== 'production') {
+        logger.error('Cannot update a Workbox instance without ' +
+          'being registered. Register the Workbox instance first.');
+      }
+      return;
+    }
+
+    // Try to update registration
+    await this._registration.update();
+  }
+
+  /**
    * Resolves to the service worker registered by this instance as soon as it
    * is active. If a service worker was already controlling at registration
    * time then it will resolve to that if the script URLs (and optionally
