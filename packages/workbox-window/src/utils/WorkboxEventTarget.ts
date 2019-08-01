@@ -9,7 +9,7 @@
 import {WorkboxEvent, WorkboxEventMap} from './WorkboxEvent.js';
 
 
-export type ListenerCallback = (event: WorkboxEvent) => any;
+export type ListenerCallback = (event: WorkboxEvent<any>) => any;
 
 /**
  * A minimal `EventTarget` shim.
@@ -43,7 +43,7 @@ export class WorkboxEventTarget {
    * @param {Object} event
    * @private
    */
-  dispatchEvent(event: WorkboxEvent) {
+  dispatchEvent(event: WorkboxEvent<any>) {
     event.target = this;
 
     const listeners = this._getEventListenersByType(event.type)

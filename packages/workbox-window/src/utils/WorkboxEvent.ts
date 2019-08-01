@@ -16,29 +16,26 @@ import '../_version.js';
  * constructable `EventTarget`, and using a real `Event` will error.
  * @private
  */
-export class WorkboxEvent {
+export class WorkboxEvent<K extends keyof WorkboxEventMap> {
   target?: WorkboxEventTarget;
   sw: ServiceWorker;
+  originalEvent?: Event;
 
-  constructor(public type: keyof WorkboxEventMap, props: Object) {
+  constructor(public type: K, props: Omit<WorkboxEventMap[K], 'target' | 'type'>) {
     Object.assign(this, props);
   }
 }
 
-export interface WorkboxMessageEvent extends WorkboxEvent {
-  type: 'message';
+export interface WorkboxMessageEvent extends WorkboxEvent<'message'> {
   originalEvent: Event;
   data: any;
 }
 
-export interface WorkboxLifecycleEvent extends WorkboxEvent {
-  type: keyof WorkboxLifecycleEventMap;
-  originalEvent: Event;
+export interface WorkboxLifecycleEvent extends WorkboxEvent<keyof WorkboxLifecycleEventMap> {
   isUpdate?: boolean;
 }
 
 export interface WorkboxLifecycleWaitingEvent extends WorkboxLifecycleEvent {
-  type: keyof WorkboxLifecycleEventMap;
   wasWaitingBeforeRegister?: boolean;
 }
 

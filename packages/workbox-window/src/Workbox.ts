@@ -392,12 +392,15 @@ class Workbox extends WorkboxEventTarget {
   private _onStateChange = (originalEvent: Event) => {
     // `this._registration` will never be `undefined` after an update is found.
     const registration = this._registration!;
-    const sw = <ServiceWorker>originalEvent.target;
+    const sw = originalEvent.target as ServiceWorker;
     const {state} = sw;
     const isExternal = sw === this._externalSW;
     const eventPrefix = isExternal ? 'external' : '';
 
-    const eventProps: any = {sw, originalEvent};
+    const eventProps: {sw: ServiceWorker, originalEvent: Event, isUpdate?: boolean} = {
+      sw,
+      originalEvent
+    };
     if (!isExternal && this._isUpdate) {
       eventProps.isUpdate = true;
     }
