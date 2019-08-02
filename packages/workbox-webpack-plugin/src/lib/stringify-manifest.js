@@ -6,10 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-const stringify = require('json-stable-stringify');
+const stringify = require('fast-json-stable-stringify');
 
 module.exports = (manifestEntries, injectionPoint, prettyPrint) => {
-  // json-stable-stringify ensures that we get a consistent output, with all
+  // stringify ensures that we get a consistent output, with all
   // the properties of each object sorted.
   // There's a hash created of the serialized JSON data, and we want the hash to
   // be the same if the data is the same, without any sort-order variation.
