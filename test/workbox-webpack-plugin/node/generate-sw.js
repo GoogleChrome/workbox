@@ -110,6 +110,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
+        devtool: 'source-map',
         entry: {
           main: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
           imported: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
@@ -139,16 +140,17 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           expect(statsJson.warnings).to.have.length(1);
 
           const files = await globby(outputDir);
-          expect(files).to.have.length(4);
+          expect(files).to.have.length(8);
 
           await validateServiceWorkerRuntime({
             swFile, expectedMethodCalls: {
+              // imported-[chunkhash].js.map should *not* be included.
               importScripts: [
                 ['imported-1f6b183815996bd3f526.js'],
               ],
               // imported-[chunkhash].js should *not* be included.
               precacheAndRoute: [[[{
-                revision: '0fae6a991467bd40263a3ba8cd82835d',
+                revision: '39e9dd73c0daacacec3ea359cd47394a',
                 url: 'main-01a6ea3dea62d17888bb.js',
               }], {}]],
             },

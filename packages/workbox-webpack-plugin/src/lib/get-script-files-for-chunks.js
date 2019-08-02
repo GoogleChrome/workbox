@@ -6,6 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
+const upath = require('upath');
+
 const resolveWebpackURL = require('./resolve-webpack-url');
 
 module.exports = (compilation, chunkNames) => {
@@ -17,7 +19,10 @@ module.exports = (compilation, chunkNames) => {
     const chunk = chunks.find((chunk) => chunk.names.includes(chunkName));
     if (chunk) {
       for (const file of chunk.files) {
-        scriptFiles.add(resolveWebpackURL(publicPath, file));
+        // See https://github.com/GoogleChrome/workbox/issues/2161
+        if (upath.extname(file) === '.js') {
+          scriptFiles.add(resolveWebpackURL(publicPath, file));
+        }
       }
     } else {
       compilation.warnings.push(`${chunkName} was provided to ` +
