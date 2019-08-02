@@ -106,7 +106,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
       });
     });
 
-    it(`•should work when called with importScriptsViaChunks`, function(done) {
+    it(`should work when called with importScriptsViaChunks`, function(done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
