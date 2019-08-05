@@ -6,7 +6,6 @@
   https://opensource.org/licenses/MIT.
 */
 
-const {By} = require('selenium-webdriver');
 const expect = require('chai').expect;
 const qs = require('qs');
 
@@ -74,9 +73,6 @@ describe(`[workbox-google-analytics] initialize`, function() {
       return 'SyncManager' in window;
     });
     if (!browserSupportsSync) this.skip();
-
-    const simulateOfflineEl =
-        await webdriver.findElement(By.id('simulate-offline'));
 
     // Send a hit while online to ensure regular requests work.
     await webdriver.executeAsyncScript((done) => {
