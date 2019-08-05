@@ -102,7 +102,9 @@ describe(`[workbox-google-analytics] initialize`, function() {
       window.gtag('event', 'beacon', {
         transport_type: 'beacon',
         event_label: Date.now(),
-        event_callback: done,
+        event_callback: () => {
+          setTimeout(done, 50);
+        },
       });
     });
 
@@ -110,7 +112,9 @@ describe(`[workbox-google-analytics] initialize`, function() {
       window.gtag('event', 'pixel', {
         transport_type: 'image',
         event_label: Date.now(),
-        event_callback: done,
+        event_callback: () => {
+          setTimeout(done, 50);
+        },
       });
     });
 
@@ -160,8 +164,6 @@ describe(`[workbox-google-analytics] initialize`, function() {
     // and ensure those values reflect the original order of the hits.
     expect(requests[0].params.qt > 0).to.be.true;
     expect(requests[1].params.qt > 0).to.be.true;
-    // This should be <= instead of less than, since a ms didn't necessarily
-    // pass in between the two events.
-    expect(requests[0].originalTime <= requests[1].originalTime).to.be.true;
+    expect(requests[0].originalTime < requests[1].originalTime).to.be.true;
   });
 });
