@@ -103,6 +103,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
         transport_type: 'beacon',
         event_label: Date.now(),
         event_callback: () => {
+          // See https://github.com/GoogleChrome/workbox/issues/2168
           setTimeout(done, 50);
         },
       });
@@ -113,6 +114,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
         transport_type: 'image',
         event_label: Date.now(),
         event_callback: () => {
+          // See https://github.com/GoogleChrome/workbox/issues/2168
           setTimeout(done, 50);
         },
       });
