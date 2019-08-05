@@ -96,16 +96,17 @@ describe(`[workbox-google-analytics] initialize`, function() {
       action: 'clear-spied-requests',
     });
 
-    // Check the "simulate offline" checkbox and make some requests.
-    await simulateOfflineEl.click();
+    // Switch the service worker into "offline" mode.
+    await webdriver.executeAsyncScript(messageSW, {
+      action: 'simulate-offline',
+      value: true,
+    });
 
     await webdriver.executeAsyncScript((done) => {
       window.gtag('event', 'beacon', {
         transport_type: 'beacon',
         event_label: Date.now(),
-        event_callback: () => {
-          setTimeout(done, 50);
-        },
+        event_callback: done,
       });
     });
 
@@ -113,9 +114,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
       window.gtag('event', 'pixel', {
         transport_type: 'image',
         event_label: Date.now(),
-        event_callback: () => {
-          setTimeout(done, 50);
-        },
+        event_callback: done,
       });
     });
 
@@ -131,8 +130,13 @@ describe(`[workbox-google-analytics] initialize`, function() {
     });
     expect(requests).to.have.lengthOf(0);
 
-    // Uncheck the "simulate offline" checkbox and then trigger a sync.
-    await simulateOfflineEl.click();
+    // Switch the service worker into "online" mode.
+    await webdriver.executeAsyncScript(messageSW, {
+      action: 'simulate-offline',
+      value: false,
+    });
+
+    // Dispatch a sync event.
     await webdriver.executeAsyncScript(messageSW, {
       action: 'dispatch-sync-event',
     });
@@ -160,6 +164,8 @@ describe(`[workbox-google-analytics] initialize`, function() {
     // and ensure those values reflect the original order of the hits.
     expect(requests[0].params.qt > 0).to.be.true;
     expect(requests[1].params.qt > 0).to.be.true;
-    expect(requests[0].originalTime < requests[1].originalTime).to.be.true;
+    // This should be <= instead of less than, since a ms didn't necessarily
+    // pass in between the two events.
+    expect(requests[0].originalTime <= requests[1].originalTime).to.be.true;
   });
 });
