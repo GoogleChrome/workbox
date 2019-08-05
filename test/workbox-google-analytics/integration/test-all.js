@@ -6,13 +6,13 @@
   https://opensource.org/licenses/MIT.
 */
 
+const {By} = require('selenium-webdriver');
 const expect = require('chai').expect;
 const qs = require('qs');
-const {By} = require('selenium-webdriver');
+
+const {runUnitTests} = require('../../../infra/testing/webdriver/runUnitTests');
 const activateAndControlSW = require('../../../infra/testing/activate-and-control');
 const waitUntil = require('../../../infra/testing/wait-until');
-const {runUnitTests} = require('../../../infra/testing/webdriver/runUnitTests');
-
 
 // Store local references of these globals.
 const {webdriver, server} = global.__workbox;
@@ -98,20 +98,27 @@ describe(`[workbox-google-analytics] initialize`, function() {
 
     // Check the "simulate offline" checkbox and make some requests.
     await simulateOfflineEl.click();
+
     await webdriver.executeAsyncScript((done) => {
       window.gtag('event', 'beacon', {
         transport_type: 'beacon',
         event_label: Date.now(),
-        event_callback: () => done(),
+        event_callback: () => {
+          setTimeout(done, 50);
+        },
       });
     });
+
     await webdriver.executeAsyncScript((done) => {
       window.gtag('event', 'pixel', {
         transport_type: 'image',
         event_label: Date.now(),
-        event_callback: () => done(),
+        event_callback: () => {
+          setTimeout(done, 50);
+        },
       });
     });
+
     // This request should not match GA routes, so it shouldn't be replayed.
     await webdriver.executeAsyncScript((done) => {
       fetch('https://httpbin.org/get').then(() => done());
@@ -152,7 +159,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
     // Ensure the hit's qt params were present and greater than 0,
     // and ensure those values reflect the original order of the hits.
     expect(requests[0].params.qt > 0).to.be.true;
-    expect(requests[0].params.qt > 0).to.be.true;
+    expect(requests[1].params.qt > 0).to.be.true;
     expect(requests[0].originalTime < requests[1].originalTime).to.be.true;
   });
 });
