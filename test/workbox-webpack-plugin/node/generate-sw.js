@@ -1022,6 +1022,44 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
     });
   });
 
+  describe(`[workbox-webpack-plugin] Hot-reload scenarios`, function() {
+    // See https://github.com/GoogleChrome/workbox/issues/2158
+    it(`should support multiple compilations using the same plugin instance`, async function() {
+      const outputDir = tempy.directory();
+      const srcDir = upath.join(__dirname, '..', 'static', 'example-project-1');
+      const config = {
+        mode: 'production',
+        entry: {
+          index: upath.join(srcDir, 'webpackEntry.js'),
+        },
+        output: {
+          filename: '[name].js',
+          path: outputDir,
+        },
+        plugins: [
+          new GenerateSW(),
+        ],
+      };
+
+      const compiler = webpack(config);
+      for (const i of [1, 2]) {
+        await new Promise((resolve, reject) => {
+          compiler.run(async (webpackError, stats) => {
+            try {
+              webpackBuildCheck(webpackError, stats);
+              const files = await globby(outputDir);
+              expect(files).to.have.length(3);
+
+              resolve();
+            } catch (error) {
+              reject(`Failure during compilation ${i}: ${error}`);
+            }
+          });
+        });
+      }
+    });
+  });
+
   describe(`[workbox-webpack-plugin] Rollup plugin configuration options`, function() {
     it(`should support inlining the Workbox runtime`, function(done) {
       const outputDir = tempy.directory();

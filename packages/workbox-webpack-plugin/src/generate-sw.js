@@ -76,37 +76,41 @@ class GenerateSW {
    * @private
    */
   async handleEmit(compilation) {
+    let config;
     try {
-      this.config = validate(this.config, webpackGenerateSWSchema);
+      // emit might be called multiple times; instead of modifying this.config,
+      // use a validated copy.
+      // See https://github.com/GoogleChrome/workbox/issues/2158
+      config = validate(this.config, webpackGenerateSWSchema);
     } catch (error) {
       throw new Error(`Please check your ${this.constructor.name} plugin ` +
         `configuration:\n${error.message}`);
     }
 
-    if (this.config.importScriptsViaChunks) {
+    if (config.importScriptsViaChunks) {
       // Anything loaded via importScripts() is implicitly cached by the service
       // worker, and should not be added to the precache manifest.
-      this.config.excludeChunks = (this.config.excludeChunks || [])
-          .concat(this.config.importScriptsViaChunks);
+      config.excludeChunks = (config.excludeChunks || [])
+          .concat(config.importScriptsViaChunks);
 
       const scripts = getScriptFilesForChunks(
-          compilation, this.config.importScriptsViaChunks);
+          compilation, config.importScriptsViaChunks);
 
-      this.config.importScripts = (this.config.importScripts || [])
+      config.importScripts = (config.importScripts || [])
           .concat(scripts);
     }
 
-    this.config.manifestEntries = getManifestEntriesFromCompilation(
-        compilation, this.config);
+    config.manifestEntries = getManifestEntriesFromCompilation(
+        compilation, config);
 
-    const unbundledCode = populateSWTemplate(this.config);
+    const unbundledCode = populateSWTemplate(config);
 
     const files = await bundle({
-      babelPresetEnvTargets: this.config.babelPresetEnvTargets,
-      inlineWorkboxRuntime: this.config.inlineWorkboxRuntime,
-      mode: this.config.mode,
-      sourcemap: this.config.sourcemap,
-      swDest: relativeToOutputPath(compilation, this.config.swDest),
+      babelPresetEnvTargets: config.babelPresetEnvTargets,
+      inlineWorkboxRuntime: config.inlineWorkboxRuntime,
+      mode: config.mode,
+      sourcemap: config.sourcemap,
+      swDest: relativeToOutputPath(compilation, config.swDest),
       unbundledCode,
     });
 
