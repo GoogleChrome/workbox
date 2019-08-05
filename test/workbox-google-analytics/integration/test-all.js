@@ -8,11 +8,10 @@
 
 const expect = require('chai').expect;
 const qs = require('qs');
-const {By} = require('selenium-webdriver');
+
+const {runUnitTests} = require('../../../infra/testing/webdriver/runUnitTests');
 const activateAndControlSW = require('../../../infra/testing/activate-and-control');
 const waitUntil = require('../../../infra/testing/wait-until');
-const {runUnitTests} = require('../../../infra/testing/webdriver/runUnitTests');
-
 
 // Store local references of these globals.
 const {webdriver, server} = global.__workbox;
@@ -75,9 +74,6 @@ describe(`[workbox-google-analytics] initialize`, function() {
     });
     if (!browserSupportsSync) this.skip();
 
-    const simulateOfflineEl =
-        await webdriver.findElement(By.id('simulate-offline'));
-
     // Send a hit while online to ensure regular requests work.
     await webdriver.executeAsyncScript((done) => {
       window.gtag('event', 'beacon', {
@@ -96,22 +92,34 @@ describe(`[workbox-google-analytics] initialize`, function() {
       action: 'clear-spied-requests',
     });
 
-    // Check the "simulate offline" checkbox and make some requests.
-    await simulateOfflineEl.click();
+    // Switch the service worker into "offline" mode.
+    await webdriver.executeAsyncScript(messageSW, {
+      action: 'simulate-offline',
+      value: true,
+    });
+
     await webdriver.executeAsyncScript((done) => {
       window.gtag('event', 'beacon', {
         transport_type: 'beacon',
         event_label: Date.now(),
-        event_callback: () => done(),
+        event_callback: () => {
+          // See https://github.com/GoogleChrome/workbox/issues/2168
+          setTimeout(done, 50);
+        },
       });
     });
+
     await webdriver.executeAsyncScript((done) => {
       window.gtag('event', 'pixel', {
         transport_type: 'image',
         event_label: Date.now(),
-        event_callback: () => done(),
+        event_callback: () => {
+          // See https://github.com/GoogleChrome/workbox/issues/2168
+          setTimeout(done, 50);
+        },
       });
     });
+
     // This request should not match GA routes, so it shouldn't be replayed.
     await webdriver.executeAsyncScript((done) => {
       fetch('https://httpbin.org/get').then(() => done());
@@ -124,8 +132,13 @@ describe(`[workbox-google-analytics] initialize`, function() {
     });
     expect(requests).to.have.lengthOf(0);
 
-    // Uncheck the "simulate offline" checkbox and then trigger a sync.
-    await simulateOfflineEl.click();
+    // Switch the service worker into "online" mode.
+    await webdriver.executeAsyncScript(messageSW, {
+      action: 'simulate-offline',
+      value: false,
+    });
+
+    // Dispatch a sync event.
     await webdriver.executeAsyncScript(messageSW, {
       action: 'dispatch-sync-event',
     });
@@ -152,7 +165,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
     // Ensure the hit's qt params were present and greater than 0,
     // and ensure those values reflect the original order of the hits.
     expect(requests[0].params.qt > 0).to.be.true;
-    expect(requests[0].params.qt > 0).to.be.true;
+    expect(requests[1].params.qt > 0).to.be.true;
     expect(requests[0].originalTime < requests[1].originalTime).to.be.true;
   });
 });
