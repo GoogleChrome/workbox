@@ -8,8 +8,10 @@
 
 import {logger} from 'workbox-core/_private/logger.mjs';
 
-
 describe(`logger`, function() {
+  const SAFARI_USER_AGENT = `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1.1 Safari/605.1.15`;
+  const CHROME_USER_AGENT = `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.87 Safari/537.36`;
+
   const sandbox = sinon.createSandbox();
 
   beforeEach(function() {
@@ -104,59 +106,65 @@ describe(`logger`, function() {
       expect(stub.callCount).to.equal(1);
     });
 
-    // TODO: https://github.com/GoogleChrome/workbox/issues/2149
-    it.skip(`should work with several inputs`, function() {
-      if (process.env.NODE_ENV === 'production') this.skip();
+    // There's User-Agent sniffing in the logger code, so we need to run
+    // two different test scenarios for Safari and non-Safari browsers.
+    // See https://github.com/GoogleChrome/workbox/issues/2149
+    for (const [userAgent, isPrefixed] of new Map([[SAFARI_USER_AGENT, false], [CHROME_USER_AGENT, true]])) {
+      it(`should work with several inputs (for ${userAgent})`, function() {
+        if (process.env.NODE_ENV === 'production') this.skip();
 
-      const stub = sandbox.stub(console, 'groupCollapsed');
-      sandbox.stub(console, 'groupEnd');
+        const stub = sandbox.stub(console, 'groupCollapsed');
+        sandbox.replaceGetter(navigator, 'userAgent', () => userAgent);
+        sandbox.stub(console, 'groupEnd');
 
-      const args = ['', 'test', null, undefined, [], {}];
-      logger.groupCollapsed(...args);
-      logger.groupEnd();
+        const args = ['', 'test', null, undefined, [], {}];
+        logger.groupCollapsed(...args);
+        logger.groupEnd();
 
-      // Restore so mocha tests can properly log.
-      sandbox.restore();
+        // Restore so mocha tests can properly log.
+        sandbox.restore();
 
-      validateStub(stub, args, true);
-    });
+        validateStub(stub, args, isPrefixed);
+      });
 
-    // TODO: https://github.com/GoogleChrome/workbox/issues/2149
-    it.skip(`should not prefix log message until after .groupEnd() is called`, function() {
-      if (process.env.NODE_ENV === 'production') this.skip();
+      it(`should not prefix log message until after .groupEnd() is called (for ${userAgent})`, function() {
+        if (process.env.NODE_ENV === 'production') this.skip();
 
-      const debugStub = sandbox.stub(console, 'debug');
-      const logStub = sandbox.stub(console, 'log');
-      const warnStub = sandbox.stub(console, 'warn');
-      const errorStub = sandbox.stub(console, 'error');
-      sandbox.stub(console, 'groupCollapsed');
-      sandbox.stub(console, 'groupEnd');
+        sandbox.replaceGetter(navigator, 'userAgent', () => userAgent);
 
-      logger.groupCollapsed();
-      logger.debug();
-      logger.log();
-      logger.warn();
-      logger.error();
-      logger.groupEnd();
+        const debugStub = sandbox.stub(console, 'debug');
+        const logStub = sandbox.stub(console, 'log');
+        const warnStub = sandbox.stub(console, 'warn');
+        const errorStub = sandbox.stub(console, 'error');
+        sandbox.stub(console, 'groupCollapsed');
+        sandbox.stub(console, 'groupEnd');
 
-      // Restore so mocha tests can properly log.
-      sandbox.restore();
+        logger.groupCollapsed();
+        logger.debug();
+        logger.log();
+        logger.warn();
+        logger.error();
+        logger.groupEnd();
 
-      validateStub(debugStub, [], false);
-      validateStub(logStub, [], false);
-      validateStub(warnStub, [], false);
-      validateStub(errorStub, [], false);
+        // Restore so mocha tests can properly log.
+        sandbox.restore();
 
-      // After `groupEnd()`, subsequent logs should be prefixed again.
-      const logStub2 = sandbox.stub(console, 'log');
+        validateStub(debugStub, [], !isPrefixed);
+        validateStub(logStub, [], !isPrefixed);
+        validateStub(warnStub, [], !isPrefixed);
+        validateStub(errorStub, [], !isPrefixed);
 
-      logger.log();
+        // After `groupEnd()`, subsequent logs should be prefixed again.
+        const logStub2 = sandbox.stub(console, 'log');
 
-      // Restore so mocha tests can properly log.
-      sandbox.restore();
+        logger.log();
 
-      validateStub(logStub2, [], true);
-    });
+        // Restore so mocha tests can properly log.
+        sandbox.restore();
+
+        validateStub(logStub2, [], true);
+      });
+    }
   });
 
   describe(`.groupEnd()`, function() {
