@@ -36,7 +36,11 @@ describe(`[workbox-window] Workbox`, function() {
   });
 
   afterEach(async function() {
-    await unregisterAllSWs();
+    try {
+      await unregisterAllSWs();
+    } catch (error) {
+      // no-op
+    }
   });
 
   describe('register', () => {
@@ -147,8 +151,7 @@ describe(`[workbox-window] Workbox`, function() {
       expect(result.controllingSpyCallCount).to.equal(1);
     });
 
-    // TODO: https://github.com/GoogleChrome/workbox/issues/2150
-    it.skip(`reports all events for an external SW registration`, async function() {
+    it(`reports all events for an external SW registration`, async function() {
       const firstTab = await getLastWindowHandle();
 
       await executeAsyncAndCatch(async (cb) => {
