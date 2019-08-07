@@ -58,7 +58,7 @@ const logger = <Console> (process.env.NODE_ENV === 'production' ? null : (() => 
   const loggerMethods = Object.keys(methodToColorMap);
 
   for (const key of loggerMethods) {
-    const method = <LoggerMethods> key
+    const method = <LoggerMethods> key;
 
     api[method] = (...args: any[]) => {
       print(method, args);
