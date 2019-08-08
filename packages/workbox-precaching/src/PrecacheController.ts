@@ -113,35 +113,37 @@ class PrecacheController {
       }
     }
 
-    const urlsToPrecache = [];
-    const urlsAlreadyPrecached = [];
+    const toBePrecached: {cacheKey: string, url: string}[] = [];
+    const alreadyPrecached: string[] = [];
 
     const cache = await caches.open(this._cacheName);
     const alreadyCachedRequests = await cache.keys();
-    const alreadyCachedURLs = new Set(alreadyCachedRequests.map(
+    const existingCacheKeys = new Set(alreadyCachedRequests.map(
         (request) => request.url));
 
-    for (const cacheKey of this._urlsToCacheKeys.values()) {
-      if (alreadyCachedURLs.has(cacheKey)) {
-        urlsAlreadyPrecached.push(cacheKey);
+    for (const [url, cacheKey] of this._urlsToCacheKeys) {
+      if (existingCacheKeys.has(cacheKey)) {
+        alreadyPrecached.push(url);
       } else {
-        urlsToPrecache.push(cacheKey);
+        toBePrecached.push({cacheKey, url});
       }
     }
 
-    const precacheRequests = urlsToPrecache.map((url) => {
-      const integrity = this._cacheKeysToIntegrities.get(url);
-      return this._addURLToCache({event, plugins, url, integrity});
+    const precacheRequests = toBePrecached.map(({cacheKey, url}) => {
+      const integrity = this._cacheKeysToIntegrities.get(cacheKey);
+      return this._addURLToCache({cacheKey, event, plugins, url, integrity});
     });
     await Promise.all(precacheRequests);
 
+    const updatedURLs = toBePrecached.map((item) => item.url);
+
     if (process.env.NODE_ENV !== 'production') {
-      printInstallDetails(urlsToPrecache, urlsAlreadyPrecached);
+      printInstallDetails(updatedURLs, alreadyPrecached);
     }
 
     return {
-      updatedURLs: urlsToPrecache,
-      notUpdatedURLs: urlsAlreadyPrecached,
+      updatedURLs,
+      notUpdatedURLs: alreadyPrecached,
     };
   }
 
@@ -182,12 +184,16 @@ class PrecacheController {
    *
    * @private
    * @param {Object} options
+   * @param {string} options.cacheKey The string to use a cache key.
    * @param {string} options.url The URL to fetch and cache.
    * @param {Event} [options.event] The install event (if passed).
    * @param {Array<Object>} [options.plugins] An array of plugins to apply to
    * fetch and caching.
+   * @param {string} [options.integrity] The value to use for the `integrity`
+   * field when making the request.
    */
-  async _addURLToCache({url, event, plugins, integrity}: {
+  async _addURLToCache({cacheKey, url, event, plugins, integrity}: {
+    cacheKey: string,
     url: string,
     event?: ExtendableEvent,
     plugins?: WorkboxPlugin[],
@@ -195,6 +201,7 @@ class PrecacheController {
   }) {
     const request = new Request(url, {
       integrity,
+      cache: 'reload',
       credentials: 'same-origin',
     });
 
@@ -239,8 +246,9 @@ class PrecacheController {
     await cacheWrapper.put({
       event,
       plugins,
-      request,
       response,
+      // `request` already uses `url`. We may be able to reuse it.
+      request: cacheKey === url ? request : new Request(cacheKey),
       cacheName: this._cacheName,
       matchOptions: {
         ignoreSearch: true,

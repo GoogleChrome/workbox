@@ -323,7 +323,12 @@ describe(`PrecacheController`, function() {
         `${location.origin}/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=1234`,
       ];
 
-      expect(initialInstallInfo.updatedURLs).to.have.members(initialExpectedCacheKeys);
+      expect(initialInstallInfo.updatedURLs).to.have.members([
+        `${location.origin}/index.1234.html`,
+        `${location.origin}/example.1234.css`,
+        `${location.origin}/scripts/index.js`,
+        `${location.origin}/scripts/stress.js?test=search&foo=bar`,
+      ]);
       expect(initialInstallInfo.notUpdatedURLs).to.be.empty;
 
       if (process.env.NODE_ENV != 'production') {
@@ -364,11 +369,11 @@ describe(`PrecacheController`, function() {
       const updateInstallInfo = await updatePrecacheController.install();
       expect(updateInstallInfo.updatedURLs).to.have.members([
         `${location.origin}/index.4321.html`,
-        `${location.origin}/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=4321`,
+        `${location.origin}/scripts/stress.js?test=search&foo=bar`,
       ]);
       expect(updateInstallInfo.notUpdatedURLs).to.have.members([
         `${location.origin}/example.1234.css`,
-        `${location.origin}/scripts/index.js?__WB_REVISION__=1234`,
+        `${location.origin}/scripts/index.js`,
       ]);
 
       // The cache mock needs the cache to be re-opened to have up-to-date keys.
@@ -415,7 +420,7 @@ describe(`PrecacheController`, function() {
       }
     });
 
-    it('it should precache with plugins', async function() {
+    it('should precache with plugins', async function() {
       sandbox.spy(fetchWrapper, 'fetch');
       sandbox.spy(cacheWrapper, 'put');
 
@@ -449,7 +454,7 @@ describe(`PrecacheController`, function() {
       expect(cacheWrapper.put.args[1][0].plugins).to.equal(testPlugins);
     });
 
-    it(`it should use the proper 'this' when calling a cacheWillUpdate plugin`, async function() {
+    it(`should use the proper 'this' when calling a cacheWillUpdate plugin`, async function() {
       const precacheController = new PrecacheController();
       const cacheList = [
         '/index.1234.html',
@@ -471,7 +476,7 @@ describe(`PrecacheController`, function() {
       expect(cacheWillUpdateSpy.thisValues[0]).to.be.an.instanceof(TestPlugin);
     });
 
-    it(`it should set credentials: 'same-origin' on the precaching requests`, async function() {
+    it(`should set credentials: 'same-origin' on the precaching requests`, async function() {
       sandbox.spy(fetchWrapper, 'fetch');
 
       const precacheController = new PrecacheController();
@@ -486,7 +491,41 @@ describe(`PrecacheController`, function() {
       expect(request.credentials).to.eql('same-origin');
     });
 
-    it(`it should use the integrity value when making requests`, async function() {
+    it(`should set cache: 'reload' on the precaching requests`, async function() {
+      const fetchStub = sandbox.stub(fetchWrapper, 'fetch').resolves(new Response('test'));
+
+      const precacheController = new PrecacheController();
+      const cacheList = [
+        {url: '/test', revision: 'abcd'},
+      ];
+      precacheController.addToCacheList(cacheList);
+
+      await precacheController.install();
+
+      expect(fetchStub.calledOnce).to.be.true;
+      const {request} = fetchStub.firstCall.args[0];
+      expect(request.url).to.eql(`${location.origin}/test`);
+      expect(request.cache).to.eql('reload');
+    });
+
+    it(`should pass in a request that includes the revision to cacheWrapper.put()`, async function() {
+      sandbox.stub(fetchWrapper, 'fetch').resolves(new Response('test'));
+      const putStub = sandbox.stub(cacheWrapper, 'put').resolves();
+
+      const precacheController = new PrecacheController();
+      const cacheList = [
+        {url: '/test', revision: 'abcd'},
+      ];
+      precacheController.addToCacheList(cacheList);
+
+      await precacheController.install();
+
+      expect(putStub.calledOnce).to.be.true;
+      const {request} = putStub.firstCall.args[0];
+      expect(request.url).to.eql(`${location.origin}/test?__WB_REVISION__=abcd`);
+    });
+
+    it(`should use the integrity value when making requests`, async function() {
       const fetchSpy = sandbox.spy(fetchWrapper, 'fetch');
 
       const precacheController = new PrecacheController();
@@ -503,7 +542,7 @@ describe(`PrecacheController`, function() {
       expect(fetchSpy.secondCall.args[0].request.integrity).to.eql('sha256-second');
     });
 
-    it(`it should fail when entries have the same url but different integrity`, function() {
+    it(`should fail when entries have the same url but different integrity`, function() {
       return expectError(() => {
         const precacheController = new PrecacheController();
         const cacheList = [
@@ -516,7 +555,7 @@ describe(`PrecacheController`, function() {
       });
     });
 
-    it(`it should fail installation when a response with a status of 400 is received`, async function() {
+    it(`should fail installation when a response with a status of 400 is received`, async function() {
       sandbox.stub(fetchWrapper, 'fetch').resolves(new Response('', {
         status: 400,
       }));
@@ -533,7 +572,7 @@ describe(`PrecacheController`, function() {
       );
     });
 
-    it(`it should successfully install when an opaque response is received`, async function() {
+    it(`should successfully install when an opaque response is received`, async function() {
       sandbox.stub(fetchWrapper, 'fetch').callsFake(() => {
         const response = new Response('opaque');
         sandbox.stub(response, 'status').value(0);
@@ -550,7 +589,7 @@ describe(`PrecacheController`, function() {
       await precacheController.install();
     });
 
-    it(`it should successfully install when a response with a status of 400 is received, if a cacheWillUpdate plugin allows it`, async function() {
+    it(`should successfully install when a response with a status of 400 is received, if a cacheWillUpdate plugin allows it`, async function() {
       sandbox.stub(fetchWrapper, 'fetch').resolves(new Response('', {
         status: 400,
       }));
