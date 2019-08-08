@@ -113,8 +113,8 @@ class PrecacheController {
       }
     }
 
-    const toBePrecached = [];
-    const alreadyPrecached = [];
+    const toBePrecached: {cacheKey: string, url: string}[] = [];
+    const alreadyPrecached: string[] = [];
 
     const cache = await caches.open(this._cacheName);
     const alreadyCachedRequests = await cache.keys();
