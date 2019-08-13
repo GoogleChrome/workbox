@@ -1022,7 +1022,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
     });
   });
 
-  describe(`[workbox-webpack-plugin] Hot-reload scenarios`, function() {
+  describe(`[workbox-webpack-plugin] Multiple invocation scenarios`, function() {
     // See https://github.com/GoogleChrome/workbox/issues/2158
     it(`should support multiple compilations using the same plugin instance`, async function() {
       const outputDir = tempy.directory();
@@ -1057,6 +1057,68 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           });
         });
       }
+    });
+
+    it(`should not list the swDest from one plugin in the other's manifest`, function(done) {
+      const outputDir = tempy.directory();
+      const srcDir = upath.join(__dirname, '..', 'static', 'example-project-1');
+      const config = {
+        mode: 'production',
+        entry: {
+          index: upath.join(srcDir, 'webpackEntry.js'),
+        },
+        output: {
+          filename: '[name].js',
+          path: outputDir,
+        },
+        plugins: [
+          new GenerateSW({
+            swDest: 'sw1.js',
+          }),
+          new GenerateSW({
+            swDest: 'sw2.js',
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError, stats) => {
+        const sw1File = upath.join(outputDir, 'sw1.js');
+        const sw2File = upath.join(outputDir, 'sw2.js');
+
+        try {
+          webpackBuildCheck(webpackError, stats);
+
+          const files = await globby(outputDir);
+          expect(files).to.have.length(4);
+
+          await validateServiceWorkerRuntime({
+            swFile: sw1File,
+            expectedMethodCalls: {
+              importScripts: [],
+              precacheAndRoute: [[[{
+                revision: '0fae6a991467bd40263a3ba8cd82835d',
+                url: 'index.js',
+              }], {}]],
+            },
+          });
+
+          await validateServiceWorkerRuntime({
+            swFile: sw2File,
+            expectedMethodCalls: {
+              importScripts: [],
+              precacheAndRoute: [[[{
+                revision: '0fae6a991467bd40263a3ba8cd82835d',
+                url: 'index.js',
+              }], {}]],
+            },
+          });
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
     });
   });
 
