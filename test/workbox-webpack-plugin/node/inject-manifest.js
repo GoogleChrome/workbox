@@ -1173,4 +1173,70 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       });
     });
   });
+
+  describe(`[workbox-webpack-plugin] Multiple plugin instances`, function() {
+    // See https://github.com/GoogleChrome/workbox/issues/2181
+    it(`should not list the swDest from one plugin in the other's manifest`, function(done) {
+      const outputDir = tempy.directory();
+      const config = {
+        mode: 'production',
+        entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        output: {
+          filename: '[name].[hash:6].js',
+          path: outputDir,
+        },
+        plugins: [
+          new InjectManifest({
+            exclude: [/sw\d.js/],
+            swSrc: upath.join(__dirname, '..', 'static', 'sw.ts'),
+            swDest: 'sw1.js',
+          }),
+          new InjectManifest({
+            exclude: [/sw\d.js/],
+            swSrc: upath.join(__dirname, '..', 'static', 'sw.ts'),
+            swDest: 'sw2.js',
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError, stats) => {
+        const sw1File = upath.join(outputDir, 'sw1.js');
+        const sw2File = upath.join(outputDir, 'sw2.js');
+
+        try {
+          webpackBuildCheck(webpackError, stats);
+
+          const files = await globby(outputDir);
+          expect(files).to.have.length(3);
+
+          await validateServiceWorkerRuntime({
+            swFile: sw1File,
+            entryPoint: 'injectManifest',
+            expectedMethodCalls: {
+              precacheAndRoute: [[[{
+                revision: '0fae6a991467bd40263a3ba8cd82835d',
+                url: 'main.94b7e7.js',
+              }], {}]],
+            },
+          });
+
+          await validateServiceWorkerRuntime({
+            swFile: sw2File,
+            entryPoint: 'injectManifest',
+            expectedMethodCalls: {
+              precacheAndRoute: [[[{
+                revision: '0fae6a991467bd40263a3ba8cd82835d',
+                url: 'main.94b7e7.js',
+              }], {}]],
+            },
+          });
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+  });
 });
