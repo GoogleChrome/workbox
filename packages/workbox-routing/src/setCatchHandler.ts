@@ -7,7 +7,7 @@
 */
 
 import {getOrCreateDefaultRouter} from './utils/getOrCreateDefaultRouter.js';
-import {HandlerCallback} from './_types.js';
+import {Handler} from './_types.js';
 import './_version.js';
 
 
@@ -20,7 +20,7 @@ import './_version.js';
  *
  * @alias workbox.routing.setCatchHandler
  */
-export const setCatchHandler = (handler: HandlerCallback) => {
+export const setCatchHandler = (handler: Handler) => {
   const defaultRouter = getOrCreateDefaultRouter();
   defaultRouter.setCatchHandler(handler);
 };

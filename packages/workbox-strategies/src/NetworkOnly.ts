@@ -10,7 +10,7 @@ import {assert} from 'workbox-core/_private/assert.js';
 import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.js';
 import {logger} from 'workbox-core/_private/logger.js';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
-import {RouteHandler, RouteHandlerCallbackOptions, WorkboxPlugin} from 'workbox-core/types.js';
+import {RouteHandlerObject, RouteHandlerCallbackOptions, WorkboxPlugin} from 'workbox-core/types.js';
 import {messages} from './utils/messages.js';
 import './_version.js';
 
@@ -32,7 +32,7 @@ interface NetworkFirstOptions {
  *
  * @memberof workbox.strategies
  */
-class NetworkOnly implements RouteHandler {
+class NetworkOnly implements RouteHandlerObject {
   private _plugins: WorkboxPlugin[];
   private _fetchOptions?: RequestInit;
 

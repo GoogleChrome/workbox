@@ -59,9 +59,15 @@ export interface RouteHandlerCallback {
  * function or this `RouteHandler` object. The benefit of the `RouteHandler`
  * is it can be extended (as is done by the `workbox-strategies` package).
  */
-export interface RouteHandler {
-  handle(opts: RouteHandlerCallbackOptions): Promise<Response>;
+export interface RouteHandlerObject {
+  handle: RouteHandlerCallback;
 }
+
+/**
+ * Either a `RouteHandlerCallback` or a `RouteHandlerObject`.
+ * Most APIs in `workbox-routing` that accept route handlers take either.
+ */
+export type RouteHandler = RouteHandlerCallback | RouteHandlerObject;
 
 interface CacheDidUpdateCallback {
   ({cacheName, oldResponse, newResponse, request, event}: {
