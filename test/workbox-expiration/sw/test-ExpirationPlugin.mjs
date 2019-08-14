@@ -6,13 +6,13 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {Plugin} from 'workbox-expiration/Plugin.mjs';
+import {ExpirationPlugin} from 'workbox-expiration/ExpirationPlugin.mjs';
 import {CacheExpiration} from 'workbox-expiration/CacheExpiration.mjs';
 import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
 import {executeQuotaErrorCallbacks} from 'workbox-core/_private/executeQuotaErrorCallbacks.mjs';
 
 
-describe(`Plugin`, function() {
+describe(`ExpirationPlugin`, function() {
   const sandbox = sinon.createSandbox();
 
   beforeEach(function() {
@@ -28,7 +28,7 @@ describe(`Plugin`, function() {
       if (process.env.NODE_ENV === 'production') this.skip();
 
       return expectError(() => {
-        new Plugin();
+        new ExpirationPlugin();
       }, 'max-entries-or-age-required');
     });
 
@@ -36,7 +36,7 @@ describe(`Plugin`, function() {
       if (process.env.NODE_ENV === 'production') this.skip();
 
       return expectError(() => {
-        new Plugin({
+        new ExpirationPlugin({
           maxEntries: 'Hi',
         });
       }, 'incorrect-type');
@@ -46,28 +46,28 @@ describe(`Plugin`, function() {
       if (process.env.NODE_ENV === 'production') this.skip();
 
       return expectError(() => {
-        new Plugin({
+        new ExpirationPlugin({
           maxAgeSeconds: 'Hi',
         });
       }, 'incorrect-type');
     });
 
     it(`should construct with just maxAgeSeconds`, function() {
-      const plugin = new Plugin({
+      const plugin = new ExpirationPlugin({
         maxAgeSeconds: 10,
       });
       expect(plugin._maxAgeSeconds).to.equal(10);
     });
 
     it(`should construct with just maxEntries`, function() {
-      const plugin = new Plugin({
+      const plugin = new ExpirationPlugin({
         maxEntries: 10,
       });
       expect(plugin._config.maxEntries).to.equal(10);
     });
 
     it(`should register a quota error callback when purgeOnQuotaError is true`, async function() {
-      const plugin = new Plugin({
+      const plugin = new ExpirationPlugin({
         maxEntries: 10,
         purgeOnQuotaError: true,
       });
@@ -79,7 +79,7 @@ describe(`Plugin`, function() {
     });
 
     it(`should not register a quota error callback when purgeOnQuotaError is false`, async function() {
-      const plugin = new Plugin({
+      const plugin = new ExpirationPlugin({
         maxEntries: 10,
         purgeOnQuotaError: false,
       });
@@ -93,7 +93,7 @@ describe(`Plugin`, function() {
 
   describe(`cachedResponseWillBeUsed()`, function() {
     it(`should expose a cachedResponseWillBeUsed() method`, function() {
-      const plugin = new Plugin({maxAgeSeconds: 1});
+      const plugin = new ExpirationPlugin({maxAgeSeconds: 1});
       expect(plugin).to.respondTo('cachedResponseWillBeUsed');
     });
 
@@ -106,7 +106,7 @@ describe(`Plugin`, function() {
       const dateString = new Date().toUTCString();
       const cachedResponse = new Response('', {headers: {date: dateString}});
 
-      const plugin = new Plugin({maxAgeSeconds: 1});
+      const plugin = new ExpirationPlugin({maxAgeSeconds: 1});
 
       const expirationManager = plugin._getCacheExpiration('test-cache');
       sandbox.spy(expirationManager, 'expireEntries');
@@ -126,7 +126,7 @@ describe(`Plugin`, function() {
       // Clock past the expiration of the Data header
       clock.tick(1000 + 1);
 
-      const plugin = new Plugin({maxAgeSeconds: 1});
+      const plugin = new ExpirationPlugin({maxAgeSeconds: 1});
 
       const expirationManager = plugin._getCacheExpiration('test-cache');
       sandbox.spy(expirationManager, 'expireEntries');
@@ -136,7 +136,7 @@ describe(`Plugin`, function() {
     });
 
     it(`should handle a null cachedResponse`, async function() {
-      const plugin = new Plugin({maxAgeSeconds: 1});
+      const plugin = new ExpirationPlugin({maxAgeSeconds: 1});
 
       const expirationManager = plugin._getCacheExpiration('test-cache');
       sandbox.spy(expirationManager, 'expireEntries');
@@ -145,7 +145,7 @@ describe(`Plugin`, function() {
     });
 
     it(`should update the timestamp for the request URL`, async function() {
-      const plugin = new Plugin({maxEntries: 10});
+      const plugin = new ExpirationPlugin({maxEntries: 10});
 
       const expirationManager = plugin._getCacheExpiration('test-cache');
       sandbox.spy(expirationManager, 'updateTimestamp');
@@ -163,13 +163,13 @@ describe(`Plugin`, function() {
 
   describe(`_isResponseDateFresh()`, function() {
     it(`should return true when maxAgeSeconds is not set`, function() {
-      const plugin = new Plugin({maxEntries: 1});
+      const plugin = new ExpirationPlugin({maxEntries: 1});
       const isFresh = plugin._isResponseDateFresh(new Response('Hi'));
       expect(isFresh).to.equal(true);
     });
 
     it(`should return true when there is no Date header`, function() {
-      const plugin = new Plugin({maxAgeSeconds: 1});
+      const plugin = new ExpirationPlugin({maxAgeSeconds: 1});
       const isFresh = plugin._isResponseDateFresh(new Response('Hi', {
         // TODO: Remove this when https://github.com/pinterest/service-workers/issues/72
         // is fixed.
@@ -179,7 +179,7 @@ describe(`Plugin`, function() {
     });
 
     it(`should return true when the Date header is invalid`, function() {
-      const plugin = new Plugin({maxAgeSeconds: 1});
+      const plugin = new ExpirationPlugin({maxAgeSeconds: 1});
       const isFresh = plugin._isResponseDateFresh(new Response('Hi', {
         headers: {date: 'invalid header'},
       }));
@@ -189,7 +189,7 @@ describe(`Plugin`, function() {
 
   describe(`cacheDidUpdate()`, function() {
     it(`should expose a cacheDidUpdate() method`, function() {
-      const plugin = new Plugin({maxAgeSeconds: 1});
+      const plugin = new ExpirationPlugin({maxAgeSeconds: 1});
       expect(plugin).to.respondTo('cacheDidUpdate');
     });
 
@@ -197,7 +197,7 @@ describe(`Plugin`, function() {
       const cacheName = 'test-cache';
       const url = new URL('/test', self.location).toString();
       const request = new Request(url);
-      const plugin = new Plugin({maxAgeSeconds: 10});
+      const plugin = new ExpirationPlugin({maxAgeSeconds: 10});
 
       sandbox.spy(CacheExpiration.prototype, 'updateTimestamp');
       sandbox.spy(CacheExpiration.prototype, 'expireEntries');
@@ -212,7 +212,7 @@ describe(`Plugin`, function() {
 
   describe(`_getCacheExpiration()`, function() {
     it(`should reject when called with the default runtime cache name`, async function() {
-      const plugin = new Plugin({maxAgeSeconds: 1});
+      const plugin = new ExpirationPlugin({maxAgeSeconds: 1});
       await expectError(
           () => plugin._getCacheExpiration(cacheNames.getRuntimeName()),
           'expire-custom-caches-only'

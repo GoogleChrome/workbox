@@ -16,7 +16,7 @@ import './_version.js';
  *
  * @memberof workbox.backgroundSync
  */
-class Plugin implements WorkboxPlugin {
+class BackgroundSyncPlugin implements WorkboxPlugin {
   private _queue: Queue;
 
   /**
@@ -40,4 +40,4 @@ class Plugin implements WorkboxPlugin {
   }
 }
 
-export {Plugin};
+export {BackgroundSyncPlugin};

@@ -7,7 +7,7 @@
 */
 
 import {CacheExpiration} from './CacheExpiration.js';
-import {Plugin} from './Plugin.js';
+import {ExpirationPlugin} from './ExpirationPlugin.js';
 import './_version.js';
 
 
@@ -17,5 +17,5 @@ import './_version.js';
 
 export {
   CacheExpiration,
-  Plugin,
+  ExpirationPlugin,
 };

@@ -20,7 +20,7 @@ import './_version.js';
  *
  * @memberof workbox.rangeRequests
  */
-class Plugin implements WorkboxPlugin {
+class RangeRequestsPlugin implements WorkboxPlugin {
   /**
    * @param {Object} options
    * @param {Request} options.request The original request, which may or may not
@@ -46,4 +46,4 @@ class Plugin implements WorkboxPlugin {
   }
 }
 
-export {Plugin};
+export {RangeRequestsPlugin};

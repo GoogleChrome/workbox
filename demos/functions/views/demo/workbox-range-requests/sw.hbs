@@ -1,13 +1,13 @@
 {{{WORKBOX_SW_IMPORT}}}
 
-console.log(new workbox.rangeRequests.Plugin());
+console.log(new workbox.rangeRequests.RangeRequestsPlugin());
 
 workbox.routing.registerRoute(
   new RegExp('/range-request-example'),
   workbox.strategies.cacheOnly({
     cacheName: 'range-requests-demo',
     plugins: [
-      new workbox.rangeRequests.Plugin(),
+      new workbox.rangeRequests.RangeRequestsPlugin(),
     ],
   })
 );

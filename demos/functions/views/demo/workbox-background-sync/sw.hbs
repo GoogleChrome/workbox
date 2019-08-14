@@ -1,6 +1,6 @@
 {{{WORKBOX_SW_IMPORT}}}
 
-const bgSyncPlugin = new workbox.backgroundSync.Plugin('myQueueName');
+const bgSyncPlugin = new workbox.backgroundSync.BackgroundSyncPlugin('myQueueName');
 
 workbox.routing.registerRoute(
   ({url}) => url.pathname === '/demo/workbox-background-sync/example.txt',

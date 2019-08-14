@@ -31,7 +31,7 @@ function getOptionsString(moduleRegistry, options = {}) {
   }
 
   // Pull handler-specific config from the options object, since they are
-  // not directly used to construct a Plugin instance. If set, need to be
+  // not directly used to construct a plugin instance. If set, need to be
   // passed as options to the handler constructor instead.
   const handlerOptionKeys = [
     'cacheName',
@@ -48,7 +48,7 @@ function getOptionsString(moduleRegistry, options = {}) {
   }
 
   for (const [pluginName, pluginConfig] of Object.entries(options)) {
-    // Ensure that we have some valid configuration to pass to Plugin().
+    // Ensure that we have some valid configuration to pass to the plugin.
     if (Object.keys(pluginConfig).length === 0) {
       continue;
     }
@@ -57,7 +57,9 @@ function getOptionsString(moduleRegistry, options = {}) {
     switch (pluginName) {
       case 'backgroundSync': {
         const name = pluginConfig.name;
-        const plugin = moduleRegistry.use('workbox-background-sync', 'Plugin');
+        const plugin = moduleRegistry.use(
+            'workbox-background-sync', 'BackgroundSyncPlugin');
+
         pluginCode = `new ${plugin}(${JSON.stringify(name)}`;
         if ('options' in pluginConfig) {
           pluginCode += `, ${stringifyWithoutComments(pluginConfig.options)}`;
@@ -70,7 +72,9 @@ function getOptionsString(moduleRegistry, options = {}) {
       case 'broadcastUpdate': {
         const channelName = pluginConfig.channelName;
         const opts = Object.assign({channelName}, pluginConfig.options);
-        const plugin = moduleRegistry.use('workbox-broadcast-update', 'Plugin');
+        const plugin = moduleRegistry.use(
+            'workbox-broadcast-update', 'BroadcastUpdatePlugin');
+
         pluginCode = `new ${plugin}(${stringifyWithoutComments(opts)})`;
 
         break;
@@ -78,14 +82,17 @@ function getOptionsString(moduleRegistry, options = {}) {
 
       case 'cacheableResponse': {
         const plugin = moduleRegistry.use(
-            'workbox-cacheable-response', 'Plugin');
+            'workbox-cacheable-response', 'CacheableResponsePlugin');
+
         pluginCode = `new ${plugin}(${stringifyWithoutComments(pluginConfig)})`;
 
         break;
       }
 
       case 'expiration': {
-        const plugin = moduleRegistry.use('workbox-expiration', 'Plugin');
+        const plugin = moduleRegistry.use(
+            'workbox-expiration', 'ExpirationPlugin');
+
         pluginCode = `new ${plugin}(${stringifyWithoutComments(pluginConfig)})`;
 
         break;

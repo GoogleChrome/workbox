@@ -17,7 +17,7 @@ workbox.routing.registerRoute(
     workbox.strategies.cacheOnly({
       cacheName,
       plugins: [
-        new workbox.rangeRequests.Plugin(),
+        new workbox.rangeRequests.RangeRequestsPlugin(),
       ],
     })
 );

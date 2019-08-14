@@ -17,7 +17,7 @@ workbox.routing.registerRoute(
     new workbox.strategies.CacheFirst({
       cacheName: 'expiration-plugin-max-age-seconds',
       plugins: [
-        new workbox.expiration.Plugin({
+        new workbox.expiration.ExpirationPlugin({
           maxAgeSeconds: 1,
         }),
       ],

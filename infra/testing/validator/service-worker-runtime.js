@@ -39,10 +39,10 @@ function setupSpiesAndContextForInjectManifest() {
 
   const workbox = {
     cacheableResponse: {
-      Plugin: CacheableResponsePlugin,
+      CacheableResponsePlugin: CacheableResponsePlugin,
     },
     expiration: {
-      Plugin: CacheExpirationPlugin,
+      CacheExpirationPlugin: CacheExpirationPlugin,
     },
     googleAnalytics: {
       initialize: sinon.spy(),
@@ -114,9 +114,9 @@ function setupSpiesAndContextForGenerateSW() {
     initialize: sinon.spy(),
     NavigationRoute: sinon.stub().returns({name: 'NavigationRoute'}),
     NetworkFirst: sinon.stub().returns({name: 'NetworkFirst'}),
-    Plugin: sinon.spy(),
-    Plugin$1: sinon.spy(),
-    Plugin$2: sinon.spy(),
+    BroadcastUpdatePlugin: sinon.spy(),
+    CacheableResponsePlugin: sinon.spy(),
+    ExpirationPlugin: sinon.spy(),
     precacheAndRoute: sinon.spy(),
     registerRoute: sinon.spy(),
     setCacheNameDetails: sinon.spy(),

@@ -7,10 +7,10 @@
 */
 
 import {CacheableResponse} from 'workbox-cacheable-response/CacheableResponse.mjs';
-import {Plugin} from 'workbox-cacheable-response/Plugin.mjs';
+import {CacheableResponsePlugin} from 'workbox-cacheable-response/CacheableResponsePlugin.mjs';
 
 
-describe(`Plugin`, function() {
+describe(`CacheableResponsePlugin`, function() {
   const STATUSES = [200];
 
   const sandbox = sinon.createSandbox();
@@ -25,13 +25,13 @@ describe(`Plugin`, function() {
 
   describe(`constructor`, function() {
     it(`should construct a properly-configured internal CacheableResponse instance`, function() {
-      const cacheableResponsePlugin = new Plugin({statuses: STATUSES});
+      const cacheableResponsePlugin = new CacheableResponsePlugin({statuses: STATUSES});
       expect(cacheableResponsePlugin._cacheableResponse).to.be.instanceOf(CacheableResponse);
       expect(cacheableResponsePlugin._cacheableResponse._statuses).to.eql(STATUSES);
     });
 
     it(`should expose cacheWillUpdate, which calls cacheableResponse.isResponseCacheable()`, function() {
-      const cacheableResponsePlugin = new Plugin({statuses: STATUSES});
+      const cacheableResponsePlugin = new CacheableResponsePlugin({statuses: STATUSES});
       const isResponseCacheableSpy = sandbox.spy(cacheableResponsePlugin._cacheableResponse, 'isResponseCacheable');
       const response = new Response('');
       cacheableResponsePlugin.cacheWillUpdate({response});
@@ -43,7 +43,7 @@ describe(`Plugin`, function() {
 
   describe(`cacheWillUpdate`, function() {
     it(`should return null for non-cachable response`, async function() {
-      const cacheableResponsePlugin = new Plugin({statuses: STATUSES});
+      const cacheableResponsePlugin = new CacheableResponsePlugin({statuses: STATUSES});
       sandbox.stub(cacheableResponsePlugin._cacheableResponse, 'isResponseCacheable').callsFake(() => false);
       expect(await cacheableResponsePlugin.cacheWillUpdate({
         response: new Response(),

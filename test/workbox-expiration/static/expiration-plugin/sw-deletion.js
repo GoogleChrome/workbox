@@ -12,7 +12,7 @@ importScripts('/__WORKBOX/buildFile/workbox-routing');
 importScripts('/__WORKBOX/buildFile/workbox-strategies');
 importScripts('/infra/testing/comlink/sw-interface.js');
 
-const expirationPlugin = new workbox.expiration.Plugin({
+const expirationPlugin = new workbox.expiration.ExpirationPlugin({
   maxEntries: 1,
   purgeOnQuotaError: true,
 });

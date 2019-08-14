@@ -7,7 +7,7 @@
 */
 
 import {Queue} from './Queue.js';
-import {Plugin} from './Plugin.js';
+import {BackgroundSyncPlugin} from './BackgroundSyncPlugin.js';
 import './_version.js';
 
 
@@ -17,5 +17,5 @@ import './_version.js';
 
 export {
   Queue,
-  Plugin,
+  BackgroundSyncPlugin,
 };

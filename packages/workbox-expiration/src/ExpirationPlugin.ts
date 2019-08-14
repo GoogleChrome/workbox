@@ -34,7 +34,7 @@ import './_version.js';
  *
  * @memberof workbox.expiration
  */
-class Plugin implements WorkboxPlugin {
+class ExpirationPlugin implements WorkboxPlugin {
   private _config: object;
   private _maxAgeSeconds?: number;
   private _cacheExpirations: Map<string, CacheExpiration>;
@@ -285,4 +285,4 @@ class Plugin implements WorkboxPlugin {
   }
 }
 
-export {Plugin};
+export {ExpirationPlugin};

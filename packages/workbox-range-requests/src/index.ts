@@ -7,7 +7,7 @@
 */
 
 import {createPartialResponse} from './createPartialResponse.js';
-import {Plugin} from './Plugin.js';
+import {RangeRequestsPlugin} from './RangeRequestsPlugin.js';
 import './_version.js';
 
 
@@ -17,5 +17,5 @@ import './_version.js';
 
 export {
   createPartialResponse,
-  Plugin,
+  RangeRequestsPlugin,
 };

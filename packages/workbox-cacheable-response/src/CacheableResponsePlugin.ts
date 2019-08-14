@@ -17,11 +17,11 @@ import './_version.js';
  *
  * @memberof workbox.cacheableResponse
  */
-class Plugin implements WorkboxPlugin {
+class CacheableResponsePlugin implements WorkboxPlugin {
   private _cacheableResponse: CacheableResponse;
 
   /**
-   * To construct a new cacheable response Plugin instance you must provide at
+   * To construct a new CacheableResponsePlugin instance you must provide at
    * least one of the `config` properties.
    *
    * If both `statuses` and `headers` are specified, then both conditions must
@@ -52,4 +52,4 @@ class Plugin implements WorkboxPlugin {
   }
 }
 
-export {Plugin};
+export {CacheableResponsePlugin};

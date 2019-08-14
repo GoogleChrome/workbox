@@ -7,7 +7,7 @@
 */
 
 import {CacheableResponse} from './CacheableResponse.js';
-import {Plugin} from './Plugin.js';
+import {CacheableResponsePlugin} from './CacheableResponsePlugin.js';
 import './_version.js';
 
 
@@ -17,5 +17,5 @@ import './_version.js';
 
 export {
   CacheableResponse,
-  Plugin,
+  CacheableResponsePlugin,
 };

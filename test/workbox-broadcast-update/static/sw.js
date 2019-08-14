@@ -18,7 +18,7 @@ workbox.routing.registerRoute(
     workbox.strategies.staleWhileRevalidate({
       cacheName,
       plugins: [
-        new workbox.broadcastUpdate.Plugin(),
+        new workbox.broadcastUpdate.BroadcastUpdatePlugin(),
       ],
     })
 );
