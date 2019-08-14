@@ -11,7 +11,7 @@ import {cacheNames} from 'workbox-core/_private/cacheNames.js';
 import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.js';
 import {logger} from 'workbox-core/_private/logger.js';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
-import {RouteHandler, RouteHandlerCallbackOptions, WorkboxPlugin} from 'workbox-core/types.js';
+import {RouteHandlerObject, RouteHandlerCallbackOptions, WorkboxPlugin} from 'workbox-core/types.js';
 import {messages} from './utils/messages.js';
 import './_version.js';
 
@@ -34,7 +34,7 @@ interface CacheOnlyOptions {
  *
  * @memberof workbox.strategies
  */
-class CacheOnly implements RouteHandler {
+class CacheOnly implements RouteHandlerObject {
   private _cacheName: string;
   private _plugins: WorkboxPlugin[];
   private _matchOptions?: CacheQueryOptions;

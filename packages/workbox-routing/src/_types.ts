@@ -8,6 +8,7 @@
 
 import {
   RouteHandler,
+  RouteHandlerObject,
   RouteHandlerCallback,
   RouteHandlerCallbackOptions,
   RouteMatchCallback,
@@ -66,6 +67,7 @@ import './_version.js';
 
  export {
   RouteHandler as Handler,
+  RouteHandlerObject as HandlerObject,
   RouteHandlerCallback as HandlerCallback,
   RouteHandlerCallbackOptions as HandlerCallbackOptions,
   RouteMatchCallback as MatchCallback,

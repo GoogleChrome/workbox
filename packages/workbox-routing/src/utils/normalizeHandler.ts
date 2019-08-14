@@ -7,7 +7,7 @@
 */
 
 import {assert} from 'workbox-core/_private/assert.js';
-import {Handler, HandlerCallback} from '../_types.js';
+import {Handler, HandlerObject} from '../_types.js';
 import '../_version.js';
 
 
@@ -19,8 +19,8 @@ import '../_version.js';
  * @private
  */
 export const normalizeHandler = (
-  handler: Handler | HandlerCallback
-): Handler => {
+  handler: Handler
+): HandlerObject => {
   if (handler && typeof handler === 'object') {
     if (process.env.NODE_ENV !== 'production') {
       assert!.hasMethod(handler, 'handle', {

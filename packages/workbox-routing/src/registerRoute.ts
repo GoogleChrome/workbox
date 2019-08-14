@@ -12,7 +12,7 @@ import {Route} from './Route.js';
 import {RegExpRoute} from './RegExpRoute.js';
 import {HTTPMethod} from './utils/constants.js';
 import {getOrCreateDefaultRouter} from './utils/getOrCreateDefaultRouter.js';
-import {MatchCallback, HandlerCallback} from './_types.js';
+import {Handler, MatchCallback} from './_types.js';
 import './_version.js';
 
 
@@ -43,7 +43,7 @@ import './_version.js';
  */
 export const registerRoute = (
     capture: RegExp | string | MatchCallback | Route,
-    handler?: HandlerCallback,
+    handler?: Handler,
     method?: HTTPMethod): Route => {
   let route;
 

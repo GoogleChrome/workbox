@@ -9,7 +9,7 @@
 import {assert} from 'workbox-core/_private/assert.js';
 import {logger} from 'workbox-core/_private/logger.js';
 import {Route} from './Route.js';
-import {HandlerCallback, MatchCallbackOptions} from './_types.js';
+import {Handler, MatchCallbackOptions} from './_types.js';
 import './_version.js';
 
 export interface NavigationRouteMatchOptions {
@@ -55,7 +55,7 @@ class NavigationRoute extends Route {
    * match the URL's pathname and search parameter, the route will handle the
    * request (assuming the blacklist doesn't match).
    */
-  constructor(handler: HandlerCallback,
+  constructor(handler: Handler,
       {whitelist = [/./], blacklist = []}: NavigationRouteMatchOptions = {}) {
     if (process.env.NODE_ENV !== 'production') {
       assert!.isArrayOfClass(whitelist, RegExp, {

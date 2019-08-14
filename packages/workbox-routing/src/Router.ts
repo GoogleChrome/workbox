@@ -13,7 +13,7 @@ import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
 import {Route} from './Route.js';
 import {HTTPMethod} from './utils/constants.js';
 import {normalizeHandler} from './utils/normalizeHandler.js';
-import {Handler, HandlerCallback, HandlerCallbackOptions} from './_types.js';
+import {Handler, HandlerObject, HandlerCallbackOptions} from './_types.js';
 import './_version.js';
 
 
@@ -46,8 +46,8 @@ interface CacheURLsMessageData {
  */
 class Router {
   private _routes: Map<HTTPMethod, Route[]>;
-  private _defaultHandler: Handler;
-  private _catchHandler: Handler;
+  private _defaultHandler: HandlerObject;
+  private _catchHandler: HandlerObject;
 
   /**
    * Initializes a new Router.
@@ -327,7 +327,7 @@ class Router {
    * @param {workbox.routing.Route~handlerCallback} handler A callback
    * function that returns a Promise resulting in a Response.
    */
-  setDefaultHandler(handler: HandlerCallback) {
+  setDefaultHandler(handler: Handler) {
     this._defaultHandler = normalizeHandler(handler);
   }
 
@@ -338,7 +338,7 @@ class Router {
    * @param {workbox.routing.Route~handlerCallback} handler A callback
    * function that returns a Promise resulting in a Response.
    */
-  setCatchHandler(handler: HandlerCallback) {
+  setCatchHandler(handler: Handler) {
     this._catchHandler = normalizeHandler(handler);
   }
 

@@ -7,7 +7,7 @@
 */
 
 import {getOrCreateDefaultRouter} from './utils/getOrCreateDefaultRouter.js';
-import {HandlerCallback} from './_types.js';
+import {Handler} from './_types.js';
 import './_version.js';
 
 
@@ -23,7 +23,7 @@ import './_version.js';
  *
  * @alias workbox.routing.setDefaultHandler
  */
-export const setDefaultHandler = (handler: HandlerCallback) => {
+export const setDefaultHandler = (handler: Handler) => {
   const defaultRouter = getOrCreateDefaultRouter();
   defaultRouter.setDefaultHandler(handler);
 };

@@ -10,7 +10,7 @@ import {assert} from 'workbox-core/_private/assert.js';
 import {logger} from 'workbox-core/_private/logger.js';
 import {HTTPMethod} from './utils/constants.js';
 import {Route} from './Route.js';
-import {MatchCallbackOptions, HandlerCallback, MatchCallback} from './_types.js';
+import {Handler, MatchCallbackOptions, MatchCallback} from './_types.js';
 import './_version.js';
 
 
@@ -41,7 +41,7 @@ class RegExpRoute extends Route {
    * @param {string} [method='GET'] The HTTP method to match the Route
    * against.
    */
-  constructor(regExp: RegExp, handler: HandlerCallback, method?: HTTPMethod) {
+  constructor(regExp: RegExp, handler: Handler, method?: HTTPMethod) {
     if (process.env.NODE_ENV !== 'production') {
       assert!.isInstance(regExp, RegExp, {
         moduleName: 'workbox-routing',

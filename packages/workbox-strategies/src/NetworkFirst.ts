@@ -13,7 +13,7 @@ import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.js';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
 import {logger} from 'workbox-core/_private/logger.js';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
-import {RouteHandler, RouteHandlerCallbackOptions, WorkboxPlugin} from 'workbox-core/types.js';
+import {RouteHandlerObject, RouteHandlerCallbackOptions, WorkboxPlugin} from 'workbox-core/types.js';
 import {messages} from './utils/messages.js';
 import {cacheOkAndOpaquePlugin} from './plugins/cacheOkAndOpaquePlugin.js';
 import './_version.js';
@@ -42,7 +42,7 @@ interface NetworkFirstOptions {
  *
  * @memberof workbox.strategies
  */
-class NetworkFirst implements RouteHandler {
+class NetworkFirst implements RouteHandlerObject {
   private _cacheName: string;
   private _plugins: WorkboxPlugin[];
   private _fetchOptions?: RequestInit;
