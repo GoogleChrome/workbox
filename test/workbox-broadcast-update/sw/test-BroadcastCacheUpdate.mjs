@@ -6,15 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {Deferred} from 'workbox-core/_private/Deferred.mjs';
 import {BroadcastCacheUpdate} from 'workbox-broadcast-update/BroadcastCacheUpdate.mjs';
-import {
-  CACHE_UPDATED_MESSAGE_META,
-  CACHE_UPDATED_MESSAGE_TYPE,
-  DEFAULT_BROADCAST_CHANNEL_NAME,
-  DEFAULT_DEFER_NOTIFICATION_TIMEOUT,
-  DEFAULT_HEADERS_TO_CHECK,
-} from 'workbox-broadcast-update/utils/constants.mjs';
+import {CACHE_UPDATED_MESSAGE_META, CACHE_UPDATED_MESSAGE_TYPE, DEFAULT_HEADERS_TO_CHECK} from 'workbox-broadcast-update/utils/constants.mjs';
 
 
 describe(`BroadcastCacheUpdate`, function() {
@@ -29,12 +22,6 @@ describe(`BroadcastCacheUpdate`, function() {
   });
 
   describe(`constructor()`, function() {
-    it(`should use the passed channelName`, function() {
-      const channelName = 'my-channel';
-      const bcu = new BroadcastCacheUpdate({channelName});
-      expect(bcu._channelName).to.equal(channelName);
-    });
-
     it(`should use the passed headersToCheck`, function() {
       const headersToCheck = [
         'hello-1',
@@ -44,101 +31,25 @@ describe(`BroadcastCacheUpdate`, function() {
       expect(bcu._headersToCheck).to.equal(headersToCheck);
     });
 
-    it(`should use the passed deferNoticationTimeout`, function() {
-      const deferNoticationTimeout = 42;
-      const bcu = new BroadcastCacheUpdate({deferNoticationTimeout});
-      expect(bcu._deferNoticationTimeout).to.equal(deferNoticationTimeout);
-    });
-
-    it(`should use the default channelName when not passed`, function() {
-      const bcu = new BroadcastCacheUpdate();
-      expect(bcu._channelName).to.equal(DEFAULT_BROADCAST_CHANNEL_NAME);
-    });
-
     it(`should use the default headersToCheck when not passed`, function() {
       const bcu = new BroadcastCacheUpdate();
       expect(bcu._headersToCheck).to.deep.equal(DEFAULT_HEADERS_TO_CHECK);
     });
 
-    it(`should use the default headersToCheck when not passed`, function() {
-      const bcu = new BroadcastCacheUpdate();
-      expect(bcu._deferNoticationTimeout).to.equal(
-          DEFAULT_DEFER_NOTIFICATION_TIMEOUT);
+    it(`should use the passed generatePayload`, function() {
+      const generatePayload = () => {};
+      const bcu = new BroadcastCacheUpdate({generatePayload});
+      expect(bcu._generatePayload).to.equal(generatePayload);
     });
 
-    it(`adds a deferreds mapping for navigation fetch events`, () => {
+    it(`should use the default generatePayload when not passed`, function() {
       const bcu = new BroadcastCacheUpdate();
-      expect(bcu._navigationEventsDeferreds).to.be.an.instanceof(Map);
-    });
-
-    it(`adds a message event listener that resolves deferreds`, () => {
-      // Set a test timeout greater than the setTimeout below.
-      this.timeout(1000);
-
-      sandbox.spy(self, 'addEventListener');
-
-      const bcu = new BroadcastCacheUpdate();
-      expect(self.addEventListener.callCount).to.equal(1);
-
-      const fetchEvent = new FetchEvent('fetch', {request: new Request('/')});
-      const deferred = new Deferred();
-      bcu._navigationEventsDeferreds.set(fetchEvent, deferred);
-
-      setTimeout(() => {
-        const messageEvent = new ExtendableMessageEvent('message', {
-          data: {type: 'WINDOW_READY', meta: 'workbox-window'},
-        });
-        self.dispatchEvent(messageEvent);
-      }, 100);
-
-      // The message event should resolve this deferred's promise.
-      return deferred.promise;
+      expect(bcu._generatePayload).to.be.a('function');
     });
   });
 
   describe(`notifyIfUpdated()`, function() {
     it(`should broadcast update if responses are different`, async function() {
-      const bcu = new BroadcastCacheUpdate();
-      sandbox.spy(bcu, '_broadcastUpdate');
-
-      await bcu.notifyIfUpdated({
-        oldResponse: new Response('', {
-          headers: {'content-length': 0},
-        }),
-        newResponse: new Response('', {
-          headers: {'content-length': 1},
-        }),
-        url: '/',
-        cacheName: 'cache-name',
-      });
-
-      expect(bcu._broadcastUpdate.callCount).to.equal(1);
-      expect(bcu._broadcastUpdate.args[0][0].url).to.equal('/');
-      expect(bcu._broadcastUpdate.args[0][0].cacheName).to.equal('cache-name');
-    });
-
-    it(`should not broadcast update if responses are the same`, async function() {
-      const bcu = new BroadcastCacheUpdate();
-      sandbox.spy(bcu, '_broadcastUpdate');
-
-      await bcu.notifyIfUpdated({
-        oldResponse: new Response('', {
-          headers: {'content-length': 0},
-        }),
-        newResponse: new Response('', {
-          headers: {'content-length': 0},
-        }),
-        url: '/',
-        cacheName: 'cache-name',
-      });
-
-      expect(bcu._broadcastUpdate.callCount).to.equal(0);
-    });
-
-    it(`should postMessage window clients in browsers that don't support BroadcastChannel`, async function() {
-      const OriginalBroadcastChannel = self.BroadcastChannel;
-      delete self.BroadcastChannel;
-
       const bcu = new BroadcastCacheUpdate();
 
       const pm1Spy = sandbox.spy();
@@ -154,7 +65,7 @@ describe(`BroadcastCacheUpdate`, function() {
         newResponse: new Response('', {
           headers: {'content-length': 1},
         }),
-        url: '/',
+        request: new Request('/'),
         cacheName: 'cache-name',
       });
 
@@ -162,7 +73,7 @@ describe(`BroadcastCacheUpdate`, function() {
         type: CACHE_UPDATED_MESSAGE_TYPE,
         meta: CACHE_UPDATED_MESSAGE_META,
         payload: {
-          updatedURL: '/',
+          updatedURL: new URL('/', location).href,
           cacheName: 'cache-name',
         },
       };
@@ -171,16 +82,9 @@ describe(`BroadcastCacheUpdate`, function() {
       expect(pm1Spy.args[0][0]).to.deep.equal(expectData);
       expect(pm2Spy.callCount).to.equal(1);
       expect(pm2Spy.args[0][0]).to.deep.equal(expectData);
-
-      if (OriginalBroadcastChannel) {
-        self.BroadcastChannel = OriginalBroadcastChannel;
-      }
     });
 
-    it(`should not postMessage updates if responses are the same`, async function() {
-      const OriginalBroadcastChannel = self.BroadcastChannel;
-      delete self.BroadcastChannel;
-
+    it(`should not broadcast update if responses are the same`, async function() {
       const bcu = new BroadcastCacheUpdate();
 
       const pm1Spy = sandbox.spy();
@@ -196,131 +100,48 @@ describe(`BroadcastCacheUpdate`, function() {
         newResponse: new Response('', {
           headers: {'content-length': 0},
         }),
-        url: '/',
+        request: new Request('/'),
         cacheName: 'cache-name',
       });
 
       expect(pm1Spy.callCount).to.equal(0);
       expect(pm2Spy.callCount).to.equal(0);
-
-      if (OriginalBroadcastChannel) {
-        self.BroadcastChannel = OriginalBroadcastChannel;
-      }
     });
 
-    it(`should wait to broadcast on navigation requests`, function() {
-      const bcu = new BroadcastCacheUpdate();
+    it(`should throw when called and cacheName is missing`, function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
 
-      sandbox.spy(bcu, '_windowReadyOrTimeout');
-      sandbox.spy(bcu, '_broadcastUpdate');
-
-      bcu.notifyIfUpdated({
-        oldResponse: new Response('', {
-          headers: {'content-length': 0},
-        }),
-        newResponse: new Response('', {
-          headers: {'content-length': 1},
-        }),
-        url: '/',
-        cacheName: 'cache-name',
-      });
-
-      expect(bcu._broadcastUpdate.callCount).to.equal(1);
-      expect(bcu._windowReadyOrTimeout.callCount).to.equal(0);
-
-      // Stub a navigation request.
-      const request = new Request('/');
-      Object.defineProperty(request, 'mode', {value: 'navigate'});
-
-      bcu.notifyIfUpdated({
-        oldResponse: new Response('', {
-          headers: {'content-length': 0},
-        }),
-        newResponse: new Response('', {
-          headers: {'content-length': 1},
-        }),
-        url: '/',
-        cacheName: 'cache-name',
-        event: new FetchEvent('fetch', {request}),
-      });
-
-      expect(bcu._windowReadyOrTimeout.callCount).to.equal(1);
-
-      // Fake receiving a message event from the window.
-      setTimeout(() => {
-        const messageEvent = new ExtendableMessageEvent('message', {
-          data: {type: 'WINDOW_READY', meta: 'workbox-window'},
-        });
-        self.dispatchEvent(messageEvent);
-      }, 0);
-
-      return waitUntil(() => bcu._broadcastUpdate.callCount === 2);
-    });
-  });
-
-  describe(`_getChannel`, function() {
-    it(`should not create more than one channel per instance`, function() {
-      if (!('BroadcastChannel' in self)) this.skip();
-
-      const channelName = 'channel-name';
-      const bcu = new BroadcastCacheUpdate({channelName});
-      const broadcastChannel = bcu._getChannel();
-      expect(broadcastChannel).to.be.instanceof(BroadcastChannel);
-
-      // bcu._getChannel() is a getter that create a BroadcastChannel the first
-      // time it's called, and this test confirms that it returns the same
-      // BroadcastChannel object when called twice.
-      expect(broadcastChannel).to.eql(bcu._getChannel());
-      expect(broadcastChannel.name).to.equal(channelName);
+      return expectError(async () => {
+        const bcu = new BroadcastCacheUpdate();
+        const oldResponse = new Response();
+        const newResponse = new Response();
+        const request = new Request('/');
+        await bcu.notifyIfUpdated({oldResponse, newResponse, request});
+      }, 'incorrect-type');
     });
 
-    it(`should return undefined if BroadcastChannel is not supported`, function() {
-      const OriginalBroadcastChannel = self.BroadcastChannel;
-      delete self.BroadcastChannel;
+    it(`should throw when called and newResponse is missing`, function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
 
-      const channelName = 'channel-name';
-      const bcu = new BroadcastCacheUpdate({channelName});
-      const broadcastChannel = bcu._getChannel();
-      expect(broadcastChannel).to.be.undefined;
-
-      if (OriginalBroadcastChannel) {
-        self.BroadcastChannel = OriginalBroadcastChannel;
-      }
-    });
-  });
-
-  describe(`_windowReadyOrTimeout`, function() {
-    it(`waits to resolve until receiving a message from the window`, function(done) {
-      // Set a timeout less than DEFAULT_DEFER_NOTIFICATION_TIMEOUT
-      this.timeout(DEFAULT_DEFER_NOTIFICATION_TIMEOUT / 2);
-
-      const bcu = new BroadcastCacheUpdate();
-      const spy = sinon.spy();
-
-      bcu._windowReadyOrTimeout().then(spy);
-
-      setTimeout(() => {
-        const messageEvent = new ExtendableMessageEvent('message', {
-          data: {type: 'WINDOW_READY', meta: 'workbox-window'},
-        });
-        self.dispatchEvent(messageEvent);
-
-        setTimeout(() => {
-          // The above `readyPromise` should resolve as soon as the `message`
-          // event fires, so one macrotask later the spy should have run.
-          expect(spy.callCount).to.equal(1);
-          done();
-        }, 0);
-      }, 100);
+      return expectError(async () => {
+        const bcu = new BroadcastCacheUpdate();
+        const cacheName = 'cache-name';
+        const oldResponse = new Response();
+        const request = new Request('/');
+        await bcu.notifyIfUpdated({cacheName, oldResponse, request});
+      }, 'incorrect-class');
     });
 
-    it(`waits no longer than the deferNoticationTimeout amount`, function(done) {
-      // Set a timeout greater than the `deferNoticationTimeout` option below.
-      this.timeout(1000);
+    it(`should throw when called and request is missing`, function() {
+      if (process.env.NODE_ENV === 'production') this.skip();
 
-      const bcu = new BroadcastCacheUpdate({deferNoticationTimeout: 100});
-
-      bcu._windowReadyOrTimeout().then(done);
+      return expectError(async () => {
+        const bcu = new BroadcastCacheUpdate();
+        const cacheName = 'cache-name';
+        const oldResponse = new Response();
+        const newResponse = new Response();
+        await bcu.notifyIfUpdated({cacheName, oldResponse, newResponse});
+      }, 'incorrect-class');
     });
   });
 });

@@ -30,16 +30,11 @@ describe(`[workbox-broadcast-update] Plugin`, function() {
     await webdriver.get(testingURL);
     await activateAndControlSW(swURL);
 
-    const supported = await webdriver.executeScript(() => {
-      return 'BroadcastChannel' in window;
-    });
-
-    if (!supported) {
-      this.skip();
-      return;
-    }
-
     const err = await webdriver.executeAsyncScript((apiURL, cb) => {
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        window.__test.message = event.data;
+      });
+
       // There's already a cached entry for apiURL created by the
       // service worker's install handler.
       fetch(apiURL)

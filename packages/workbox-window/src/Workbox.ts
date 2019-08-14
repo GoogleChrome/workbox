@@ -55,7 +55,6 @@ class Workbox extends WorkboxEventTarget {
   private _compatibleControllingSW?: ServiceWorker;
   private _registration?: ServiceWorkerRegistration;
   private _sw?: ServiceWorker;
-  private _broadcastChannel?: BroadcastChannel;
   private _externalSW?: ServiceWorker;
   private _waitingTimeout?: number;
 
@@ -118,7 +117,6 @@ class Workbox extends WorkboxEventTarget {
       this._activeDeferred.resolve(this._compatibleControllingSW);
       this._controllingDeferred.resolve(this._compatibleControllingSW);
 
-      this._reportWindowReady(this._compatibleControllingSW);
       this._compatibleControllingSW.addEventListener(
           'statechange', this._onStateChange, {once: true});
     }
@@ -183,11 +181,7 @@ class Workbox extends WorkboxEventTarget {
     navigator.serviceWorker.addEventListener(
         'controllerchange', this._onControllerChange, {once: true});
 
-    // Add message listeners.
-    if ('BroadcastChannel' in self) {
-      this._broadcastChannel = new BroadcastChannel('workbox');
-      this._broadcastChannel.addEventListener('message', this._onMessage);
-    }
+    // Add a message listener.
     navigator.serviceWorker.addEventListener('message', this._onMessage);
 
     return this._registration;
@@ -317,20 +311,6 @@ class Workbox extends WorkboxEventTarget {
       // Re-throw the error.
       throw error;
     }
-  }
-
-
-  /**
-   * Sends a message to the passed service worker that the window is ready.
-   *
-   * @param {ServiceWorker} sw
-   * @private
-   */
-  private _reportWindowReady(sw: ServiceWorker) {
-    messageSW(sw, {
-      type: 'WINDOW_READY',
-      meta: 'workbox-window',
-    });
   }
 
   /**
@@ -528,8 +508,7 @@ class Workbox extends WorkboxEventTarget {
 // -----------------------------------------------------------------------
 
 /**
- * The `message` event is dispatched any time a `postMessage` (or a
- * `BroadcastChannel` message with the `workbox` channel name) is received.
+ * The `message` event is dispatched any time a `postMessage` is received.
  *
  * @event module:workbox-window.Workbox#message
  * @type {WorkboxEvent}

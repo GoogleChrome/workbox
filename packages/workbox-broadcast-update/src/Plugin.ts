@@ -6,7 +6,6 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.js';
 import {WorkboxPlugin} from 'workbox-core/types.js';
 import {BroadcastCacheUpdate, BroadcastCacheUpdateOptions} from './BroadcastCacheUpdate.js';
 import './_version.js';
@@ -22,20 +21,16 @@ class Plugin implements WorkboxPlugin {
 
   /**
    * Construct a BroadcastCacheUpdate instance with the passed options and
-   * calls its `notifyIfUpdated()` method whenever the plugin's
-   * `cacheDidUpdate` callback is invoked.
+   * calls its [`notifyIfUpdated()`]{@link workbox.broadcastUpdate.BroadcastCacheUpdate~notifyIfUpdated}
+   * method whenever the plugin's `cacheDidUpdate` callback is invoked.
    *
    * @param {Object} options
-   * @param {Array<string>}
-   *     [options.headersToCheck=['content-length', 'etag', 'last-modified']]
+   * @param {Array<string>} [options.headersToCheck=['content-length', 'etag', 'last-modified']]
    *     A list of headers that will be used to determine whether the responses
    *     differ.
-   * @param {string} [options.channelName='workbox'] The name that will be used
-   *.    when creating the `BroadcastChannel`, which defaults to 'workbox' (the
-   *     channel name used by the `workbox-window` package).
-   * @param {string} [options.deferNoticationTimeout=10000] The amount of time
-   *     to wait for a ready message from the window on navigation requests
-   *     before sending the update.
+   * @param {string} [options.generatePayload] A function whose return value
+   *     will be used as the `payload` field in any cache update messages sent
+   *     to the window clients.
    */
   constructor(options: BroadcastCacheUpdateOptions) {
     this._broadcastUpdate = new BroadcastCacheUpdate(options);
@@ -54,44 +49,8 @@ class Plugin implements WorkboxPlugin {
    * @param {Request} options.request The request that triggered the update.
    * @param {Request} [options.event] The event that triggered the update.
    */
-  cacheDidUpdate: WorkboxPlugin['cacheDidUpdate'] = async ({
-    cacheName,
-    oldResponse,
-    newResponse,
-    request,
-    event
-  }) => {
-    if (process.env.NODE_ENV !== 'production') {
-      assert!.isType(cacheName, 'string', {
-        moduleName: 'workbox-broadcast-update',
-        className: 'Plugin',
-        funcName: 'cacheDidUpdate',
-        paramName: 'cacheName',
-      });
-      assert!.isInstance(newResponse, Response, {
-        moduleName: 'workbox-broadcast-update',
-        className: 'Plugin',
-        funcName: 'cacheDidUpdate',
-        paramName: 'newResponse',
-      });
-      assert!.isInstance(request, Request, {
-        moduleName: 'workbox-broadcast-update',
-        className: 'Plugin',
-        funcName: 'cacheDidUpdate',
-        paramName: 'request',
-      });
-    }
-
-    // Without a two responses there is nothing to compare.
-    if (oldResponse) {
-      this._broadcastUpdate.notifyIfUpdated({
-        cacheName,
-        oldResponse,
-        newResponse,
-        event,
-        url: request.url,
-      });
-    }
+  cacheDidUpdate: WorkboxPlugin['cacheDidUpdate'] = async (options) => {
+    this._broadcastUpdate.notifyIfUpdated(options);
   }
 }
 
