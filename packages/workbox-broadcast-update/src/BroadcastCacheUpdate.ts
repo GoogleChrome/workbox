@@ -124,7 +124,9 @@ class BroadcastCacheUpdate {
     }
 
     // Without two responses there is nothing to compare.
-    if (!options.oldResponse) return;
+    if (!options.oldResponse) {
+      return;
+    }
 
     if (!responsesAreSame(options.oldResponse!, options.newResponse, this._headersToCheck)) {
       if (process.env.NODE_ENV !== 'production') {
