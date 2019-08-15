@@ -199,26 +199,6 @@ describe(`[workbox-window] Workbox`, function() {
       }
     });
 
-    it(`notifies the SW that the window is ready if the registered SW is already controlling the page`, async function() {
-      // Gets the URL of the currently controlling SW.
-      const controllingSW = navigator.serviceWorker.controller;
-      const {scriptURL} = controllingSW;
-      sandbox.stub(controllingSW, 'postMessage');
-
-      await new Workbox(scriptURL).register();
-
-      expect(controllingSW.postMessage.callCount).to.equal(1);
-      expect(controllingSW.postMessage.args[0][0]).to.deep.equal({
-        type: 'WINDOW_READY',
-        meta: 'workbox-window',
-      });
-
-      // Test that no message is sent if the SW wasn't already controlling the
-      // page at registration time.
-      await new Workbox(scriptURL + '&nocache').register();
-      expect(controllingSW.postMessage.callCount).to.equal(1);
-    });
-
     describe(`logs in development-only`, function() {
       it(`(debug) if a SW with the same script URL is already controlling the page`, async function() {
         if (!isDev()) this.skip();
@@ -531,27 +511,6 @@ describe(`[workbox-window] Workbox`, function() {
           type: 'message',
           target: wb,
           data: 'postMessage from SW!',
-          originalEvent: {type: 'message'},
-        });
-      });
-
-      it(`fires when a BroadcastChannel message for the workbox tag is received`, async function() {
-        if (!('BroadcastChannel' in self)) this.skip();
-
-        const wb = new Workbox(uniq('sw-message-reply.js'));
-        await wb.register();
-        await wb.getSW();
-
-        const messageSpy = sandbox.spy();
-        wb.addEventListener('message', messageSpy);
-
-        wb.messageSW({type: 'BROADCAST_BACK'});
-        await nextEvent(wb, 'message');
-
-        assertMatchesWorkboxEvent(messageSpy.args[0][0], {
-          type: 'message',
-          target: wb,
-          data: 'BroadcastChannel from SW!',
           originalEvent: {type: 'message'},
         });
       });

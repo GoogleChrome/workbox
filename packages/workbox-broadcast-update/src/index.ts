@@ -8,7 +8,6 @@
 
 import {BroadcastCacheUpdate} from './BroadcastCacheUpdate.js';
 import {Plugin} from './Plugin.js';
-import {broadcastUpdate} from './broadcastUpdate.js';
 import {responsesAreSame} from './responsesAreSame.js';
 import './_version.js';
 
@@ -20,6 +19,5 @@ import './_version.js';
 export {
   BroadcastCacheUpdate,
   Plugin,
-  broadcastUpdate,
   responsesAreSame,
 };

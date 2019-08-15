@@ -69,61 +69,75 @@ export interface RouteHandlerObject {
  */
 export type RouteHandler = RouteHandlerCallback | RouteHandlerObject;
 
-interface CacheDidUpdateCallback {
-  ({cacheName, oldResponse, newResponse, request, event}: {
-    cacheName: string,
-    oldResponse?: Response,
-    newResponse: Response,
-    request: Request,
-    event?: FetchEvent
-  }): Promise<void | null | undefined>;
+export interface CacheDidUpdateCallbackParam {
+  cacheName: string;
+  oldResponse?: Response;
+  newResponse: Response;
+  request: Request;
+  event?: FetchEvent;
 }
 
-interface CacheKeyWillBeUsedCallback {
-  ({request, mode}: {
-    request: Request,
-    mode: string,
-  }): Promise<Request | string>;
+export interface CacheDidUpdateCallback {
+  (param: CacheDidUpdateCallbackParam): Promise<void | null | undefined>;
 }
 
-interface CacheWillUpdateCallback {
-  ({response, request, event}: {
-    response: Response,
-    request?: Request,
-    event?: ExtendableEvent,
-  }): Promise<Response | void | null | undefined>;
+export interface CacheKeyWillBeUsedCallbackParam {
+  request: Request;
+  mode: string;
 }
 
-interface CachedResponseWillBeUsedCallback {
-  ({cacheName, request, matchOptions, cachedResponse, event}: {
-    cacheName: string,
-    request: Request,
-    matchOptions?: CacheQueryOptions,
-    cachedResponse?: Response,
-    event?: ExtendableEvent,
-  }): Promise<Response | void | null | undefined>;
+export interface CacheKeyWillBeUsedCallback {
+  (param: CacheKeyWillBeUsedCallbackParam): Promise<Request | string>;
 }
 
-interface FetchDidFailCallback {
-  ({originalRequest, request, error, event}: {
-    originalRequest: Request,
-    error: Error,
-    request: Request,
-    event?: ExtendableEvent,
-  }): Promise<void | null | undefined>;
+export interface CacheWillUpdateCallbackParamParam {
+  response: Response;
+  request?: Request;
+  event?: ExtendableEvent;
 }
 
-interface FetchDidSucceedCallback {
-  ({request, response}: {
-    request: Request,
-    response: Response,
-  }): Promise<Response>
+export interface CacheWillUpdateCallback {
+  (param: CacheWillUpdateCallbackParamParam): Promise<Response | void | null | undefined>;
 }
 
-interface RequestWillFetchCallback {
-  ({request}: {
-    request: Request
-  }): Promise<void | null | undefined>
+export interface CachedResponseWillBeUsedCallbackParam {
+  cacheName: string;
+  request: Request;
+  matchOptions?: CacheQueryOptions;
+  cachedResponse?: Response;
+  event?: ExtendableEvent;
+}
+
+export interface CachedResponseWillBeUsedCallback {
+  (param: CachedResponseWillBeUsedCallbackParam): Promise<Response | void | null | undefined>;
+}
+
+export interface FetchDidFailCallbackParam {
+  originalRequest: Request;
+  error: Error;
+  request: Request;
+  event?: ExtendableEvent;
+}
+
+export interface FetchDidFailCallback {
+  (param: FetchDidFailCallbackParam): Promise<void | null | undefined>;
+}
+
+export interface FetchDidSucceedCallbackParam {
+  request: Request;
+  response: Response;
+}
+
+export interface FetchDidSucceedCallback {
+  (param: FetchDidSucceedCallbackParam): Promise<Response>
+}
+
+export interface RequestWillFetchCallbackParam {
+  request: Request;
+}
+
+export interface RequestWillFetchCallback {
+  (param: RequestWillFetchCallbackParam): Promise<void | null | undefined>
 }
 
 /**

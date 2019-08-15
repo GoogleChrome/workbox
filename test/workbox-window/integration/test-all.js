@@ -228,42 +228,5 @@ describe(`[workbox-window] Workbox`, function() {
       // The waiting phase should have been skipped.
       expect(result.waitingSpyCallCount).to.equal(0);
     });
-
-    it(`notifies a controlling SW that the window is ready`, async function() {
-      // Register a SW and wait until it's controlling the page since
-      // ready messages are only sent to controlling SWs with matching URLs.
-      await executeAsyncAndCatch(async (cb) => {
-        try {
-          const wb = new Workbox('sw-window-ready.js');
-          await wb.register();
-
-          wb.addEventListener('controlling', () => cb());
-        } catch (error) {
-          cb({error: error.stack});
-        }
-      });
-
-      const result = await executeAsyncAndCatch(async (cb) => {
-        try {
-          const readyMessageReceived = new Promise((resolve) => {
-            navigator.serviceWorker.addEventListener('message', (event) => {
-              if (event.data.type === 'sw:message:ready') {
-                resolve();
-              }
-            });
-          });
-
-          const wb = new Workbox('sw-window-ready.js');
-          wb.register();
-
-          await readyMessageReceived;
-          cb(true);
-        } catch (error) {
-          cb({error: error.stack});
-        }
-      });
-
-      expect(result).to.equal(true);
-    });
   });
 });
