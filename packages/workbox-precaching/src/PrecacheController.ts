@@ -22,7 +22,7 @@ import {printCleanupDetails} from './utils/printCleanupDetails.js';
 import {printInstallDetails} from './utils/printInstallDetails.js';
 
 import './_version.js';
- 
+
 /**
  * Performs efficient precaching of assets.
  *
@@ -213,7 +213,7 @@ class PrecacheController {
 
     // Allow developers to override the default logic about what is and isn't
     // valid by passing in a plugin implementing cacheWillUpdate(), e.g.
-    // a workbox.cacheableResponse.Plugin instance.
+    // a workbox.cacheableResponse.CacheableResponsePlugin instance.
     let cacheWillUpdatePlugin;
     for (const plugin of (plugins || [])) {
       if ('cacheWillUpdate' in plugin) {
@@ -293,7 +293,7 @@ class PrecacheController {
   /**
    * Returns a function that looks up `url` in the precache (taking into
    * account revision information), and returns the corresponding `Response`.
-   * 
+   *
    * If for an unexpected reason there is a cache miss when looking up `url`,
    * this will fall back to retrieving the `Response` via `fetch()`.
    *
@@ -309,21 +309,21 @@ class PrecacheController {
         paramName: 'url',
       });
     }
-  
+
     const cacheKey = this.getCacheKeyForURL(url);
     if (!cacheKey) {
       throw new WorkboxError('non-precached-url', {url});
     }
-  
+
     return async () => {
       try {
         const cache = await caches.open(this._cacheName);
         const response = await cache.match(cacheKey);
-  
+
         if (response) {
           return response;
         }
-  
+
         // This shouldn't normally happen, but there are edge cases:
         // https://github.com/GoogleChrome/workbox/issues/1441
         throw new Error(`The cache ${this._cacheName} did not have an entry ` +
@@ -337,7 +337,7 @@ class PrecacheController {
           logger.debug(`Unable to respond to navigation request with ` +
               `cached response. Falling back to network.`, error);
         }
-  
+
         // This might still fail if the browser is offline...
         return fetch(cacheKey);
       }

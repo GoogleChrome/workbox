@@ -12,7 +12,7 @@ importScripts('/infra/testing/comlink/sw-interface.js');
 workbox.setConfig({modulePathPrefix: '/__WORKBOX/buildFile/'});
 
 workbox.precaching.addPlugins([
-  new workbox.cacheableResponse.Plugin({
+  new workbox.cacheableResponse.CacheableResponsePlugin({
     statuses: [200],
   }),
 ]);

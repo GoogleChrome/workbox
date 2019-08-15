@@ -27,10 +27,10 @@ function validate(runtimeCachingOptions, convertedOptions) {
   expect(convertedOptions).to.have.lengthOf(runtimeCachingOptions.length);
 
   const globalScope = {
-    workbox_cacheable_response_Plugin: sinon.spy(),
-    workbox_expiration_Plugin: sinon.spy(),
-    workbox_background_sync_Plugin: sinon.spy(),
-    workbox_broadcast_update_Plugin: sinon.spy(),
+    workbox_cacheable_response_CacheableResponsePlugin: sinon.spy(),
+    workbox_expiration_ExpirationPlugin: sinon.spy(),
+    workbox_background_sync_BackgroundSyncPlugin: sinon.spy(),
+    workbox_broadcast_update_BroadcastUpdatePlugin: sinon.spy(),
     workbox_routing_registerRoute: sinon.spy(),
     workbox_strategies_CacheFirst: sinon.spy(),
     workbox_strategies_CacheOnly: sinon.spy(),
@@ -90,22 +90,22 @@ function validate(runtimeCachingOptions, convertedOptions) {
       }
 
       if (Object.keys(options.expiration).length > 0) {
-        expect(globalScope.workbox_expiration_Plugin.calledWith(options.expiration)).to.be.true;
+        expect(globalScope.workbox_expiration_ExpirationPlugin.calledWith(options.expiration)).to.be.true;
       }
 
       if (options.cacheableResponse) {
-        expect(globalScope.workbox_cacheable_response_Plugin.calledWith(options.cacheableResponse)).to.be.true;
+        expect(globalScope.workbox_cacheable_response_CacheableResponsePlugin.calledWith(options.cacheableResponse)).to.be.true;
       }
 
       if (options.backgroundSync) {
         if ('options' in options.backgroundSync) {
           expect(
-              globalScope.workbox_background_sync_Plugin.calledWith(
+              globalScope.workbox_background_sync_BackgroundSyncPlugin.calledWith(
                   options.backgroundSync.name, options.backgroundSync.options)
           ).to.be.true;
         } else {
           expect(
-              globalScope.workbox_background_sync_Plugin.calledWith(
+              globalScope.workbox_background_sync_BackgroundSyncPlugin.calledWith(
                   options.backgroundSync.name)
           ).to.be.true;
         }
@@ -116,10 +116,10 @@ function validate(runtimeCachingOptions, convertedOptions) {
           const expectedOptions = Object.assign(
               {channelName: options.broadcastUpdate.channelName},
               options.broadcastUpdate.options);
-          expect(globalScope.workbox_broadcast_update_Plugin.calledWith(expectedOptions))
+          expect(globalScope.workbox_broadcast_update_BroadcastUpdatePlugin.calledWith(expectedOptions))
               .to.be.true;
         } else {
-          expect(globalScope.workbox_broadcast_update_Plugin.calledWith(
+          expect(globalScope.workbox_broadcast_update_BroadcastUpdatePlugin.calledWith(
               {channelName: options.broadcastUpdate.channelName})).to.be.true;
         }
       }

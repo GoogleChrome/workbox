@@ -6,10 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {Plugin} from '../../../packages/workbox-broadcast-update/Plugin.mjs';
+import {BroadcastUpdatePlugin} from '../../../packages/workbox-broadcast-update/BroadcastUpdatePlugin.mjs';
 
 
-describe(`Plugin`, function() {
+describe(`BroadcastUpdatePlugin`, function() {
   const sandbox = sinon.createSandbox();
 
   beforeEach(function() {
@@ -22,7 +22,7 @@ describe(`Plugin`, function() {
 
   describe(`cacheDidUpdate`, function() {
     it(`should call notifyIfUpdated and pass all options`, async function() {
-      const bcuPlugin = new Plugin();
+      const bcuPlugin = new BroadcastUpdatePlugin();
       sandbox.stub(bcuPlugin._broadcastUpdate, 'notifyIfUpdated');
 
       const opts = {};

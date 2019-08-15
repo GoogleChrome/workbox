@@ -7,9 +7,9 @@
 */
 
 import {Queue} from 'workbox-background-sync/Queue.mjs';
-import {Plugin} from 'workbox-background-sync/Plugin.mjs';
+import {BackgroundSyncPlugin} from 'workbox-background-sync/BackgroundSyncPlugin.mjs';
 
-describe(`Plugin`, function() {
+describe(`BackgroundSyncPlugin`, function() {
   const sandbox = sinon.createSandbox();
 
   beforeEach(async function() {
@@ -27,7 +27,7 @@ describe(`Plugin`, function() {
   describe(`constructor`, function() {
     it(`should implement fetchDidFail and add requests to the queue`, async function() {
       const stub = sandbox.stub(Queue.prototype, 'pushRequest');
-      const queuePlugin = new Plugin('a');
+      const queuePlugin = new BackgroundSyncPlugin('a');
 
       queuePlugin.fetchDidFail({request: new Request('/one')});
       expect(stub.callCount).to.equal(1);

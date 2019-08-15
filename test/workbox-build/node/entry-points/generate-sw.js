@@ -774,8 +774,8 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
           cacheName: secondRuntimeCachingOptions.cacheName,
           plugins: [{}],
         }]],
-        Plugin: [[firstRuntimeCachingOptions.expiration]],
-        Plugin$1: [[secondRuntimeCachingOptions.cacheableResponse]],
+        ExpirationPlugin: [[firstRuntimeCachingOptions.expiration]],
+        CacheableResponsePlugin: [[secondRuntimeCachingOptions.cacheableResponse]],
         importScripts: [],
         precacheAndRoute: [[[{
           url: 'index.html',

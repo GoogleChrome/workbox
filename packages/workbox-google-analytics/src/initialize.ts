@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {Plugin} from 'workbox-background-sync/Plugin.js';
+import {BackgroundSyncPlugin} from 'workbox-background-sync/BackgroundSyncPlugin.js';
 import {Queue} from 'workbox-background-sync/Queue.js';
 import {cacheNames} from 'workbox-core/_private/cacheNames.js';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
@@ -37,7 +37,7 @@ interface GoogleAnalyticsInitializeOptions {
 
 /**
  * Creates the requestWillDequeue callback to be used with the background
- * sync queue plugin. The callback takes the failed request and adds the
+ * sync plugin. The callback takes the failed request and adds the
  * `qt` param based on the current time, as well as applies any other
  * user-defined hit modifications.
  *
@@ -116,18 +116,18 @@ const createOnSyncCallback = (config: GoogleAnalyticsInitializeOptions) => {
 /**
  * Creates GET and POST routes to catch failed Measurement Protocol hits.
  *
- * @param {Plugin} queuePlugin
+ * @param {BackgroundSyncPlugin} bgSyncPlugin
  * @return {Array<Route>} The created routes.
  *
  * @private
  */
-const createCollectRoutes = (queuePlugin: Plugin) => {
+const createCollectRoutes = (bgSyncPlugin: BackgroundSyncPlugin) => {
   const match = ({url}: RouteMatchCallbackOptions) =>
       url.hostname === GOOGLE_ANALYTICS_HOST &&
       COLLECT_PATHS_REGEX.test(url.pathname);
 
   const handler = new NetworkOnly({
-    plugins: [queuePlugin],
+    plugins: [bgSyncPlugin],
   });
 
   return [
@@ -209,7 +209,7 @@ const createGtmJsRoute = (cacheName: string) => {
 const initialize = (options: GoogleAnalyticsInitializeOptions = {}) => {
   const cacheName = cacheNames.getGoogleAnalyticsName(options.cacheName);
 
-  const queuePlugin = new Plugin(QUEUE_NAME, {
+  const bgSyncPlugin = new BackgroundSyncPlugin(QUEUE_NAME, {
     maxRetentionTime: MAX_RETENTION_TIME,
     onSync: createOnSyncCallback(options),
   });
@@ -218,7 +218,7 @@ const initialize = (options: GoogleAnalyticsInitializeOptions = {}) => {
     createGtmJsRoute(cacheName),
     createAnalyticsJsRoute(cacheName),
     createGtagJsRoute(cacheName),
-    ...createCollectRoutes(queuePlugin),
+    ...createCollectRoutes(bgSyncPlugin),
   ];
 
   const router = new Router();

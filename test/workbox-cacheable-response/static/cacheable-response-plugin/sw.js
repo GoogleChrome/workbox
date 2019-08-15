@@ -17,7 +17,7 @@ workbox.routing.registerRoute(
     workbox.strategies.cacheFirst({
       cacheName: 'cacheable-response-cache',
       plugins: [
-        new workbox.cacheableResponse.Plugin({
+        new workbox.cacheableResponse.CacheableResponsePlugin({
           statuses: [0, 200],
         }),
       ],

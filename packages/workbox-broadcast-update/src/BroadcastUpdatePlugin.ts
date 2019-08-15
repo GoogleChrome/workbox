@@ -16,7 +16,7 @@ import './_version.js';
  *
  * @memberof workbox.broadcastUpdate
  */
-class Plugin implements WorkboxPlugin {
+class BroadcastUpdatePlugin implements WorkboxPlugin {
   private _broadcastUpdate: BroadcastCacheUpdate;
 
   /**
@@ -54,4 +54,4 @@ class Plugin implements WorkboxPlugin {
   }
 }
 
-export {Plugin};
+export {BroadcastUpdatePlugin};
