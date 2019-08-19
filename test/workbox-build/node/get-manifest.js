@@ -11,10 +11,10 @@ const fse = require('fs-extra');
 const upath = require('upath');
 const tempy = require('tempy');
 
-const getManifest = require('../../../../packages/workbox-build/src/entry-points/get-manifest');
+const getManifest = require('../../../packages/workbox-build/src/get-manifest');
 
-describe(`[workbox-build] entry-points/get-manifest.js (End to End)`, function() {
-  const SRC_DIR = upath.join(__dirname, '..', '..', 'static', 'example-project-1');
+describe(`[workbox-build] get-manifest.js (End to End)`, function() {
+  const SRC_DIR = upath.join(__dirname, '..', 'static', 'example-project-1');
   const BASE_OPTIONS = {
     globDirectory: SRC_DIR,
   };

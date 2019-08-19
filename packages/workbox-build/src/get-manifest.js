@@ -6,9 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
-const getFileManifestEntries = require('../lib/get-file-manifest-entries');
-const getManifestSchema = require('./options/get-manifest-schema');
-const validate = require('./options/validate');
+const getFileManifestEntries = require('./lib/get-file-manifest-entries');
+const getManifestSchema = require('./options/schema/get-manifest');
+const validate = require('./lib/validate-options');
 
 /**
  * This method returns a list of URLs to precache, referred to as a "precache

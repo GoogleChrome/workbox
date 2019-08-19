@@ -16,6 +16,8 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
   const MODULE_PATH = '../../../../packages/workbox-build/src/lib/populate-sw-template';
 
   it(`should throw an error if templating fails`, function() {
+    const manifestEntries = ['ignored'];
+
     const populateSWTemplate = proxyquire(MODULE_PATH, {
       'lodash.template': () => {
         throw new Error();
@@ -23,10 +25,23 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     });
 
     try {
-      populateSWTemplate({});
+      populateSWTemplate({manifestEntries});
       throw new Error('Unexpected success.');
     } catch (error) {
       expect(error.message).to.have.string(errors['populating-sw-tmpl-failed']);
+    }
+  });
+
+  it(`should throw an error if both manifestEntries and runtimeCaching are empty`, function() {
+    const populateSWTemplate = proxyquire(MODULE_PATH, {
+      'lodash.template': () => {},
+    });
+
+    try {
+      populateSWTemplate({manifestEntries: [], runtimeCaching: []});
+      throw new Error('Unexpected success.');
+    } catch (error) {
+      expect(error.message).to.have.string(errors['no-manifest-entries-or-runtime-caching']);
     }
   });
 
@@ -34,6 +49,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     const runtimeCachingPlaceholder = 'runtime-caching-placeholder';
     const swTemplate = 'template';
     const precacheOptionsString = '{}';
+    const manifestEntries = ['ignored'];
 
     const innerStub = sinon.stub().returns('');
     const outerStub = sinon.stub().returns(innerStub);
@@ -43,7 +59,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
       '../templates/sw-template': swTemplate,
     });
 
-    populateSWTemplate({});
+    populateSWTemplate({manifestEntries});
 
     expect(outerStub.alwaysCalledWith(swTemplate)).to.be.true;
 
@@ -52,11 +68,11 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     delete(innerStub.args[0][0].use);
 
     expect(innerStub.args[0]).to.eql([{
+      manifestEntries,
       cacheId: undefined,
       cleanupOutdatedCaches: undefined,
       clientsClaim: undefined,
       importScripts: undefined,
-      manifestEntries: undefined,
       navigateFallback: undefined,
       navigateFallbackBlacklist: undefined,
       navigateFallbackWhitelist: undefined,
@@ -156,6 +172,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
       },
     };
     const offlineAnalyticsConfigString = `{\n\tparameterOverrides: {\n\t\tcd1: 'offline'\n\t},\n\thitFilter: (params) => {\n        \n        params.set('cm1', params.get('qt'));\n      }\n}`;
+    const manifestEntries = ['ignored'];
 
     const innerStub = sinon.stub().returns('');
     const outerStub = sinon.stub().returns(innerStub);
@@ -165,7 +182,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
       '../templates/sw-template': swTemplate,
     });
 
-    populateSWTemplate({offlineGoogleAnalytics});
+    populateSWTemplate({manifestEntries, offlineGoogleAnalytics});
 
     expect(outerStub.alwaysCalledWith(swTemplate)).to.be.true;
 
@@ -174,11 +191,11 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     delete(innerStub.args[0][0].use);
 
     expect(innerStub.args[0]).to.eql([{
+      manifestEntries,
       cacheId: undefined,
       cleanupOutdatedCaches: undefined,
       clientsClaim: undefined,
       importScripts: undefined,
-      manifestEntries: undefined,
       navigateFallback: undefined,
       navigateFallbackBlacklist: undefined,
       navigateFallbackWhitelist: undefined,

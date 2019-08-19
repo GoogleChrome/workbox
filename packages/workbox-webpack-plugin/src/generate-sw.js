@@ -10,9 +10,9 @@ const {RawSource} = require('webpack-sources');
 const bundle = require('workbox-build/build/lib/bundle');
 const populateSWTemplate =
   require('workbox-build/build/lib/populate-sw-template');
-const validate = require('workbox-build/build/entry-points/options/validate');
+const validate = require('workbox-build/build/lib/validate-options');
 const webpackGenerateSWSchema = require(
-    'workbox-build/build/entry-points/options/webpack-generate-sw-schema');
+    'workbox-build/build/options/schema/webpack-generate-sw');
 
 const getScriptFilesForChunks = require('./lib/get-script-files-for-chunks');
 const getManifestEntriesFromCompilation =

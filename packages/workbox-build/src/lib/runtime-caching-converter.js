@@ -117,7 +117,7 @@ function getOptionsString(moduleRegistry, options = {}) {
   }
 }
 
-module.exports = (moduleRegistry, runtimeCaching = []) => {
+module.exports = (moduleRegistry, runtimeCaching) => {
   return runtimeCaching.map((entry) => {
     const method = entry.method || 'GET';
 

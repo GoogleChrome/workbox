@@ -9,9 +9,9 @@
 const joi = require('@hapi/joi');
 const upath = require('upath');
 
-const baseSchema = require('./base-schema');
-const defaults = require('./defaults');
-const webpackCommon = require('./webpack-common');
+const basePartial = require('../partials/base');
+const injectPartial = require('../partials/inject');
+const webpackPartial = require('../partials/webpack');
 
 // See https://github.com/hapijs/joi/blob/v16.0.0-rc2/API.md#anydefaultvalue-description
 const swSrcBasename = (context) => {
@@ -21,11 +21,11 @@ const swSrcBasename = (context) => {
 };
 swSrcBasename.description = 'derived from the swSrc file name';
 
-module.exports = baseSchema.keys(Object.assign({
-  injectionPoint: joi.string().default(defaults.injectionPoint),
-  swSrc: joi.string().required(),
+const supportedOptions = Object.assign({
   webpackCompilationPlugins: joi.array().items(joi.object()),
-}, webpackCommon)).keys({
+}, basePartial, injectPartial, webpackPartial);
+
+module.exports = joi.object().keys(supportedOptions).keys({
   // List this separately, so that the swSrc validation happens first.
   swDest: joi.string().default(swSrcBasename),
 });

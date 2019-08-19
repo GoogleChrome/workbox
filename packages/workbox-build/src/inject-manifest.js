@@ -10,11 +10,11 @@ const assert = require('assert');
 const fse = require('fs-extra');
 const upath = require('upath');
 
-const errors = require('../lib/errors');
-const escapeRegexp = require('../lib/escape-regexp');
-const getFileManifestEntries = require('../lib/get-file-manifest-entries');
-const injectManifestSchema = require('./options/inject-manifest-schema');
-const validate = require('./options/validate');
+const errors = require('./lib/errors');
+const escapeRegexp = require('./lib/escape-regexp');
+const getFileManifestEntries = require('./lib/get-file-manifest-entries');
+const injectManifestSchema = require('./options/schema/inject-manifest');
+const validate = require('./lib/validate-options');
 
 /**
  * This method creates a list of URLs to precache, referred to as a "precache
