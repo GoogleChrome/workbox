@@ -21,15 +21,20 @@ module.exports = ({
   directoryIndex,
   ignoreURLParametersMatching,
   importScripts,
-  manifestEntries,
+  manifestEntries = [],
   navigateFallback,
   navigateFallbackBlacklist,
   navigateFallbackWhitelist,
   navigationPreload,
   offlineGoogleAnalytics,
-  runtimeCaching,
+  runtimeCaching = [],
   skipWaiting,
 }) => {
+  // There needs to be at least something to precache, or else runtime caching.
+  if (!(manifestEntries.length > 0 || runtimeCaching.length > 0)) {
+    throw new Error(errors['no-manifest-entries-or-runtime-caching']);
+  }
+
   // These are all options that can be passed to the precacheAndRoute() method.
   const precacheOptions = {
     directoryIndex,

@@ -110,4 +110,8 @@ module.exports = {
     its own revision info for them. To disable this warning, pass in an
     object with a 'url' property, and a 'revision' property set to null
     (e.g. {url: 'https://example.com/v1.0/index.js', revision: null}).`,
+  'no-manifest-entries-or-runtime-caching': ol`Couldn't find configuration for
+    either precaching or runtime caching. Please ensure that the various glob
+    options are set to match one or more files, and/or configure the
+    runtimeCaching option.`,
 };

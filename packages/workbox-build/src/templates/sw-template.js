@@ -39,24 +39,19 @@ self.addEventListener('message', (event) => {
 <% } %>
 <% if (clientsClaim) { %><%= use('workbox-core', 'clientsClaim') %>();<% } %>
 
-<% if (Array.isArray(manifestEntries)) {%>
+<% if (Array.isArray(manifestEntries) && manifestEntries.length > 0) {%>
 /**
- * The workboxSW.precacheAndRoute() method efficiently caches and responds to
+ * The precacheAndRoute() method efficiently caches and responds to
  * requests for URLs in the manifest.
  * See https://goo.gl/S9QRab
  */
-self.__precacheManifest = <%= JSON.stringify(manifestEntries, null, 2) %>.concat(self.__precacheManifest || []);
-<%= use('workbox-precaching', 'precacheAndRoute') %>(self.__precacheManifest, <%= precacheOptionsString %>);
-<% } else { %>
-if (Array.isArray(self.__precacheManifest)) {
-  <%= use('workbox-precaching', 'precacheAndRoute') %>(self.__precacheManifest, <%= precacheOptionsString %>);
-}
-<% } %>
+<%= use('workbox-precaching', 'precacheAndRoute') %>(<%= JSON.stringify(manifestEntries, null, 2) %>, <%= precacheOptionsString %>);
 <% if (cleanupOutdatedCaches) { %><%= use('workbox-precaching', 'cleanupOutdatedCaches') %>();<% } %>
 <% if (navigateFallback) { %><%= use('workbox-routing', 'registerRoute') %>(new <%= use('workbox-routing', 'NavigationRoute') %>(<%= use('workbox-precaching', 'createHandlerForURL') %>(<%= JSON.stringify(navigateFallback) %>)<% if (navigateFallbackWhitelist || navigateFallbackBlacklist) { %>, {
   <% if (navigateFallbackWhitelist) { %>whitelist: [<%= navigateFallbackWhitelist %>],<% } %>
   <% if (navigateFallbackBlacklist) { %>blacklist: [<%= navigateFallbackBlacklist %>],<% } %>
 }<% } %>));<% } %>
+<% } %>
 
 <% if (runtimeCaching) { runtimeCaching.forEach(runtimeCachingString => {%><%= runtimeCachingString %><% });} %>
 

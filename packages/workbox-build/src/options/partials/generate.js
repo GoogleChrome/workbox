@@ -1,5 +1,5 @@
 /*
-  Copyright 2018 Google LLC
+  Copyright 2019 Google LLC
 
   Use of this source code is governed by an MIT-style
   license that can be found in the LICENSE file or at
@@ -8,12 +8,10 @@
 
 const joi = require('@hapi/joi');
 
-const baseSchema = require('./base-schema');
-const defaults = require('./defaults');
-const regExpObject = require('./reg-exp-object');
+const defaults = require('../defaults');
+const regExpObject = require('../objects/reg-exp');
 
-// Add some constraints that apply to both generateSW and generateSWString.
-module.exports = baseSchema.keys({
+module.exports = {
   babelPresetEnvTargets: joi.array().items(joi.string())
       .default(defaults.babelPresetEnvTargets),
   cacheId: joi.string(),
@@ -78,5 +76,4 @@ module.exports = baseSchema.keys({
   }),
   skipWaiting: joi.boolean().default(defaults.skipWaiting),
   sourcemap: joi.boolean().default(defaults.sourcemap),
-  swDest: joi.string().required().regex(/\.js$/),
-});
+};

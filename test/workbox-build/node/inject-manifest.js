@@ -10,26 +10,26 @@ const expect = require('chai').expect;
 const upath = require('upath');
 const tempy = require('tempy');
 
-const errors = require('../../../../packages/workbox-build/src/lib/errors');
-const injectManifest = require('../../../../packages/workbox-build/src/entry-points/inject-manifest');
-const validateServiceWorkerRuntime = require('../../../../infra/testing/validator/service-worker-runtime');
+const errors = require('../../../packages/workbox-build/src/lib/errors');
+const injectManifest = require('../../../packages/workbox-build/src/inject-manifest');
+const validateServiceWorkerRuntime = require('../../../infra/testing/validator/service-worker-runtime');
 
-describe(`[workbox-build] entry-points/inject-manifest.js (End to End)`, function() {
-  const GLOB_DIR = upath.join(__dirname, '..', '..', 'static', 'example-project-1');
-  const SW_SRC_DIR = upath.join(__dirname, '..', '..', 'static', 'sw-injections');
+describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
+  const GLOB_DIR = upath.join(__dirname, '..', 'static', 'example-project-1');
+  const SW_SRC_DIR = upath.join(__dirname, '..', 'static', 'sw-injections');
   const BASE_OPTIONS = {
     globDirectory: GLOB_DIR,
     swDest: tempy.file({extension: 'js'}),
     swSrc: upath.join(SW_SRC_DIR, 'basic.js'),
   };
   const REQUIRED_PARAMS = [
-    'globDirectory',
     'swDest',
     'swSrc',
   ];
   const SUPPORTED_PARAMS = [
     'additionalManifestEntries',
     'dontCacheBustURLsMatching',
+    'globDirectory',
     'globFollow',
     'globIgnores',
     'globPatterns',

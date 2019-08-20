@@ -46,7 +46,7 @@ describe(`[workbox-build] lib/write-sw-using-default-template.js`, function() {
     });
 
     try {
-      await writeSWUsingDefaultTemplate({});
+      await writeSWUsingDefaultTemplate({manifestEntries: ['ignored']});
       throw new Error('Unexpected success.');
     } catch (error) {
       expect(error.message).to.have.string(errors['sw-write-failure']);
@@ -73,7 +73,7 @@ describe(`[workbox-build] lib/write-sw-using-default-template.js`, function() {
     });
 
     try {
-      await writeSWUsingDefaultTemplate({});
+      await writeSWUsingDefaultTemplate({manifestEntries: ['ignored']});
       throw new Error('Unexpected success.');
     } catch (error) {
       expect(error.message).to.have.string(errors['sw-write-failure-directory']);

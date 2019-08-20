@@ -11,13 +11,13 @@ const fse = require('fs-extra');
 const upath = require('upath');
 const tempy = require('tempy');
 
-const confirmDirectoryContains = require('../../../../infra/testing/confirm-directory-contains');
-const errors = require('../../../../packages/workbox-build/src/lib/errors');
-const generateSW = require('../../../../packages/workbox-build/src/entry-points/generate-sw');
-const validateServiceWorkerRuntime = require('../../../../infra/testing/validator/service-worker-runtime');
+const confirmDirectoryContains = require('../../../infra/testing/confirm-directory-contains');
+const errors = require('../../../packages/workbox-build/src/lib/errors');
+const generateSW = require('../../../packages/workbox-build/src/generate-sw');
+const validateServiceWorkerRuntime = require('../../../infra/testing/validator/service-worker-runtime');
 
-describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() {
-  const GLOB_DIR = upath.join(__dirname, '..', '..', 'static', 'example-project-1');
+describe(`[workbox-build] generate-sw.js (End to End)`, function() {
+  const GLOB_DIR = upath.join(__dirname, '..', 'static', 'example-project-1');
   const BASE_OPTIONS = {
     globDirectory: GLOB_DIR,
     inlineWorkboxRuntime: false,
@@ -25,7 +25,6 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     swDest: tempy.file({extension: 'js'}),
   };
   const REQUIRED_PARAMS = [
-    'globDirectory',
     'swDest',
   ];
   const SUPPORTED_PARAMS = [
@@ -35,6 +34,7 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
     'clientsClaim',
     'directoryIndex',
     'dontCacheBustURLsMatching',
+    'globDirectory',
     'globFollow',
     'globIgnores',
     'globPatterns',
@@ -110,6 +110,18 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
         }
       });
     }
+
+    it(`should reject when there are no manifest entries or runtimeCaching`, async function() {
+      const options = Object.assign({}, BASE_OPTIONS);
+      delete options.globDirectory;
+
+      try {
+        await generateSW(options);
+        throw new Error('Unexpected success.');
+      } catch (error) {
+        expect(error.message).to.eql(errors['no-manifest-entries-or-runtime-caching']);
+      }
+    });
   });
 
   describe(`[workbox-build] writing a service worker file`, function() {
@@ -642,6 +654,30 @@ describe(`[workbox-build] entry-points/generate-sw.js (End to End)`, function() 
         expect(error.name).to.eql('ValidationError');
         expect(error.details[0].context.key).to.eql('handler');
       }
+    });
+
+    // See https://github.com/GoogleChrome/workbox/issues/2078
+    it(`should not require using precaching`, async function() {
+      const swDest = tempy.file({extension: 'js'});
+      const runtimeCaching = [{
+        urlPattern: STRING_URL_PATTERN,
+        handler: STRING_HANDLER,
+      }];
+      const options = Object.assign({}, BASE_OPTIONS, {
+        runtimeCaching,
+        swDest,
+      });
+      delete options.globDirectory;
+
+      const {count, size, warnings} = await generateSW(options);
+      expect(warnings).to.be.empty;
+      expect(count).to.eql(0);
+      expect(size).to.eql(0);
+      await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
+        [STRING_HANDLER]: [[]],
+        importScripts: [],
+        registerRoute: [[STRING_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD]],
+      }});
     });
 
     it(`should support a single string 'urlPattern' and a string 'handler'`, async function() {

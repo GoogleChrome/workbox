@@ -6,11 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
-const generateSWSchema = require('./options/generate-sw-schema');
-const getFileManifestEntries = require('../lib/get-file-manifest-entries');
-const validate = require('./options/validate');
+const generateSWSchema = require('./options/schema/generate-sw');
+const getFileManifestEntries = require('./lib/get-file-manifest-entries');
+const validate = require('./lib/validate-options');
 const writeServiceWorkerUsingDefaultTemplate =
-  require('../lib/write-sw-using-default-template');
+  require('./lib/write-sw-using-default-template');
 
 /**
  * This method creates a list of URLs to precache, referred to as a "precache

@@ -8,10 +8,9 @@
 
 const joi = require('@hapi/joi');
 
-const defaults = require('./defaults');
-const regExpObject = require('./reg-exp-object');
+const defaults = require('../defaults');
+const regExpObject = require('../objects/reg-exp');
 
-// Used as a mix-in for the GenerateSW and InjectManifest configs.
 module.exports = {
   chunks: joi.array().items(joi.string()),
   exclude: joi.array().items(joi.string(), regExpObject, joi.func().arity(1))
