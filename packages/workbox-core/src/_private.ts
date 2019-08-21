@@ -10,6 +10,8 @@
 import {assert} from './_private/assert.js';
 import {cacheNames} from './_private/cacheNames.js';
 import {cacheWrapper} from './_private/cacheWrapper.js';
+import {canConstructReadableStream} from './_private/canConstructReadableStream.js';
+import {canConstructResponseFromBodyStream} from './_private/canConstructResponseFromBodyStream.js';
 import {DBWrapper} from './_private/DBWrapper.js';
 import {Deferred} from './_private/Deferred.js';
 import {deleteDatabase} from './_private/deleteDatabase.js';
@@ -25,6 +27,8 @@ export {
   assert,
   cacheNames,
   cacheWrapper,
+  canConstructReadableStream,
+  canConstructResponseFromBodyStream,
   DBWrapper,
   Deferred,
   deleteDatabase,

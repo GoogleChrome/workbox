@@ -6,9 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
+import {canConstructReadableStream} from 'workbox-core/_private/canConstructReadableStream.js';
 import './_version.js';
 
-let cachedIsSupported: boolean | undefined;
 
 /**
  * This is a utility method that determines whether the current browser supports
@@ -21,18 +21,8 @@ let cachedIsSupported: boolean | undefined;
  *
  * @memberof workbox.streams
  */
-function isSupported(): boolean {
-  if (cachedIsSupported === undefined) {
-    // See https://github.com/GoogleChrome/workbox/issues/1473
-    try {
-      new ReadableStream({start() {}});
-      cachedIsSupported = true;
-    } catch (error) {
-      cachedIsSupported = false;
-    }
-  }
-
-  return cachedIsSupported;
+function isSupported() {
+  return canConstructReadableStream();
 }
 
-export {isSupported};
+export {isSupported}
