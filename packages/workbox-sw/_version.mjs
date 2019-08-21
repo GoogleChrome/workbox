@@ -1,1 +1,1 @@
-try{self['workbox:sw:5.0.0-alpha.2']&&_()}catch(e){}// eslint-disable-line
+try{self['workbox:sw:5.0.0-beta.0']&&_()}catch(e){}// eslint-disable-line
