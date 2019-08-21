@@ -1,6 +1,6 @@
 {
   "name": "workbox-range-requests",
-  "version": "5.0.0-alpha.2",
+  "version": "5.0.0-beta.0",
   "license": "MIT",
   "author": "Google's Web DevRel Team",
   "description": "This library creates a new Response, given a source Response and a Range header value.",
@@ -31,6 +31,6 @@
   "module": "index.mjs",
   "types": "index.d.ts",
   "dependencies": {
-    "workbox-core": "^5.0.0-alpha.2"
+    "workbox-core": "^5.0.0-beta.0"
   }
 }
