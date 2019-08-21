@@ -108,7 +108,7 @@ class GenerateSW {
           .concat(scripts);
     }
 
-    config.manifestEntries = getManifestEntriesFromCompilation(
+    config.manifestEntries = await getManifestEntriesFromCompilation(
         compilation, config);
 
     const unbundledCode = populateSWTemplate(config);

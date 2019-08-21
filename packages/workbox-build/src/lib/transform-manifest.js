@@ -28,7 +28,7 @@ const noRevisionForURLsMatchingTransform =
  * @example <caption>A transformation that prepended the origin of a CDN for any
  * URL starting with '/assets/' could be implemented as:</caption>
  *
- * const cdnTransform = (manifestEntries) => {
+ * const cdnTransform = async (manifestEntries) => {
  *   const manifest = manifestEntries.map(entry => {
  *     const cdnOrigin = 'https://example.com';
  *     if (entry.url.startsWith('/assets/')) {
@@ -43,7 +43,7 @@ const noRevisionForURLsMatchingTransform =
  * URL contains an 8-character hash surrounded by '.', indicating that it
  * already contains revision information:</caption>
  *
- * const removeRevisionTransform = (manifestEntries) => {
+ * const removeRevisionTransform = async (manifestEntries) => {
  *   const manifest = manifestEntries.map(entry => {
  *     const hashRegExp = /\.\w{8}\./;
  *     if (entry.url.match(hashRegExp)) {
@@ -59,14 +59,14 @@ const noRevisionForURLsMatchingTransform =
  * array of entries, prior to the current transformation.
  * @param {Object} [compilation] When used in the webpack plugins, this param
  * will be set to the current `compilation`.
- * @return {module:workbox-build.ManifestTransformResult}
+ * @return {Promise<module:workbox-build.ManifestTransformResult>}
  * The array of entries with the transformation applied, and optionally, any
  * warnings that should be reported back to the build tool.
  *
  * @memberof module:workbox-build
  */
 
-module.exports = ({
+module.exports = async ({
   additionalManifestEntries,
   dontCacheBustURLsMatching,
   fileDetails,
@@ -115,7 +115,7 @@ module.exports = ({
 
   let transformedManifest = normalizedManifest;
   for (const transform of transformsToApply) {
-    const result = transform(transformedManifest, transformParam);
+    const result = await transform(transformedManifest, transformParam);
     if (!('manifest' in result)) {
       throw new Error(errors['bad-manifest-transforms-return-value']);
     }

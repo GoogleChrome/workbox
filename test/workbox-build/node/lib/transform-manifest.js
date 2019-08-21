@@ -30,7 +30,7 @@ describe(`[workbox-build] lib/transform-manifest.js`, function() {
   const FILE_DETAILS = [ENTRY1, ENTRY2, ENTRY3];
 
   it(`should filter out files above maximumFileSizeToCacheInBytes`, async function() {
-    const {size, count, manifestEntries} = transformManifest({
+    const {size, count, manifestEntries} = await transformManifest({
       maximumFileSizeToCacheInBytes: MAXIMUM_FILE_SIZE,
       fileDetails: FILE_DETAILS,
     });
@@ -47,7 +47,7 @@ describe(`[workbox-build] lib/transform-manifest.js`, function() {
   });
 
   it(`should remove revision info based on dontCacheBustURLsMatching`, async function() {
-    const {size, count, manifestEntries} = transformManifest({
+    const {size, count, manifestEntries} = await transformManifest({
       dontCacheBustURLsMatching: new RegExp(ENTRY1.file),
       fileDetails: FILE_DETAILS,
     });
@@ -68,7 +68,7 @@ describe(`[workbox-build] lib/transform-manifest.js`, function() {
   it(`should modify the URLs based on modifyURLPrefix`, async function() {
     const prefix = 'prefix/';
 
-    const {size, count, manifestEntries} = transformManifest({
+    const {size, count, manifestEntries} = await transformManifest({
       modifyURLPrefix: {
         '': prefix,
       },
@@ -89,7 +89,7 @@ describe(`[workbox-build] lib/transform-manifest.js`, function() {
     }]);
   });
 
-  it(`should use custom manifestTransforms`, function() {
+  it(`should use custom manifestTransforms`, async function() {
     const prefix1 = 'prefix1/';
     const prefix2 = 'prefix2/';
 
@@ -118,7 +118,7 @@ describe(`[workbox-build] lib/transform-manifest.js`, function() {
       return {manifest, warnings: [warning2]};
     };
 
-    const {size, count, manifestEntries, warnings} = transformManifest({
+    const {size, count, manifestEntries, warnings} = await transformManifest({
       fileDetails: FILE_DETAILS,
       manifestTransforms: [transform1, transform2],
       transformParam,
@@ -135,6 +135,32 @@ describe(`[workbox-build] lib/transform-manifest.js`, function() {
       revision: ENTRY2.hash,
     }, {
       url: prefix2 + prefix1 + ENTRY3.file,
+      revision: ENTRY3.hash,
+    }]);
+  });
+
+  it(`should support an async manifestTransform`, async function() {
+    const asyncTransform = async (manifest) => {
+      await Promise.resolve();
+      return {manifest, warnings: []};
+    };
+
+    const {size, count, manifestEntries, warnings} = await transformManifest({
+      fileDetails: FILE_DETAILS,
+      manifestTransforms: [asyncTransform],
+    });
+
+    expect(warnings).to.be.empty;
+    expect(size).to.eql(ENTRY1.size + ENTRY2.size + ENTRY3.size);
+    expect(count).to.eql(3);
+    expect(manifestEntries).to.deep.equal([{
+      url: ENTRY1.file,
+      revision: ENTRY1.hash,
+    }, {
+      url: ENTRY2.file,
+      revision: ENTRY2.hash,
+    }, {
+      url: ENTRY3.file,
       revision: ENTRY3.hash,
     }]);
   });
