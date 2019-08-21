@@ -150,7 +150,7 @@ function filterAssets(compilation, config) {
   return filteredAssets;
 }
 
-module.exports = (compilation, config) => {
+module.exports = async (compilation, config) => {
   const filteredAssets = filterAssets(compilation, config);
 
   const {publicPath} = compilation.options.output;
@@ -177,7 +177,7 @@ module.exports = (compilation, config) => {
   // We also get back `size` and `count`, and it would be nice to log that
   // somewhere, but... webpack doesn't offer info-level logs?
   // https://github.com/webpack/webpack/issues/3996
-  const {manifestEntries, warnings} = transformManifest({
+  const {manifestEntries, warnings} = await transformManifest({
     fileDetails,
     additionalManifestEntries: config.additionalManifestEntries,
     dontCacheBustURLsMatching: config.dontCacheBustURLsMatching,

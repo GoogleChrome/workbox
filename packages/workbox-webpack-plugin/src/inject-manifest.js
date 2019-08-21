@@ -152,7 +152,7 @@ class InjectManifest {
     const swAsset = compilation.assets[config.swDest];
     delete compilation.assets[config.swDest];
 
-    const manifestEntries = getManifestEntriesFromCompilation(
+    const manifestEntries = await getManifestEntriesFromCompilation(
         compilation, config);
 
     const manifestDeclaration = stringifyManifest(manifestEntries,

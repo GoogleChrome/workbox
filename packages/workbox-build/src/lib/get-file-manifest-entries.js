@@ -108,7 +108,7 @@ module.exports = async ({
     }
   }
 
-  const transformedManifest = transformManifest({
+  const transformedManifest = await transformManifest({
     additionalManifestEntries,
     dontCacheBustURLsMatching,
     fileDetails,
