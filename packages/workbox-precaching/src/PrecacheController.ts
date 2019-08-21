@@ -11,12 +11,12 @@ import {cacheNames} from 'workbox-core/_private/cacheNames.js';
 import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.js';
 import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.js';
 import {logger} from 'workbox-core/_private/logger.js';
-import {RouteHandlerCallback} from 'workbox-core/types.js';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
+import {copyResponse} from 'workbox-core/copyResponse.js';
+import {RouteHandlerCallback} from 'workbox-core/types.js';
 import {WorkboxPlugin} from 'workbox-core/types.js';
 
 import {PrecacheEntry} from './_types.js';
-import {cleanRedirect} from './utils/cleanRedirect.js';
 import {createCacheKey} from './utils/createCacheKey.js';
 import {printCleanupDetails} from './utils/printCleanupDetails.js';
 import {printInstallDetails} from './utils/printInstallDetails.js';
@@ -239,8 +239,12 @@ class PrecacheController {
       });
     }
 
+    // Redirected responses cannot be used to satisfy a navigation request, so
+    // any redirected response must be "copied" rather than cloned, so the new
+    // response doesn't contain the `redirected` flag. See:
+    // https://bugs.chromium.org/p/chromium/issues/detail?id=669363&desc=2#c1
     if (response.redirected) {
-      response = await cleanRedirect(response);
+      response = await copyResponse(response);
     }
 
     await cacheWrapper.put({
