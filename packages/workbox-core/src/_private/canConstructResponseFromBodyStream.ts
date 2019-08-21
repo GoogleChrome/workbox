@@ -17,6 +17,8 @@ let supportStatus: boolean | undefined;
  *
  * @return {boolean} `true`, if the current browser can successfully
  *     construct a `Response` from a `response.body` stream, `false` otherwise.
+ *
+ * @private
  */
 function canConstructResponseFromBodyStream(): boolean {
   if (supportStatus === undefined) {

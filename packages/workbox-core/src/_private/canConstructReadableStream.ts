@@ -18,6 +18,8 @@ let supportStatus: boolean | undefined;
  *
  * @return {boolean} `true`, if the current browser can successfully
  *     construct a `ReadableStream`, `false` otherwise.
+ *
+ * @private
  */
 function canConstructReadableStream(): boolean {
   if (supportStatus === undefined) {

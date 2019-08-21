@@ -8,8 +8,9 @@
 
 import {registerQuotaErrorCallback} from './registerQuotaErrorCallback.js';
 import * as _private from './_private.js';
-import {clientsClaim} from './clientsClaim.js';
 import {cacheNames} from './cacheNames.js';
+import {copyResponse} from './copyResponse.js';
+import {clientsClaim} from './clientsClaim.js';
 import {setCacheNameDetails} from './setCacheNameDetails.js';
 import {skipWaiting} from './skipWaiting.js';
 import './_version.js';
@@ -24,8 +25,9 @@ import './_version.js';
  */
 export {
   _private,
-  clientsClaim,
   cacheNames,
+  clientsClaim,
+  copyResponse,
   registerQuotaErrorCallback,
   setCacheNameDetails,
   skipWaiting,
