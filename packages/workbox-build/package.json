@@ -32,7 +32,7 @@
     "rollup": "^1.17.0",
     "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-off-main-thread": "^1.0.1",
+    "@surma/rollup-plugin-off-main-thread": "^1.1.1",
     "rollup-plugin-replace": "^2.2.0",
     "rollup-plugin-terser": "^5.1.1",
     "stringify-object": "^3.3.0",
