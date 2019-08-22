@@ -51,7 +51,7 @@ describe(`[workbox-build] lib/bundle.js`, function() {
       'rollup-plugin-terser': {
         terser: sinon.stub(),
       },
-      'rollup-plugin-off-main-thread': sinon.stub(),
+      '@surma/rollup-plugin-off-main-thread': sinon.stub(),
       'rollup': {
         rollup: sinon.stub().resolves(rollupStub),
       },
@@ -85,7 +85,7 @@ describe(`[workbox-build] lib/bundle.js`, function() {
     });
 
     expect(stubs.rollup.rollup.args[0][0].manualChunks).to.be.a('function');
-    expect(stubs['rollup-plugin-off-main-thread'].calledOnce).to.be.true;
+    expect(stubs['@surma/rollup-plugin-off-main-thread'].calledOnce).to.be.true;
   });
 
   it(`should not use loadz0r or configure manualChunks when 'inlineWorkboxRuntime' is true`, async function() {
@@ -94,7 +94,7 @@ describe(`[workbox-build] lib/bundle.js`, function() {
     });
 
     expect(stubs.rollup.rollup.args[0][0].manualChunks).not.to.exist;
-    expect(stubs['rollup-plugin-off-main-thread'].notCalled).to.be.true;
+    expect(stubs['@surma/rollup-plugin-off-main-thread'].notCalled).to.be.true;
   });
 
   it(`should replace NODE_ENV with the 'mode' value`, async function() {
