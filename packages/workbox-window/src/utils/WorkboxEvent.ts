@@ -51,6 +51,7 @@ export interface WorkboxLifecycleEventMap {
   'externalwaiting': WorkboxLifecycleWaitingEvent;
   'externalactivating': WorkboxLifecycleEvent;
   'externalactivated': WorkboxLifecycleEvent;
+  'redundant': WorkboxLifecycleEvent;
 }
 
 export interface WorkboxEventMap extends WorkboxLifecycleEventMap {
