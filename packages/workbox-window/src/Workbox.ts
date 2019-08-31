@@ -145,8 +145,7 @@ class Workbox extends WorkboxEventTarget {
 
     // If an "own" SW is already set, resolve the deferred.
     if (this._sw) {
-      this._sw.addEventListener(
-          'statechange', this._onStateChange, {once: true});
+      this._sw.addEventListener('statechange', this._onStateChange);
       this._swDeferred.resolve(this._sw);
     }
 
