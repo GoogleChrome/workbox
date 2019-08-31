@@ -30,13 +30,16 @@ export interface RouteMatchCallbackOptions {
  * `options.params` argument.
  */
 export interface RouteMatchCallback {
-  ({url, request, event}: RouteMatchCallbackOptions): any;
+  (options: RouteMatchCallbackOptions): any;
 }
 
 /**
  * Options passed to a `RouteHandlerCallback` function.
  */
-export interface RouteHandlerCallbackOptions extends RouteMatchCallbackOptions {
+export interface RouteHandlerCallbackOptions {
+  request: Request;
+  url?: URL;
+  event?: ExtendableEvent;
   params?: string[] | {[paramName: string]: string};
 }
 
@@ -49,7 +52,7 @@ export interface RouteHandlerCallbackOptions extends RouteMatchCallbackOptions {
  * will be passed in as this handler's `options.params` argument.
  */
 export interface RouteHandlerCallback {
-  ({url, request, event, params}: RouteHandlerCallbackOptions): Promise<Response>;
+  (options: RouteHandlerCallbackOptions): Promise<Response>;
 }
 
 /**
@@ -92,7 +95,7 @@ export interface CacheKeyWillBeUsedCallback {
 
 export interface CacheWillUpdateCallbackParamParam {
   response: Response;
-  request?: Request;
+  request: Request;
   event?: ExtendableEvent;
 }
 
@@ -137,7 +140,7 @@ export interface RequestWillFetchCallbackParam {
 }
 
 export interface RequestWillFetchCallback {
-  (param: RequestWillFetchCallbackParam): Promise<void | null | undefined>
+  (param: RequestWillFetchCallbackParam): Promise<Request | void | null | undefined>
 }
 
 /**
