@@ -116,9 +116,6 @@ class Workbox extends WorkboxEventTarget {
       this._sw = this._compatibleControllingSW;
       this._activeDeferred.resolve(this._compatibleControllingSW);
       this._controllingDeferred.resolve(this._compatibleControllingSW);
-
-      this._compatibleControllingSW.addEventListener(
-          'statechange', this._onStateChange, {once: true});
     }
 
     // If there's a waiting service worker with a matching URL before the
@@ -148,6 +145,8 @@ class Workbox extends WorkboxEventTarget {
 
     // If an "own" SW is already set, resolve the deferred.
     if (this._sw) {
+      this._sw.addEventListener(
+          'statechange', this._onStateChange, {once: true});
       this._swDeferred.resolve(this._sw);
     }
 
