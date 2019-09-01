@@ -514,6 +514,55 @@ describe(`[workbox-window] Workbox`, function() {
           originalEvent: {type: 'message'},
         });
       });
+
+      it(`can receive a message prior to calling register but buffers them until after registration`, async function() {
+        const scriptURL = navigator.serviceWorker.controller.scriptURL;
+        const wb = new Workbox(scriptURL);
+
+        const messageSpy = sandbox.spy();
+        wb.addEventListener('message', messageSpy);
+
+        // Simulate a message event sent from the controlling service worker
+        // at page load time (prior to calling `register()`);
+        navigator.serviceWorker.dispatchEvent(new MessageEvent('message', {
+          data: 'postMessage from during page load!',
+          source: navigator.serviceWorker.controller,
+        }));
+
+        expect(messageSpy.notCalled).to.be.true;
+
+        await wb.register();
+
+        expect(messageSpy.callCount).to.equal(1);
+        assertMatchesWorkboxEvent(messageSpy.args[0][0], {
+          type: 'message',
+          target: wb,
+          sw: navigator.serviceWorker.controller,
+          data: 'postMessage from during page load!',
+          originalEvent: {type: 'message'},
+        });
+      });
+
+      it(`does not dispatch messages received from non-own service workers`, async function() {
+        const wb = new Workbox(uniq('sw-clients-claim.js.njk'));
+
+        const messageSpy = sandbox.spy();
+        wb.addEventListener('message', messageSpy);
+
+        // Simulate a message event sent from the controlling service worker
+        // at page load time (prior to calling `register()`);
+        navigator.serviceWorker.dispatchEvent(new MessageEvent('message', {
+          data: 'postMessage from during page load!',
+          source: navigator.serviceWorker.controller,
+        }));
+
+        expect(messageSpy.notCalled).to.be.true;
+
+        wb.register();
+        await wb.controlling;
+
+        expect(messageSpy.notCalled).to.be.true;
+      });
     });
 
     describe(`installed`, function() {
