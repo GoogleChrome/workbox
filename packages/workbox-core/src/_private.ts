@@ -19,6 +19,8 @@ import {executeQuotaErrorCallbacks} from './_private/executeQuotaErrorCallbacks.
 import {fetchWrapper} from './_private/fetchWrapper.js';
 import {getFriendlyURL} from './_private/getFriendlyURL.js';
 import {logger} from './_private/logger.js';
+import {resultingClientExists} from './_private/resultingClientExists.js';
+import {timeout} from './_private/timeout.js';
 import {WorkboxError} from './_private/WorkboxError.js';
 
 import './_version.js';
@@ -36,5 +38,7 @@ export {
   fetchWrapper,
   getFriendlyURL,
   logger,
+  resultingClientExists,
+  timeout,
   WorkboxError,
 };

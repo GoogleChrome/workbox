@@ -7,12 +7,20 @@
 */
 
 import {assert} from 'workbox-core/_private/assert.js';
+import {timeout} from 'workbox-core/_private/timeout.js';
+import {resultingClientExists} from 'workbox-core/_private/resultingClientExists.js';
 import {CacheDidUpdateCallbackParam} from 'workbox-core/types.js';
 import {logger} from 'workbox-core/_private/logger.js';
 import {responsesAreSame} from './responsesAreSame.js';
 import {CACHE_UPDATED_MESSAGE_TYPE, CACHE_UPDATED_MESSAGE_META, DEFAULT_HEADERS_TO_CHECK} from './utils/constants.js';
 
 import './_version.js';
+
+
+// UA-sniff Safari: https://stackoverflow.com/questions/7944460/detect-safari-browser
+// TODO(philipwalton): remove once this Safari bug fix has been released.
+// https://bugs.webkit.org/show_bug.cgi?id=201169
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
 
 // Give TypeScript the correct global.
@@ -139,6 +147,28 @@ class BroadcastCacheUpdate {
         meta: CACHE_UPDATED_MESSAGE_META,
         payload: this._generatePayload(options),
       };
+
+      // For navigation requests, wait until the new window client exists
+      // before sending the message
+      if (options.request.mode === 'navigate') {
+        const resultingClientId =
+            options.event && options.event.resultingClientId;
+
+        const resultingWin = await resultingClientExists(resultingClientId);
+
+        // Safari does not currently implement postMessage buffering and
+        // there's no good way to feature detect that, so to increase the
+        // chances of the message being delivered in Safari, we add a timeout.
+        // We also do this if `resultingClientExists()` didn't return a client,
+        // which means it timed out, so it's worth waiting a bit longer.
+        if (!resultingWin || isSafari) {
+          // 3500 is chosen because (according to CrUX data) 80% of mobile
+          // websites hit the DOMContentLoaded event in less than 3.5 seconds.
+          // And presumably sites implementing service worker are on the
+          // higher end of the performance spectrum.
+          await timeout(3500);
+        }
+      }
 
       const windows = await self.clients.matchAll({type: 'window'});
       for (const win of windows) {

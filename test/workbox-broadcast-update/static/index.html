@@ -4,7 +4,10 @@
   <body>
     <p>You need to manually register sw.js</p>
     <script>
-      window.__test = {};
+      window.__messages = [];
+      navigator.serviceWorker.addEventListener('message', (event) => {
+        window.__messages.push(event.data);
+      });
     </script>
   </body>
   </html>
