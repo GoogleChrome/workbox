@@ -116,6 +116,9 @@ class Workbox extends WorkboxEventTarget {
       this._sw = this._compatibleControllingSW;
       this._activeDeferred.resolve(this._compatibleControllingSW);
       this._controllingDeferred.resolve(this._compatibleControllingSW);
+
+      this._compatibleControllingSW.addEventListener(
+          'statechange', this._onStateChange, {once: true});
     }
 
     // If there's a waiting service worker with a matching URL before the
