@@ -311,13 +311,14 @@ describe(`[workbox-window] Workbox`, function() {
       // Update the SW after so an update check triggers an update.
       await updateVersion('2.0.0', scriptURL);
 
-      const updatefoundSpy = sandbox.spy();
-      reg.addEventListener('updatefound', updatefoundSpy);
+      wb.update();
 
-      await wb.update();
-      await waitUntil(() => updatefoundSpy.callCount === 1);
-
-      expect(reg.installing).to.not.equal(navigator.serviceWorker.controller);
+      await new Promise((resolve) => {
+        reg.addEventListener('updatefound', () => {
+          expect(reg.installing).to.not.equal(navigator.serviceWorker.controller);
+          resolve();
+        });
+      });
     });
 
     describe(`logs in development-only`, function() {
