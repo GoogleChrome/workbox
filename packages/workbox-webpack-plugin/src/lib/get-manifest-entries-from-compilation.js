@@ -66,7 +66,10 @@ function assetToChunkNameMapping(stats) {
 
   for (const [chunkName, {assets}] of Object.entries(stats.namedChunkGroups)) {
     for (const assetName of assets) {
-      mapping[assetName].add(chunkName);
+      // See https://github.com/GoogleChrome/workbox/issues/2194
+      if (mapping[assetName]) {
+        mapping[assetName].add(chunkName);
+      }
     }
   }
 
