@@ -153,6 +153,7 @@ describe(`[workbox-window] Workbox`, function() {
 
     it(`reports all events for an external SW registration`, async function() {
       const firstTab = await getLastWindowHandle();
+      await webdriver.switchTo().window(firstTab);
 
       await executeAsyncAndCatch(async (cb) => {
         try {
