@@ -301,11 +301,19 @@ describe(`[workbox-window] Workbox`, function() {
       expect(reg.update.callCount).to.equal(1);
     });
 
-    it(`triggers an updatefound event if the SW was udpated`, async function() {
+    it(`triggers an updatefound event if the SW was updated`, async function() {
       const scriptURL = navigator.serviceWorker.controller.scriptURL;
 
       const wb = new Workbox(scriptURL);
+
       const reg = await wb.register();
+      const updatefoundPromise = new Promise((resolve) => {
+        reg.addEventListener('updatefound', () => {
+          expect(reg.installing).to.not.equal(navigator.serviceWorker.controller);
+          resolve();
+        });
+      });
+
       await wb.controlling;
 
       // Update the SW after so an update check triggers an update.
@@ -313,12 +321,7 @@ describe(`[workbox-window] Workbox`, function() {
 
       wb.update();
 
-      await new Promise((resolve) => {
-        reg.addEventListener('updatefound', () => {
-          expect(reg.installing).to.not.equal(navigator.serviceWorker.controller);
-          resolve();
-        });
-      });
+      await updatefoundPromise;
     });
 
     describe(`logs in development-only`, function() {
