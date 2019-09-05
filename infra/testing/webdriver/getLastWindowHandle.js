@@ -33,6 +33,10 @@ const getLastWindowHandle = async () => {
     if (currentUrl.startsWith(testServerOrigin)) {
       lastWindowHandle = handle;
       break;
+    } else {
+      // Used for debugging failing tests with unexpected windows openning.
+      // eslint-disable-next-line no-console
+      console.log(`Unexpected window opened: ${currentUrl}`);
     }
   }
 

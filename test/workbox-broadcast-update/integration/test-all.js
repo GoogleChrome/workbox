@@ -99,7 +99,9 @@ describe(`[workbox-broadcast-update] Plugin`, function() {
     templateData.assign({
       body: 'New content to change Content-Length!',
     });
-    await webdriver.navigate().refresh();
+
+    await webdriver.get(webdriver.getCurrentUrl());
+
     await webdriver.wait(() => {
       return webdriver.executeScript(() => {
         return window.__messages.length > 0;

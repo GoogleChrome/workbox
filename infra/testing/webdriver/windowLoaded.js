@@ -15,11 +15,20 @@ const {executeAsyncAndCatch} = require('./executeAsyncAndCatch');
 const windowLoaded = async () => {
   // Wait for the window to load, so the `Workbox` global is available.
   await executeAsyncAndCatch(async (cb) => {
+    const loaded = () => {
+      if (!window.Workbox) {
+        const error = new Error('Workbox not yet loaded...');
+        cb({error: error.stack});
+      } else {
+        cb();
+      }
+    };
+
     try {
       if (document.readyState === 'complete') {
-        cb();
+        loaded();
       } else {
-        addEventListener('load', () => cb());
+        addEventListener('load', () => loaded());
       }
     } catch (error) {
       cb({error: error.stack});

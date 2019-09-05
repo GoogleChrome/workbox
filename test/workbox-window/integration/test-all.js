@@ -23,7 +23,7 @@ const testServerOrigin = server.getAddress();
 const testPath = `${testServerOrigin}/test/workbox-window/static/`;
 
 describe(`[workbox-window]`, function() {
-  it(`passes all window unit tests`, async function() {
+  xit(`passes all window unit tests`, async function() {
     await runUnitTests('/test/workbox-window/window/');
   });
 });
@@ -189,6 +189,10 @@ describe(`[workbox-window] Workbox`, function() {
       templateData.assign({version: '2'});
 
       await openNewTab(testPath);
+
+      // eslint-disable-next-line no-console
+      console.log('New tab:', await webdriver.getCurrentUrl());
+
       await windowLoaded();
 
       await executeAsyncAndCatch(async (cb) => {
