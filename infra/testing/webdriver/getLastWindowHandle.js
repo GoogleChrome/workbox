@@ -37,7 +37,12 @@ const getLastWindowHandle = async () => {
   }
 
   await webdriver.switchTo().window(currentWindowHandle);
-  return lastWindowHandle;
+  if (lastWindowHandle) {
+    return lastWindowHandle;
+  }
+
+  // If we can't find anything, treat that as a fatal error.
+  throw new Error(`Unable to a window with origin ${testServerOrigin}.`);
 };
 
 module.exports = {getLastWindowHandle};
