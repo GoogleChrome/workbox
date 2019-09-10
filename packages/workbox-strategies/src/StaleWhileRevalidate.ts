@@ -38,7 +38,7 @@ interface StaleWhileRevalidateOptions {
  *
  * By default, this strategy will cache responses with a 200 status code as
  * well as [opaque responses]{@link https://developers.google.com/web/tools/workbox/guides/handle-third-party-requests}.
- * Opaque responses are are cross-origin requests where the response doesn't
+ * Opaque responses are cross-origin requests where the response doesn't
  * support [CORS]{@link https://enable-cors.org/}.
  *
  * If the network request fails, and there is no cache match, this will throw
