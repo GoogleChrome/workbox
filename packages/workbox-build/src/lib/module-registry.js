@@ -12,6 +12,8 @@ const upath = require('upath');
 /**
  * Class for keeping track of which Workbox modules are used by the generated
  * service worker script.
+ *
+ * @private
  */
 class ModuleRegistry {
   /**
@@ -24,6 +26,8 @@ class ModuleRegistry {
   /**
    * @return {Array<string>} A list of all of the import statements that are
    * needed for the modules being used.
+   *
+   * @private
    */
   getImportStatements() {
     const workboxModuleImports = [];
@@ -48,6 +52,8 @@ class ModuleRegistry {
    * @param {string} pkg The workbox package that the module belongs to.
    * @param {string} moduleName The name of the module to import.
    * @return {string} The local variable name that corresponds to that module.
+   *
+   * @private
    */
   getLocalName(pkg, moduleName) {
     return `${pkg.replace(/-/g, '_')}_${moduleName}`;
@@ -57,6 +63,8 @@ class ModuleRegistry {
    * @param {string} pkg The workbox package that the module belongs to.
    * @param {string} moduleName The name of the module to import.
    * @return {string} The local variable name that corresponds to that module.
+   *
+   * @private
    */
   use(pkg, moduleName) {
     const localName = this.getLocalName(pkg, moduleName);
