@@ -98,10 +98,10 @@ describe(`[workbox-build] lib/write-sw-using-default-template.js`, function() {
         writeFile: writeFileStub,
       },
       './bundle': async () => [{
-        name: file1,
+        name: upath.join(expectedPath, file1),
         contents: contents1,
       }, {
-        name: file2,
+        name: upath.join(expectedPath, file2),
         contents: contents2,
       }],
       './populate-sw-template': () => '',
