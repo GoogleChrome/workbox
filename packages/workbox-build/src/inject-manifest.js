@@ -40,10 +40,6 @@ const validate = require('./lib/validate-options');
 async function injectManifest(config) {
   const options = validate(config, injectManifestSchema);
 
-  if (upath.resolve(config.swSrc) === upath.resolve(config.swDest)) {
-    throw new Error(errors['same-src-and-dest']);
-  }
-
   const globalRegexp = new RegExp(escapeRegexp(options.injectionPoint), 'g');
 
   const {count, size, manifestEntries, warnings} =
@@ -56,8 +52,16 @@ async function injectManifest(config) {
   }
 
   const injectionResults = swFileContents.match(globalRegexp);
-  assert(injectionResults, errors['injection-point-not-found'] +
-    options.injectionPoint);
+  if (!injectionResults) {
+    // See https://github.com/GoogleChrome/workbox/issues/2230
+    if (upath.resolve(config.swSrc) === upath.resolve(config.swDest)) {
+      throw new Error(errors['same-src-and-dest'] + ' ' +
+        options.injectionPoint);
+    }
+    throw new Error(errors['injection-point-not-found'] + ' ' +
+      options.injectionPoint);
+  }
+
   assert(injectionResults.length === 1, errors['multiple-injection-points'] +
     options.injectionPoint);
 
