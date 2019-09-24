@@ -40,6 +40,15 @@ const validate = require('./lib/validate-options');
 async function injectManifest(config) {
   const options = validate(config, injectManifestSchema);
 
+  // Make sure we leave swSrc and swDest out of the precache manifest.
+  for (const file of [options.swSrc, options.swDest]) {
+    const absolutePath = upath.resolve(file);
+    const pathRelativeToGlobDirectory = upath.relative(options.globDirectory,
+        absolutePath);
+    options.globIgnores.push(pathRelativeToGlobDirectory);
+  }
+
+
   if (upath.resolve(config.swSrc) === upath.resolve(config.swDest)) {
     throw new Error(errors['same-src-and-dest']);
   }

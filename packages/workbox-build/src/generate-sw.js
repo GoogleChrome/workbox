@@ -8,6 +8,7 @@
 
 const generateSWSchema = require('./options/schema/generate-sw');
 const getFileManifestEntries = require('./lib/get-file-manifest-entries');
+const upath = require('upath');
 const validate = require('./lib/validate-options');
 const writeServiceWorkerUsingDefaultTemplate =
   require('./lib/write-sw-using-default-template');
@@ -35,6 +36,14 @@ const writeServiceWorkerUsingDefaultTemplate =
  */
 async function generateSW(config) {
   const options = validate(config, generateSWSchema);
+
+  if (options.globDirectory) {
+    // Make sure we leave swDest out of the precache manifest.
+    const absoluteSWDest = upath.resolve(options.swDest);
+    const swDestRelativeToGlobDirectory = upath.relative(options.globDirectory,
+        absoluteSWDest);
+    options.globIgnores.push(swDestRelativeToGlobDirectory);
+  }
 
   const {count, size, manifestEntries, warnings} =
     await getFileManifestEntries(options);
