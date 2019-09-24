@@ -7,7 +7,6 @@
 */
 
 const assert = require('assert');
-const upath = require('upath');
 
 const errors = require('./errors');
 const transformManifest = require('./transform-manifest');
