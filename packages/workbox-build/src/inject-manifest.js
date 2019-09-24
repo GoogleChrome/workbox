@@ -14,6 +14,7 @@ const errors = require('./lib/errors');
 const escapeRegexp = require('./lib/escape-regexp');
 const getFileManifestEntries = require('./lib/get-file-manifest-entries');
 const injectManifestSchema = require('./options/schema/inject-manifest');
+const rebasePath = require('./lib/rebase-path');
 const validate = require('./lib/validate-options');
 
 /**
@@ -42,10 +43,10 @@ async function injectManifest(config) {
 
   // Make sure we leave swSrc and swDest out of the precache manifest.
   for (const file of [options.swSrc, options.swDest]) {
-    const absolutePath = upath.resolve(file);
-    const pathRelativeToGlobDirectory = upath.relative(options.globDirectory,
-        absolutePath);
-    options.globIgnores.push(pathRelativeToGlobDirectory);
+    options.globIgnores.push(rebasePath({
+      file,
+      baseDirectory: options.globDirectory,
+    }));
   }
 
 

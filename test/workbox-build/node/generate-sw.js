@@ -936,11 +936,13 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       }
     });
 
-    it(`should ignore swDest when generating manifest entries`, async function() {
+    it(`should ignore swDest and workbox-*.js when generating manifest entries`, async function() {
       const tempDirectory = tempy.directory();
       await fse.copy(BASE_OPTIONS.globDirectory, tempDirectory);
       const swDest = upath.join(tempDirectory, 'service-worker.js');
       await fse.createFile(swDest);
+      // See https://rollupjs.org/guide/en/#outputchunkfilenames
+      await fse.createFile(upath.join(tempDirectory, 'workbox-abcd1234.js'));
       const options = Object.assign({}, BASE_OPTIONS, {
         globDirectory: tempDirectory,
         swDest,
