@@ -1,5 +1,5 @@
 /*
-  Copyright 2018 Google LLC
+  Copyright 2019 Google LLC
 
   Use of this source code is governed by an MIT-style
   license that can be found in the LICENSE file or at
@@ -9,7 +9,7 @@
 const upath = require('upath');
 
 module.exports = ({baseDirectory, file}) => {
-  // file starts our relative to the current directory, so make it absolute.
+  // The initial path is relative to the current directory, so make it absolute.
   const absolutePath = upath.resolve(file);
 
   // Convert the absolute path so that it's relative to the baseDirectory.
