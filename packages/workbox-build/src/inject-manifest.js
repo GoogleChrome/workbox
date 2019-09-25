@@ -14,6 +14,7 @@ const errors = require('./lib/errors');
 const escapeRegexp = require('./lib/escape-regexp');
 const getFileManifestEntries = require('./lib/get-file-manifest-entries');
 const injectManifestSchema = require('./options/schema/inject-manifest');
+const rebasePath = require('./lib/rebase-path');
 const validate = require('./lib/validate-options');
 
 /**
@@ -39,6 +40,15 @@ const validate = require('./lib/validate-options');
  */
 async function injectManifest(config) {
   const options = validate(config, injectManifestSchema);
+
+  // Make sure we leave swSrc and swDest out of the precache manifest.
+  for (const file of [options.swSrc, options.swDest]) {
+    options.globIgnores.push(rebasePath({
+      file,
+      baseDirectory: options.globDirectory,
+    }));
+  }
+
 
   if (upath.resolve(config.swSrc) === upath.resolve(config.swDest)) {
     throw new Error(errors['same-src-and-dest']);

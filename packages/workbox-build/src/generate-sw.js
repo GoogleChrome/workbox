@@ -6,8 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
+const upath = require('upath');
+
 const generateSWSchema = require('./options/schema/generate-sw');
 const getFileManifestEntries = require('./lib/get-file-manifest-entries');
+const rebasePath = require('./lib/rebase-path');
 const validate = require('./lib/validate-options');
 const writeServiceWorkerUsingDefaultTemplate =
   require('./lib/write-sw-using-default-template');
@@ -35,6 +38,25 @@ const writeServiceWorkerUsingDefaultTemplate =
  */
 async function generateSW(config) {
   const options = validate(config, generateSWSchema);
+
+  if (options.globDirectory) {
+    // Make sure we leave swDest out of the precache manifest.
+    options.globIgnores.push(rebasePath({
+      baseDirectory: options.globDirectory,
+      file: options.swDest,
+    }));
+
+    // If we create an extra external runtime file, ignore that, too.
+    // See https://rollupjs.org/guide/en/#outputchunkfilenames for naming.
+    if (!options.inlineWorkboxRuntime) {
+      const swDestDir = upath.dirname(options.swDest);
+      const workboxRuntimeFile = upath.join(swDestDir, 'workbox-*.js');
+      options.globIgnores.push(rebasePath({
+        baseDirectory: options.globDirectory,
+        file: workboxRuntimeFile,
+      }));
+    }
+  }
 
   const {count, size, manifestEntries, warnings} =
     await getFileManifestEntries(options);
