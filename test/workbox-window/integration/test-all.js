@@ -17,7 +17,7 @@ const {windowLoaded} = require('../../../infra/testing/webdriver/windowLoaded');
 
 
 // Store local references of these globals.
-const {webdriver, server} = global.__workbox;
+const {webdriver, server, seleniumBrowser} = global.__workbox;
 
 const testServerOrigin = server.getAddress();
 const testPath = `${testServerOrigin}/test/workbox-window/static/`;
@@ -152,7 +152,14 @@ describe(`[workbox-window] Workbox`, function() {
     });
 
     it(`reports all events for an external SW registration`, async function() {
+      // Skip this test in Safari due to this flakiness issue:
+      // https://github.com/GoogleChrome/workbox/issues/2150
+      if (seleniumBrowser.getId() === 'safari') {
+        this.skip();
+      }
+
       const firstTab = await getLastWindowHandle();
+      await webdriver.switchTo().window(firstTab);
 
       await executeAsyncAndCatch(async (cb) => {
         try {
