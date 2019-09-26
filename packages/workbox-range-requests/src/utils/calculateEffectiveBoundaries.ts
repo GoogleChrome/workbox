@@ -44,15 +44,14 @@ function calculateEffectiveBoundaries(
   let effectiveStart: number;
   let effectiveEnd: number;
 
-  // != and == are used so both null and undefined are treated the same.
-  if (start != undefined && end != undefined) {
+  if (start !== undefined && end !== undefined) {
     effectiveStart = start;
     // Range values are inclusive, so add 1 to the value.
     effectiveEnd = end + 1;
-  } else if (start != undefined && end == undefined) {
+  } else if (start !== undefined && end === undefined) {
     effectiveStart = start;
     effectiveEnd = blobSize;
-  } else if (end != undefined && start == undefined) {
+  } else if (end !== undefined && start === undefined) {
     effectiveStart = blobSize - end;
     effectiveEnd = blobSize;
   }
