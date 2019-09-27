@@ -6,8 +6,12 @@
   https://opensource.org/licenses/MIT.
 */
 
-const {ConcatSource} = require('webpack-sources');
+const {RawSource} = require('webpack-sources');
 const SingleEntryPlugin = require('webpack/lib/SingleEntryPlugin');
+const replaceAndUpdateSourceMap = require(
+    'workbox-build/build/lib/replace-and-update-source-map');
+const sourceMapURL = require('source-map-url');
+const stringify = require('fast-json-stable-stringify');
 const upath = require('upath');
 const validate = require('workbox-build/build/lib/validate-options');
 const webpackInjectManifestSchema = require(
@@ -16,7 +20,6 @@ const webpackInjectManifestSchema = require(
 const getManifestEntriesFromCompilation =
   require('./lib/get-manifest-entries-from-compilation');
 const relativeToOutputPath = require('./lib/relative-to-output-path');
-const stringifyManifest = require('./lib/stringify-manifest');
 
 // Used to keep track of swDest files written by *any* instance of this plugin.
 // See https://github.com/GoogleChrome/workbox/issues/2181
@@ -150,16 +153,53 @@ class InjectManifest {
     compilation.fileDependencies.add(absoluteSwSrc);
 
     const swAsset = compilation.assets[config.swDest];
-    delete compilation.assets[config.swDest];
+    const initialSWAssetString = swAsset.source();
+    if (!initialSWAssetString.includes(config.injectionPoint)) {
+      throw new Error(`Can't find ${config.injectionPoint} in your SW source.`);
+    }
 
     const manifestEntries = await getManifestEntriesFromCompilation(
         compilation, config);
 
-    const manifestDeclaration = stringifyManifest(manifestEntries,
-        config.injectionPoint, config.mode !== 'production');
+    const manifestString = stringify(manifestEntries);
 
-    compilation.assets[config.swDest] = new ConcatSource(
-        manifestDeclaration, swAsset || '');
+    const url = sourceMapURL.getFrom(initialSWAssetString);
+    // If our bundled swDest file contains a sourcemap, we would invalidate that
+    // mapping if we just replaced injectionPoint with the stringified manifest.
+    // Instead, we need to update the swDest contents as well as the sourcemap
+    // at the same time.
+    // See https://github.com/GoogleChrome/workbox/issues/2235
+    if (url) {
+      // Translate the relative URL to what the presumed name for the webpack
+      // asset should be.
+      // TODO: Is there an "official" mapping maintained by webpack of assets to
+      // the name of their generated sourcemap?
+      const swAssetDirname = upath.dirname(config.swDest);
+      const sourcemapURLAssetName = upath.normalize(
+          upath.join(swAssetDirname, url));
+
+      const existingSourcemapAsset = compilation.assets[sourcemapURLAssetName];
+
+      if (!existingSourcemapAsset) {
+        throw new Error(`Can't find ${sourcemapURLAssetName} in assets.`);
+      }
+
+      const {source, map} = await replaceAndUpdateSourceMap({
+        jsFilename: config.swDest,
+        originalMap: JSON.parse(existingSourcemapAsset.source()),
+        originalSource: initialSWAssetString,
+        replaceString: manifestString,
+        searchString: config.injectionPoint,
+      });
+
+      compilation.assets[sourcemapURLAssetName] = new RawSource(map);
+      compilation.assets[config.swDest] = new RawSource(source);
+    } else {
+      // If there's no sourcemap associated with swDest, a simple string
+      // replacement will suffice.
+      compilation.assets[config.swDest] = new RawSource(
+          initialSWAssetString.replace(config.injectionPoint, manifestString));
+    }
   }
 }
 
