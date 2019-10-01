@@ -57,8 +57,8 @@ describe(`calculateEffectiveBoundaries()`, function() {
   it(`should return the expected boundaries when it's called with valid parameters`, function() {
     const testCases = [
       [{start: 100, end: 200}, {start: 100, end: 201}],
-      [{start: null, end: 200}, {start: 56, end: 256}],
-      [{start: 100, end: null}, {start: 100, end: 256}],
+      [{start: undefined, end: 200}, {start: 56, end: 256}],
+      [{start: 100, end: undefined}, {start: 100, end: 256}],
     ];
 
     for (const [sourceBoundaries, expectedBoundaries] of testCases) {
