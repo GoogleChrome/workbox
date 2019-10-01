@@ -49,7 +49,6 @@ async function injectManifest(config) {
     }));
   }
 
-
   if (upath.resolve(config.swSrc) === upath.resolve(config.swDest)) {
     throw new Error(errors['same-src-and-dest']);
   }
@@ -66,8 +65,16 @@ async function injectManifest(config) {
   }
 
   const injectionResults = swFileContents.match(globalRegexp);
-  assert(injectionResults, errors['injection-point-not-found'] +
-    options.injectionPoint);
+  if (!injectionResults) {
+    // See https://github.com/GoogleChrome/workbox/issues/2230
+    if (upath.resolve(config.swSrc) === upath.resolve(config.swDest)) {
+      throw new Error(errors['same-src-and-dest'] + ' ' +
+        options.injectionPoint);
+    }
+    throw new Error(errors['injection-point-not-found'] + ' ' +
+      options.injectionPoint);
+  }
+
   assert(injectionResults.length === 1, errors['multiple-injection-points'] +
     options.injectionPoint);
 
