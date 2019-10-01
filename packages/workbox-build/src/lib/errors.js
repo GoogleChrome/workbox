@@ -90,8 +90,9 @@ module.exports = {
   'invalid-generate-file-manifest-arg': ol`The input to generateFileManifest()
     must be an Object.`,
   'invalid-sw-src': `The 'swSrc' file can't be read.`,
-  'same-src-and-dest': ol`'swSrc' and 'swDest' should not be set to the same ` +
-    `file. Please use a different file path for 'swDest'.`,
+  'same-src-and-dest': ol`Unable to find a place to inject the manifest. This is
+    likely because swSrc and swDest are configured to the same file.
+    Please ensure that your swSrc file contains the following:`,
   'only-regexp-routes-supported': ol`Please use a regular expression object as
     the urlPattern parameter. (Express-style routes are not currently
     supported.)`,
