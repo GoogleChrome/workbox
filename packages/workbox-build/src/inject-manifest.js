@@ -67,7 +67,7 @@ async function injectManifest(config) {
   const injectionResults = swFileContents.match(globalRegexp);
   if (!injectionResults) {
     // See https://github.com/GoogleChrome/workbox/issues/2230
-    if (upath.resolve(config.swSrc) === upath.resolve(config.swDest)) {
+    if (upath.resolve(options.swSrc) === upath.resolve(options.swDest)) {
       throw new Error(errors['same-src-and-dest'] + ' ' +
         options.injectionPoint);
     }
