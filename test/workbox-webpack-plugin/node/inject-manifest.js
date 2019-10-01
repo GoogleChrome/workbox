@@ -10,6 +10,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const WorkerPlugin = require('worker-plugin');
 const expect = require('chai').expect;
+const fse = require('fs-extra');
 const globby = require('globby');
 const upath = require('upath');
 const tempy = require('tempy');
@@ -462,6 +463,112 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
                   url: 'webpackEntry.js',
                 },
               ], {}]],
+            },
+          });
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+  });
+
+  describe(`[workbox-webpack-plugin] Sourcemap manipulation`, function() {
+    it(`should update the sourcemap to account for manifest injection`, function(done) {
+      const outputDir = tempy.directory();
+      const config = {
+        mode: 'production',
+        entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        output: {
+          filename: WEBPACK_ENTRY_FILENAME,
+          path: outputDir,
+        },
+        devtool: 'source-map',
+        plugins: [
+          new InjectManifest({
+            swSrc: SW_SRC,
+            swDest: 'service-worker.js',
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError, stats) => {
+        const swFile = upath.join(outputDir, 'service-worker.js');
+        try {
+          webpackBuildCheck(webpackError, stats);
+
+          const files = await globby(outputDir);
+          expect(files).to.have.length(4);
+
+          const expectedSourcemap = await fse.readJSON(
+              upath.join(__dirname, '..', 'static', 'expected-service-worker.js.map'));
+          const actualSourcemap = await fse.readJSON(upath.join(outputDir, 'service-worker.js.map'));
+          expect(actualSourcemap).to.eql(expectedSourcemap);
+
+          await validateServiceWorkerRuntime({
+            swFile,
+            entryPoint: 'injectManifest',
+            expectedMethodCalls: {
+              precacheAndRoute: [[[{
+                revision: '35ecfdff688561581ddd68a107ef1c46',
+                url: 'webpackEntry.js',
+              }], {}]],
+            },
+          });
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+
+    it(`should handle a custom output.sourceMapFilename`, function(done) {
+      const outputDir = tempy.directory();
+
+      const sourceMapFilename = upath.join('subdir', '[file].map');
+      const config = {
+        mode: 'production',
+        entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        output: {
+          sourceMapFilename,
+          filename: WEBPACK_ENTRY_FILENAME,
+          path: outputDir,
+        },
+        devtool: 'source-map',
+        plugins: [
+          new InjectManifest({
+            swSrc: SW_SRC,
+            swDest: 'service-worker.js',
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError, stats) => {
+        const swFile = upath.join(outputDir, 'service-worker.js');
+        try {
+          webpackBuildCheck(webpackError, stats);
+
+          const files = await globby(outputDir);
+          expect(files).to.have.length(4);
+
+          const expectedSourcemap = await fse.readJSON(
+              upath.join(__dirname, '..', 'static', 'expected-service-worker.js.map'));
+          const actualSourcemap = await fse.readJSON(
+              upath.join(outputDir, 'subdir', 'service-worker.js.map'));
+          expect(actualSourcemap).to.eql(expectedSourcemap);
+
+          await validateServiceWorkerRuntime({
+            swFile,
+            entryPoint: 'injectManifest',
+            expectedMethodCalls: {
+              precacheAndRoute: [[[{
+                revision: 'cbdf84623d52128c960fd35af74cdfbc',
+                url: 'webpackEntry.js',
+              }], {}]],
             },
           });
 

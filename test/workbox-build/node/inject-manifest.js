@@ -371,6 +371,32 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
     });
   });
 
+  describe(`[workbox-webpack-plugin] Sourcemap manipulation`, function() {
+    it(`should update the sourcemap to account for manifest injection`, async function() {
+      const outputDir = tempy.directory();
+      const swSrc = upath.join(SW_SRC_DIR, 'basic-with-sourcemap.js.nolint');
+      const swDest = upath.join(outputDir, 'basic-with-sourcemap.js');
+      const sourcemapDest = upath.join(outputDir, 'basic-with-sourcemap.js.map');
+      const options = Object.assign({}, BASE_OPTIONS, {
+        swDest,
+        swSrc,
+      });
+
+      const {count, filePaths, size, warnings} = await injectManifest(options);
+      expect(warnings).to.be.empty;
+      expect(count).to.eql(6);
+      expect(size).to.eql(2604);
+      expect(filePaths).to.have.members([swDest, sourcemapDest]);
+
+      const actualSourcemap = await fse.readJSON(sourcemapDest);
+      const expectedSourcemap = await fse.readJSON(
+          upath.join(SW_SRC_DIR, '..', 'expected-source-map.js.map'));
+      expect(actualSourcemap).to.eql(expectedSourcemap);
+
+      // We can't validate the SW file contents.
+    });
+  });
+
   describe(`[workbox-build] removed options`, function() {
     // These were deprecated in v4, and formally removed in v5.
     const oldOptionsToValue = {

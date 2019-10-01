@@ -115,4 +115,6 @@ module.exports = {
     either precaching or runtime caching. Please ensure that the various glob
     options are set to match one or more files, and/or configure the
     runtimeCaching option.`,
+  'cant-find-sourcemap': ol`The swSrc file refers to a sourcemap that can't be
+    opened:`,
 };
