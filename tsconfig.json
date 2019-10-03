@@ -14,10 +14,11 @@
     "noUnusedParameters": true,
     "preserveConstEnums": true,
     "strictNullChecks": true,
+    "strictPropertyInitialization": true,
     "tsBuildInfoFile": "./tsconfig.tsbuildinfo"
   },
   "files": [
-    "./infra/type-overrides.d.ts",
+    "./infra/type-overrides.d.ts"
   ],
   "exclude": [],
   "references": [

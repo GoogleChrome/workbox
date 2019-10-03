@@ -98,7 +98,7 @@ class CacheTimestampsModel {
       id: this._getId(url),
     };
 
-    await this._db.put(OBJECT_STORE_NAME, entry);
+    await this._db.put!(OBJECT_STORE_NAME, entry);
   }
 
   /**
@@ -111,7 +111,7 @@ class CacheTimestampsModel {
    */
   async getTimestamp(url: string): Promise<number> {
     const entry: CacheTimestampsModelEntry =
-        await this._db.get(OBJECT_STORE_NAME, this._getId(url));
+        await this._db.get!(OBJECT_STORE_NAME, this._getId(url));
 
     return entry.timestamp;
   }
@@ -173,7 +173,7 @@ class CacheTimestampsModel {
     // https://github.com/GoogleChrome/workbox/issues/1978
     const urlsDeleted: string[] = [];
     for (const entry of entriesToDelete) {
-      await this._db.delete(OBJECT_STORE_NAME, entry.id);
+      await this._db.delete!(OBJECT_STORE_NAME, entry.id);
       urlsDeleted.push(entry.url);
     }
 
