@@ -1281,6 +1281,58 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     });
   });
 
+  describe(`[workbox-webpack-plugin] Multiple invocation scenarios`, function() {
+    // See https://github.com/GoogleChrome/workbox/issues/2158
+    it(`•should support multiple compilations using the same plugin instance`, async function() {
+      const outputDir = tempy.directory();
+      const config = {
+        mode: 'production',
+        entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        output: {
+          filename: '[name].[hash:6].js',
+          path: outputDir,
+        },
+        plugins: [
+          new InjectManifest({
+            swSrc: SW_SRC,
+            swDest: 'service-worker.js',
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      for (const i of [1, 2, 3]) {
+        await new Promise((resolve, reject) => {
+          compiler.run(async (webpackError, stats) => {
+            try {
+              if (webpackError) {
+                throw new Error(webpackError.message);
+              }
+
+              const statsJson = stats.toJson('verbose');
+              expect(statsJson.errors).to.have.length(0);
+
+              // There should be a warning logged after the first compilation.
+              // See https://github.com/GoogleChrome/workbox/issues/1790
+              if (i > 1) {
+                expect(statsJson.warnings).to.have.length(1);
+              } else {
+                expect(statsJson.warnings).to.have.length(0);
+              }
+
+              const files = await globby(outputDir);
+              expect(files).to.have.length(2);
+
+              resolve();
+            } catch (error) {
+              reject(new Error(`Failure during compilation ${i}: ${error}`));
+            }
+          });
+        });
+      }
+    });
+  });
+
   describe(`[workbox-webpack-plugin] Multiple plugin instances`, function() {
     // See https://github.com/GoogleChrome/workbox/issues/2181
     it(`should not list the swDest from one plugin in the other's manifest`, function(done) {
