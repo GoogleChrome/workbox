@@ -46,8 +46,8 @@ interface CacheURLsMessageData {
  */
 class Router {
   private _routes: Map<HTTPMethod, Route[]>;
-  private _defaultHandler: HandlerObject;
-  private _catchHandler: HandlerObject;
+  private _defaultHandler?: HandlerObject;
+  private _catchHandler?: HandlerObject;
 
   /**
    * Initializes a new Router.
@@ -248,7 +248,7 @@ class Router {
           logger.error(err);
           logger.groupEnd();
         }
-        return this._catchHandler.handle({url, request, event});
+        return this._catchHandler!.handle({url, request, event});
       });
     }
 

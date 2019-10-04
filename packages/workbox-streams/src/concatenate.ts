@@ -95,7 +95,7 @@ function concatenate(sourcePromises: Promise<StreamSource>[]): {
                 }
 
                 controller.close();
-                streamDeferred.resolve();
+                streamDeferred.resolve!();
                 return;
               }
 
@@ -108,7 +108,7 @@ function concatenate(sourcePromises: Promise<StreamSource>[]): {
             if (process.env.NODE_ENV !== 'production') {
               logger.error('An error occurred:', error);
             }
-            streamDeferred.reject(error);
+            streamDeferred.reject!(error);
             throw error;
           });
     },
@@ -118,7 +118,7 @@ function concatenate(sourcePromises: Promise<StreamSource>[]): {
         logger.warn('The ReadableStream was cancelled.');
       }
 
-      streamDeferred.resolve();
+      streamDeferred.resolve!();
     },
   });
 

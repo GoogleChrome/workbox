@@ -42,14 +42,14 @@ export class DBWrapper {
   private _db: IDBDatabase | null = null;
 
   // The following IDBObjectStore methods are shadowed on this class.
-  get: Function;
-  count: Function;
-  add: Function;
-  put: Function;
-  clear: Function;
-  delete: Function;
+  add?: Function;
+  clear?: Function;
+  count?: Function;
+  delete?: Function;
+  get?: Function;
+  put?: Function;
 
-  OPEN_TIMEOUT: number;
+  OPEN_TIMEOUT?: number;
 
   /**
    * @param {string} name

@@ -18,7 +18,7 @@ import '../_version.js';
  */
 export class WorkboxEvent<K extends keyof WorkboxEventMap> {
   target?: WorkboxEventTarget;
-  sw: ServiceWorker;
+  sw?: ServiceWorker;
   originalEvent?: Event;
 
   constructor(public type: K, props: Omit<WorkboxEventMap[K], 'target' | 'type'>) {
