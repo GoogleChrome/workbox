@@ -266,7 +266,9 @@ export class DBWrapper {
     ...args: any[]
   ) {
     const callback = (txn: IDBTransaction, done: Function) => {
-      const objStore = txn.objectStore(storeName)
+      const objStore = txn.objectStore(storeName);
+      // TODO(philipwalton): Fix this underlying TS2684 error.
+      // @ts-ignore
       const request = <IDBRequest> objStore[method].apply(objStore, args);
 
       request.onsuccess = () => done(request.result);

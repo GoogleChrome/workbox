@@ -19,7 +19,8 @@ import './_version.js';
  * @alias workbox.precaching.cleanupOutdatedCaches
  */
 export const cleanupOutdatedCaches = () => {
-  addEventListener('activate', (event: ExtendableEvent) => {
+  // See https://github.com/Microsoft/TypeScript/issues/28357#issuecomment-436484705
+  addEventListener('activate', ((event: ExtendableEvent) => {
     const cacheName = cacheNames.getPrecacheName();
 
     event.waitUntil(deleteOutdatedCaches(cacheName).then((cachesDeleted) => {
@@ -30,5 +31,5 @@ export const cleanupOutdatedCaches = () => {
         }
       }
     }));
-  });
+  }) as EventListener);
 };

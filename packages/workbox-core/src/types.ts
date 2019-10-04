@@ -74,10 +74,10 @@ export type RouteHandler = RouteHandlerCallback | RouteHandlerObject;
 
 export interface CacheDidUpdateCallbackParam {
   cacheName: string;
-  oldResponse?: Response;
+  oldResponse?: Response | null;
   newResponse: Response;
   request: Request;
-  event?: FetchEvent;
+  event?: Event;
 }
 
 export interface CacheDidUpdateCallback {
