@@ -56,7 +56,8 @@ export const addFetchListener = ({
 }: FetchListenerOptions = {}) => {
   const cacheName = cacheNames.getPrecacheName();
 
-  addEventListener('fetch', (event: FetchEvent) => {
+  // See https://github.com/Microsoft/TypeScript/issues/28357#issuecomment-436484705
+  addEventListener('fetch', ((event: FetchEvent) => {
     const precachedURL = getCacheKeyForURL(event.request.url, {
       cleanURLs,
       directoryIndex,
@@ -111,5 +112,5 @@ export const addFetchListener = ({
     }
 
     event.respondWith(responsePromise);
-  });
+  }) as EventListener);
 };

@@ -1,20 +1,17 @@
 {
   "compilerOptions": {
-    "lib": ["es2017", "webworker"],
-    "target": "esnext",
-    "module": "esnext",
-    "moduleResolution": "node",
     "composite": true,
     "declaration": true,
+    "lib": ["es2017", "webworker"],
+    "module": "esnext",
+    "moduleResolution": "node",
     "noFallthroughCasesInSwitch": true,
-    "noImplicitAny": true,
-    "noImplicitThis": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "preserveConstEnums": true,
-    "strictNullChecks": true,
-    "strictPropertyInitialization": true,
+    "strict": true,
+    "target": "esnext",
     "tsBuildInfoFile": "./tsconfig.tsbuildinfo"
   },
   "files": [

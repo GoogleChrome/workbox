@@ -151,8 +151,10 @@ class BroadcastCacheUpdate {
       // For navigation requests, wait until the new window client exists
       // before sending the message
       if (options.request.mode === 'navigate') {
-        const resultingClientId =
-            options.event && options.event.resultingClientId;
+        let resultingClientId: string | undefined;
+        if (options.event instanceof FetchEvent) {
+          resultingClientId = options.event.resultingClientId;
+        }
 
         const resultingWin = await resultingClientExists(resultingClientId);
 
