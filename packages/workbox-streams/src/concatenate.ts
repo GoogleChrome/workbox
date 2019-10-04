@@ -67,7 +67,7 @@ function concatenate(sourcePromises: Promise<StreamSource>[]): {
   let i = 0;
   const logMessages: any[] = [];
   const stream = new ReadableStream({
-    pull(controller) {
+    pull(controller: ReadableStreamDefaultController<any>) {
       return readerPromises[i]
           .then((reader) => reader.read())
           .then((result) => {

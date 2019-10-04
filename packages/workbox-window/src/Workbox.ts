@@ -7,13 +7,15 @@
 */
 
 import {Deferred} from 'workbox-core/_private/Deferred.js';
+import {dontWaitFor} from 'workbox-core/_private/dontWaitFor.js';
 import {logger} from 'workbox-core/_private/logger.js';
+
 import {messageSW} from './messageSW.js';
 import {WorkboxEventTarget} from './utils/WorkboxEventTarget.js';
 import {urlsMatch} from './utils/urlsMatch.js';
 import {WorkboxEvent, WorkboxLifecycleEventMap} from './utils/WorkboxEvent.js';
-import './_version.js';
 
+import './_version.js';
 
 // The time a SW must be in the waiting phase before we can conclude
 // `skipWaiting()` wasn't called. This 200 amount wasn't scientifically
@@ -140,7 +142,7 @@ class Workbox extends WorkboxEventTarget {
 
       // Run this in the next microtask, so any code that adds an event
       // listener after awaiting `register()` will get this event.
-      Promise.resolve().then(() => {
+      dontWaitFor(Promise.resolve().then(() => {
         this.dispatchEvent(new WorkboxEvent('waiting', {
           sw: waitingSW,
           wasWaitingBeforeRegister: true,
@@ -149,7 +151,7 @@ class Workbox extends WorkboxEventTarget {
           logger.warn('A service worker was already waiting to activate ' +
               'before this script was registered...');
         }
-      });
+      }));
     }
 
     // If an "own" SW is already set, resolve the deferred.

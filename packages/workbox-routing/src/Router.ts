@@ -238,7 +238,7 @@ class Router {
       responsePromise = Promise.reject(err);
     }
 
-    if (responsePromise && this._catchHandler) {
+    if (responsePromise instanceof Promise && this._catchHandler) {
       responsePromise = responsePromise.catch((err) => {
         if (process.env.NODE_ENV !== 'production') {
           // Still include URL here as it will be async from the console group
