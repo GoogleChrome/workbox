@@ -39,24 +39,24 @@ export const setCacheNameDetails = (details: PartialCacheNameDetails) => {
       });
     });
 
-    if ('precache' in details && details.precache!.length === 0) {
+    if ('precache' in details && details['precache']!.length === 0) {
       throw new WorkboxError('invalid-cache-name', {
         cacheNameId: 'precache',
-        value: details.precache,
+        value: details['precache'],
       });
     }
 
-    if ('runtime' in details && details.runtime!.length === 0) {
+    if ('runtime' in details && details['runtime']!.length === 0) {
       throw new WorkboxError('invalid-cache-name', {
         cacheNameId: 'runtime',
-        value: details.runtime,
+        value: details['runtime'],
       });
     }
 
-    if ('googleAnalytics' in details && details.googleAnalytics!.length === 0) {
+    if ('googleAnalytics' in details && details['googleAnalytics'].length === 0) {
       throw new WorkboxError('invalid-cache-name', {
         cacheNameId: 'googleAnalytics',
-        value: details.googleAnalytics,
+        value: details['googleAnalytics'],
       });
     }
   }
