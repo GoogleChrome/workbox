@@ -345,7 +345,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
         // This isn't the *cleanest* possible way of testing the message event
         // handler, but given the constraints of this node-based environment,
         // it seems the most effective way to ensure the right code gets run.
-        expect(addEventListenerStub.firstCall.args[1].toString()).to.eql(`event => {\n    if (event.data && event.data.type === 'SKIP_WAITING') {\n      self.skipWaiting();\n    }\n  }`);
+        expect(addEventListenerStub.firstCall.args[1].toString()).to.eql(`event => {\n    const replyPort = event.ports[0];\n    const data = event.data;\n\n    if (data && data.type === 'SKIP_WAITING') {\n      event.waitUntil(self.skipWaiting().then(() => replyPort && replyPort.postMessage({\n        error: null\n      }), error => replyPort && replyPort.postMessage({\n        error\n      })));\n    }\n  }`);
       }});
     });
 
