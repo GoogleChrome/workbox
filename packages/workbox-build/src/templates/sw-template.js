@@ -32,8 +32,8 @@ importScripts(
 <%= use('workbox-core', 'skipWaiting') %>();
 <% } else { %>
 self.addEventListener('message', (event) => {
-  const replyPort = event.ports[0]
-  const data = event.data
+  const replyPort = event.ports[0];
+  const data = event.data;
   if (data && data.type === 'SKIP_WAITING') {
     event.waitUntil(
       self.skipWaiting()
