@@ -32,8 +32,16 @@ importScripts(
 <%= use('workbox-core', 'skipWaiting') %>();
 <% } else { %>
 self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
+  const replyPort = event.ports[0]
+  const data = event.data
+  if (data && data.type === 'SKIP_WAITING') {
+    event.waitUntil(
+      self.skipWaiting()
+        .then(
+          () => replyPort && replyPort.postMessage({ error: null }),
+          (error) => replyPort && replyPort.postMessage({ error })
+        )
+    );
   }
 });
 <% } %>
