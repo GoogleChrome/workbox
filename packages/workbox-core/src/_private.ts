@@ -12,6 +12,7 @@ import {cacheNames} from './_private/cacheNames.js';
 import {cacheWrapper} from './_private/cacheWrapper.js';
 import {canConstructReadableStream} from './_private/canConstructReadableStream.js';
 import {canConstructResponseFromBodyStream} from './_private/canConstructResponseFromBodyStream.js';
+import {dontWaitFor} from './_private/dontWaitFor.js';
 import {DBWrapper} from './_private/DBWrapper.js';
 import {Deferred} from './_private/Deferred.js';
 import {deleteDatabase} from './_private/deleteDatabase.js';
@@ -31,6 +32,7 @@ export {
   cacheWrapper,
   canConstructReadableStream,
   canConstructResponseFromBodyStream,
+  dontWaitFor,
   DBWrapper,
   Deferred,
   deleteDatabase,

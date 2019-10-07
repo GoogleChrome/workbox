@@ -23,7 +23,7 @@ describe(`BroadcastUpdatePlugin`, function() {
   describe(`cacheDidUpdate`, function() {
     it(`should call notifyIfUpdated and pass all options`, async function() {
       const bcuPlugin = new BroadcastUpdatePlugin();
-      sandbox.stub(bcuPlugin._broadcastUpdate, 'notifyIfUpdated');
+      sandbox.stub(bcuPlugin._broadcastUpdate, 'notifyIfUpdated').resolves();
 
       const opts = {};
       await bcuPlugin.cacheDidUpdate(opts);
