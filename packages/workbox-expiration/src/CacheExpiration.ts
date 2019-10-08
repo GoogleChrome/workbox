@@ -6,10 +6,12 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {CacheTimestampsModel} from './models/CacheTimestampsModel.js';
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
 import {assert} from 'workbox-core/_private/assert.js';
+import {dontWaitFor} from 'workbox-core/_private/dontWaitFor.js';
 import {logger} from 'workbox-core/_private/logger.js';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
+
+import {CacheTimestampsModel} from './models/CacheTimestampsModel.js';
 
 import './_version.js';
 
@@ -132,7 +134,7 @@ class CacheExpiration {
     this._isRunning = false;
     if (this._rerunRequested) {
       this._rerunRequested = false;
-      this.expireEntries();
+      dontWaitFor(this.expireEntries());
     }
   }
 

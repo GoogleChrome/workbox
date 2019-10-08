@@ -7,13 +7,15 @@
 */
 
 import {Deferred} from 'workbox-core/_private/Deferred.js';
+import {dontWaitFor} from 'workbox-core/_private/dontWaitFor.js';
 import {logger} from 'workbox-core/_private/logger.js';
+
 import {messageSW} from './messageSW.js';
 import {WorkboxEventTarget} from './utils/WorkboxEventTarget.js';
 import {urlsMatch} from './utils/urlsMatch.js';
 import {WorkboxEvent, WorkboxLifecycleEventMap} from './utils/WorkboxEvent.js';
-import './_version.js';
 
+import './_version.js';
 
 // The time a SW must be in the waiting phase before we can conclude
 // `skipWaiting()` wasn't called. This 200 amount wasn't scientifically
@@ -120,8 +122,8 @@ class Workbox extends WorkboxEventTarget {
     // SW, resolve active/controlling deferreds and add necessary listeners.
     if (this._compatibleControllingSW) {
       this._sw = this._compatibleControllingSW;
-      this._activeDeferred.resolve(this._compatibleControllingSW);
-      this._controllingDeferred.resolve(this._compatibleControllingSW);
+      this._activeDeferred.resolve!(this._compatibleControllingSW);
+      this._controllingDeferred.resolve!(this._compatibleControllingSW);
 
       this._compatibleControllingSW.addEventListener(
           'statechange', this._onStateChange, {once: true});
@@ -140,7 +142,7 @@ class Workbox extends WorkboxEventTarget {
 
       // Run this in the next microtask, so any code that adds an event
       // listener after awaiting `register()` will get this event.
-      Promise.resolve().then(() => {
+      dontWaitFor(Promise.resolve().then(() => {
         this.dispatchEvent(new WorkboxEvent('waiting', {
           sw: waitingSW,
           wasWaitingBeforeRegister: true,
@@ -149,12 +151,12 @@ class Workbox extends WorkboxEventTarget {
           logger.warn('A service worker was already waiting to activate ' +
               'before this script was registered...');
         }
-      });
+      }));
     }
 
     // If an "own" SW is already set, resolve the deferred.
     if (this._sw) {
-      this._swDeferred.resolve(this._sw);
+      this._swDeferred.resolve!(this._sw);
       this._ownSWs.add(this._sw);
     }
 
@@ -364,7 +366,7 @@ class Workbox extends WorkboxEventTarget {
       // SW is the one we registered, so we set it.
       this._sw = installingSW;
       this._ownSWs.add(installingSW);
-      this._swDeferred.resolve(installingSW);
+      this._swDeferred.resolve!(installingSW);
 
       // The `installing` state isn't something we have a dedicated
       // callback for, but we do log messages for it in development.
@@ -438,7 +440,7 @@ class Workbox extends WorkboxEventTarget {
     } else if (state === 'activating') {
       clearTimeout(this._waitingTimeout);
       if (!isExternal) {
-        this._activeDeferred.resolve(sw);
+        this._activeDeferred.resolve!(sw);
       }
     }
 
@@ -491,7 +493,7 @@ class Workbox extends WorkboxEventTarget {
       if (process.env.NODE_ENV !== 'production') {
         logger.log('Registered service worker now controlling this page.');
       }
-      this._controllingDeferred.resolve(sw);
+      this._controllingDeferred.resolve!(sw);
     }
   }
 

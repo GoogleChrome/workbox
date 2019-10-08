@@ -6,16 +6,16 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {WorkboxError} from './WorkboxError.js';
 import {assert} from './assert.js';
+import {executeQuotaErrorCallbacks} from './executeQuotaErrorCallbacks.js';
 import {getFriendlyURL} from './getFriendlyURL.js';
 import {logger} from './logger.js';
-import {executeQuotaErrorCallbacks} from './executeQuotaErrorCallbacks.js';
 import {pluginEvents} from '../models/pluginEvents.js';
-import {WorkboxPlugin} from '../types.js';
 import {pluginUtils} from '../utils/pluginUtils.js';
-import '../_version.js';
+import {WorkboxError} from './WorkboxError.js';
+import {WorkboxPlugin} from '../types.js';
 
+import '../_version.js';
 
 interface MatchWrapperOptions {
   cacheName: string;
@@ -140,7 +140,7 @@ const putWrapper = async ({
  * @param {string} options.cacheName Name of the cache to match against.
  * @param {Request} options.request The Request that will be used to look up
  *     cache entries.
- * @param {Event} [options.event] The event that propted the action.
+ * @param {Event} [options.event] The event that prompted the action.
  * @param {Object} [options.matchOptions] Options passed to cache.match().
  * @param {Array<Object>} [options.plugins=[]] Array of plugins.
  * @return {Response} A cached response if available.
@@ -298,7 +298,7 @@ const _getEffectiveRequest = async ({
   const cacheKeyWillBeUsedPlugins = pluginUtils.filter(
       plugins, pluginEvents.CACHE_KEY_WILL_BE_USED);
 
-  let effectiveRequest = request;
+  let effectiveRequest: Request | string = request;
   for (const plugin of cacheKeyWillBeUsedPlugins) {
     effectiveRequest = await plugin[pluginEvents.CACHE_KEY_WILL_BE_USED]!.call(
         plugin, {mode, request: effectiveRequest});

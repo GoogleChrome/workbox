@@ -8,12 +8,15 @@
 
 import {assert} from 'workbox-core/_private/assert.js';
 import {cacheNames} from 'workbox-core/_private/cacheNames.js';
+import {dontWaitFor} from 'workbox-core/_private/dontWaitFor.js';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
 import {logger} from 'workbox-core/_private/logger.js';
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
 import {registerQuotaErrorCallback} from 'workbox-core/registerQuotaErrorCallback.js';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
 import {WorkboxPlugin} from 'workbox-core/types.js';
+
 import {CacheExpiration} from './CacheExpiration.js';
+
 import './_version.js';
 
 /**
@@ -144,7 +147,7 @@ class ExpirationPlugin implements WorkboxPlugin {
     // Expire entries to ensure that even if the expiration date has
     // expired, it'll only be used once.
     const cacheExpiration = this._getCacheExpiration(cacheName);
-    cacheExpiration.expireEntries();
+    dontWaitFor(cacheExpiration.expireEntries());
 
     // Update the metadata for the request URL to the current timestamp,
     // but don't `await` it as we don't want to block the response.

@@ -30,10 +30,8 @@ describe(`createPartialResponse()`, function() {
       },
     });
 
-    const VALID_RESPONSE = new Response(SOURCE_BLOB);
-
     it(`should return a Response with status 416 when the 'request' parameter isn't valid`, async function() {
-      const response = await createPartialResponse(null, VALID_RESPONSE);
+      const response = await createPartialResponse(null, new Response(SOURCE_BLOB));
       expect(response.status).to.equal(416);
     });
 
@@ -44,18 +42,36 @@ describe(`createPartialResponse()`, function() {
 
     it(`should return a Response with status 416 when there's no Range: header in the request`, async function() {
       const noRangeHeaderRequest = new Request('/');
-      const response = await createPartialResponse(noRangeHeaderRequest, VALID_RESPONSE);
+      const response = await createPartialResponse(noRangeHeaderRequest, new Response(SOURCE_BLOB));
       expect(response.status).to.equal(416);
     });
 
     it(`should return the expected Response when it's called with valid parameters`, async function() {
-      const response = await createPartialResponse(VALID_REQUEST, VALID_RESPONSE);
+      const response = await createPartialResponse(VALID_REQUEST, new Response(SOURCE_BLOB));
       expect(response.status).to.equal(206);
       expect(response.headers.get('Content-Length')).to.equal('101');
       expect(response.headers.get('Content-Range')).to.equal(`bytes 100-200/${SOURCE_BLOB_SIZE}`);
 
       const responseBlob = await response.blob();
       const expectedBlob = constructBlob(101);
+
+      expect(await (new Response(responseBlob)).text())
+          .to.equal(await (new Response(expectedBlob)).text());
+    });
+
+    it(`should return the full body when it's called with bytes=0-`, async function() {
+      const fullBodyRequest = new Request('/', {
+        headers: {
+          range: 'bytes=0-',
+        },
+      });
+      const response = await createPartialResponse(fullBodyRequest, new Response(SOURCE_BLOB));
+      expect(response.status).to.equal(206);
+      expect(response.headers.get('Content-Length')).to.equal(`${SOURCE_BLOB_SIZE}`);
+      expect(response.headers.get('Content-Range')).to.equal(`bytes 0-${SOURCE_BLOB_SIZE - 1}/${SOURCE_BLOB_SIZE}`);
+
+      const responseBlob = await response.blob();
+      const expectedBlob = constructBlob(SOURCE_BLOB_SIZE);
 
       expect(await (new Response(responseBlob)).text())
           .to.equal(await (new Response(expectedBlob)).text());

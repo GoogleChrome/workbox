@@ -41,7 +41,7 @@ const hasMethod = (
 ) => {
   const type = typeof object[expectedMethod];
   if (type !== 'function') {
-    details.expectedMethod = expectedMethod;
+    details['expectedMethod'] = expectedMethod;
     throw new WorkboxError('missing-a-method', details);
   }
 };
@@ -52,7 +52,7 @@ const isType = (
   details: WorkboxErrorDetails,
 ) => {
   if (typeof object !== expectedType) {
-    details.expectedType = expectedType;
+    details['expectedType'] = expectedType;
     throw new WorkboxError('incorrect-type', details);
   }
 };
@@ -63,7 +63,7 @@ const isInstance = (
   details: WorkboxErrorDetails,
 ) => {
   if (!(object instanceof expectedClass)) {
-    details.expectedClass = expectedClass;
+    details['expectedClass'] = expectedClass;
     throw new WorkboxError('incorrect-class', details);
   }
 };
@@ -73,7 +73,7 @@ const isOneOf = (
   validValues: any[],
   details: WorkboxErrorDetails) => {
   if (!validValues.includes(value)) {
-    details.validValueDescription =
+    details['validValueDescription'] =
         `Valid values are ${JSON.stringify(validValues)}.`
     throw new WorkboxError('invalid-value', details);
   }

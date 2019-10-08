@@ -43,6 +43,7 @@ class GenerateSW {
    */
   constructor(config = {}) {
     this.config = config;
+    this.alreadyCalled = false;
   }
 
   /**
@@ -80,6 +81,17 @@ class GenerateSW {
    * @private
    */
   async handleEmit(compilation) {
+    // See https://github.com/GoogleChrome/workbox/issues/1790
+    if (this.alreadyCalled) {
+      compilation.warnings.push(`${this.constructor.name} has been called ` +
+        `multiple times, perhaps due to running webpack in --watch mode. The ` +
+        `precache manifest generated after the first call may be inaccurate! ` +
+        `Please see https://github.com/GoogleChrome/workbox/issues/1790 for ` +
+        `more information.`);
+    } else {
+      this.alreadyCalled = true;
+    }
+
     let config;
     try {
       // emit might be called multiple times; instead of modifying this.config,

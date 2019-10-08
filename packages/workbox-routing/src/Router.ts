@@ -46,8 +46,8 @@ interface CacheURLsMessageData {
  */
 class Router {
   private _routes: Map<HTTPMethod, Route[]>;
-  private _defaultHandler: HandlerObject;
-  private _catchHandler: HandlerObject;
+  private _defaultHandler?: HandlerObject;
+  private _catchHandler?: HandlerObject;
 
   /**
    * Initializes a new Router.
@@ -70,13 +70,14 @@ class Router {
    * the event's request.
    */
   addFetchListener() {
-    self.addEventListener('fetch', (event: FetchEvent) => {
+    // See https://github.com/Microsoft/TypeScript/issues/28357#issuecomment-436484705
+    self.addEventListener('fetch', ((event: FetchEvent) => {
       const {request} = event;
       const responsePromise = this.handleRequest({request, event});
       if (responsePromise) {
         event.respondWith(responsePromise);
       }
-    });
+    }) as EventListener);
   }
 
   /**
@@ -102,7 +103,8 @@ class Router {
    * ```
    */
   addCacheListener() {
-    self.addEventListener('message', async (event: ExtendableMessageEvent) => {
+    // See https://github.com/Microsoft/TypeScript/issues/28357#issuecomment-436484705
+    self.addEventListener('message', ((event: ExtendableMessageEvent) => {
       if (event.data && event.data.type === 'CACHE_URLS') {
         const {payload}: CacheURLsMessageData = event.data;
 
@@ -128,11 +130,10 @@ class Router {
 
         // If a MessageChannel was used, reply to the message on success.
         if (event.ports && event.ports[0]) {
-          await requestPromises;
-          event.ports[0].postMessage(true);
+          requestPromises.then(() => event.ports[0].postMessage(true));
         }
       }
-    });
+    }) as EventListener);
   }
 
   /**
@@ -237,7 +238,7 @@ class Router {
       responsePromise = Promise.reject(err);
     }
 
-    if (responsePromise && this._catchHandler) {
+    if (responsePromise instanceof Promise && this._catchHandler) {
       responsePromise = responsePromise.catch((err) => {
         if (process.env.NODE_ENV !== 'production') {
           // Still include URL here as it will be async from the console group
@@ -248,7 +249,7 @@ class Router {
           logger.error(err);
           logger.groupEnd();
         }
-        return this._catchHandler.handle({url, request, event});
+        return this._catchHandler!.handle({url, request, event});
       });
     }
 

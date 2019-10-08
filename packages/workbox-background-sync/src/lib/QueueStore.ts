@@ -30,7 +30,7 @@ export interface QueueStoreEntry extends UnidentifiedQueueStoreEntry {
 }
 
 /**
- * A class to manage storing requests from a Queue in IndexedbDB,
+ * A class to manage storing requests from a Queue in IndexedDB,
  * indexed by their queue name for easier access.
  *
  * @private
@@ -82,11 +82,11 @@ export class QueueStore {
     delete entry.id;
     entry.queueName = this._queueName;
 
-    await this._db.add(OBJECT_STORE_NAME, entry);
+    await this._db.add!(OBJECT_STORE_NAME, entry);
   }
 
   /**
-   * Preppend an entry first in the queue.
+   * Prepend an entry first in the queue.
    *
    * @param {Object} entry
    * @param {Object} entry.requestData
@@ -123,7 +123,7 @@ export class QueueStore {
     }
     entry.queueName = this._queueName;
 
-    await this._db.add(OBJECT_STORE_NAME, entry);
+    await this._db.add!(OBJECT_STORE_NAME, entry);
   }
 
   /**
@@ -172,7 +172,7 @@ export class QueueStore {
    * @param {number} id
    */
   async deleteEntry(id: number) {
-    await this._db.delete(OBJECT_STORE_NAME, id);
+    await this._db.delete!(OBJECT_STORE_NAME, id);
   }
 
   /**
