@@ -83,6 +83,84 @@ const writeServiceWorkerUsingDefaultTemplate =
  * inside the generated service worker file. This is  useful when you want to
  * let Workbox create your top-level service worker file, but want to include
  * some additional code, such as a push event listener.
+ * @param {boolean} [config.inlineWorkboxRuntime=false] Whether the runtime code
+ * for the Workbox library should be included in the top-level service worker,
+ * or split into a separate file that needs to be deployed alongside the service
+ * worker. Keeping the runtime separate means that users will not have to
+ * re-download the Workbox code each time your top-level service worker changes.
+ * @param {string} [config.navigateFallback] If specified, all
+ * [navigation requests](https://developers.google.com/web/fundamentals/primers/service-workers/high-performance-loading#first_what_are_navigation_requests)
+ * for URLs that aren't precached will be fulfilled with the HTML at the URL
+ * provided. You must pass in the URL of an HTML document that is listed in your
+ * precache manifest. This is meant to be used in a Single Page App scenario, in
+ * which you want all navigations to use common [App Shell HTML](https://developers.google.com/web/fundamentals/architecture/app-shell).
+ * @param {Array<RegExp>} [config.navigateFallbackBlacklist] An optional array
+ * of regular expressions that restricts which URLs the configured
+ * `navigateFallback` behavior applies to. This is useful if only a subset of
+ * your site's URLs should be treated as being part of a
+ * [Single Page App](https://en.wikipedia.org/wiki/Single-page_application). If
+ * both `navigateFallbackBlacklist` and `navigateFallbackWhitelist` are
+ * configured, the blacklist takes precedent.
+ * @param {Array<RegExp>} [config.navigateFallbackWhitelist] An optional array
+ * of regular expressions that restricts which URLs the configured
+ * `navigateFallback` behavior applies to. This is useful if only a subset of
+ * your site's URLs should be treated as being part of a
+ * [Single Page App](https://en.wikipedia.org/wiki/Single-page_application). If
+ * both `navigateFallbackBlacklist` and `navigateFallbackWhitelist` are
+ * configured, the blacklist takes precedent.
+ * @param {boolean} [config.navigationPreload=false] Whether or not to enable
+ * [navigation preload](https://developers.google.com/web/tools/workbox/modules/workbox-navigation-preload)
+ * in the generated service worker. When set to true, you must also use
+ * `runtimeCaching` to set up an appropriate response strategy that will match
+ * navigation requests, and make use of the preloaded response.
+ * @param {boolean|Object} [config.offlineGoogleAnalytics=false] Controls
+ * whether or not to include support for
+ * [offline Google Analytics](https://developers.google.com/web/tools/workbox/guides/enable-offline-analytics).
+ * When `true`, the call to `workbox-google-analytics`'s `initialize()` will be
+ * added to your generated service worker. When set to an `Object`, that object
+ * will be passed in to the `initialize()` call, allowing you to customize the
+ * behavior.
+ * @param {Array<Object>} [config.runtimeCaching]
+ * @param {string} [config.runtimeCaching[].method='GET'] The
+ * [HTTP method](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods) that
+ * will match the generated route.
+ * @param {string|RegExp|workbox.routing.Route~matchCallback} config.runtimeCaching[].urlPattern
+ * The value that will be passed to workbox.routing.Router~registerRoute, used
+ * to determine whether the generated route will match a given request.
+ * @param {string|workbox.routing.Route~handlerCallback} config.runtimeCaching[].handler
+ * Either the name of one of the [built-in strategy classes](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.strategies),
+ * or custom handler callback to use when the generated route matches.
+ * @param {Object} [config.runtimeCaching[].options]
+ * @param {Object} [config.runtimeCaching[].options.backgroundSync]
+ * @param {string} config.runtimeCaching[].options.backgroundSync.name The
+ * [`name` parameter](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.backgroundSync.Queue.html)
+ * to use when creating the `BackgroundSyncPlugin`.
+ * @param {Object} [config.runtimeCaching[].options.backgroundSync.options] The
+ * [`options` parameter](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.backgroundSync.Queue.html)
+ * to use when creating the `BackgroundSyncPlugin`.
+ * @param {Object} [config.runtimeCaching[].options.broadcastUpdate]
+ * @param {string} config.runtimeCaching[].options.broadcastUpdate.channelName
+ * The [`channelName` parameter](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.broadcastUpdate.BroadcastCacheUpdate)
+ * to use when creating the `BroadcastCacheUpdatePlugin`.
+ * @param {Object} [config.runtimeCaching[].options.broadcastUpdate.options] The
+ * [`options` parameter](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.broadcastUpdate.BroadcastCacheUpdate)
+ * to use when creating the `BroadcastCacheUpdatePlugin`.
+ * @param {Object} [config.runtimeCaching[].options.cacheableResponse]
+ * @param {Array<Number>} [config.runtimeCaching[].options.cacheableResponse.statuses]
+ * The [`status` parameter](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.cacheableResponse.CacheableResponse)
+ * to use when creating the `CacheableResponsePlugin`.
+ * @param {Object} [config.runtimeCaching[].options.cacheableResponse.headers]
+ * The [`headers` parameter](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.cacheableResponse.CacheableResponse)
+ * to use when creating the `CacheableResponsePlugin`.
+ * @param {string} [config.runtimeCaching[].options.cacheName] The `cacheName`
+ * to use when constructing one of the [Workbox strategy classes](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.strategies).
+ * @param {Object} [config.runtimeCaching[].options.expiration]
+ * @param {Number} [config.runtimeCaching[].options.expiration.maxAgeSeconds]
+ * The [`maxAgeSeconds` parameter](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.expiration.CacheExpiration)
+ * to use when creating the `CacheExpirationPlugin`.
+ * @param {Number} [config.runtimeCaching[].options.expiration.maxEntries]
+ * The [`maxAgeSeconds` parameter](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.expiration.CacheExpiration)
+ * to use when creating the `CacheExpirationPlugin`.
  * @return {Promise<{count: number, filePaths: Array<string>, size: number, warnings: Array<string>}>}
  * A promise that resolves once the service worker and related files
  * (indicated by `filePaths`) has been written to `swDest`. The `size` property
