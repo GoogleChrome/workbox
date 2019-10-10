@@ -7,13 +7,15 @@
 */
 
 import {Deferred} from 'workbox-core/_private/Deferred.js';
+import {dontWaitFor} from 'workbox-core/_private/dontWaitFor.js';
 import {logger} from 'workbox-core/_private/logger.js';
+
 import {messageSW} from './messageSW.js';
 import {WorkboxEventTarget} from './utils/WorkboxEventTarget.js';
 import {urlsMatch} from './utils/urlsMatch.js';
 import {WorkboxEvent, WorkboxLifecycleEventMap} from './utils/WorkboxEvent.js';
-import './_version.js';
 
+import './_version.js';
 
 // The time a SW must be in the waiting phase before we can conclude
 // `skipWaiting()` wasn't called. This 200 amount wasn't scientifically
@@ -55,6 +57,7 @@ class Workbox extends WorkboxEventTarget {
   private _compatibleControllingSW?: ServiceWorker;
   private _registration?: ServiceWorkerRegistration;
   private _sw?: ServiceWorker;
+  private _ownSWs: Set<ServiceWorker> = new Set();
   private _externalSW?: ServiceWorker;
   private _waitingTimeout?: number;
 
@@ -74,6 +77,11 @@ class Workbox extends WorkboxEventTarget {
 
     this._scriptURL = scriptURL;
     this._registerOptions = registerOptions;
+
+    // Add a message listener immediately since messages received during
+    // page load are buffered only until the DOMContentLoaded event:
+    // https://github.com/GoogleChrome/workbox/issues/2202
+    navigator.serviceWorker.addEventListener('message', this._onMessage);
   }
 
   /**
@@ -114,8 +122,8 @@ class Workbox extends WorkboxEventTarget {
     // SW, resolve active/controlling deferreds and add necessary listeners.
     if (this._compatibleControllingSW) {
       this._sw = this._compatibleControllingSW;
-      this._activeDeferred.resolve(this._compatibleControllingSW);
-      this._controllingDeferred.resolve(this._compatibleControllingSW);
+      this._activeDeferred.resolve!(this._compatibleControllingSW);
+      this._controllingDeferred.resolve!(this._compatibleControllingSW);
 
       this._compatibleControllingSW.addEventListener(
           'statechange', this._onStateChange, {once: true});
@@ -123,7 +131,7 @@ class Workbox extends WorkboxEventTarget {
 
     // If there's a waiting service worker with a matching URL before the
     // `updatefound` event fires, it likely means that this site is open
-    // in another tab, or the user refreshed the page (and thus the prevoius
+    // in another tab, or the user refreshed the page (and thus the previous
     // page wasn't fully unloaded before this page started loading).
     // https://developers.google.com/web/fundamentals/primers/service-workers/lifecycle#waiting
     const waitingSW = this._registration.waiting;
@@ -134,7 +142,7 @@ class Workbox extends WorkboxEventTarget {
 
       // Run this in the next microtask, so any code that adds an event
       // listener after awaiting `register()` will get this event.
-      Promise.resolve().then(() => {
+      dontWaitFor(Promise.resolve().then(() => {
         this.dispatchEvent(new WorkboxEvent('waiting', {
           sw: waitingSW,
           wasWaitingBeforeRegister: true,
@@ -143,13 +151,14 @@ class Workbox extends WorkboxEventTarget {
           logger.warn('A service worker was already waiting to activate ' +
               'before this script was registered...');
         }
-      });
+      }));
     }
 
     // If an "own" SW is already set, resolve the deferred.
     if (this._sw) {
       this._sw.addEventListener('statechange', this._onStateChange);
-      this._swDeferred.resolve(this._sw);
+      this._swDeferred.resolve!(this._sw);
+      this._ownSWs.add(this._sw);
     }
 
     if (process.env.NODE_ENV !== 'production') {
@@ -181,9 +190,6 @@ class Workbox extends WorkboxEventTarget {
     this._registration.addEventListener('updatefound', this._onUpdateFound);
     navigator.serviceWorker.addEventListener(
         'controllerchange', this._onControllerChange, {once: true});
-
-    // Add a message listener.
-    navigator.serviceWorker.addEventListener('message', this._onMessage);
 
     return this._registration;
   }
@@ -360,7 +366,8 @@ class Workbox extends WorkboxEventTarget {
       // If the update was not triggered externally we know the installing
       // SW is the one we registered, so we set it.
       this._sw = installingSW;
-      this._swDeferred.resolve(installingSW);
+      this._ownSWs.add(installingSW);
+      this._swDeferred.resolve!(installingSW);
 
       // The `installing` state isn't something we have a dedicated
       // callback for, but we do log messages for it in development.
@@ -434,7 +441,7 @@ class Workbox extends WorkboxEventTarget {
     } else if (state === 'activating') {
       clearTimeout(this._waitingTimeout);
       if (!isExternal) {
-        this._activeDeferred.resolve(sw);
+        this._activeDeferred.resolve!(sw);
       }
     }
 
@@ -487,7 +494,7 @@ class Workbox extends WorkboxEventTarget {
       if (process.env.NODE_ENV !== 'production') {
         logger.log('Registered service worker now controlling this page.');
       }
-      this._controllingDeferred.resolve(sw);
+      this._controllingDeferred.resolve!(sw);
     }
   }
 
@@ -496,12 +503,25 @@ class Workbox extends WorkboxEventTarget {
    * @param {Event} originalEvent
    */
   private _onMessage = async (originalEvent: MessageEvent) => {
-    const {data} = originalEvent;
-    this.dispatchEvent(new WorkboxEvent('message', {
-      data,
-      sw: await this.getSW(),
-      originalEvent,
-    }));
+    const {data, source} = originalEvent;
+
+    // Wait until there's an "own" service worker. This is used to buffer
+    // `message` events that may be received prior to calling `register()`.
+    await this.getSW();
+
+    // If the service worker that sent the message is in the list of own
+    // service workers for this instance, dispatch a `message` event.
+    // NOTE: we check for all previously owned service workers rather than
+    // just the current one because some messages (e.g. cache updates) use
+    // a timeout when sent and may be delayed long enough for a service worker
+    // update to be found.
+    if (this._ownSWs.has(source as ServiceWorker)) {
+      this.dispatchEvent(new WorkboxEvent('message', {
+        data,
+        sw: source as ServiceWorker,
+        originalEvent,
+      }));
+    }
   }
 }
 

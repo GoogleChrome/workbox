@@ -72,7 +72,7 @@ module.exports = async ({
     const filePaths = [];
 
     for (const file of files) {
-      const filePath = upath.resolve(outputDir, file.name);
+      const filePath = upath.resolve(file.name);
       filePaths.push(filePath);
       await fse.writeFile(filePath, file.contents);
     }

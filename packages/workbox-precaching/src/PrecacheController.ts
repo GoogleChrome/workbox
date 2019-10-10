@@ -31,6 +31,7 @@ import './_version.js';
 class PrecacheController {
   private _cacheName: string;
   private _urlsToCacheKeys: Map<string, string>;
+  private _urlsToCacheModes: Map<string, "reload" | "default" | "no-store" | "no-cache" | "force-cache" | "only-if-cached">;
   private _cacheKeysToIntegrities: Map<string, string>;
 
   /**
@@ -42,6 +43,7 @@ class PrecacheController {
   constructor(cacheName?: string) {
     this._cacheName = cacheNames.getPrecacheName(cacheName);
     this._urlsToCacheKeys = new Map();
+    this._urlsToCacheModes = new Map();
     this._cacheKeysToIntegrities = new Map();
   }
 
@@ -65,6 +67,8 @@ class PrecacheController {
 
     for (const entry of entries) {
       const {cacheKey, url} = createCacheKey(entry);
+      const cacheMode = (typeof entry !== 'string' && entry.revision) ?
+        'reload' : 'default';
 
       if (this._urlsToCacheKeys.has(url) &&
           this._urlsToCacheKeys.get(url) !== cacheKey) {
@@ -85,6 +89,7 @@ class PrecacheController {
       }
 
       this._urlsToCacheKeys.set(url, cacheKey);
+      this._urlsToCacheModes.set(url, cacheMode);
     }
   }
 
@@ -131,7 +136,15 @@ class PrecacheController {
 
     const precacheRequests = toBePrecached.map(({cacheKey, url}) => {
       const integrity = this._cacheKeysToIntegrities.get(cacheKey);
-      return this._addURLToCache({cacheKey, event, plugins, url, integrity});
+      const cacheMode = this._urlsToCacheModes.get(url);
+      return this._addURLToCache({
+        cacheKey,
+        cacheMode,
+        event,
+        integrity,
+        plugins,
+        url,
+      });
     });
     await Promise.all(precacheRequests);
 
@@ -186,22 +199,24 @@ class PrecacheController {
    * @param {Object} options
    * @param {string} options.cacheKey The string to use a cache key.
    * @param {string} options.url The URL to fetch and cache.
+   * @param {string} [options.cacheMode] The cache mode for the network request.
    * @param {Event} [options.event] The install event (if passed).
    * @param {Array<Object>} [options.plugins] An array of plugins to apply to
    * fetch and caching.
    * @param {string} [options.integrity] The value to use for the `integrity`
    * field when making the request.
    */
-  async _addURLToCache({cacheKey, url, event, plugins, integrity}: {
+  async _addURLToCache({cacheKey, url, cacheMode, event, plugins, integrity}: {
     cacheKey: string,
     url: string,
+    cacheMode: "reload" | "default" | "no-store" | "no-cache" | "force-cache" | "only-if-cached" | undefined,
     event?: ExtendableEvent,
     plugins?: WorkboxPlugin[],
     integrity?: string,
   }) {
     const request = new Request(url, {
       integrity,
-      cache: 'reload',
+      cache: cacheMode,
       credentials: 'same-origin',
     });
 

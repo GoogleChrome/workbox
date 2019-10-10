@@ -491,7 +491,7 @@ describe(`PrecacheController`, function() {
       expect(request.credentials).to.eql('same-origin');
     });
 
-    it(`should set cache: 'reload' on the precaching requests`, async function() {
+    it(`should use cache: 'reload' on the precaching requests when there's a revision field`, async function() {
       const fetchStub = sandbox.stub(fetchWrapper, 'fetch').resolves(new Response('test'));
 
       const precacheController = new PrecacheController();
@@ -506,6 +506,23 @@ describe(`PrecacheController`, function() {
       const {request} = fetchStub.firstCall.args[0];
       expect(request.url).to.eql(`${location.origin}/test`);
       expect(request.cache).to.eql('reload');
+    });
+
+    it(`should use cache: 'default' on the precaching requests when there's no revision field`, async function() {
+      const fetchStub = sandbox.stub(fetchWrapper, 'fetch').resolves(new Response('test'));
+
+      const precacheController = new PrecacheController();
+      const cacheList = [
+        {url: '/test'},
+      ];
+      precacheController.addToCacheList(cacheList);
+
+      await precacheController.install();
+
+      expect(fetchStub.calledOnce).to.be.true;
+      const {request} = fetchStub.firstCall.args[0];
+      expect(request.url).to.eql(`${location.origin}/test`);
+      expect(request.cache).to.eql('default');
     });
 
     it(`should pass in a request that includes the revision to cacheWrapper.put()`, async function() {

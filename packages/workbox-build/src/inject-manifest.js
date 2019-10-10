@@ -8,12 +8,17 @@
 
 const assert = require('assert');
 const fse = require('fs-extra');
+const sourceMapURL = require('source-map-url');
+const stringify = require('fast-json-stable-stringify');
 const upath = require('upath');
 
 const errors = require('./lib/errors');
 const escapeRegexp = require('./lib/escape-regexp');
 const getFileManifestEntries = require('./lib/get-file-manifest-entries');
 const injectManifestSchema = require('./options/schema/inject-manifest');
+const rebasePath = require('./lib/rebase-path');
+const replaceAndUpdateSourceMap =
+  require('./lib/replace-and-update-source-map');
 const validate = require('./lib/validate-options');
 
 /**
@@ -40,8 +45,12 @@ const validate = require('./lib/validate-options');
 async function injectManifest(config) {
   const options = validate(config, injectManifestSchema);
 
-  if (upath.resolve(config.swSrc) === upath.resolve(config.swDest)) {
-    throw new Error(errors['same-src-and-dest']);
+  // Make sure we leave swSrc and swDest out of the precache manifest.
+  for (const file of [options.swSrc, options.swDest]) {
+    options.globIgnores.push(rebasePath({
+      file,
+      baseDirectory: options.globDirectory,
+    }));
   }
 
   const globalRegexp = new RegExp(escapeRegexp(options.injectionPoint), 'g');
@@ -50,34 +59,79 @@ async function injectManifest(config) {
     await getFileManifestEntries(options);
   let swFileContents;
   try {
-    swFileContents = await fse.readFile(config.swSrc, 'utf8');
+    swFileContents = await fse.readFile(options.swSrc, 'utf8');
   } catch (error) {
     throw new Error(`${errors['invalid-sw-src']} ${error.message}`);
   }
 
   const injectionResults = swFileContents.match(globalRegexp);
-  assert(injectionResults, errors['injection-point-not-found'] +
-    options.injectionPoint);
+  if (!injectionResults) {
+    // See https://github.com/GoogleChrome/workbox/issues/2230
+    if (upath.resolve(options.swSrc) === upath.resolve(options.swDest)) {
+      throw new Error(errors['same-src-and-dest'] + ' ' +
+        options.injectionPoint);
+    }
+    throw new Error(errors['injection-point-not-found'] + ' ' +
+      options.injectionPoint);
+  }
+
   assert(injectionResults.length === 1, errors['multiple-injection-points'] +
     options.injectionPoint);
 
-  const entriesString = JSON.stringify(manifestEntries, null, 2);
-  swFileContents = swFileContents.replace(globalRegexp, entriesString);
+  const manifestString = stringify(manifestEntries);
+  const filesToWrite = {};
 
-  try {
-    await fse.mkdirp(upath.dirname(options.swDest));
-  } catch (error) {
-    throw new Error(errors['unable-to-make-injection-directory'] +
-      ` '${error.message}'`);
+  const url = sourceMapURL.getFrom(swFileContents);
+  // If our swSrc file contains a sourcemap, we would invalidate that
+  // mapping if we just replaced injectionPoint with the stringified manifest.
+  // Instead, we need to update the swDest contents as well as the sourcemap
+  // at the same time.
+  // See https://github.com/GoogleChrome/workbox/issues/2235
+  if (url) {
+    const sourcemapSrcPath = upath.resolve(upath.dirname(options.swSrc), url);
+    const sourcemapDestPath = upath.resolve(upath.dirname(options.swDest), url);
+
+    let originalMap;
+    try {
+      originalMap = await fse.readJSON(sourcemapSrcPath, 'utf8');
+    } catch (error) {
+      throw new Error(`${errors['cant-find-sourcemap']} ${error.message}`);
+    }
+
+    const {map, source} = await replaceAndUpdateSourceMap({
+      originalMap,
+      jsFilename: upath.basename(options.swDest),
+      originalSource: swFileContents,
+      replaceString: manifestString,
+      searchString: options.injectionPoint,
+    });
+
+    filesToWrite[options.swDest] = source;
+    filesToWrite[sourcemapDestPath] = map;
+  } else {
+    // If there's no sourcemap associated with swSrc, a simple string
+    // replacement will suffice.
+    filesToWrite[options.swDest] = swFileContents.replace(
+        globalRegexp, manifestString);
   }
 
-  await fse.writeFile(config.swDest, swFileContents);
+  for (const [file, contents] of Object.entries(filesToWrite)) {
+    try {
+      await fse.mkdirp(upath.dirname(file));
+    } catch (error) {
+      throw new Error(errors['unable-to-make-injection-directory'] +
+        ` '${error.message}'`);
+    }
 
-  // Wrap the single output file in an array to make the return value consistent
-  // with generateSW.
-  const filePaths = [config.swDest];
+    await fse.writeFile(file, contents);
+  }
 
-  return {count, filePaths, size, warnings};
+  return {
+    count,
+    size,
+    warnings,
+    filePaths: Object.keys(filesToWrite),
+  };
 }
 
 module.exports = injectManifest;

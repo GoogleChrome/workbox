@@ -289,15 +289,39 @@ describe(`[workbox-window] Workbox`, function() {
   });
 
   describe(`update`, function() {
-    it(`updates service worker and resolves with the new registration`, async function() {
-      const controllerBeforeTest = navigator.serviceWorker.controller;
-      const scriptURL = controllerBeforeTest.scriptURL;
+    it(`calls update on the registration`, async function() {
+      const scriptURL = navigator.serviceWorker.controller.scriptURL;
+      const wb = new Workbox(scriptURL);
+      const reg = await wb.register();
+
+      sandbox.stub(reg, 'update');
+
+      await wb.update();
+
+      expect(reg.update.callCount).to.equal(1);
+    });
+
+    it(`triggers an updatefound event if the SW was updated`, async function() {
+      const scriptURL = navigator.serviceWorker.controller.scriptURL;
+
       const wb = new Workbox(scriptURL);
 
       const reg = await wb.register();
-      const newReg = await wb.update();
+      const updatefoundPromise = new Promise((resolve) => {
+        reg.addEventListener('updatefound', () => {
+          expect(reg.installing).to.not.equal(navigator.serviceWorker.controller);
+          resolve();
+        });
+      });
 
-      expect(reg).not.to.equal(newReg);
+      await wb.controlling;
+
+      // Update the SW after so an update check triggers an update.
+      await updateVersion('2.0.0', scriptURL);
+
+      wb.update();
+
+      await updatefoundPromise;
     });
 
     describe(`logs in development-only`, function() {
@@ -444,7 +468,7 @@ describe(`[workbox-window] Workbox`, function() {
       const wb = new Workbox(scriptURL);
 
       // Registering using the same script URL that's already active won't
-      // trigger an update.
+      // necessarily trigger an update, so we have to also call update below.
       const regPromise = wb.register();
 
       const controllingSW = await wb.getSW();
@@ -513,6 +537,55 @@ describe(`[workbox-window] Workbox`, function() {
           data: 'postMessage from SW!',
           originalEvent: {type: 'message'},
         });
+      });
+
+      it(`can receive a message prior to calling register but buffers them until after registration`, async function() {
+        const scriptURL = navigator.serviceWorker.controller.scriptURL;
+        const wb = new Workbox(scriptURL);
+
+        const messageSpy = sandbox.spy();
+        wb.addEventListener('message', messageSpy);
+
+        // Simulate a message event sent from the controlling service worker
+        // at page load time (prior to calling `register()`);
+        navigator.serviceWorker.dispatchEvent(new MessageEvent('message', {
+          data: 'postMessage from during page load!',
+          source: navigator.serviceWorker.controller,
+        }));
+
+        expect(messageSpy.notCalled).to.be.true;
+
+        await wb.register();
+
+        expect(messageSpy.callCount).to.equal(1);
+        assertMatchesWorkboxEvent(messageSpy.args[0][0], {
+          type: 'message',
+          target: wb,
+          sw: navigator.serviceWorker.controller,
+          data: 'postMessage from during page load!',
+          originalEvent: {type: 'message'},
+        });
+      });
+
+      it(`does not dispatch messages received from non-own service workers`, async function() {
+        const wb = new Workbox(uniq('sw-clients-claim.js.njk'));
+
+        const messageSpy = sandbox.spy();
+        wb.addEventListener('message', messageSpy);
+
+        // Simulate a message event sent from the controlling service worker
+        // at page load time (prior to calling `register()`);
+        navigator.serviceWorker.dispatchEvent(new MessageEvent('message', {
+          data: 'postMessage from during page load!',
+          source: navigator.serviceWorker.controller,
+        }));
+
+        expect(messageSpy.notCalled).to.be.true;
+
+        wb.register();
+        await wb.controlling;
+
+        expect(messageSpy.notCalled).to.be.true;
       });
     });
 
@@ -593,7 +666,6 @@ describe(`[workbox-window] Workbox`, function() {
           wasWaitingBeforeRegister: undefined,
         });
 
-        console.log(waiting2Spy.args);
         expect(waiting2Spy.callCount).to.equal(0);
 
         expect(waiting3Spy.callCount).to.equal(1);
@@ -792,6 +864,43 @@ describe(`[workbox-window] Workbox`, function() {
         // Assert the same method on the second instance isn't called.
         expect(externalInstalled2Spy.callCount).to.equal(0);
       });
+
+      it(`runs when an updated version of the registered SW is found after the update timeout`, async function() {
+        const clock = sandbox.useFakeTimers({
+          toFake: ['performance'],
+        });
+
+        const scriptURL = navigator.serviceWorker.controller.scriptURL;
+
+        const wb = new Workbox(scriptURL);
+        const reg = await wb.register();
+        await wb.controlling;
+
+        // Update the SW after so an update check triggers an update.
+        await updateVersion('2.0.0', scriptURL);
+
+        let updatedSW;
+        reg.addEventListener('updatefound', () => {
+          updatedSW = reg.installing;
+        });
+
+        const externalInstalledSpy = sandbox.spy();
+        wb.addEventListener('externalinstalled', externalInstalledSpy);
+
+        // Let more than an hour pass.
+        clock.tick(60001);
+
+        wb.update();
+        await waitUntil(() => externalInstalledSpy.callCount === 1);
+
+        expect(externalInstalledSpy.callCount).to.equal(1);
+        assertMatchesWorkboxEvent(externalInstalledSpy.args[0][0], {
+          type: 'externalinstalled',
+          target: wb,
+          sw: updatedSW,
+          originalEvent: {type: 'statechange'},
+        });
+      });
     });
 
     describe(`externalwaiting`, function() {
@@ -824,6 +933,44 @@ describe(`[workbox-window] Workbox`, function() {
         expect(waiting2Spy.callCount).to.equal(1);
         expect(externalWaiting2Spy.callCount).to.equal(0);
       });
+
+      it(`runs when an updated version of the registered SW is found after the update timeout and is waiting to activate`, async function() {
+        const clock = sandbox.useFakeTimers({
+          toFake: ['performance'],
+        });
+
+        const scriptURL = uniq('sw-skip-waiting-on-mesage.js.njk');
+        const wb = new Workbox(scriptURL);
+        const reg = await wb.register();
+
+        wb.messageSW({type: 'SKIP_WAITING'});
+        await wb.controlling;
+
+        // Update the SW after so an update check triggers an update.
+        await updateVersion('2.0.0', scriptURL);
+
+        let updatedSW;
+        reg.addEventListener('updatefound', () => {
+          updatedSW = reg.installing;
+        });
+
+        const externalWaitingSpy = sandbox.spy();
+        wb.addEventListener('externalwaiting', externalWaitingSpy);
+
+        // Let more than an hour pass.
+        clock.tick(60001);
+
+        wb.update();
+        await waitUntil(() => externalWaitingSpy.callCount === 1);
+
+        expect(externalWaitingSpy.callCount).to.equal(1);
+        assertMatchesWorkboxEvent(externalWaitingSpy.args[0][0], {
+          type: 'externalwaiting',
+          target: wb,
+          sw: updatedSW,
+          originalEvent: {type: 'statechange'},
+        });
+      });
     });
 
     describe(`externalactivated`, function() {
@@ -851,6 +998,43 @@ describe(`[workbox-window] Workbox`, function() {
 
         // Assert the same method on the second instance isn't called.
         expect(externalActivated2Spy.callCount).to.equal(0);
+      });
+
+      it(`runs when an updated version of the registered SW is found after the update timeout and has activated`, async function() {
+        const clock = sandbox.useFakeTimers({
+          toFake: ['performance'],
+        });
+
+        const scriptURL = navigator.serviceWorker.controller.scriptURL;
+
+        const wb = new Workbox(scriptURL);
+        const reg = await wb.register();
+        await wb.controlling;
+
+        // Update the SW after so an update check triggers an update.
+        await updateVersion('2.0.0', scriptURL);
+
+        let updatedSW;
+        reg.addEventListener('updatefound', () => {
+          updatedSW = reg.installing;
+        });
+
+        const externalActivatedSpy = sandbox.spy();
+        wb.addEventListener('externalactivated', externalActivatedSpy);
+
+        // Let more than an hour pass.
+        clock.tick(60001);
+
+        wb.update();
+        await waitUntil(() => externalActivatedSpy.callCount === 1);
+
+        expect(externalActivatedSpy.callCount).to.equal(1);
+        assertMatchesWorkboxEvent(externalActivatedSpy.args[0][0], {
+          type: 'externalactivated',
+          target: wb,
+          sw: updatedSW,
+          originalEvent: {type: 'statechange'},
+        });
       });
     });
 

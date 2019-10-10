@@ -1042,17 +1042,31 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
       };
 
       const compiler = webpack(config);
-      for (const i of [1, 2]) {
+      for (const i of [1, 2, 3]) {
         await new Promise((resolve, reject) => {
           compiler.run(async (webpackError, stats) => {
             try {
-              webpackBuildCheck(webpackError, stats);
+              if (webpackError) {
+                throw new Error(webpackError.message);
+              }
+
+              const statsJson = stats.toJson('verbose');
+              expect(statsJson.errors).to.have.length(0);
+
+              // There should be a warning logged after the first compilation.
+              // See https://github.com/GoogleChrome/workbox/issues/1790
+              if (i > 1) {
+                expect(statsJson.warnings).to.have.length(1);
+              } else {
+                expect(statsJson.warnings).to.have.length(0);
+              }
+
               const files = await globby(outputDir);
               expect(files).to.have.length(3);
 
               resolve();
             } catch (error) {
-              reject(`Failure during compilation ${i}: ${error}`);
+              reject(new Error(`Failure during compilation ${i}: ${error}`));
             }
           });
         });

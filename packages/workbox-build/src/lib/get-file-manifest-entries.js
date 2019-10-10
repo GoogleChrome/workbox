@@ -7,7 +7,6 @@
 */
 
 const assert = require('assert');
-const upath = require('upath');
 
 const errors = require('./errors');
 const transformManifest = require('./transform-manifest');
@@ -36,11 +35,6 @@ module.exports = async ({
   const fileSet = new Set();
 
   if (globDirectory) {
-    if (swDest) {
-      // Ensure that we ignore the SW file we're eventually writing to disk.
-      globIgnores.push(`**/${upath.basename(swDest)}`);
-    }
-
     try {
       fileDetails = globPatterns.reduce((accumulated, globPattern) => {
         const {globbedFileDetails, warning} = getFileDetails({
