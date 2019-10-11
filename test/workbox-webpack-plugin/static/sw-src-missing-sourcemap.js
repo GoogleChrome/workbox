@@ -6,5 +6,6 @@
   https://opensource.org/licenses/MIT.
 */
 
+/* eslint-disable */
 workbox.precaching.precacheAndRoute(self.__WB_MANIFEST, {});
 //# sourceMappingURL=does-not-exist.js.map
