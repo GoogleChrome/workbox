@@ -1,5 +1,5 @@
 /*
-  Copyright 2018 Google LLC
+  Copyright 2019 Google LLC
 
   Use of this source code is governed by an MIT-style
   license that can be found in the LICENSE file or at
@@ -7,16 +7,19 @@
 */
 
 import {assert} from 'workbox-core/_private/assert.js';
+
 import {addPlugins} from './addPlugins.js';
 import {addRoute} from './addRoute.js';
 import {cleanupOutdatedCaches} from './cleanupOutdatedCaches.js';
-import {createHandlerForURL} from './createHandlerForURL.js';
+import {createHandler} from './createHandler.js';
+import {createHandlerBoundToURL} from './createHandlerBoundToURL.js';
 import {getCacheKeyForURL} from './getCacheKeyForURL.js';
+import {matchPrecache} from './matchPrecache.js';
 import {precache} from './precache.js';
 import {precacheAndRoute} from './precacheAndRoute.js';
 import {PrecacheController} from './PrecacheController.js';
-import './_version.js';
 
+import './_version.js';
 
 if (process.env.NODE_ENV !== 'production') {
   assert!.isSWEnv('workbox-precaching');
@@ -39,8 +42,10 @@ export {
   addPlugins,
   addRoute,
   cleanupOutdatedCaches,
-  createHandlerForURL,
+  createHandler,
+  createHandlerBoundToURL,
   getCacheKeyForURL,
+  matchPrecache,
   precache,
   precacheAndRoute,
   PrecacheController,
