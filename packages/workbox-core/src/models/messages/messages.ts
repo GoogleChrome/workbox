@@ -258,8 +258,8 @@ export const messages : MessageMap = {
   },
 
   'non-precached-url': ({url}) => {
-    return `createHandlerForURL('${url}') was called, but that URL is not ` +
-      `precached. Please pass in a URL that is precached instead.`;
+    return `createHandlerBoundToURL('${url}') was called, but that URL is ` +
+      `not precached. Please pass in a URL that is precached instead.`;
   },
 
   'add-to-cache-list-conflicting-integrities': ({url}) => {

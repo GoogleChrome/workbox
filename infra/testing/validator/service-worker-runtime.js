@@ -109,7 +109,7 @@ function setupSpiesAndContextForGenerateSW() {
     importScripts,
     CacheFirst: sinon.stub().returns({name: 'CacheFirst'}),
     clientsClaim: sinon.spy(),
-    createHandlerForURL: sinon.stub().returns('/urlWithCacheKey'),
+    createHandlerBoundToURL: sinon.stub().returns('/urlWithCacheKey'),
     enable: sinon.spy(),
     initialize: sinon.spy(),
     NavigationRoute: sinon.stub().returns({name: 'NavigationRoute'}),
