@@ -32,3 +32,5 @@ export {
   setCacheNameDetails,
   skipWaiting,
 };
+
+export * from './types.js';
