@@ -267,4 +267,8 @@ export const messages : MessageMap = {
       `'workbox-precaching.PrecacheController.addToCacheList()' had the URL ` +
       `${url} with different integrity values. Please remove one of them.`;
   },
+
+  'missing-precache-entry': ({cacheName, url}) => {
+    return `Unable to find a precached response in ${cacheName} for ${url}.`;
+  },
 };

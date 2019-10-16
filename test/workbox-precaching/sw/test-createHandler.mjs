@@ -20,6 +20,18 @@ describe(`createHandler()`, function() {
     sandbox.restore();
   });
 
+  it(`should throw the expected error when there's a cache miss and fallbackToNetwork is false`, async function() {
+    precache([]);
+    const handler = createHandler(false);
+
+    return expectError(async () => {
+      await handler({request: new Request('/cache-miss')});
+    }, 'missing-precache-entry', (error) => {
+      expect(error.details.url).to.eql(`${location.origin}/cache-miss`);
+      expect(error.details.cacheName).to.eql(`workbox-precache-v2-${location.origin}/test/workbox-precaching/sw/`);
+    });
+  });
+
   it(`should return the expected handlerCallback for precached URLs`, async function() {
     // Simulate the following: first two handlerCallbacks have cache.match()
     // calls that return a hit. Third, and subsequent handlerCallback has a

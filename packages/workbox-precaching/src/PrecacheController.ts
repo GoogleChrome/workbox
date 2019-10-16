@@ -359,8 +359,10 @@ class PrecacheController {
 
         // This shouldn't normally happen, but there are edge cases:
         // https://github.com/GoogleChrome/workbox/issues/1441
-        throw new Error(`The cache ${this._cacheName} did not have an entry ` +
-            `for ${request.url}.`);
+        throw new WorkboxError('missing-precache-entry', {
+          cacheName: this._cacheName,
+          url: request.url,
+        });
       } catch (error) {
         if (fallbackToNetwork) {
           if (process.env.NODE_ENV !== 'production') {
