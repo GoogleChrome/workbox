@@ -370,7 +370,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        createHandlerForURL: [[navigateFallback]],
+        createHandlerBoundToURL: [[navigateFallback]],
         importScripts: [],
         precacheAndRoute: [[[{
           url: 'index.html',

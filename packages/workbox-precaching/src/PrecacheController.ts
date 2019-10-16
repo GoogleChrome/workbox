@@ -1,5 +1,5 @@
 /*
-  Copyright 2018 Google LLC
+  Copyright 2019 Google LLC
 
   Use of this source code is governed by an MIT-style
   license that can be found in the LICENSE file or at
@@ -13,7 +13,8 @@ import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.js';
 import {logger} from 'workbox-core/_private/logger.js';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
 import {copyResponse} from 'workbox-core/copyResponse.js';
-import {RouteHandlerCallback} from 'workbox-core/types.js';
+import {RouteHandlerCallback, RouteHandlerCallbackOptions}
+    from 'workbox-core/types.js';
 import {WorkboxPlugin} from 'workbox-core/types.js';
 
 import {PrecacheEntry} from './_types.js';
@@ -310,58 +311,96 @@ class PrecacheController {
   }
 
   /**
-   * Returns a function that looks up `url` in the precache (taking into
-   * account revision information), and returns the corresponding `Response`.
+   * This acts as a drop-in replacement for [`cache.match()`](https://developer.mozilla.org/en-US/docs/Web/API/Cache/match)
+   * with the following differences:
+   * 
+   * - It knows what the name of the precache is, and only checks in that cache.
+   * - It allows you to pass in an "original" URL without versioning parameters,
+   * and it will automatically look up the correct cache key for the currently
+   * active revision of that URL.
+   * 
+   * E.g., `matchPrecache('index.html')` will find the correct precached
+   * response for the currently active service worker, even if the actual cache
+   * key is `'/index.html?__WB_REVISION__=1234abcd'`.
    *
-   * If for an unexpected reason there is a cache miss when looking up `url`,
-   * this will fall back to retrieving the `Response` via `fetch()`.
+   * @param {string|Request} request The key (without revisioning parameters)
+   * to look up in the precache.
+   * @return {Promise<Response|undefined>}
+   */
+  async matchPrecache(request: string|Request): Promise<Response|undefined> {
+    const url = request instanceof Request ? request.url : request;
+    const cacheKey = this.getCacheKeyForURL(url);
+    if (cacheKey) {
+      const cache = await caches.open(this._cacheName);
+      return cache.match(cacheKey);
+    }
+    return undefined;
+  }
+
+  /**
+   * Returns a function that can be used within a {@link workbox.routing.Route}
+   * that will find a response for the incoming request against the precache.
    *
-   * @param {string} url The precached URL which will be used to lookup the
-   * `Response`.
+   * If for an unexpected reason there is a cache miss for the request,
+   * this will fall back to retrieving the `Response` via `fetch()` when
+   * `fallbackToNetwork` is `true`.
+   *
+   * @param {boolean} [fallbackToNetwork=true] Whether to attempt to get the
+   * response from the network if there's a precache miss.
    * @return {workbox.routing.Route~handlerCallback}
    */
-  createHandlerForURL(url: string): RouteHandlerCallback {
-    if (process.env.NODE_ENV !== 'production') {
-      assert!.isType(url, 'string', {
-        moduleName: 'workbox-precaching',
-        funcName: 'createHandlerForURL',
-        paramName: 'url',
-      });
-    }
-
-    const cacheKey = this.getCacheKeyForURL(url);
-    if (!cacheKey) {
-      throw new WorkboxError('non-precached-url', {url});
-    }
-
-    return async () => {
+  createHandler(fallbackToNetwork = true): RouteHandlerCallback {
+    return async ({request}: RouteHandlerCallbackOptions) => {
       try {
-        const cache = await caches.open(this._cacheName);
-        const response = await cache.match(cacheKey);
-
+        const response = await this.matchPrecache(request);
         if (response) {
           return response;
         }
 
         // This shouldn't normally happen, but there are edge cases:
         // https://github.com/GoogleChrome/workbox/issues/1441
-        throw new Error(`The cache ${this._cacheName} did not have an entry ` +
-            `for ${cacheKey}.`);
+        throw new WorkboxError('missing-precache-entry', {
+          cacheName: this._cacheName,
+          url: request.url,
+        });
       } catch (error) {
-        // If there's either a cache miss, or the caches.match() call threw
-        // an exception, then attempt to fulfill the navigation request with
-        // a response from the network rather than leaving the user with a
-        // failed navigation.
-        if (process.env.NODE_ENV !== 'production') {
-          logger.debug(`Unable to respond to navigation request with ` +
-              `cached response. Falling back to network.`, error);
+        if (fallbackToNetwork) {
+          if (process.env.NODE_ENV !== 'production') {
+            logger.debug(`Unable to respond with precached response. ` +
+                `Falling back to network.`, error);
+          }
+          return fetch(request);
         }
 
-        // This might still fail if the browser is offline...
-        return fetch(cacheKey);
+        throw error;
       }
     };
-  };
+  }
+
+  /**
+   * Returns a function that looks up `url` in the precache (taking into
+   * account revision information), and returns the corresponding `Response`.
+   *
+   * If for an unexpected reason there is a cache miss when looking up `url`,
+   * this will fall back to retrieving the `Response` via `fetch()` when
+   * `fallbackToNetwork` is `true`.
+   *
+   * @param {string} url The precached URL which will be used to lookup the
+   * `Response`.
+   * @param {boolean} [fallbackToNetwork=true] Whether to attempt to get the
+   * response from the network if there's a precache miss.
+   * @return {workbox.routing.Route~handlerCallback}
+   */
+  createHandlerBoundToURL(url: string, fallbackToNetwork = true): RouteHandlerCallback {
+    const cacheKey = this.getCacheKeyForURL(url);
+    if (!cacheKey) {
+      throw new WorkboxError('non-precached-url', {url});
+    }
+
+    const handler = this.createHandler(fallbackToNetwork);
+    const request = new Request(url);
+    return () => handler({request});
+  }
 }
 
 export {PrecacheController};

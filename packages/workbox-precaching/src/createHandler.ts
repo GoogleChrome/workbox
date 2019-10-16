@@ -12,20 +12,20 @@ import './_version.js';
 
 /**
  * Helper function that calls
- * {@link PrecacheController#createHandlerForURL} on the default
+ * {@link PrecacheController#createHandler} on the default
  * {@link PrecacheController} instance.
  * 
  * If you are creating your own {@link PrecacheController}, then call the
- * {@link PrecacheController#createHandlerForURL} on that instance,
+ * {@link PrecacheController#createHandler} on that instance,
  * instead of using this function.
  *
- * @param {string} url The precached URL which will be used to lookup the
- * `Response`.
+ * @param {boolean} [fallbackToNetwork=true] Whether to attempt to get the
+ * response from the network if there's a precache miss.
  * @return {workbox.routing.Route~handlerCallback}
  *
- * @alias workbox.precaching.createHandlerForURL
+ * @alias workbox.precaching.createHandler
  */
-export const createHandlerForURL = (url: string) => {
+export const createHandler = (fallbackToNetwork = true) => {
   const precacheController = getOrCreatePrecacheController();
-  return precacheController.createHandlerForURL(url);
+  return precacheController.createHandler(fallbackToNetwork);
 };
