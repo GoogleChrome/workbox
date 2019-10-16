@@ -1,6 +1,6 @@
 {
   "name": "workbox-cli",
-  "version": "5.0.0-beta.1",
+  "version": "5.0.0-rc.0",
   "description": "workbox-cli is the command line interface for Workbox.",
   "keywords": [
     "workbox",
@@ -41,7 +41,7 @@
     "pretty-bytes": "^5.2.0",
     "upath": "^1.1.2",
     "update-notifier": "^3.0.1",
-    "workbox-build": "^5.0.0-beta.1"
+    "workbox-build": "^5.0.0-rc.0"
   },
   "workbox": {
     "packageType": "node"

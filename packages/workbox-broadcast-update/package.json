@@ -1,6 +1,6 @@
 {
   "name": "workbox-broadcast-update",
-  "version": "5.0.0-beta.1",
+  "version": "5.0.0-rc.0",
   "license": "MIT",
   "author": "Google's Web DevRel Team",
   "description": "A service worker helper library that uses the Broadcast Channel API to announce when a cached response has updated",
@@ -27,6 +27,6 @@
   "module": "index.mjs",
   "types": "index.d.ts",
   "dependencies": {
-    "workbox-core": "^5.0.0-beta.1"
+    "workbox-core": "^5.0.0-rc.0"
   }
 }
