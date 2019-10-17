@@ -9,7 +9,7 @@
 import '../_version.js';
 
 
-declare var registration : ServiceWorkerRegistration;
+declare var registration : ServiceWorkerRegistration|undefined;
 
 export interface CacheNameDetails {
   googleAnalytics: string; 
@@ -32,7 +32,7 @@ const _cacheNameDetails: CacheNameDetails = {
   precache: 'precache-v2',
   prefix: 'workbox',
   runtime: 'runtime',
-  suffix: registration.scope,
+  suffix: typeof registration !== 'undefined' ? registration!.scope : '',
 };
 
 const _createCacheName = (cacheName: string): string => {
