@@ -100,21 +100,23 @@ class PrecacheController {
       this._urlsToCacheKeys.set(url, cacheKey);
       this._urlsToCacheModes.set(url, cacheMode);
 
-      const warningMessage = `Workbox is precaching URLs without revision ` +
-        `info: ${urlsToWarnAbout.join(', ')}\nOnce precached, the responses ` +
-        `will never be updated.\nThis is only safe for URLs which ` +
-        `contain versioning info (e.g. /v1.0/app.js or /app.1234.js, not ` +
-        `/index.html).\nIf your URLs do contain revision info, pass in ` +
-        `a object with a 'url' property and a 'revision' property set to ` +
-        `null (e.g. {url: '/v1.0/index.js', revision: null}).\nIn a future ` +
-        `release, using revision: null will be required.\nLearn more at ` +
-        `https://bit.ly/wb-precache`;
-      if (process.env.NODE_ENV === 'production') {
-        // Use console directly to display this warning without bloating bundle
-        // sizes by pulling in all of the logger codebase in production.
-        console.warn(warningMessage);
-      } else {
-        logger.warn(warningMessage);
+      if (urlsToWarnAbout.length > 0) {
+        const warningMessage = `Workbox is precaching URLs without revision ` +
+          `info: ${urlsToWarnAbout.join(', ')}\nOnce precached, they ` +
+          `will never be updated.\nThis is only safe for URLs which ` +
+          `contain versioning info (e.g. /v1.0/app.js or /app.1234.js, not ` +
+          `/index.html).\nIf your URLs do contain revision info, pass in ` +
+          `a object with a 'url' property and a 'revision' property set to ` +
+          `null (e.g. {url: '/v1.0/index.js', revision: null}).\nIn a future ` +
+          `release, using revision: null will be required.\nLearn more at ` +
+          `https://bit.ly/wb-precache`;
+        if (process.env.NODE_ENV === 'production') {
+          // Use console directly to display this warning without bloating
+          // bundle sizes by pulling in all of the logger codebase in prod.
+          console.warn(warningMessage);
+        } else {
+          logger.warn(warningMessage);
+        }
       }
     }
   }
