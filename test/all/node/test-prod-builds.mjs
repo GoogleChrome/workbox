@@ -25,7 +25,9 @@ describe(`[all] prod builds`, function() {
     const invalidFiles = [];
     buildFiles.forEach((filePath) => {
       const fileContents = fs.readFileSync(filePath).toString();
-      if (fileContents.indexOf(`console`) > -1 ||
+      if ((fileContents.indexOf(`console`) > -1 &&
+           // See https://github.com/GoogleChrome/workbox/issues/2259
+           !filePath.includes('workbox-precaching')) ||
           fileContents.indexOf(`%cworkbox`) > -1) {
         invalidFiles.push(filePath);
       }
