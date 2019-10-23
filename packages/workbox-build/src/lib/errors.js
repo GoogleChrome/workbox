@@ -112,7 +112,7 @@ module.exports = {
     object with a 'url' property, and a 'revision' property set to null
     (e.g. {url: 'https://example.com/v1.0/index.js', revision: null}). In a
     future release, using revision: null will be required. Learn
-    more at http://bit.ly/wb-precache`,
+    more at https://bit.ly/wb-precache`,
   'no-manifest-entries-or-runtime-caching': ol`Couldn't find configuration for
     either precaching or runtime caching. Please ensure that the various glob
     options are set to match one or more files, and/or configure the
