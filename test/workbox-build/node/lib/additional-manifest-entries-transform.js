@@ -15,34 +15,35 @@ describe(`[workbox-build] lib/additional-manifest-entries-transform.js`, functio
   function getManifest() {
     return [{
       url: '/first',
+      revision: null,
     }];
   }
 
   it(`should not make any changes when additionalManifestEntries is empty`, function() {
     const transform = additionalManifestEntriesTransform([]);
     expect(transform(getManifest())).to.eql({
-      manifest: [{url: '/first'}],
+      manifest: [{url: '/first', revision: null}],
       warnings: [],
     });
   });
 
   it(`should add the additionalManifestEntries to the end of the existing manifest`, function() {
     const transform = additionalManifestEntriesTransform([
-      {url: '/second'},
-      {url: '/third'},
+      {url: '/second', revision: null},
+      {url: '/third', revision: null},
     ]);
 
     expect(transform(getManifest())).to.eql({
       manifest: [
-        {url: '/first'},
-        {url: '/second'},
-        {url: '/third'},
+        {url: '/first', revision: null},
+        {url: '/second', revision: null},
+        {url: '/third', revision: null},
       ],
       warnings: [],
     });
   });
 
-  it(`should return a warning, along with the modified manifest, when additionalManifestEntries contains a string`, function() {
+  it(`should return a warning, along with the modified manifest, when additionalManifestEntries contains a string or an entry without revision`, function() {
     const transform = additionalManifestEntriesTransform([
       '/second',
       {url: '/third'},
@@ -50,11 +51,11 @@ describe(`[workbox-build] lib/additional-manifest-entries-transform.js`, functio
 
     expect(transform(getManifest())).to.eql({
       manifest: [
-        {url: '/first'},
+        {url: '/first', revision: null},
         '/second',
         {url: '/third'},
       ],
-      warnings: [errors['string-entry-warning'] + '\n  - /second\n'],
+      warnings: [errors['string-entry-warning'] + '\n  - /second\n  - /third\n'],
     });
   });
 });
