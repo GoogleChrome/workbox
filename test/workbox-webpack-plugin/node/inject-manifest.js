@@ -1447,7 +1447,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
   });
 
   describe(`[workbox-webpack-plugin] Manifest injection in development mode`, function() {
-    it(`•should produce valid, parsable JavaScript`, function(done) {
+    it(`should produce valid, parsable JavaScript`, function(done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'development',
