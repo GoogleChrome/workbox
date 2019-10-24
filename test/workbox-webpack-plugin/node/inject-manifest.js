@@ -1445,4 +1445,52 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       });
     });
   });
+
+  describe(`[workbox-webpack-plugin] Manifest injection in development mode`, function() {
+    it(`should produce valid, parsable JavaScript`, function(done) {
+      const outputDir = tempy.directory();
+      const config = {
+        mode: 'development',
+        entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        output: {
+          filename: '[name].[hash:6].js',
+          path: outputDir,
+        },
+        plugins: [
+          new InjectManifest({
+            exclude: [/sw\d.js/],
+            swDest: 'sw.js',
+            swSrc: upath.join(__dirname, '..', 'static', 'sw-src.js'),
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError, stats) => {
+        const swFile = upath.join(outputDir, 'sw.js');
+
+        try {
+          webpackBuildCheck(webpackError, stats);
+
+          const files = await globby(outputDir);
+          expect(files).to.have.length(2);
+
+          await validateServiceWorkerRuntime({
+            swFile: swFile,
+            entryPoint: 'injectManifest',
+            expectedMethodCalls: {
+              precacheAndRoute: [[[{
+                revision: 'a2baa2e58fe291932f000f0217579e97',
+                url: 'main.43096b.js',
+              }], {}]],
+            },
+          });
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+  });
 });

@@ -173,7 +173,8 @@ class InjectManifest {
     const manifestEntries = await getManifestEntriesFromCompilation(
         compilation, config);
 
-    const manifestString = stringify(manifestEntries);
+    // See https://github.com/GoogleChrome/workbox/issues/2263
+    const manifestString = stringify(manifestEntries).replace(/"/g, `'`);
 
     const sourcemapAssetName = getSourcemapAssetName(
         compilation, initialSWAssetString, config.swDest);
