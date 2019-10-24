@@ -106,13 +106,8 @@ module.exports = {
     manifestTransform should be an object with 'manifest' and optionally
     'warnings' properties.`,
   'string-entry-warning': ol`Some items were passed to additionalManifestEntries
-    without revisioning info. Please ensure these URLs contain versioning info
-    (e.g. 'https://example.com/v1.0/index.js'), as Workbox will not update them
-    after they are initially precached. To disable this warning, pass in an
-    object with a 'url' property, and a 'revision' property set to null
-    (e.g. {url: 'https://example.com/v1.0/index.js', revision: null}). In a
-    future release, using revision: null will be required. Learn
-    more at https://bit.ly/wb-precache`,
+    without revisioning info. This is generally NOT safe. Learn more at
+    https://bit.ly/wb-precache.`,
   'no-manifest-entries-or-runtime-caching': ol`Couldn't find configuration for
     either precaching or runtime caching. Please ensure that the various glob
     options are set to match one or more files, and/or configure the
