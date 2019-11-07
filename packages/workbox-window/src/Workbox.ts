@@ -104,7 +104,7 @@ class Workbox extends WorkboxEventTarget {
     }
 
     if (!immediate && document.readyState !== 'complete') {
-      await new Promise((res) => addEventListener('load', res));
+      await new Promise((res) => window.addEventListener('load', res));
     }
 
     // Set this flag to true if any service worker was controlling the page

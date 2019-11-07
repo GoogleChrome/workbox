@@ -20,7 +20,7 @@ import './_version.js';
  */
 export const cleanupOutdatedCaches = () => {
   // See https://github.com/Microsoft/TypeScript/issues/28357#issuecomment-436484705
-  addEventListener('activate', ((event: ExtendableEvent) => {
+  self.addEventListener('activate', ((event: ExtendableEvent) => {
     const cacheName = cacheNames.getPrecacheName();
 
     event.waitUntil(deleteOutdatedCaches(cacheName).then((cachesDeleted) => {

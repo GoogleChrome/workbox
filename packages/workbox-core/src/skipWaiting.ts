@@ -21,5 +21,5 @@ declare var self: ServiceWorkerGlobalScope;
 export const skipWaiting = () => {
   // We need to explicitly call `self.skipWaiting()` here because we're
   // shadowing `skipWaiting` with this local function.
-  addEventListener('install', () => self.skipWaiting());
+  self.addEventListener('install', () => self.skipWaiting());
 };
