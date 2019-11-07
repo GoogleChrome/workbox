@@ -98,7 +98,7 @@ const putWrapper = async ({
     return;
   }
 
-  const cache = await caches.open(cacheName);
+  const cache = await self.caches.open(cacheName);
 
   const updatePlugins = pluginUtils.filter(
       plugins, pluginEvents.CACHE_DID_UPDATE);
@@ -155,7 +155,7 @@ const matchWrapper = async ({
   matchOptions,
   plugins = [],
 } : MatchWrapperOptions) : Promise<Response|undefined> => {
-  const cache = await caches.open(cacheName);
+  const cache = await self.caches.open(cacheName);
 
   const effectiveRequest = await _getEffectiveRequest({
     plugins, request, mode: 'read'});

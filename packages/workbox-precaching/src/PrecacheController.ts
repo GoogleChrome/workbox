@@ -143,7 +143,7 @@ class PrecacheController {
     const toBePrecached: {cacheKey: string, url: string}[] = [];
     const alreadyPrecached: string[] = [];
 
-    const cache = await caches.open(this._cacheName);
+    const cache = await self.caches.open(this._cacheName);
     const alreadyCachedRequests = await cache.keys();
     const existingCacheKeys = new Set(alreadyCachedRequests.map(
         (request) => request.url));
@@ -189,7 +189,7 @@ class PrecacheController {
    * @return {Promise<workbox.precaching.CleanupResult>}
    */
   async activate() {
-    const cache = await caches.open(this._cacheName);
+    const cache = await self.caches.open(this._cacheName);
     const currentlyCachedRequests = await cache.keys();
     const expectedCacheKeys = new Set(this._urlsToCacheKeys.values());
 
@@ -352,7 +352,7 @@ class PrecacheController {
     const url = request instanceof Request ? request.url : request;
     const cacheKey = this.getCacheKeyForURL(url);
     if (cacheKey) {
-      const cache = await caches.open(this._cacheName);
+      const cache = await self.caches.open(this._cacheName);
       return cache.match(cacheKey);
     }
     return undefined;

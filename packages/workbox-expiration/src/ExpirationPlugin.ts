@@ -279,7 +279,7 @@ class ExpirationPlugin implements WorkboxPlugin {
     // Do this one at a time instead of all at once via `Promise.all()` to
     // reduce the chance of inconsistency if a promise rejects.
     for (const [cacheName, cacheExpiration] of this._cacheExpirations) {
-      await caches.delete(cacheName);
+      await self.caches.delete(cacheName);
       await cacheExpiration.delete();
     }
 

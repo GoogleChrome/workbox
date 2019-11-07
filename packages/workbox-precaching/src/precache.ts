@@ -69,7 +69,7 @@ export const precache = (entries: Array<PrecacheEntry|string>) => {
     // method is called multiple times) because event listeners are implemented
     // as a set, where each listener must be unique.
     // See https://github.com/Microsoft/TypeScript/issues/28357#issuecomment-436484705
-    addEventListener('install', installListener as EventListener);
-    addEventListener('activate', activateListener as EventListener);
+    self.addEventListener('install', installListener as EventListener);
+    self.addEventListener('activate', activateListener as EventListener);
   }
 };
