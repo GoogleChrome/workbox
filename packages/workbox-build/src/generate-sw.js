@@ -15,6 +15,7 @@ const validate = require('./lib/validate-options');
 const writeServiceWorkerUsingDefaultTemplate =
   require('./lib/write-sw-using-default-template');
 
+// eslint-disable-next-line valid-jsdoc, jsdoc/newline-after-description
 /**
  * This method creates a list of URLs to precache, referred to as a "precache
  * manifest", based on the options you provide.
@@ -146,7 +147,7 @@ const writeServiceWorkerUsingDefaultTemplate =
  * [`options` parameter](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.broadcastUpdate.BroadcastCacheUpdate)
  * to use when creating the `BroadcastCacheUpdatePlugin`.
  * @param {Object} [config.runtimeCaching[].options.cacheableResponse]
- * @param {Array<Number>} [config.runtimeCaching[].options.cacheableResponse.statuses]
+ * @param {Array<number>} [config.runtimeCaching[].options.cacheableResponse.statuses]
  * The [`status` parameter](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.cacheableResponse.CacheableResponse)
  * to use when creating the `CacheableResponsePlugin`.
  * @param {Object} [config.runtimeCaching[].options.cacheableResponse.headers]
@@ -155,12 +156,57 @@ const writeServiceWorkerUsingDefaultTemplate =
  * @param {string} [config.runtimeCaching[].options.cacheName] The `cacheName`
  * to use when constructing one of the [Workbox strategy classes](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.strategies).
  * @param {Object} [config.runtimeCaching[].options.expiration]
- * @param {Number} [config.runtimeCaching[].options.expiration.maxAgeSeconds]
+ * @param {number} [config.runtimeCaching[].options.expiration.maxAgeSeconds]
  * The [`maxAgeSeconds` parameter](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.expiration.CacheExpiration)
  * to use when creating the `CacheExpirationPlugin`.
- * @param {Number} [config.runtimeCaching[].options.expiration.maxEntries]
+ * @param {number} [config.runtimeCaching[].options.expiration.maxEntries]
  * The [`maxAgeSeconds` parameter](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.expiration.CacheExpiration)
  * to use when creating the `CacheExpirationPlugin`.
+ * @param {number} [config.runtimeCaching[].options.networkTimeoutSeconds]
+ * The `networkTimeoutSeconds` parameter value to use when creating a
+ * `NetworkFirst` handler.
+ * @param {Array<Object>} [config.runtimeCaching[].options.plugins]
+ * One or more [additional plugins](https://developers.google.com/web/tools/workbox/guides/using-plugins#custom_plugins)
+ * to apply to the handler. Useful when you want a plugin that doesn't have a
+ * "shortcut" configuration, like `expiration` or `cacheableResponse`.
+ * @param {Object} [config.runtimeCaching[].options.fetchOptions]
+ * The `fetchOptions` parameter value to use when creating the handler.
+ * @param {Object} [config.runtimeCaching[].options.matchOptions]
+ * The `matchOptions` parameter value to use when creating the handler.
+ * @param {boolean} [config.skipWaiting=false] Whether to add an
+ * unconditional call to [`skipWaiting()`](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.core#.skipWaiting)
+ * to the generated service worker. If `false`, then a `message` listener will
+ * be added instead, all you to conditionally call `skipWaiting()`.
+ * @param {boolean} [config.sourcemap=true] Whether to create a sourcemap
+ * for the generated service worker files.
+ * @param {string} config.globDirectory The local directory you wish to match
+ * `globPatterns` against. The path is relative to the current directory.
+ * @param {boolean} [config.globFollow=true] Determines whether or not symlinks
+ * are followed when generating the precache manifest. For more information, see
+ * the definition of `follow` in the `glob`
+ * [documentation](https://github.com/isaacs/node-glob#options).
+ * @param {Array<string>} [config.globIgnores=['node_modules/**']]
+ * A set of patterns matching files to always exclude when generating the
+ * precache manifest. For more information, see the definition of `ignore` in the `glob`
+ * [documentation](https://github.com/isaacs/node-glob#options).
+ * @param {Array<string>} [config.globPatterns=['**.{js,css,html}']]
+ * Files matching any of these patterns will be included in the precache
+ * manifest. For more information, see the
+ * [`glob` primer](https://github.com/isaacs/node-glob#glob-primer).
+ * @param {boolean} [config.globStrict=true] If true, an error reading a directory when
+ * generating a precache manifest will cause the build to fail. If false, the
+ * problematic directory will be skipped. For more information, see the
+ * definition of `strict` in the `glob`
+ * [documentation](https://github.com/isaacs/node-glob#options).
+ *
+ *
+ * @param {Object} [config.templatedURLs] If a URL is rendered based on some
+ * server-side logic, its contents may depend on multiple files or on some other
+ * unique string value. The keys in this object are server-rendered URLs. If the
+ * values are an array of strings, they will be interpreted as `glob` patterns,
+ * and the contents of any files matching the patterns will be used to uniquely
+ * version the URL. If used with a single string, it will be interpreted as
+ * unique versioning information that you've generated for a given URL.
  * @return {Promise<{count: number, filePaths: Array<string>, size: number, warnings: Array<string>}>}
  * A promise that resolves once the service worker and related files
  * (indicated by `filePaths`) has been written to `swDest`. The `size` property
