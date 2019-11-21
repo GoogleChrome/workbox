@@ -26,6 +26,8 @@ describe(`logger`, function() {
         }
       });
     }
+
+    self.__WB_DISABLE_DEV_LOGS = false;
   });
 
   after(function() {
@@ -57,6 +59,20 @@ describe(`logger`, function() {
     if (process.env.NODE_ENV !== 'production') this.skip();
 
     expect(logger).to.equal(null);
+  });
+
+  it(`should toggle logging based on the value of __WB_DISABLE_DEV_LOGS`, function() {
+    if (process.env.NODE_ENV === 'production') this.skip();
+
+    const logStub = sandbox.stub(console, 'log');
+
+    self.__WB_DISABLE_DEV_LOGS = true;
+    logger.log('');
+    expect(logStub.callCount).to.eql(0);
+
+    self.__WB_DISABLE_DEV_LOGS = false;
+    logger.log('');
+    expect(logStub.callCount).to.eql(1);
   });
 
   consoleLevels.forEach((consoleLevel) => {

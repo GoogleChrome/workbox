@@ -135,7 +135,7 @@ function setupSpiesAndContextForGenerateSW() {
   return {addEventListener, context, methodsToSpies: workboxContext};
 }
 
-function validateMethodCalls({methodsToSpies, expectedMethodCalls}) {
+function validateMethodCalls({methodsToSpies, expectedMethodCalls, context}) {
   for (const [method, spy] of Object.entries(methodsToSpies)) {
     if (spy.called) {
       // Special-case handling for importScripts(), as the first call may be
@@ -156,6 +156,13 @@ function validateMethodCalls({methodsToSpies, expectedMethodCalls}) {
       expect(expectedMethodCalls[method],
           `while testing method calls for ${method}`).to.be.undefined;
     }
+  }
+
+  // Special validation for __WB_DISABLE_DEV_LOGS, which is a boolean
+  // assignment, so we can't stub it out.
+  if ('__WB_DISABLE_DEV_LOGS' in expectedMethodCalls) {
+    expect(context.self.__WB_DISABLE_DEV_LOGS).to.eql(
+        expectedMethodCalls.__WB_DISABLE_DEV_LOGS, `__WB_DISABLE_DEV_LOGS`);
   }
 }
 
@@ -194,7 +201,7 @@ module.exports = async ({
 
   vm.runInNewContext(swString, context);
 
-  validateMethodCalls({methodsToSpies, expectedMethodCalls});
+  validateMethodCalls({methodsToSpies, expectedMethodCalls, context});
 
   // Optionally check the usage of addEventListener().
   if (addEventListenerValidation) {

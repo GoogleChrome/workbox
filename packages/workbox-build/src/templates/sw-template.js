@@ -55,4 +55,6 @@ self.addEventListener('message', (event) => {
 
 <% if (runtimeCaching) { runtimeCaching.forEach(runtimeCachingString => {%><%= runtimeCachingString %><% });} %>
 
-<% if (offlineAnalyticsConfigString) { %><%= use('workbox-google-analytics', 'initialize') %>(<%= offlineAnalyticsConfigString %>);<% } %>`;
+<% if (offlineAnalyticsConfigString) { %><%= use('workbox-google-analytics', 'initialize') %>(<%= offlineAnalyticsConfigString %>);<% } %>
+
+<% if (disableDevLogs) { %>self.__WB_DISABLE_DEV_LOGS = true;<% } %>`;
