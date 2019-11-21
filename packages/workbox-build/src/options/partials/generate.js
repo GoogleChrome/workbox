@@ -18,6 +18,7 @@ module.exports = {
   cleanupOutdatedCaches: joi.boolean().default(defaults.cleanupOutdatedCaches),
   clientsClaim: joi.boolean().default(defaults.clientsClaim),
   directoryIndex: joi.string(),
+  disableDebugLogs: joi.boolean().default(defaults.disableDebugLogs),
   ignoreURLParametersMatching: joi.array().items(regExpObject),
   importScripts: joi.array().items(joi.string()),
   inlineWorkboxRuntime: joi.boolean().default(defaults.inlineWorkboxRuntime),
