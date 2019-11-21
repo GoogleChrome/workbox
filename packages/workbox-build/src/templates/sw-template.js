@@ -57,4 +57,4 @@ self.addEventListener('message', (event) => {
 
 <% if (offlineAnalyticsConfigString) { %><%= use('workbox-google-analytics', 'initialize') %>(<%= offlineAnalyticsConfigString %>);<% } %>
 
-<% if (disableDebugLogs) { %>self.__WB_DISABLE_DEBUG_LOGS = true;<% } %>`;
+<% if (disableDevLogs) { %>self.__WB_DISABLE_DEV_LOGS = true;<% } %>`;

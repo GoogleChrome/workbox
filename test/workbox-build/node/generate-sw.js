@@ -33,7 +33,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
     'cacheId',
     'clientsClaim',
     'directoryIndex',
-    'disableDebugLogs',
+    'disableDevLogs',
     'dontCacheBustURLsMatching',
     'globDirectory',
     'globFollow',
@@ -139,7 +139,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        __WB_DISABLE_DEBUG_LOGS: undefined,
+        __WB_DISABLE_DEV_LOGS: undefined,
         importScripts: [],
         precacheAndRoute: [[[{
           url: 'index.html',
@@ -163,11 +163,11 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       }});
     });
 
-    it(`should disable logging when disableDebugLogs is set to true`, async function() {
+    it(`should disable logging when disableDevLogs is set to true`, async function() {
       const outputDir = tempy.directory();
       const swDest = upath.join(outputDir, 'sw.js');
       const options = Object.assign({}, BASE_OPTIONS, {
-        disableDebugLogs: true,
+        disableDevLogs: true,
         swDest,
       });
 
@@ -179,7 +179,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        __WB_DISABLE_DEBUG_LOGS: true,
+        __WB_DISABLE_DEV_LOGS: true,
         importScripts: [],
         precacheAndRoute: [[[{
           url: 'index.html',

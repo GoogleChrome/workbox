@@ -72,7 +72,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
       cacheId: undefined,
       cleanupOutdatedCaches: undefined,
       clientsClaim: undefined,
-      disableDebugLogs: undefined,
+      disableDevLogs: undefined,
       importScripts: undefined,
       navigateFallback: undefined,
       navigateFallbackBlacklist: undefined,
@@ -90,7 +90,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     const cleanupOutdatedCaches = true;
     const clientsClaim = true;
     const directoryIndex = 'index.html';
-    const disableDebugLogs = true;
+    const disableDevLogs = true;
     const handleFetch = true;
     const ignoreURLParametersMatching = [/a/, /b/];
     const importScripts = ['test.js'];
@@ -124,7 +124,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
       cleanupOutdatedCaches,
       clientsClaim,
       directoryIndex,
-      disableDebugLogs,
+      disableDevLogs,
       handleFetch,
       ignoreURLParametersMatching,
       importScripts,
@@ -148,7 +148,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
       cacheId,
       cleanupOutdatedCaches,
       clientsClaim,
-      disableDebugLogs,
+      disableDevLogs,
       importScripts,
       manifestEntries,
       navigateFallback,
@@ -199,7 +199,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
       cacheId: undefined,
       cleanupOutdatedCaches: undefined,
       clientsClaim: undefined,
-      disableDebugLogs: undefined,
+      disableDevLogs: undefined,
       importScripts: undefined,
       navigateFallback: undefined,
       navigateFallbackBlacklist: undefined,

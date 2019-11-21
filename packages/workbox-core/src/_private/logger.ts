@@ -9,14 +9,14 @@ import '../_version.js';
 
 declare global {
   interface WorkerGlobalScope {
-    __WB_DISABLE_DEBUG_LOGS: boolean;
+    __WB_DISABLE_DEV_LOGS: boolean;
   }
 }
 
 type LoggerMethods = 'debug'|'log'|'warn'|'error'|'groupCollapsed'|'groupEnd';
     
 const logger = <Console> (process.env.NODE_ENV === 'production' ? null : (() => {
-  self.__WB_DISABLE_DEBUG_LOGS = false;
+  self.__WB_DISABLE_DEV_LOGS = false;
 
   let inGroup = false;
 
@@ -30,7 +30,7 @@ const logger = <Console> (process.env.NODE_ENV === 'production' ? null : (() => 
   };
 
   const print = function(method: LoggerMethods, args: any[]) {
-    if (self.__WB_DISABLE_DEBUG_LOGS) {
+    if (self.__WB_DISABLE_DEV_LOGS) {
       return;
     }
 

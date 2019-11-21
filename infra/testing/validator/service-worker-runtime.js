@@ -158,11 +158,11 @@ function validateMethodCalls({methodsToSpies, expectedMethodCalls, context}) {
     }
   }
 
-  // Special validation for __WB_DISABLE_DEBUG_LOGS, which is a boolean
+  // Special validation for __WB_DISABLE_DEV_LOGS, which is a boolean
   // assignment, so we can't stub it out.
-  if ('__WB_DISABLE_DEBUG_LOGS' in expectedMethodCalls) {
-    expect(context.self.__WB_DISABLE_DEBUG_LOGS).to.eql(
-        expectedMethodCalls.__WB_DISABLE_DEBUG_LOGS, `__WB_DISABLE_DEBUG_LOGS`);
+  if ('__WB_DISABLE_DEV_LOGS' in expectedMethodCalls) {
+    expect(context.self.__WB_DISABLE_DEV_LOGS).to.eql(
+        expectedMethodCalls.__WB_DISABLE_DEV_LOGS, `__WB_DISABLE_DEV_LOGS`);
   }
 }
 
