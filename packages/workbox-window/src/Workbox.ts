@@ -642,7 +642,7 @@ class Workbox extends WorkboxEventTarget {
 
 /**
  * The `externalinstalled` event is dispatched if the state of an
- * [external service worker]{@link https://developers.google.com/web/tools/workbox/modules/workbox-precaching#def-external-sw}
+ * [external service worker]{@link https://developers.google.com/web/tools/workbox/modules/workbox-window#when_an_unexpected_version_of_the_service_worker_is_found}
  * changes to `installed`.
  *
  * @event module:workbox-window.Workbox#externalinstalled
@@ -656,7 +656,7 @@ class Workbox extends WorkboxEventTarget {
 
 /**
  * The `externalwaiting` event is dispatched if the state of an
- * [external service worker]{@link https://developers.google.com/web/tools/workbox/modules/workbox-precaching#def-external-sw}
+ * [external service worker]{@link https://developers.google.com/web/tools/workbox/modules/workbox-window#when_an_unexpected_version_of_the_service_worker_is_found}
  * changes to `waiting`.
  *
  * @event module:workbox-window.Workbox#externalwaiting
@@ -670,7 +670,7 @@ class Workbox extends WorkboxEventTarget {
 
 /**
  * The `externalactivated` event is dispatched if the state of an
- * [external service worker]{@link https://developers.google.com/web/tools/workbox/modules/workbox-precaching#def-external-sw}
+ * [external service worker]{@link https://developers.google.com/web/tools/workbox/modules/workbox-window#when_an_unexpected_version_of_the_service_worker_is_found}
  * changes to `activated`.
  *
  * @event module:workbox-window.Workbox#externalactivated
