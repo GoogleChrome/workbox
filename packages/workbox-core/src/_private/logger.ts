@@ -7,8 +7,13 @@
 
 import '../_version.js';
 
+// logger is used inside of both service workers and the window global scope.
 declare global {
   interface WorkerGlobalScope {
+    __WB_DISABLE_DEV_LOGS: boolean;
+  }
+
+  interface Window {
     __WB_DISABLE_DEV_LOGS: boolean;
   }
 }
