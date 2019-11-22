@@ -262,7 +262,7 @@ class PrecacheController {
       // Use a callback if provided. It returns a truthy value if valid.
       // NOTE: invoke the method on the plugin instance so the `this` context
       // is correct.
-      cacheWillUpdatePlugin.cacheWillUpdate!({event, request, response}) :
+      await cacheWillUpdatePlugin.cacheWillUpdate!({event, request, response}) :
       // Otherwise, default to considering any response status under 400 valid.
       // This includes, by default, considering opaque responses valid.
       response.status < 400;
