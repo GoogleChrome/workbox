@@ -19,7 +19,7 @@ gulp.task('lerna-bootstrap', () => {
 
   // If it's not a star, we can scope the build to a specific project.
   return lernaWrapper.bootstrap(
-      '--include-filtered-dependencies',
+      '--include-dependencies',
       '--scope', global.packageOrStar
   );
 });

@@ -13,7 +13,8 @@
     "local-jsdoc": "jsdoc",
     "local-lerna": "lerna",
     "local-tsc": "tsc",
-    "test": "nyc --clean false --silent mocha --timeout 60000"
+    "test": "nyc --clean false --silent mocha --timeout 60000",
+    "version": "git add -A packages"
   },
   "nyc": {
     "include": [
@@ -81,7 +82,7 @@
     "html-webpack-plugin": "^3.2.0",
     "jsdoc": "^3.5.5",
     "jsdoc-baseline": "git://github.com/hegemonic/baseline.git#c492ee17",
-    "lerna": "^3.4.0",
+    "lerna": "^3.19.0",
     "minimist": "^1.2.0",
     "mocha": "^5.2.0",
     "nunjucks": "^3.1.6",

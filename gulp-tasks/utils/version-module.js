@@ -19,7 +19,7 @@ const getDetails = (packagePath) => {
   return ['workbox', name, pkgJson.version].join(':');
 };
 
-module.exports = async (packagePath, buildType) => {
+module.exports = async (packagePath) => {
   const versionString =
       `try{self['${getDetails(packagePath)}']&&_()}catch(e){}`;
 
