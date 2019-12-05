@@ -199,6 +199,17 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
       });
     });
 
+    it(`should use absolute paths in the filePaths return value`, async function() {
+      // Deliberately use a relative path for swDest.
+      const swDest = upath.relative('.', tempy.file({extension: 'js'}));
+      const options = Object.assign({}, BASE_OPTIONS, {swDest});
+
+      const {filePaths, warnings} = await injectManifest(options);
+      expect(warnings).to.be.empty;
+      // Use upath.resolve() to confirm that we get back an absolute path.
+      expect(filePaths).to.have.members([upath.resolve(swDest)]);
+    });
+
     it(`should use defaults when all the required parameters are present, when workboxSW.precache() is called twice`, async function() {
       const swDest = tempy.file({extension: 'js'});
       const options = Object.assign({}, BASE_OPTIONS, {
