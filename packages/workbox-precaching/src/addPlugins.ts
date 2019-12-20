@@ -16,9 +16,9 @@ import './_version.js';
  *
  * @param {Array<Object>} newPlugins
  *
- * @alias workbox.precaching.addPlugins
+ * @memberof module:workbox-precaching
  */
-const addPlugins = (newPlugins: WorkboxPlugin[]) => {
+function addPlugins(newPlugins: WorkboxPlugin[]) {
   precachePlugins.add(newPlugins);
 };
 

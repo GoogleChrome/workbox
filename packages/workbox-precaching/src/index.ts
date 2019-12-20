@@ -35,7 +35,7 @@ if (process.env.NODE_ENV !== 'production') {
  * [PrecacheController]{@link workbox.precaching.PrecacheController}
  * to determine when performed.
  *
- * @namespace workbox.precaching
+ * @module workbox-precaching
  */
 
 export {

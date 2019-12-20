@@ -17,6 +17,7 @@ import {WorkboxEvent, WorkboxLifecycleEventMap} from './utils/WorkboxEvent.js';
 
 import './_version.js';
 
+
 // The time a SW must be in the waiting phase before we can conclude
 // `skipWaiting()` wasn't called. This 200 amount wasn't scientifically
 // chosen, but it seems to avoid false positives in my testing.
@@ -39,7 +40,6 @@ const REGISTRATION_TIMEOUT_DURATION = 60000;
  * @fires [externalinstalled]{@link module:workbox-window.Workbox#externalinstalled}
  * @fires [externalwaiting]{@link module:workbox-window.Workbox#externalwaiting}
  * @fires [externalactivated]{@link module:workbox-window.Workbox#externalactivated}
- *
  * @memberof module:workbox-window
  */
 class Workbox extends WorkboxEventTarget {
@@ -524,6 +524,8 @@ class Workbox extends WorkboxEventTarget {
   }
 }
 
+export {Workbox};
+
 // The jsdoc comments below outline the events this instance may dispatch:
 // -----------------------------------------------------------------------
 
@@ -681,5 +683,3 @@ class Workbox extends WorkboxEventTarget {
  * @property {string} type `externalactivated`.
  * @property {Workbox} target The `Workbox` instance.
  */
-
-export {Workbox};

@@ -27,5 +27,5 @@ module.exports = {
     configuration file.`,
   'sw-src-missing-injection-point': ol`That is not a valid source service worker
     file. Please try again with a file containing
-    'workbox.precaching.precacheAndRoute([])'.`,
+    'self.__WB_MANIFEST'.`,
 };

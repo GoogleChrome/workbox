@@ -17,7 +17,7 @@ import './_version.js';
  * there's a quota error.
  *
  * @param {Function} callback
- * @memberof workbox.core
+ * @memberof module:workbox-core
  */
 function registerQuotaErrorCallback(callback: Function) {
   if (process.env.NODE_ENV !== 'production') {

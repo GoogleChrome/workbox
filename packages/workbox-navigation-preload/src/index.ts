@@ -13,7 +13,7 @@ import './_version.js';
 
 
 /**
- * @namespace workbox.navigationPreload
+ * @module workbox-navigation-preload
  */
 
 export {

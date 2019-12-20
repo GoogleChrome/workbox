@@ -58,9 +58,9 @@ const activateListener = (event: ExtendableEvent) => {
  *
  * @param {Array<Object|string>} [entries=[]] Array of entries to precache.
  *
- * @alias workbox.precaching.precache
+ * @memberof module:workbox-precaching
  */
-export const precache = (entries: Array<PrecacheEntry|string>) => {
+function precache(entries: Array<PrecacheEntry|string>) {
   const precacheController = getOrCreatePrecacheController();
   precacheController.addToCacheList(entries);
 
@@ -73,3 +73,5 @@ export const precache = (entries: Array<PrecacheEntry|string>) => {
     self.addEventListener('activate', activateListener as EventListener);
   }
 };
+
+export {precache}

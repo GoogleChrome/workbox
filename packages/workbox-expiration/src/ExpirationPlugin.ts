@@ -35,7 +35,7 @@ import './_version.js';
  * When using `maxEntries`, the entry least-recently requested will be removed
  * from the cache first.
  *
- * @memberof workbox.expiration
+ * @memberof module:workbox-expiration
  */
 class ExpirationPlugin implements WorkboxPlugin {
   private _config: object;
@@ -117,7 +117,7 @@ class ExpirationPlugin implements WorkboxPlugin {
 
   /**
    * A "lifecycle" callback that will be triggered automatically by the
-   * `workbox.strategies` handlers when a `Response` is about to be returned
+   * `workbox-strategies` handlers when a `Response` is about to be returned
    * from a [Cache](https://developer.mozilla.org/en-US/docs/Web/API/Cache) to
    * the handler. It allows the `Response` to be inspected for freshness and
    * prevents it from being used if the `Response`'s `Date` header value is
@@ -226,7 +226,7 @@ class ExpirationPlugin implements WorkboxPlugin {
 
   /**
    * A "lifecycle" callback that will be triggered automatically by the
-   * `workbox.strategies` handlers when an entry is added to a cache.
+   * `workbox-strategies` handlers when an entry is added to a cache.
    *
    * @param {Object} options
    * @param {string} options.cacheName Name of the cache that was updated.

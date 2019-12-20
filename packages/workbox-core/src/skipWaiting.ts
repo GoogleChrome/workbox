@@ -16,10 +16,12 @@ declare var self: ServiceWorkerGlobalScope;
  * Force a service worker to become active, instead of waiting. This is
  * normally used in conjunction with `clientsClaim()`.
  *
- * @alias workbox.core.skipWaiting
+ * @memberof module:workbox-core
  */
-export const skipWaiting = () => {
+function skipWaiting() {
   // We need to explicitly call `self.skipWaiting()` here because we're
   // shadowing `skipWaiting` with this local function.
   self.addEventListener('install', () => self.skipWaiting());
 };
+
+export {skipWaiting}

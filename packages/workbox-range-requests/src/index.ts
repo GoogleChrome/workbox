@@ -12,7 +12,7 @@ import './_version.js';
 
 
 /**
- * @namespace workbox.rangeRequests
+ * @module workbox-range-requests
  */
 
 export {

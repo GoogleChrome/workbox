@@ -8,6 +8,30 @@
 
 import './_version.js';
 
+export interface InstallResult {
+  updatedURLs: string[];
+  notUpdatedURLs: string[];
+}
+
+export interface CleanupResult {
+  deletedCacheRequests: string[],
+}
+
+export interface PrecacheEntry {
+  integrity?: string;
+  url: string;
+  revision?: string;
+}
+
+export type urlManipulation = ({url}: {url: URL}) => URL[];
+
+// * * * IMPORTANT! * * *
+// ------------------------------------------------------------------------- //
+// jdsoc type definitions cannot be declared above TypeScript definitions or
+// they'll be stripped from the built `.js` files, and they'll only be in the
+// `d.ts` files, which aren't read by the jsdoc generator. As a result we
+// have to put declare them below.
+
 /**
  * @typedef {Object} InstallResult
  * @property {Array<string>} updatedURLs List of URLs that were updated during
@@ -17,10 +41,6 @@ import './_version.js';
  *
  * @memberof workbox.precaching
  */
-export interface InstallResult {
-  updatedURLs: string[];
-  notUpdatedURLs: string[];
-}
 
 /**
  * @typedef {Object} CleanupResult
@@ -29,9 +49,6 @@ export interface InstallResult {
  *
  * @memberof workbox.precaching
  */
-export interface CleanupResult {
-  deletedCacheRequests: string[],
-}
 
 /**
  * @typedef {Object} PrecacheEntry
@@ -42,11 +59,6 @@ export interface CleanupResult {
  *
  * @memberof workbox.precaching
  */
-export interface PrecacheEntry {
-  integrity?: string;
-  url: string;
-  revision?: string;
-}
 
 /**
  * The "urlManipulation" callback can be used to determine if there are any
@@ -64,4 +76,3 @@ export interface PrecacheEntry {
  *
  * @memberof workbox.precaching
  */
-export type urlManipulation = ({url}: {url: URL}) => URL[];

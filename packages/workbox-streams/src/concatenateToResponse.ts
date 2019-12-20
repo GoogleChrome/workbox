@@ -27,7 +27,7 @@ import './_version.js';
  * `'text/html'` will be used by default.
  * @return {Object<{done: Promise, response: Response}>}
  *
- * @memberof workbox.streams
+ * @memberof module:workbox-streams
  */
 function concatenateToResponse(
     sourcePromises: Promise<StreamSource>[],

@@ -29,7 +29,7 @@ export interface NavigationRouteMatchOptions {
  * You can optionally only apply this route to a subset of navigation requests
  * by using one or both of the `blacklist` and `whitelist` parameters.
  *
- * @memberof workbox.routing
+ * @memberof module:workbox-routing
  * @extends workbox.routing.Route
  */
 class NavigationRoute extends Route {
@@ -46,7 +46,7 @@ class NavigationRoute extends Route {
    * and [`search`]{@link https://developer.mozilla.org/en-US/docs/Web/API/HTMLHyperlinkElementUtils/search}
    * portions of the requested URL.
    *
-   * @param {workbox.routing.Route~handlerCallback} handler A callback
+   * @param {module:workbox-routing~handlerCallback} handler A callback
    * function that returns a Promise resulting in a Response.
    * @param {Object} options
    * @param {Array<RegExp>} [options.blacklist] If any of these patterns match,

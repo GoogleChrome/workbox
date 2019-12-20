@@ -334,12 +334,12 @@ class PrecacheController {
   /**
    * This acts as a drop-in replacement for [`cache.match()`](https://developer.mozilla.org/en-US/docs/Web/API/Cache/match)
    * with the following differences:
-   * 
+   *
    * - It knows what the name of the precache is, and only checks in that cache.
    * - It allows you to pass in an "original" URL without versioning parameters,
    * and it will automatically look up the correct cache key for the currently
    * active revision of that URL.
-   * 
+   *
    * E.g., `matchPrecache('index.html')` will find the correct precached
    * response for the currently active service worker, even if the actual cache
    * key is `'/index.html?__WB_REVISION__=1234abcd'`.
@@ -368,7 +368,7 @@ class PrecacheController {
    *
    * @param {boolean} [fallbackToNetwork=true] Whether to attempt to get the
    * response from the network if there's a precache miss.
-   * @return {workbox.routing.Route~handlerCallback}
+   * @return {workbox.routing~handlerCallback}
    */
   createHandler(fallbackToNetwork = true): RouteHandlerCallback {
     return async ({request}: RouteHandlerCallbackOptions) => {
@@ -410,7 +410,7 @@ class PrecacheController {
    * `Response`.
    * @param {boolean} [fallbackToNetwork=true] Whether to attempt to get the
    * response from the network if there's a precache miss.
-   * @return {workbox.routing.Route~handlerCallback}
+   * @return {workbox.routing~handlerCallback}
    */
   createHandlerBoundToURL(url: string, fallbackToNetwork = true): RouteHandlerCallback {
     const cacheKey = this.getCacheKeyForURL(url);

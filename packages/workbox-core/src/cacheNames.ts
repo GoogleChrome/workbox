@@ -23,9 +23,9 @@ import './_version.js';
  * @return {Object} An object with `precache`, `runtime`, `prefix`, and
  *     `googleAnalytics` properties.
  *
- * @alias workbox.core.cacheNames
+ * @memberof module:workbox-core
  */
-export const cacheNames = {
+const cacheNames = {
   get googleAnalytics() {
     return _cacheNames.getGoogleAnalyticsName();
   },
@@ -42,3 +42,5 @@ export const cacheNames = {
     return _cacheNames.getSuffix();
   },
 };
+
+export {cacheNames}

@@ -27,9 +27,9 @@ import './_version.js';
  * @param {Object} [details.googleAnalytics] The cache name to use for
  *     `workbox-google-analytics` caching.
  *
- * @alias workbox.core.setCacheNameDetails
+ * @memberof module:workbox-core
  */
-export const setCacheNameDetails = (details: PartialCacheNameDetails) => {
+function setCacheNameDetails(details: PartialCacheNameDetails) {
   if (process.env.NODE_ENV !== 'production') {
     Object.keys(details).forEach((key) => {
       assert!.isType(details[key], 'string', {
@@ -63,3 +63,5 @@ export const setCacheNameDetails = (details: PartialCacheNameDetails) => {
 
   cacheNames.updateDetails(details);
 };
+
+export {setCacheNameDetails}
