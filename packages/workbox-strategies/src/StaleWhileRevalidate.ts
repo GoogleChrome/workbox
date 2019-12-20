@@ -56,7 +56,7 @@ class StaleWhileRevalidate implements RouteHandlerObject {
    * @param {Object} options
    * @param {string} options.cacheName Cache name to store and retrieve
    * requests. Defaults to cache names provided by
-   * [workbox-core]{@link workbox.core.cacheNames}.
+   * [workbox-core]{@link module:workbox-core.cacheNames}.
    * @param {Array<Object>} options.plugins [Plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}
    * to use in conjunction with this caching strategy.
    * @param {Object} options.fetchOptions Values passed along to the

@@ -23,7 +23,7 @@ import './_version.js';
  * `Response`.
  * @param {boolean} [fallbackToNetwork=true] Whether to attempt to get the
  * response from the network if there's a precache miss.
- * @return {workbox.routing~handlerCallback}
+ * @return {module:workbox-routing~handlerCallback}
  *
  * @memberof module:workbox-precaching
  */

@@ -17,7 +17,7 @@ import './_version.js';
  * This plugin will automatically broadcast a message whenever a cached response
  * is updated.
  *
- * @memberof module:workbox-broadcast-updatesync
+ * @memberof module:workbox-broadcast-update
  */
 class BroadcastUpdatePlugin implements WorkboxPlugin {
   private _broadcastUpdate: BroadcastCacheUpdate;

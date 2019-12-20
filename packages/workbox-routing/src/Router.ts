@@ -57,7 +57,7 @@ class Router {
   }
 
   /**
-   * @return {Map<string, Array<workbox.routing.Route>>} routes A `Map` of HTTP
+   * @return {Map<string, Array<module:workbox-routing.Route>>} routes A `Map` of HTTP
    * method name ('GET', etc.) to an array of all the corresponding `Route`
    * instances that are registered.
    */

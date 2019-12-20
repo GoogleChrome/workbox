@@ -18,8 +18,8 @@ export interface NavigationRouteMatchOptions {
 }
 
 /**
- * NavigationRoute makes it easy to create a [Route]{@link
- * workbox.routing.Route} that matches for browser
+ * NavigationRoute makes it easy to create a
+ * [Route]{@link module:workbox-routing.Route} that matches for browser
  * [navigation requests]{@link https://developers.google.com/web/fundamentals/primers/service-workers/high-performance-loading#first_what_are_navigation_requests}.
  *
  * It will only match incoming Requests whose
@@ -30,7 +30,7 @@ export interface NavigationRouteMatchOptions {
  * by using one or both of the `blacklist` and `whitelist` parameters.
  *
  * @memberof module:workbox-routing
- * @extends workbox.routing.Route
+ * @extends module:workbox-routing.Route
  */
 class NavigationRoute extends Route {
   private _whitelist: RegExp[];

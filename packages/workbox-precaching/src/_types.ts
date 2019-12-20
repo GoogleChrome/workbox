@@ -39,7 +39,7 @@ export type urlManipulation = ({url}: {url: URL}) => URL[];
  * @property {Array<string>} notUpdatedURLs List of URLs that were already up to
  * date.
  *
- * @memberof workbox.precaching
+ * @memberof module:workbox-precaching
  */
 
 /**
@@ -47,7 +47,7 @@ export type urlManipulation = ({url}: {url: URL}) => URL[];
  * @property {Array<string>} deletedCacheRequests List of URLs that were deleted
  * while cleaning up the cache.
  *
- * @memberof workbox.precaching
+ * @memberof module:workbox-precaching
  */
 
 /**
@@ -57,7 +57,7 @@ export type urlManipulation = ({url}: {url: URL}) => URL[];
  * @property {string} [integrity] Integrity metadata that will be used when
  * making the network request for the URL.
  *
- * @memberof workbox.precaching
+ * @memberof module:workbox-precaching
  */
 
 /**
@@ -74,5 +74,5 @@ export type urlManipulation = ({url}: {url: URL}) => URL[];
  * @return {Array<URL>} To add additional urls to test, return an Array of
  * URLs. Please note that these **should not be strings**, but URL objects.
  *
- * @memberof workbox.precaching
+ * @memberof module:workbox-precaching
  */

@@ -25,7 +25,7 @@ import './_version.js';
  * [See the module docs for info.]{@link https://developers.google.com/web/tools/workbox/modules/workbox-routing}
  *
  * @memberof module:workbox-routing
- * @extends workbox.routing.Route
+ * @extends module:workbox-routing.Route
  */
 class RegExpRoute extends Route {
   /**
