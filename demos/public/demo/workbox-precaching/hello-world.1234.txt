@@ -1,3 +1,0 @@
-Hello, World!
-
-I'm the first version of this file.

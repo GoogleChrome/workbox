@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>workbox-window demo</title>
+    <meta name="workbox-window demo" content="An example to demonstrate the workbox-window module">
+    <link id="favicon" rel="icon" href="https://glitch.com/edit/favicon-app.ico" type="image/x-icon">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      body {
+        margin-left: 5%;
+        font-family: 'Open Sans', sans-serif
+      }
+      ol {
+        padding-left: 20px
+      }
+      li {
+        margin-bottom: 5px
+      }
+      button {
+        margin: 20px 0;
+        font-weight: bold
+      }
+    </style>
+  </head>
+  <body>
+
+    <header>
+      <div>
+        <h1>workbox-window Demo</h1>
+      </div>
+    </header>
+
+    <ol>
+      <li>workbox-window runs in the window context, not the service worker</li>
+      <li>Open up DevTools and go to the console</li>
+    </ol>
+
+
+    <script type="module">
+      import {Workbox} from 'https://storage.googleapis.com/workbox-cdn/releases/5.0.0-beta.1/workbox-window.prod.mjs';
+      
+      if ('serviceWorker' in navigator) {
+
+        const wb = new Workbox('/sw.js');
+
+        wb.addEventListener('activated', (event) => {
+          // `event.isUpdate` will be true if another version of the service
+          // worker was controlling the page when this version was registered.
+          if (!event.isUpdate) {
+            console.log('Service worker activated for the first time!');
+
+            // If your service worker is configured to precache assets, those
+            // assets should all be available now.
+          }
+        });
+        
+        wb.addEventListener('waiting', (event) => {
+          console.log(`A new service worker has installed, but it can't activate` +
+                      `until all tabs running the current version have fully unloaded.`);
+        });
+
+        // Register the service worker after event listeners have been added.
+        wb.register();
+        
+        const message = async () => {
+          const swVersion = await wb.messageSW({type: 'GET_VERSION'});
+          console.log('Service Worker version:', swVersion);
+        }
+        
+        message();
+        
+      }
+    </script>
+
+
+    <a href="https://developers.google.com/web/tools/workbox/modules">Back to Demos</a>
+
+    <p>
+
+    <a href="https://developers.google.com/web/tools/workbox">Docs</a> |
+    <a href="https://github.com/googlechrome/workbox">GitHub</a> |
+    <a href="https://twitter.com/workboxjs">@workboxjs</a>
+
+
+  </body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>workbox-expiration demo</title>
+    <meta name="workbox-expiration demo" content="An example to demonstrate the workbox-expiration module">
+    <link id="favicon" rel="icon" href="https://glitch.com/edit/favicon-app.ico" type="image/x-icon">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      body {
+        margin-left: 5%;
+        font-family: 'Open Sans', sans-serif
+      }
+      ol {
+        padding-left: 20px
+      }
+      li {
+        margin-bottom: 5px
+      }
+      button {
+        margin: 20px 0;
+        font-weight: bold
+      }
+    </style>
+  </head>
+  <body>
+
+    <header>     
+      <div>
+        <h1>workbox-expiration Demo</h1>
+      </div>
+    </header>
+
+  
+    <ol>
+      <li>Open DevTools</li>
+      <li>Go to the Console</li>
+      <li>Click the following buttons and look at the Cache and IndexedDB entries.
+        <ol>
+          <li><button class="entry-1">Entry 1</button> (Expires in: <span class="entry-expire-1">Not Added Yet</span>)</li>
+          <li><button class="entry-2">Entry 2</button> (Expires in: <span class="entry-expire-2">Not Added Yet</span>)</li>
+          <li><button class="entry-3">Entry 3</button> (Expires in: <span class="entry-expire-3">Not Added Yet</span>)</li>
+          <li><button class="entry-4">Entry 4</button> (Expires in: <span class="entry-expire-4">Not Added Yet</span>)</li>
+          <li><button class="entry-5">Entry 5</button> (Expires in: <span class="entry-expire-5">Not Added Yet</span>)</li>
+        </ol>
+      </li>
+      <li>To remove any expired entries click here:<p><button class="expire">Expire Entries</button></li>
+    </ol>
+
+
+    <script>
+      const expireBtn = document.querySelector('.expire');
+
+      const TIMEOUT_IN_SECS = 30;
+      const MAX_ENTRIES = 3;
+      
+      var entryQueue = [];
+
+      const setupTimeout = (btnElement, textElement) => {
+        textElement.textContent = `${btnElement.__workbox_timeoutCount}s`;
+        btnElement.__workbox_timeoutId = setTimeout(() => {
+          // TODO: FIX THIS TO TAKE FIRST ELEMENT OF CLASS LIST AND CHECK AGAIN ENTRY STACK
+          if(entryQueue.includes(btnElement.classList[0])){
+            btnElement.__workbox_timeoutCount -= 1;
+            if (btnElement.__workbox_timeoutCount > 0) {
+              setupTimeout(btnElement, textElement);
+            } else {
+              textElement.textContent = `Expired (Too Old)`;
+            }
+          } else {
+              textElement.textContent = `Expired (Too Many)`;
+          }
+          
+        }, 1000);
+      };
+
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+        .then((reg) => {
+          for (let i = 0; i < 5; i++) {
+            const entryBtn = document.querySelector(`.entry-${i + 1}`);
+            const expireText = document.querySelector(`.entry-expire-${i + 1}`);
+            entryBtn.addEventListener('click', () => {
+              const message = {
+                command: 'update-entry',
+                id: i + 1,
+              };
+              
+              var arrayEntry = `entry-${i + 1}`
+              
+              //If we refresh an entry that has already been added and is not expired
+              //we reorder it to the front of the queue
+              if(entryQueue.includes(arrayEntry)){
+                entryQueue.splice(entryQueue.indexOf(arrayEntry), 1);
+              }
+              entryQueue.push(`entry-${i + 1}`);
+              if(entryQueue.length >= 4){
+                entryQueue = entryQueue.slice(MAX_ENTRIES * -1);
+              }
+
+              reg.active.postMessage(message);
+
+              if (entryBtn.__workbox_timeoutId) {
+                clearTimeout(entryBtn.__workbox_timeoutId);
+              }
+
+              entryBtn.__workbox_timeoutCount = TIMEOUT_IN_SECS;
+              setupTimeout(entryBtn, expireText);
+            });
+          }
+
+          expireBtn.addEventListener('click', () => {
+            const message = {
+              command: 'expire-entries',
+            };
+            reg.active.postMessage(message);
+          });
+        });
+      });
+    </script>
+
+
+    <a href="https://developers.google.com/web/tools/workbox/modules">Back to Demos</a>
+
+    <p>
+
+    <a href="https://developers.google.com/web/tools/workbox">Docs</a> |
+    <a href="https://github.com/googlechrome/workbox">GitHub</a> |
+    <a href="https://twitter.com/workboxjs">@workboxjs</a>
+
+  </body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>workbox-google-analytics demo</title>
+    <meta name="workbox-googleAnalytics demo" content="An example to demonstrate the workbox-google-analytics module">
+    <link id="favicon" rel="icon" href="https://glitch.com/edit/favicon-app.ico" type="image/x-icon">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      body {
+        margin-left: 5%;
+        font-family: 'Open Sans', sans-serif
+      }
+      ol {
+        padding-left: 20px
+      }
+      li {
+        margin-bottom: 5px
+      }
+      button {
+        margin: 20px 0;
+        font-weight: bold
+      }
+    </style>
+  </head>
+  <body>
+
+    <header>      
+      <div>
+        <h1>workbox-google-analytics Demo</h1>
+      </div>
+    </header>
+
+    <ol>
+      <li>Open DevTools</li>
+      <li>Go to the Console</li>
+      <li>Click this button:<p><button class="make-analytics-call">Make Analytics Call</button></li>
+      <li>Turn off your machine's connection and press the button again. Of course, the requests fail</li>
+      <li>Upon reconnecting to the network, workbox-googleAnalytics will empty the request queue</li>
+    </ol>
+
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-77119321-5"></script>
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-77119321-5', 'auto');
+    </script>
+
+    <script>
+      const analyticsCallBtn = document.querySelector('.make-analytics-call');
+
+      navigator.serviceWorker.register('./sw.js')
+      .then((reg) => {
+        analyticsCallBtn.addEventListener('click', () => {
+          ga('send', 'pageview');
+        });
+      });
+    </script>
+
+
+    <a href="https://developers.google.com/web/tools/workbox/modules">Back to Demos</a>
+
+    <p>
+
+    <a href="https://developers.google.com/web/tools/workbox">Docs</a> |
+    <a href="https://github.com/googlechrome/workbox">GitHub</a> |
+    <a href="https://twitter.com/workboxjs">@workboxjs</a>
+
+  </body>
+</html>

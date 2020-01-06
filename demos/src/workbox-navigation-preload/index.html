@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>workbox-navigation-preload demo</title>
+    <meta name="workbox-navigation-preload demo" content="An example to demonstrate the workbox-navigation-preload module">
+    <link id="favicon" rel="icon" href="https://glitch.com/edit/favicon-app.ico" type="image/x-icon">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      body {
+        margin-left: 5%;
+        font-family: 'Open Sans', sans-serif
+      }
+      ol {
+        padding-left: 20px
+      }
+      li {
+        margin-bottom: 5px
+      }
+      button {
+        margin: 20px 0;
+        font-weight: bold
+      }
+    </style>
+  </head>
+  <body>
+
+    <header>
+      <div>
+        <h1>workbox-navigation-preload Demo</h1>
+      </div>
+    </header>
+
+    <ol>
+      <li>workbox-navigation-preload enables navigation preload in browsers that support it</li>
+      <li>Open the dev tools console and reload this page</li>
+      <li>There should be two requests for the HTML document: one initiated by the service worker, and one by Preload</li>
+    </ol>
+
+
+    <script>
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+      });
+    </script>
+
+
+    <a href="https://developers.google.com/web/tools/workbox/modules">Back to Demos</a>
+
+    <p>
+
+    <a href="https://developers.google.com/web/tools/workbox">Docs</a> |
+    <a href="https://github.com/googlechrome/workbox">GitHub</a> |
+    <a href="https://twitter.com/workboxjs">@workboxjs</a>
+
+
+  </body>
+</html>
