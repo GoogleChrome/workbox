@@ -121,58 +121,7 @@ const writeServiceWorkerUsingDefaultTemplate =
  * added to your generated service worker. When set to an `Object`, that object
  * will be passed in to the `initialize()` call, allowing you to customize the
  * behavior.
- * @param {Array<Object>} [config.runtimeCaching]
- * @param {string} [config.runtimeCaching[].method='GET'] The
- * [HTTP method](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods) that
- * will match the generated route.
- * @param {string|RegExp|workbox.routing.Route~matchCallback} config.runtimeCaching[].urlPattern
- * The value that will be passed to workbox.routing.Router~registerRoute, used
- * to determine whether the generated route will match a given request.
- * @param {string|workbox.routing.Route~handlerCallback} config.runtimeCaching[].handler
- * Either the name of one of the [built-in strategy classes](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.strategies),
- * or custom handler callback to use when the generated route matches.
- * @param {Object} [config.runtimeCaching[].options]
- * @param {Object} [config.runtimeCaching[].options.backgroundSync]
- * @param {string} config.runtimeCaching[].options.backgroundSync.name The
- * [`name` parameter](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.backgroundSync.Queue.html)
- * to use when creating the `BackgroundSyncPlugin`.
- * @param {Object} [config.runtimeCaching[].options.backgroundSync.options] The
- * [`options` parameter](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.backgroundSync.Queue.html)
- * to use when creating the `BackgroundSyncPlugin`.
- * @param {Object} [config.runtimeCaching[].options.broadcastUpdate]
- * @param {string} config.runtimeCaching[].options.broadcastUpdate.channelName
- * The [`channelName` parameter](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.broadcastUpdate.BroadcastCacheUpdate)
- * to use when creating the `BroadcastCacheUpdatePlugin`.
- * @param {Object} [config.runtimeCaching[].options.broadcastUpdate.options] The
- * [`options` parameter](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.broadcastUpdate.BroadcastCacheUpdate)
- * to use when creating the `BroadcastCacheUpdatePlugin`.
- * @param {Object} [config.runtimeCaching[].options.cacheableResponse]
- * @param {Array<number>} [config.runtimeCaching[].options.cacheableResponse.statuses]
- * The [`status` parameter](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.cacheableResponse.CacheableResponse)
- * to use when creating the `CacheableResponsePlugin`.
- * @param {Object} [config.runtimeCaching[].options.cacheableResponse.headers]
- * The [`headers` parameter](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.cacheableResponse.CacheableResponse)
- * to use when creating the `CacheableResponsePlugin`.
- * @param {string} [config.runtimeCaching[].options.cacheName] The `cacheName`
- * to use when constructing one of the [Workbox strategy classes](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.strategies).
- * @param {Object} [config.runtimeCaching[].options.expiration]
- * @param {number} [config.runtimeCaching[].options.expiration.maxAgeSeconds]
- * The [`maxAgeSeconds` parameter](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.expiration.CacheExpiration)
- * to use when creating the `CacheExpirationPlugin`.
- * @param {number} [config.runtimeCaching[].options.expiration.maxEntries]
- * The [`maxAgeSeconds` parameter](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.expiration.CacheExpiration)
- * to use when creating the `CacheExpirationPlugin`.
- * @param {number} [config.runtimeCaching[].options.networkTimeoutSeconds]
- * The `networkTimeoutSeconds` parameter value to use when creating a
- * `NetworkFirst` handler.
- * @param {Array<Object>} [config.runtimeCaching[].options.plugins]
- * One or more [additional plugins](https://developers.google.com/web/tools/workbox/guides/using-plugins#custom_plugins)
- * to apply to the handler. Useful when you want a plugin that doesn't have a
- * "shortcut" configuration, like `expiration` or `cacheableResponse`.
- * @param {Object} [config.runtimeCaching[].options.fetchOptions]
- * The `fetchOptions` parameter value to use when creating the handler.
- * @param {Object} [config.runtimeCaching[].options.matchOptions]
- * The `matchOptions` parameter value to use when creating the handler.
+ * @param {Array<RuntimeCachingEntry>} [config.runtimeCaching]
  * @param {boolean} [config.skipWaiting=false] Whether to add an
  * unconditional call to [`skipWaiting()`](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.core#.skipWaiting)
  * to the generated service worker. If `false`, then a `message` listener will
@@ -198,8 +147,6 @@ const writeServiceWorkerUsingDefaultTemplate =
  * problematic directory will be skipped. For more information, see the
  * definition of `strict` in the `glob`
  * [documentation](https://github.com/isaacs/node-glob#options).
- *
- *
  * @param {Object} [config.templatedURLs] If a URL is rendered based on some
  * server-side logic, its contents may depend on multiple files or on some other
  * unique string value. The keys in this object are server-rendered URLs. If the
