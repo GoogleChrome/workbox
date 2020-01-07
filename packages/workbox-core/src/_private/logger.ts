@@ -7,11 +7,26 @@
 
 import '../_version.js';
 
+// logger is used inside of both service workers and the window global scope.
+declare global {
+  interface WorkerGlobalScope {
+    __WB_DISABLE_DEV_LOGS: boolean;
+  }
+
+  interface Window {
+    __WB_DISABLE_DEV_LOGS: boolean;
+  }
+}
 
 type LoggerMethods = 'debug'|'log'|'warn'|'error'|'groupCollapsed'|'groupEnd';
-
     
 const logger = <Console> (process.env.NODE_ENV === 'production' ? null : (() => {
+  // Don't overwrite this value if it's already set.
+  // See https://github.com/GoogleChrome/workbox/pull/2284#issuecomment-560470923
+  if (!('__WB_DISABLE_DEV_LOGS' in self!)) {
+    self.__WB_DISABLE_DEV_LOGS = false;
+  }
+
   let inGroup = false;
 
   const methodToColorMap: {[methodName: string]: string|null} = {
@@ -24,6 +39,10 @@ const logger = <Console> (process.env.NODE_ENV === 'production' ? null : (() => 
   };
 
   const print = function(method: LoggerMethods, args: any[]) {
+    if (self.__WB_DISABLE_DEV_LOGS) {
+      return;
+    }
+
     if (method === 'groupCollapsed') {
       // Safari doesn't print all console.groupCollapsed() arguments:
       // https://bugs.webkit.org/show_bug.cgi?id=182754

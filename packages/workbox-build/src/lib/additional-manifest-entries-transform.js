@@ -14,8 +14,12 @@ module.exports = (additionalManifestEntries) => {
     const stringEntries = new Set();
 
     for (const additionalEntry of additionalManifestEntries) {
+      // Warn about either a string or an object that lacks a precache property.
+      // (An object with a revision property set to null is okay.)
       if (typeof additionalEntry === 'string') {
         stringEntries.add(additionalEntry);
+      } else if (additionalEntry && additionalEntry.revision === undefined) {
+        stringEntries.add(additionalEntry.url);
       }
 
       manifest.push(additionalEntry);

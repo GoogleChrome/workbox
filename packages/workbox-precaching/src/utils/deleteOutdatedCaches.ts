@@ -35,7 +35,7 @@ const SUBSTRING_TO_FIND = '-precache-';
 const deleteOutdatedCaches = async (
     currentPrecacheName: string,
     substringToFind:string = SUBSTRING_TO_FIND) => {
-  const cacheNames = await caches.keys();
+  const cacheNames = await self.caches.keys();
 
   const cacheNamesToDelete = cacheNames.filter((cacheName) => {
     return cacheName.includes(substringToFind) &&
@@ -44,7 +44,7 @@ const deleteOutdatedCaches = async (
   });
 
   await Promise.all(
-      cacheNamesToDelete.map((cacheName) => caches.delete(cacheName)));
+      cacheNamesToDelete.map((cacheName) => self.caches.delete(cacheName)));
 
   return cacheNamesToDelete;
 };

@@ -110,7 +110,7 @@ class CacheExpiration {
         minTimestamp, this._maxEntries);
 
     // Delete URLs from the cache
-    const cache = await caches.open(this._cacheName);
+    const cache = await self.caches.open(this._cacheName);
     for (const url of urlsExpired) {
       await cache.delete(url);
     }

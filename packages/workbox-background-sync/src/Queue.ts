@@ -18,13 +18,16 @@ import './_version.js';
 // Give TypeScript the correct global.
 declare var self: ServiceWorkerGlobalScope;
 
-const TAG_PREFIX = 'workbox-background-sync';
-const MAX_RETENTION_TIME = 60 * 24 * 7; // 7 days in minutes
+interface OnSyncCallbackOptions {
+  queue: Queue;
+}
 
-const queueNames = new Set();
+interface OnSyncCallback {
+  (options: OnSyncCallbackOptions): void;
+}
 
 export interface QueueOptions {
-  onSync?: Function;
+  onSync?: OnSyncCallback;
   maxRetentionTime?: number;
 }
 
@@ -33,6 +36,11 @@ interface QueueEntry {
   timestamp?: number;
   metadata?: object;
 }
+
+const TAG_PREFIX = 'workbox-background-sync';
+const MAX_RETENTION_TIME = 60 * 24 * 7; // 7 days in minutes
+
+const queueNames = new Set();
 
 /**
  * A class to manage storing failed requests in IndexedDB and retrying them
@@ -43,7 +51,7 @@ interface QueueEntry {
  */
 class Queue {
   private _name: string;
-  private _onSync: Function;
+  private _onSync: OnSyncCallback;
   private _maxRetentionTime: number;
   private _queueStore: QueueStore;
   private _syncInProgress: boolean = false;

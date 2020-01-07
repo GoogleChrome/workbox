@@ -6,10 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {createHandlerForURL} from 'workbox-precaching/createHandlerForURL.mjs';
+import {createHandler} from 'workbox-precaching/createHandler.mjs';
 import {precache} from 'workbox-precaching/precache.mjs';
 
-describe(`createHandlerForURL()`, function() {
+describe(`createHandler()`, function() {
   const sandbox = sinon.createSandbox();
 
   beforeEach(function() {
@@ -20,12 +20,16 @@ describe(`createHandlerForURL()`, function() {
     sandbox.restore();
   });
 
-  it(`should throw when passed a URL that isn't precached`, function() {
+  it(`should throw the expected error when there's a cache miss and fallbackToNetwork is false`, async function() {
     precache([]);
+    const handler = createHandler(false);
 
-    return expectError(() => {
-      createHandlerForURL('/does-not-exist');
-    }, 'non-precached-url', (error) => expect(error.details.url).to.eql('/does-not-exist'));
+    return expectError(async () => {
+      await handler({request: new Request('/cache-miss')});
+    }, 'missing-precache-entry', (error) => {
+      expect(error.details.url).to.eql(`${location.origin}/cache-miss`);
+      expect(error.details.cacheName).to.eql(`workbox-precache-v2-${location.origin}/test/workbox-precaching/sw/`);
+    });
   });
 
   it(`should return the expected handlerCallback for precached URLs`, async function() {
@@ -52,39 +56,38 @@ describe(`createHandlerForURL()`, function() {
       {url: '/url4', revision: 'def456'},
     ]);
 
-    const handler1 = createHandlerForURL('/url1');
-    const response1 = await handler1();
+    const handler = createHandler();
+    const response1 = await handler({request: new Request('/url1')});
 
     expect(matchStub.calledOnce).to.be.true;
     expect(matchStub.firstCall.args).to.eql([`${location.origin}/url1`]);
     expect(fetchStub.notCalled).to.be.true;
     expect(await response1.text()).to.eql('response 1');
 
-    const handler2 = createHandlerForURL('/url2');
-    const response2 = await handler2();
+    const response2 = await handler({request: new Request('/url2')});
 
     expect(matchStub.calledTwice).to.be.true;
     expect(matchStub.secondCall.args).to.eql([`${location.origin}/url2?__WB_REVISION__=abc123`]);
     expect(fetchStub.notCalled).to.be.true;
     expect(await response2.text()).to.eql('response 2');
 
-    const handler3 = createHandlerForURL('/url3');
-    const response3 = await handler3();
+    const response3 = await handler({request: new Request('/url3')});
 
     expect(matchStub.calledThrice).to.be.true;
     expect(matchStub.thirdCall.args).to.eql([`${location.origin}/url3`]);
     expect(fetchStub.calledOnce).to.be.true;
-    expect(fetchStub.firstCall.args).to.eql([`${location.origin}/url3`]);
+    // firstCall.args[0] is a Request object.
+    expect(fetchStub.firstCall.args[0].url).to.eql(`${location.origin}/url3`);
     expect(await response3.text()).to.eql('response 3');
 
-    const handler4 = createHandlerForURL('/url4');
-    const response4 = await handler4();
+    const response4 = await handler({request: new Request('/url4')});
 
     expect(matchStub.callCount).to.eql(4);
     // Call #3 is the fourth call due to zero-indexing.
     expect(matchStub.getCall(3).args).to.eql([`${location.origin}/url4?__WB_REVISION__=def456`]);
     expect(fetchStub.calledTwice).to.be.true;
-    expect(fetchStub.secondCall.args).to.eql([`${location.origin}/url4?__WB_REVISION__=def456`]);
+    // secondCall.args[0] is a Request object.
+    expect(fetchStub.secondCall.args[0].url).to.eql(`${location.origin}/url4`);
     expect(await response4.text()).to.eql('response 4');
   });
 });

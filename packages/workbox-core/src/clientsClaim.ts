@@ -19,5 +19,5 @@ declare var self: ServiceWorkerGlobalScope;
  * @alias workbox.core.clientsClaim
  */
 export const clientsClaim = () => {
-  addEventListener('activate', () => self.clients.claim());
+  self.addEventListener('activate', () => self.clients.claim());
 };

@@ -155,6 +155,31 @@ describe(`PrecacheController`, function() {
       });
     });
 
+    it(`should log a warning unless an entry has a revision property`, function() {
+      const logObject = process.env.NODE_ENV === 'production' ? console : logger;
+      const warnStub = sandbox.stub(logObject, 'warn');
+
+      const precacheController = new PrecacheController();
+
+      precacheController.addToCacheList([
+        '/should-warn',
+      ]);
+      expect(warnStub.calledOnce).to.be.true;
+      warnStub.resetHistory();
+
+      precacheController.addToCacheList([
+        {url: '/also-should-warn'},
+      ]);
+      expect(warnStub.calledOnce).to.be.true;
+      warnStub.resetHistory();
+
+      precacheController.addToCacheList([
+        {url: '/should-not-warn', revision: null},
+        {url: '/also-should-not-warn', revision: '1234abcd'},
+      ]);
+      expect(warnStub.notCalled).to.be.true;
+    });
+
     it(`should add url + revision objects to cache list`, async function() {
       const precacheController = new PrecacheController();
 
@@ -630,6 +655,36 @@ describe(`PrecacheController`, function() {
 
       // This should succeed.
       await precacheController.install({plugins});
+    });
+
+    it(`should properly await an async cacheWillUpdate plugin`, async function() {
+      sandbox.stub(fetchWrapper, 'fetch').resolves(new Response('', {
+        status: 203,
+      }));
+
+      const precacheController = new PrecacheController();
+      const cacheList = [
+        '/will-be-error.html',
+      ];
+      precacheController.addToCacheList(cacheList);
+
+      const plugins = [{
+        cacheWillUpdate: async ({request, response}) => {
+          expect(request).to.exist;
+
+          if (response.status === 203) {
+            return null;
+          }
+          return response;
+        },
+      }];
+
+      // Assuming the async plugin function is properly await-ed, an error
+      // will be thrown.
+      return expectError(
+          () => precacheController.install({plugins}),
+          'bad-precaching-response'
+      );
     });
   });
 

@@ -48,7 +48,6 @@ gulp.task('build-packages:clean', gulp.series(
 ));
 
 gulp.task('build-packages:build', gulp.series(
-    'transpile-typescript',
     gulp.parallel(
         'build-node-packages',
         'build-browser-packages',

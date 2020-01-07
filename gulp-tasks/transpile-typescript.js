@@ -65,7 +65,7 @@ const transpilePackage = async (packageName) => {
  *
  * @param {string} packagePath
  */
-const transpilePackagesOrSkip = async (packagePath) => {
+const transpilePackageOrSkip = async (packagePath) => {
   // `packagePath` will be posix style because it comes from `glog()`.
   const packageName = packagePath.split('/').slice(-1)[0];
 
@@ -88,7 +88,7 @@ const debouncedTranspilerMap = {};
 /**
  * Takes a package name and schedules that package's source TypeScript code
  * to be converted to JavaScript. If a transpilation is already scheduled, it
- * won't be queued twice, so this function is safe to call as frequenty as
+ * won't be queued twice, so this function is safe to call as frequently as
  * needed.
  *
  * @param {string} packageName
@@ -121,10 +121,10 @@ const needsTranspile = (packageName) => {
 };
 
 gulp.task('transpile-typescript', gulp.series(packageRunnner(
-    'transpile-typescript', 'all', transpilePackagesOrSkip)));
+    'transpile-typescript', 'all', transpilePackageOrSkip)));
 
 gulp.task('transpile-typescript:watch', gulp.series(packageRunnner(
-    'transpile-typescript', 'all', transpilePackagesOrSkip)));
+    'transpile-typescript', 'all', transpilePackageOrSkip)));
 
 gulp.task('transpile-typescript:watch', () => {
   const watcher = gulp.watch(`./${global.packageOrStar}/workbox-*/src/**/*.ts`);
@@ -138,6 +138,7 @@ gulp.task('transpile-typescript:watch', () => {
 });
 
 module.exports = {
+  transpilePackageOrSkip,
   queueTranspile,
   needsTranspile,
 };

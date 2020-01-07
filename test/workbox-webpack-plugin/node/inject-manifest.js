@@ -578,6 +578,53 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         }
       });
     });
+
+    it(`should not fail if the sourcemap is missing from the assets`, function(done) {
+      const outputDir = tempy.directory();
+      const swSrc = upath.join(__dirname, '..', 'static', 'sw-src-missing-sourcemap.js');
+
+      const config = {
+        mode: 'development',
+        entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        output: {
+          filename: WEBPACK_ENTRY_FILENAME,
+          path: outputDir,
+        },
+        devtool: false,
+        plugins: [
+          new InjectManifest({
+            swSrc,
+            swDest: 'service-worker.js',
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError, stats) => {
+        const swFile = upath.join(outputDir, 'service-worker.js');
+        try {
+          webpackBuildCheck(webpackError, stats);
+
+          const files = await globby(outputDir);
+          expect(files).to.have.length(2);
+
+          await validateServiceWorkerRuntime({
+            swFile,
+            entryPoint: 'injectManifest',
+            expectedMethodCalls: {
+              precacheAndRoute: [[[{
+                revision: 'f59ecc599c17c2bbc03a212969e13ee7',
+                url: 'webpackEntry.js',
+              }], {}]],
+            },
+          });
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
   });
 
   describe(`[workbox-webpack-plugin] Filtering via include/exclude`, function() {
@@ -1283,7 +1330,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
   describe(`[workbox-webpack-plugin] Multiple invocation scenarios`, function() {
     // See https://github.com/GoogleChrome/workbox/issues/2158
-    it(`•should support multiple compilations using the same plugin instance`, async function() {
+    it(`should support multiple compilations using the same plugin instance`, async function() {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -1387,6 +1434,54 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               precacheAndRoute: [[[{
                 revision: '0fae6a991467bd40263a3ba8cd82835d',
                 url: 'main.94b7e7.js',
+              }], {}]],
+            },
+          });
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+  });
+
+  describe(`[workbox-webpack-plugin] Manifest injection in development mode`, function() {
+    it(`should produce valid, parsable JavaScript`, function(done) {
+      const outputDir = tempy.directory();
+      const config = {
+        mode: 'development',
+        entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        output: {
+          filename: '[name].[hash:6].js',
+          path: outputDir,
+        },
+        plugins: [
+          new InjectManifest({
+            exclude: [/sw\d.js/],
+            swDest: 'sw.js',
+            swSrc: upath.join(__dirname, '..', 'static', 'sw-src.js'),
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError, stats) => {
+        const swFile = upath.join(outputDir, 'sw.js');
+
+        try {
+          webpackBuildCheck(webpackError, stats);
+
+          const files = await globby(outputDir);
+          expect(files).to.have.length(2);
+
+          await validateServiceWorkerRuntime({
+            swFile: swFile,
+            entryPoint: 'injectManifest',
+            expectedMethodCalls: {
+              precacheAndRoute: [[[{
+                revision: 'a2baa2e58fe291932f000f0217579e97',
+                url: 'main.43096b.js',
               }], {}]],
             },
           });

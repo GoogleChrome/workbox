@@ -212,6 +212,7 @@ class Router {
       // We have a handler, meaning Workbox is going to handle the route.
       // print the routing details to the console.
       logger.groupCollapsed(`Router is responding to: ${getFriendlyURL(url)}`);
+
       debugMessages.forEach((msg) => {
         if (Array.isArray(msg)) {
           logger.log(...msg);
@@ -219,12 +220,6 @@ class Router {
           logger.log(msg);
         }
       });
-
-      // The Request and Response objects contains a great deal of information,
-      // hide it under a group in case developers want to see it.
-      logger.groupCollapsed(`View request details here.`);
-      logger.log(request);
-      logger.groupEnd();
 
       logger.groupEnd();
     }

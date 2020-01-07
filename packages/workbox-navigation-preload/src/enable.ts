@@ -24,7 +24,7 @@ declare var self: ServiceWorkerGlobalScope;
  *
  * @memberof workbox.navigationPreload
  */
-function enable(headerValue: string) {
+function enable(headerValue?: string) {
   if (isSupported()) {
     self.addEventListener('activate', (event: ExtendableEvent) => {
       event.waitUntil(
