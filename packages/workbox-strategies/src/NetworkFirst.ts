@@ -102,12 +102,16 @@ class NetworkFirst implements RouteHandlerObject {
    * [Workbox Router]{@link workbox.routing.Router}.
    *
    * @param {Object} options
-   * @param {Request} options.request The request to run this strategy for.
+   * @param {Request|string} options.request A request to run this strategy for.
    * @param {Event} [options.event] The event that triggered the request.
    * @return {Promise<Response>}
    */
   async handle({event, request}: RouteHandlerCallbackOptions): Promise<Response> {
-   const logs: any[] = [];
+    const logs: any[] = [];
+   
+    if (typeof request === 'string') {
+      request = new Request(request);
+    }
 
     if (process.env.NODE_ENV !== 'production') {
       assert!.isInstance(request, Request, {

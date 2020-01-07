@@ -60,6 +60,30 @@ describe(`NetworkFirst`, function() {
       await compareResponses(cachedResponse, handleResponse, true);
     });
 
+    it(`should support using a string as the request`, async function() {
+      const stringRequest = 'http://example.io/test/';
+      const request = new Request(stringRequest);
+      const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
+
+      const fetchResponse = generateOpaqueResponse();
+      sandbox.stub(self, 'fetch').resolves(fetchResponse);
+
+      const networkFirst = new NetworkFirst();
+      const handleResponse = await networkFirst.handle({
+        request: stringRequest,
+        event,
+      });
+
+      // Wait until cache.put is finished.
+      await eventDoneWaiting(event);
+
+      const cache = await caches.open(cacheNames.getRuntimeName());
+      const cachedResponse = await cache.match(request);
+
+      await compareResponses(cachedResponse, handleResponse, true);
+    });
+
     it(`should return the cached response if exists and not update the cache when the network request fails`, async function() {
       sandbox.stub(self, 'fetch').rejects(new Error('Injected error.'));
 
