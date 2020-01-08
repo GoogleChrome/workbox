@@ -24,7 +24,7 @@ Commands:
     If --watch is provided, the CLI will stay running, and will
     rebuild the service worker each time a file in the precache
     manifest changes.
-    See https://goo.gl/gVo87N
+    See https://bit.ly/wb-generateSW
 
   injectManifest [<path/to/config.js>] [--watch]
     Takes an existing service worker file and creates a
@@ -34,7 +34,7 @@ Commands:
     If --watch is provided, the CLI will stay running, and will
     rebuild the service worker each time a file in the precache
     manifest changes.
-    See https://goo.gl/8bs14N
+    See https://bit.ly/wb-injectManifest
 
   copyLibraries <path/to/parent/dir>
     Makes a local copy of all of the Workbox libraries inside
@@ -45,9 +45,8 @@ Commands:
 Config file:
   In 'generateSW' or 'injectManifest' mode, the config file should be a
   JavaScript file, in CommonJS module format.
-  By default, a config location of workbox-config.js in the current
+  By default, a config file named workbox-config.js in the current
   directory is assumed, but this can be overridden.
-  The exported object's properties should follow https://goo.gl/YYPcyY
 
 Examples:
   $ workbox wizard
