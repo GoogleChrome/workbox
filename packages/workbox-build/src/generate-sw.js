@@ -15,7 +15,7 @@ const validate = require('./lib/validate-options');
 const writeServiceWorkerUsingDefaultTemplate =
   require('./lib/write-sw-using-default-template');
 
-// eslint-disable-next-line valid-jsdoc, jsdoc/newline-after-description
+// eslint-disable-next-line jsdoc/newline-after-description
 /**
  * This method creates a list of URLs to precache, referred to as a "precache
  * manifest", based on the options you provide.
