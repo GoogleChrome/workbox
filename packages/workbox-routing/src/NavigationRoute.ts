@@ -37,7 +37,7 @@ class NavigationRoute extends Route {
   private _blacklist: RegExp[];
 
   /**
-   * If both `blacklist` and `whiltelist` are provided, the `blacklist` will
+   * If both `blacklist` and `whitelist` are provided, the `blacklist` will
    * take precedence and the request will not match this route.
    *
    * The regular expressions in `whitelist` and `blacklist`
