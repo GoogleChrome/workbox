@@ -17,27 +17,57 @@ const validate = require('./lib/validate-options');
  * based on the options you provide.
  *
  * @param {Object} config The configuration to use.
+ *
+ * @param {string} config.globDirectory The local directory you wish to match
+ * `globPatterns` against. The path is relative to the current directory.
+ *
  * @param {Array<ManifestEntry>} [config.additionalManifestEntries] A list of
  * entries to be precached, in addition to any entries that are generated as
  * part of the build configuration.
+ *
  * @param {RegExp} [config.dontCacheBustURLsMatching] Assets that match this will be
  * assumed to be uniquely versioned via their URL, and exempted from the normal
  * HTTP cache-busting that's done when populating the precache. While not
  * required, it's recommended that if your existing build process already
  * inserts a `[hash]` value into each filename, you provide a RegExp that will
  * detect that, as it will reduce the bandwidth consumed when precaching.
+ *
+ * @param {boolean} [config.globFollow=true] Determines whether or not symlinks
+ * are followed when generating the precache manifest. For more information, see
+ * the definition of `follow` in the `glob`
+ * [documentation](https://github.com/isaacs/node-glob#options).
+ *
+ * @param {Array<string>} [config.globIgnores=['node_modules/**']]
+ * A set of patterns matching files to always exclude when generating the
+ * precache manifest. For more information, see the definition of `ignore` in the `glob`
+ * [documentation](https://github.com/isaacs/node-glob#options).
+ *
+ * @param {Array<string>} [config.globPatterns=['**.{js,css,html}']]
+ * Files matching any of these patterns will be included in the precache
+ * manifest. For more information, see the
+ * [`glob` primer](https://github.com/isaacs/node-glob#glob-primer).
+ *
+ * @param {boolean} [config.globStrict=true] If true, an error reading a directory when
+ * generating a precache manifest will cause the build to fail. If false, the
+ * problematic directory will be skipped. For more information, see the
+ * definition of `strict` in the `glob`
+ * [documentation](https://github.com/isaacs/node-glob#options).
+ *
  * @param {Array<ManifestTransform>} [config.manifestTransforms] One or more
  * functions which will be applied sequentially against the generated manifest.
  * If `modifyURLPrefix` or `dontCacheBustURLsMatching` are also specified, their
  * corresponding transformations will be applied first.
+ *
  * @param {number} [config.maximumFileSizeToCacheInBytes=2097152] This value can be
  * used to determine the maximum size of files that will be precached. This
  * prevents you from inadvertently precaching very large files that might have
  * accidentally matched one of your patterns.
+ *
  * @param {string} [config.mode='production'] If set to 'production', then an
  * optimized service worker bundle that excludes debugging info will be
  * produced. If not explicitly configured here, the `process.env.NODE_ENV` value
  * will be used, and failing that, it will fall back to `'production'`.
+ *
  * @param {Object<string, string>} [config.modifyURLPrefix] A mapping of prefixes
  * that, if present in an entry in the precache manifest, will be replaced with
  * the corresponding value. This can be used to, for example, remove or add a
@@ -45,25 +75,7 @@ const validate = require('./lib/validate-options');
  * your local filesystem setup. As an alternative with more flexibility, you can
  * use the `manifestTransforms` option and provide a function that modifies the
  * entries in the manifest using whatever logic you provide.
- * @param {string} config.globDirectory The local directory you wish to match
- * `globPatterns` against. The path is relative to the current directory.
- * @param {boolean} [config.globFollow=true] Determines whether or not symlinks
- * are followed when generating the precache manifest. For more information, see
- * the definition of `follow` in the `glob`
- * [documentation](https://github.com/isaacs/node-glob#options).
- * @param {Array<string>} [config.globIgnores=['node_modules/**']]
- * A set of patterns matching files to always exclude when generating the
- * precache manifest. For more information, see the definition of `ignore` in the `glob`
- * [documentation](https://github.com/isaacs/node-glob#options).
- * @param {Array<string>} [config.globPatterns=['**.{js,css,html}']]
- * Files matching any of these patterns will be included in the precache
- * manifest. For more information, see the
- * [`glob` primer](https://github.com/isaacs/node-glob#glob-primer).
- * @param {boolean} [config.globStrict=true] If true, an error reading a directory when
- * generating a precache manifest will cause the build to fail. If false, the
- * problematic directory will be skipped. For more information, see the
- * definition of `strict` in the `glob`
- * [documentation](https://github.com/isaacs/node-glob#options).
+ *
  * @param {Object} [config.templatedURLs] If a URL is rendered based on some
  * server-side logic, its contents may depend on multiple files or on some other
  * unique string value. The keys in this object are server-rendered URLs. If the
@@ -71,6 +83,7 @@ const validate = require('./lib/validate-options');
  * and the contents of any files matching the patterns will be used to uniquely
  * version the URL. If used with a single string, it will be interpreted as
  * unique versioning information that you've generated for a given URL.
+ *
  * @return {Promise<{count: number, filePaths: Array<string>, size: number, warnings: Array<string>}>}
  * A promise that resolves once the service worker and related files
  * (indicated by `filePaths`) has been written to `swDest`. The `size` property
