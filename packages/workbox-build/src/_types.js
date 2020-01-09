@@ -33,7 +33,7 @@ import './_version.mjs';
  * @property {string|workbox.routing.Route~handlerCallback} handler
  * Either the name of one of the [built-in strategy classes](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.strategies),
  * or custom handler callback to use when the generated route matches.
- * 
+ *
  * @property {string|RegExp|workbox.routing.Route~matchCallback} urlPattern
  * The value that will be passed to workbox.routing.Router~registerRoute, used
  * to determine whether the generated route will match a given request.
