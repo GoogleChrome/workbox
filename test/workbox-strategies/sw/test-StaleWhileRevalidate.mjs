@@ -57,6 +57,28 @@ describe(`StaleWhileRevalidate`, function() {
       await compareResponses(cachedResponse, handleResponse, true);
     });
 
+    it(`should support using a string as the request`, async function() {
+      sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
+
+      const stringRequest = 'http://example.io/test/';
+      const request = new Request(stringRequest);
+      const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
+
+      const staleWhileRevalidate = new StaleWhileRevalidate();
+      const handleResponse = await staleWhileRevalidate.handle({
+        request: stringRequest,
+        event,
+      });
+
+      await eventDoneWaiting(event);
+
+      const cache = await caches.open(cacheNames.getRuntimeName());
+      const cachedResponse = await cache.match(request);
+
+      await compareResponses(cachedResponse, handleResponse, true);
+    });
+
     it(`should return the cached response and not update the cache when the network request fails`, async function() {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});

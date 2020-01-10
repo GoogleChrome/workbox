@@ -382,7 +382,7 @@ class PrecacheController {
         // https://github.com/GoogleChrome/workbox/issues/1441
         throw new WorkboxError('missing-precache-entry', {
           cacheName: this._cacheName,
-          url: request.url,
+          url: request instanceof Request ? request.url : request,
         });
       } catch (error) {
         if (fallbackToNetwork) {

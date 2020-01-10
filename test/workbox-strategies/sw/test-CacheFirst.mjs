@@ -73,6 +73,44 @@ describe(`CacheFirst`, function() {
       expect(fetch.callCount).to.equal(0);
     });
 
+    it(`should support using a string as the request`, async function() {
+      const stringRequest = 'http://example.io/test/';
+      const request = new Request(stringRequest);
+      const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
+
+      const fetchResponse = generateUniqueResponse();
+      sandbox.stub(self, 'fetch').resolves(fetchResponse);
+
+      const cacheFirst = new CacheFirst();
+      const firstHandleResponse = await cacheFirst.handle({
+        request: stringRequest,
+        event,
+      });
+
+      // Wait until cache.put is finished.
+      await eventDoneWaiting(event);
+
+      const cache = await caches.open(cacheNames.getRuntimeName());
+      const firstCachedResponse = await cache.match(request);
+
+      await compareResponses(firstCachedResponse, fetchResponse, true);
+      await compareResponses(firstHandleResponse, fetchResponse, true);
+
+      const secondHandleResponse = await cacheFirst.handle({
+        request,
+        event,
+      });
+
+      // Reset spy state so we can check fetch wasn't called.
+      self.fetch.resetHistory();
+
+      const secondCachedResponse = await cache.match(request);
+      await compareResponses(firstCachedResponse, secondHandleResponse, true);
+      await compareResponses(firstCachedResponse, secondCachedResponse, true);
+      expect(fetch.callCount).to.equal(0);
+    });
+
     it(`should be able to cache a non-existent request to custom cache`, async function() {
       const cacheName = 'test-cache-name';
       const request = new Request('http://example.io/test/');
