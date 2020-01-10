@@ -130,7 +130,8 @@ async function injectManifest(config) {
     count,
     size,
     warnings,
-    filePaths: Object.keys(filesToWrite),
+    // Use upath.resolve() to make all the paths absolute.
+    filePaths: Object.keys(filesToWrite).map((f) => upath.resolve(f)),
   };
 }
 
