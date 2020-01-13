@@ -39,7 +39,7 @@ const noRevisionForURLsMatchingTransform =
  *   return {manifest, warnings: []};
  * };
  *
- * @example <caption>A transformation that removes the revision field when the
+ * @example <caption>A transformation that nulls the revision field when the
  * URL contains an 8-character hash surrounded by '.', indicating that it
  * already contains revision information:</caption>
  *
@@ -47,7 +47,7 @@ const noRevisionForURLsMatchingTransform =
  *   const manifest = manifestEntries.map(entry => {
  *     const hashRegExp = /\.\w{8}\./;
  *     if (entry.url.match(hashRegExp)) {
- *       delete entry.revision;
+ *       entry.revision = null;
  *     }
  *     return entry;
  *   });
