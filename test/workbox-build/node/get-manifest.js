@@ -39,7 +39,7 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function() {
     'importWorkboxFrom',
     'injectionPointRegexp',
     'navigateFallback',
-    'navigateFallbackWhitelist',
+    'navigateFallbackAllowlist',
     'runtimeCaching',
     'skipWaiting',
     'swSrc',

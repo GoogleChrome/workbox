@@ -82,37 +82,37 @@ describe(`NavigationRoute`, function() {
     });
   });
 
-  it(`should not include urls in blacklist that completely match`, function() {
+  it(`should not include urls in denylist that completely match`, function() {
     const url = new URL('/testing/path.html', self.location);
     const request = new Request(url);
     Object.defineProperty(request, 'mode', {value: 'navigate'});
 
     const navigationRoute = new NavigationRoute(handler, {
-      blacklist: [/\/testing\/.*/],
+      denylist: [/\/testing\/.*/],
     });
 
     expect(navigationRoute.match({request, url})).to.equal(false);
   });
 
-  it(`should blacklist urls with search params that result in partial match with regex`, function() {
+  it(`should denylist urls with search params that result in partial match with regex`, function() {
     const url = new URL('/testing/path.html?test=hello', self.location);
     const request = new Request(url);
     Object.defineProperty(request, 'mode', {value: 'navigate'});
 
     const navigationRoute = new NavigationRoute(handler, {
-      blacklist: [/\/testing\/path.html/],
+      denylist: [/\/testing\/path.html/],
     });
 
     expect(navigationRoute.match({request, url})).to.equal(false);
   });
 
-  it(`should only match urls in custom whitelist`, function() {
+  it(`should only match urls in custom allowlist`, function() {
     let url = new URL('/testing/path.html?test=hello', self.location);
     let request = new Request(url);
     Object.defineProperty(request, 'mode', {value: 'navigate'});
 
     const navigationRoute = new NavigationRoute(handler, {
-      whitelist: [/\/testing\/path.html/],
+      allowlist: [/\/testing\/path.html/],
     });
 
     expect(navigationRoute.match({request, url})).to.equal(true);
@@ -124,14 +124,14 @@ describe(`NavigationRoute`, function() {
     expect(navigationRoute.match({request, url})).to.equal(false);
   });
 
-  it(`should take blacklist as priority`, function() {
+  it(`should take denylist as priority`, function() {
     let url = new URL('/testing/path.html?test=hello', self.location);
     let request = new Request(url);
     Object.defineProperty(request, 'mode', {value: 'navigate'});
 
     const navigationRoute = new NavigationRoute(handler, {
-      whitelist: [/\/testing\/.*/],
-      blacklist: [/\/testing\/path.html/],
+      allowlist: [/\/testing\/.*/],
+      denylist: [/\/testing\/path.html/],
     });
 
     expect(navigationRoute.match({request, url})).to.equal(false);

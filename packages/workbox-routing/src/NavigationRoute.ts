@@ -13,8 +13,8 @@ import {Handler, MatchCallbackOptions} from './_types.js';
 import './_version.js';
 
 export interface NavigationRouteMatchOptions {
-  whitelist?: RegExp[],
-  blacklist?: RegExp[],
+  allowlist?: RegExp[],
+  denylist?: RegExp[],
 }
 
 /**
@@ -27,20 +27,20 @@ export interface NavigationRouteMatchOptions {
  * is set to `navigate`.
  *
  * You can optionally only apply this route to a subset of navigation requests
- * by using one or both of the `blacklist` and `whitelist` parameters.
+ * by using one or both of the `denylist` and `allowlist` parameters.
  *
  * @memberof workbox.routing
  * @extends workbox.routing.Route
  */
 class NavigationRoute extends Route {
-  private _whitelist: RegExp[];
-  private _blacklist: RegExp[];
+  private _allowlist: RegExp[];
+  private _denylist: RegExp[];
 
   /**
-   * If both `blacklist` and `whiltelist` are provided, the `blacklist` will
+   * If both `denylist` and `allowlist` are provided, the `denylist` will
    * take precedence and the request will not match this route.
    *
-   * The regular expressions in `whitelist` and `blacklist`
+   * The regular expressions in `allowlist` and `denylist`
    * are matched against the concatenated
    * [`pathname`]{@link https://developer.mozilla.org/en-US/docs/Web/API/HTMLHyperlinkElementUtils/pathname}
    * and [`search`]{@link https://developer.mozilla.org/en-US/docs/Web/API/HTMLHyperlinkElementUtils/search}
@@ -49,33 +49,33 @@ class NavigationRoute extends Route {
    * @param {workbox.routing.Route~handlerCallback} handler A callback
    * function that returns a Promise resulting in a Response.
    * @param {Object} options
-   * @param {Array<RegExp>} [options.blacklist] If any of these patterns match,
-   * the route will not handle the request (even if a whitelist RegExp matches).
-   * @param {Array<RegExp>} [options.whitelist=[/./]] If any of these patterns
+   * @param {Array<RegExp>} [options.denylist] If any of these patterns match,
+   * the route will not handle the request (even if a allowlist RegExp matches).
+   * @param {Array<RegExp>} [options.allowlist=[/./]] If any of these patterns
    * match the URL's pathname and search parameter, the route will handle the
-   * request (assuming the blacklist doesn't match).
+   * request (assuming the denylist doesn't match).
    */
   constructor(handler: Handler,
-      {whitelist = [/./], blacklist = []}: NavigationRouteMatchOptions = {}) {
+      {allowlist = [/./], denylist = []}: NavigationRouteMatchOptions = {}) {
     if (process.env.NODE_ENV !== 'production') {
-      assert!.isArrayOfClass(whitelist, RegExp, {
+      assert!.isArrayOfClass(allowlist, RegExp, {
         moduleName: 'workbox-routing',
         className: 'NavigationRoute',
         funcName: 'constructor',
-        paramName: 'options.whitelist',
+        paramName: 'options.allowlist',
       });
-      assert!.isArrayOfClass(blacklist, RegExp, {
+      assert!.isArrayOfClass(denylist, RegExp, {
         moduleName: 'workbox-routing',
         className: 'NavigationRoute',
         funcName: 'constructor',
-        paramName: 'options.blacklist',
+        paramName: 'options.denylist',
       });
     }
 
     super((options: MatchCallbackOptions) => this._match(options), handler);
 
-    this._whitelist = whitelist;
-    this._blacklist = blacklist;
+    this._allowlist = allowlist;
+    this._denylist = denylist;
   }
 
   /**
@@ -95,18 +95,18 @@ class NavigationRoute extends Route {
 
     const pathnameAndSearch = url.pathname + url.search;
 
-    for (const regExp of this._blacklist) {
+    for (const regExp of this._denylist) {
       if (regExp.test(pathnameAndSearch)) {
         if (process.env.NODE_ENV !== 'production') {
           logger.log(`The navigation route ${pathnameAndSearch} is not ` +
-              `being used, since the URL matches this blacklist pattern: ` +
+              `being used, since the URL matches this denylist pattern: ` +
               `${regExp}`);
         }
         return false;
       }
     }
 
-    if (this._whitelist.some((regExp) => regExp.test(pathnameAndSearch))) {
+    if (this._allowlist.some((regExp) => regExp.test(pathnameAndSearch))) {
       if (process.env.NODE_ENV !== 'production') {
         logger.debug(`The navigation route ${pathnameAndSearch} ` +
             `is being used.`);
@@ -117,7 +117,7 @@ class NavigationRoute extends Route {
     if (process.env.NODE_ENV !== 'production') {
       logger.log(`The navigation route ${pathnameAndSearch} is not ` +
           `being used, since the URL being navigated to doesn't ` +
-          `match the whitelist.`);
+          `match the allowlist.`);
     }
     return false;
   }

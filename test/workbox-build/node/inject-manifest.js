@@ -49,7 +49,7 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
     'importScripts',
     'importWorkboxFrom',
     'navigateFallback',
-    'navigateFallbackWhitelist',
+    'navigateFallbackAllowlist',
     'runtimeCaching',
     'skipWaiting',
   ];
