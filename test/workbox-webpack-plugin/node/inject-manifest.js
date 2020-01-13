@@ -113,7 +113,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       });
     });
 
-    it(`should honor the 'chunks' whitelist config`, function(done) {
+    it(`should honor the 'chunks' allowlist config`, function(done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -167,7 +167,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       });
     });
 
-    it(`should honor the 'chunks' whitelist config, including children created via SplitChunksPlugin`, function(done) {
+    it(`should honor the 'chunks' allowlist config, including children created via SplitChunksPlugin`, function(done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -225,7 +225,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       });
     });
 
-    it(`should honor the 'excludeChunks' blacklist config`, function(done) {
+    it(`should honor the 'excludeChunks' denylist config`, function(done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -279,7 +279,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       });
     });
 
-    it(`should honor setting both the 'chunks' and 'excludeChunks', with the blacklist taking precedence`, function(done) {
+    it(`should honor setting both the 'chunks' and 'excludeChunks', with the denylist taking precedence`, function(done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -734,7 +734,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       });
     });
 
-    it(`should allow developers to whitelist via include`, function(done) {
+    it(`should allow developers to allowlist via include`, function(done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
