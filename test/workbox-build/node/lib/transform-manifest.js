@@ -56,6 +56,7 @@ describe(`[workbox-build] lib/transform-manifest.js`, function() {
     expect(count).to.eql(3);
     expect(manifestEntries).to.deep.equal([{
       url: ENTRY1.file,
+      revision: null,
     }, {
       url: ENTRY2.file,
       revision: ENTRY2.hash,
