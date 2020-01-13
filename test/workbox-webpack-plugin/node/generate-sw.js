@@ -1273,6 +1273,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
             importScripts: [],
             precacheAndRoute: [[[{
               url: 'main.f70b1e.js',
+              revision: null,
             }], {}]],
           }});
 

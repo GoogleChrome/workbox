@@ -1169,6 +1169,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
             expectedMethodCalls: {
               precacheAndRoute: [[[{
                 url: 'main.8be1a4.js',
+                revision: null,
               }], {}]],
             },
           });
