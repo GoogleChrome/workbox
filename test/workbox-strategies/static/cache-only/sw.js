@@ -11,7 +11,7 @@ importScripts('/infra/testing/comlink/sw-interface.js');
 
 workbox.routing.registerRoute(
     new RegExp('/CacheOnly/.*/'),
-    workbox.strategies.cacheOnly()
+    new workbox.strategies.CacheOnly()
 );
 
 self.addEventListener('install', (event) => event.waitUntil(
