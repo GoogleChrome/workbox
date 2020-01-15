@@ -52,6 +52,27 @@ describe(`NetworkOnly`, function() {
       expect(keys).to.be.empty;
     });
 
+    it(`should support using a string as the request`, async function() {
+      sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
+
+      const stringRequest = 'http://example.io/test/';
+      const request = new Request(stringRequest);
+      const event = new FetchEvent('fetch', {request});
+
+      const networkOnly = new NetworkOnly();
+
+      const handleResponse = await networkOnly.handle({
+        request: stringRequest,
+        event,
+      });
+      expect(handleResponse).to.be.instanceOf(Response);
+
+      const cache = await caches.open(cacheNames.getRuntimeName());
+      const keys = await cache.keys();
+      expect(keys).to.be.empty;
+    });
+
+
     it(`should reject when the network request fails`, async function() {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});

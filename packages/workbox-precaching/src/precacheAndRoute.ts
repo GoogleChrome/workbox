@@ -30,10 +30,11 @@ declare global {
  * @param {Object} [options] See
  * [addRoute() options]{@link module:workbox-precaching.addRoute}.
  *
- * @alias workbox.precaching.precacheAndRoute
+ * @memberof module:workbox-precaching
  */
-export const precacheAndRoute =
-    (entries: Array<PrecacheEntry|string>, options?: FetchListenerOptions) => {
+function precacheAndRoute(entries: Array<PrecacheEntry|string>, options?: FetchListenerOptions) {
   precache(entries);
   addRoute(options);
 };
+
+export {precacheAndRoute}

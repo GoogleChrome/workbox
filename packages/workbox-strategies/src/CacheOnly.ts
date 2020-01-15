@@ -32,7 +32,7 @@ interface CacheOnlyOptions {
  *
  * If there is no cache match, this will throw a `WorkboxError` exception.
  *
- * @memberof workbox.strategies
+ * @memberof module:workbox-strategies
  */
 class CacheOnly implements RouteHandlerObject {
   private _cacheName: string;
@@ -43,7 +43,7 @@ class CacheOnly implements RouteHandlerObject {
    * @param {Object} options
    * @param {string} options.cacheName Cache name to store and retrieve
    * requests. Defaults to cache names provided by
-   * [workbox-core]{@link workbox.core.cacheNames}.
+   * [workbox-core]{@link module:workbox-core.cacheNames}.
    * @param {Array<Object>} options.plugins [Plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}
    * to use in conjunction with this caching strategy.
    * @param {Object} options.matchOptions [`CacheQueryOptions`](https://w3c.github.io/ServiceWorker/#dictdef-cachequeryoptions)
@@ -57,14 +57,18 @@ class CacheOnly implements RouteHandlerObject {
   /**
    * This method will perform a request strategy and follows an API that
    * will work with the
-   * [Workbox Router]{@link workbox.routing.Router}.
+   * [Workbox Router]{@link module:workbox-routing.Router}.
    *
    * @param {Object} options
-   * @param {Request} options.request The request to run this strategy for.
+   * @param {Request|string} options.request A request to run this strategy for.
    * @param {Event} [options.event] The event that triggered the request.
    * @return {Promise<Response>}
    */
   async handle({event, request}: RouteHandlerCallbackOptions): Promise<Response> {
+    if (typeof request === 'string') {
+      request = new Request(request);
+    }
+
     if (process.env.NODE_ENV !== 'production') {
       assert!.isInstance(request, Request, {
         moduleName: 'workbox-strategies',

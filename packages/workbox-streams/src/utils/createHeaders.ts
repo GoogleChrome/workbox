@@ -14,12 +14,13 @@ import '../_version.js';
  * [`ReadableStream`](https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream/ReadableStream)
  * is available.
  *
+ * @private
  * @param {HeadersInit} [headersInit] If there's no `Content-Type` specified,
  * `'text/html'` will be used by default.
  * @return {boolean} `true`, if the current browser meets the requirements for
  * streaming responses, and `false` otherwise.
  *
- * @memberof workbox.streams
+ * @memberof module:workbox-streams
  */
 function createHeaders(headersInit = {}) {
   // See https://github.com/GoogleChrome/workbox/issues/1461

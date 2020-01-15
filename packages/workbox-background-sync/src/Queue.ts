@@ -47,7 +47,7 @@ const queueNames = new Set();
  * later. All parts of the storing and replaying process are observable via
  * callbacks.
  *
- * @memberof workbox.backgroundSync
+ * @memberof module:workbox-background-sync
  */
 class Queue {
   private _name: string;

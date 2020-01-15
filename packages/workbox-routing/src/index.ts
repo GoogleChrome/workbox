@@ -6,8 +6,6 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.js';
-
 import {NavigationRoute} from './NavigationRoute.js';
 import {RegExpRoute} from './RegExpRoute.js';
 import {registerRoute} from './registerRoute.js';
@@ -18,12 +16,9 @@ import {setDefaultHandler} from './setDefaultHandler.js';
 
 import './_version.js';
 
-if (process.env.NODE_ENV !== 'production') {
-  assert!.isSWEnv('workbox-routing');
-}
 
 /**
- * @namespace workbox.routing
+ * @module workbox-routing
  */
 
 export {

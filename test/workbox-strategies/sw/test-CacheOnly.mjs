@@ -64,6 +64,23 @@ describe(`CacheOnly`, function() {
       await compareResponses(injectedResponse, handleResponse, true);
     });
 
+    it(`should support using a string as the request`, async function() {
+      const stringRequest = 'http://example.io/test/';
+      const request = new Request(stringRequest);
+      const event = new FetchEvent('fetch', {request});
+
+      const injectedResponse = generateUniqueResponse();
+      const cache = await caches.open(cacheNames.getRuntimeName());
+      await cache.put(request, injectedResponse.clone());
+
+      const cacheOnly = new CacheOnly();
+      const handleResponse = await cacheOnly.handle({
+        request: stringRequest,
+        event,
+      });
+      await compareResponses(injectedResponse, handleResponse, true);
+    });
+
     it(`should return no cached response from custom cache name`, async function() {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});

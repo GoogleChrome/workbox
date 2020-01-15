@@ -48,8 +48,8 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
     'mode',
     'modifyURLPrefix',
     'navigateFallback',
-    'navigateFallbackBlacklist',
-    'navigateFallbackWhitelist',
+    'navigateFallbackDenylist',
+    'navigateFallbackAllowlist',
     'navigationPreload',
     'offlineGoogleAnalytics',
     'runtimeCaching',
@@ -395,12 +395,12 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       const outputDir = tempy.directory();
       const swDest = upath.join(outputDir, 'sw.js');
       const navigateFallback = 'test.html';
-      const navigateFallbackBlacklist = [/test1/, /test2/];
-      const navigateFallbackWhitelist = [/test3/, /test4/];
+      const navigateFallbackDenylist = [/test1/, /test2/];
+      const navigateFallbackAllowlist = [/test3/, /test4/];
       const options = Object.assign({}, BASE_OPTIONS, {
         navigateFallback,
-        navigateFallbackBlacklist,
-        navigateFallbackWhitelist,
+        navigateFallbackDenylist,
+        navigateFallbackAllowlist,
         swDest,
       });
 
@@ -435,8 +435,8 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
         }], {}]],
         registerRoute: [[{name: 'NavigationRoute'}]],
         NavigationRoute: [['/urlWithCacheKey', {
-          blacklist: navigateFallbackBlacklist,
-          whitelist: navigateFallbackWhitelist,
+          denylist: navigateFallbackDenylist,
+          allowlist: navigateFallbackAllowlist,
         }]],
       }});
     });
@@ -1092,6 +1092,29 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
   });
 
   describe(`[workbox-build] removed options`, function() {
+    // These were removed in v5.
+    const navigateFallbackOptions = {
+      navigateFallbackBlacklist: [],
+      navigateFallbackWhitelist: [],
+    };
+
+    for (const [option, value] of Object.entries(navigateFallbackOptions)) {
+      it(`should fail validation when ${option} is used`, async function() {
+        const options = Object.assign({}, BASE_OPTIONS, {
+          [option]: value,
+        });
+
+        try {
+          await generateSW(options);
+          throw new Error('Unexpected success.');
+        } catch (error) {
+          // They fail by throwing an Error with a custom message,
+          // not a ValidationError.
+          expect(error.message).to.include(option);
+        }
+      });
+    }
+
     // These were deprecated in v4, and formally removed in v5.
     const oldOptionsToValue = {
       dontCacheBustUrlsMatching: /ignored/,

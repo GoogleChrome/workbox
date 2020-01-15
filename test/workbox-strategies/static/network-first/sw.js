@@ -11,7 +11,7 @@ importScripts('/infra/testing/comlink/sw-interface.js');
 
 workbox.routing.registerRoute(
     new RegExp('/__WORKBOX/uniqueValue'),
-    workbox.strategies.networkFirst({
+    new workbox.strategies.NetworkFirst({
       cacheName: 'network-first',
     })
 );

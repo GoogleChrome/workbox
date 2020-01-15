@@ -37,7 +37,7 @@ export interface RouteMatchCallback {
  * Options passed to a `RouteHandlerCallback` function.
  */
 export interface RouteHandlerCallbackOptions {
-  request: Request;
+  request: Request | string;
   url?: URL;
   event?: ExtendableEvent;
   params?: string[] | {[paramName: string]: string};

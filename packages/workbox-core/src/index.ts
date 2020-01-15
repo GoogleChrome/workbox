@@ -21,7 +21,7 @@ import './_version.js';
  * code as well as setting default values that need to be shared (like cache
  * names).
  *
- * @namespace workbox.core
+ * @module workbox-core
  */
 export {
   _private,

@@ -8,6 +8,30 @@
 
 import './_version.js';
 
+export interface InstallResult {
+  updatedURLs: string[];
+  notUpdatedURLs: string[];
+}
+
+export interface CleanupResult {
+  deletedCacheRequests: string[],
+}
+
+export interface PrecacheEntry {
+  integrity?: string;
+  url: string;
+  revision?: string;
+}
+
+export type urlManipulation = ({url}: {url: URL}) => URL[];
+
+// * * * IMPORTANT! * * *
+// ------------------------------------------------------------------------- //
+// jdsoc type definitions cannot be declared above TypeScript definitions or
+// they'll be stripped from the built `.js` files, and they'll only be in the
+// `d.ts` files, which aren't read by the jsdoc generator. As a result we
+// have to put declare them below.
+
 /**
  * @typedef {Object} InstallResult
  * @property {Array<string>} updatedURLs List of URLs that were updated during
@@ -15,23 +39,16 @@ import './_version.js';
  * @property {Array<string>} notUpdatedURLs List of URLs that were already up to
  * date.
  *
- * @memberof workbox.precaching
+ * @memberof module:workbox-precaching
  */
-export interface InstallResult {
-  updatedURLs: string[];
-  notUpdatedURLs: string[];
-}
 
 /**
  * @typedef {Object} CleanupResult
  * @property {Array<string>} deletedCacheRequests List of URLs that were deleted
  * while cleaning up the cache.
  *
- * @memberof workbox.precaching
+ * @memberof module:workbox-precaching
  */
-export interface CleanupResult {
-  deletedCacheRequests: string[],
-}
 
 /**
  * @typedef {Object} PrecacheEntry
@@ -40,13 +57,8 @@ export interface CleanupResult {
  * @property {string} [integrity] Integrity metadata that will be used when
  * making the network request for the URL.
  *
- * @memberof workbox.precaching
+ * @memberof module:workbox-precaching
  */
-export interface PrecacheEntry {
-  integrity?: string;
-  url: string;
-  revision?: string;
-}
 
 /**
  * The "urlManipulation" callback can be used to determine if there are any
@@ -62,6 +74,5 @@ export interface PrecacheEntry {
  * @return {Array<URL>} To add additional urls to test, return an Array of
  * URLs. Please note that these **should not be strings**, but URL objects.
  *
- * @memberof workbox.precaching
+ * @memberof module:workbox-precaching
  */
-export type urlManipulation = ({url}: {url: URL}) => URL[];
