@@ -39,14 +39,14 @@ const _generatedAssetNames = new Set();
 class InjectManifest {
   // eslint-disable-next-line jsdoc/newline-after-description
   /**
-   * Creates an instance of GenerateSW.
+   * Creates an instance of InjectManifest.
    *
    * @param {Object} config The configuration to use.
    *
    * @param {string} config.swSrc An existing service worker file that will be
    * compiled and have a precache manifest injected into it.
    *
-   * @param {Array<workbox-build~ManifestEntry>} [config.additionalManifestEntries]
+   * @param {Array<module:workbox-build~ManifestEntry>} [config.additionalManifestEntries]
    * A list of entries to be precached, in addition to any entries that are
    * generated as part of the build configuration.
    *
@@ -83,10 +83,10 @@ class InjectManifest {
    * find inside of the `swSrc` file. Once found, it will be replaced by the
    * generated precache manifest.
    *
-   * @param {Array<workbox-build~ManifestTransform>} [config.manifestTransforms] One or more
-   * functions which will be applied sequentially against the generated manifest.
-   * If `modifyURLPrefix` or `dontCacheBustURLsMatching` are also specified, their
-   * corresponding transformations will be applied first.
+   * @param {Array<module:workbox-build~ManifestTransform>} [config.manifestTransforms]
+   * One or more functions which will be applied sequentially against the
+   * generated manifest. If `modifyURLPrefix` or `dontCacheBustURLsMatching` are
+   * also specified, their corresponding transformations will be applied first.
    *
    * @param {number} [config.maximumFileSizeToCacheInBytes=2097152] This value can be
    * used to determine the maximum size of files that will be precached. This
@@ -95,8 +95,8 @@ class InjectManifest {
    *
    * @param {string} [config.mode] If set to 'production', then an optimized service
    * worker bundle that excludes debugging info will be produced. If not explicitly
-   * configured here, the `mode` value configured in the current `webpack` compiltion
-   * will be used.
+   * configured here, the `mode` value configured in the current `webpack`
+   * compilation will be used.
    *
    * @param {Object<string, string>} [config.modifyURLPrefix] A mapping of prefixes
    * that, if present in an entry in the precache manifest, will be replaced with

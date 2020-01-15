@@ -30,7 +30,7 @@ class Route {
   /**
    * Constructor for Route class.
    *
-   * @param {module:workbox-routing.Route~matchCallback} match
+   * @param {module:workbox-routing~matchCallback} match
    * A callback function that determines whether the route matches a given
    * `fetch` event by returning a non-falsy value.
    * @param {module:workbox-routing~handlerCallback} handler A callback
@@ -56,7 +56,7 @@ class Route {
     }
 
     // These values are referenced directly by Router so cannot be
-    // altered by minifification.
+    // altered by minificaton.
     this.handler = normalizeHandler(handler);
     this.match = match;
     this.method = method;

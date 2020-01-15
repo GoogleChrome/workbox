@@ -40,7 +40,7 @@ class GenerateSW {
    *
    * @param {Object} config The configuration to use.
    *
-   * @param {Array<workbox-build~ManifestEntry>} [config.additionalManifestEntries]
+   * @param {Array<module:workbox-build~ManifestEntry>} [config.additionalManifestEntries]
    * A list of entries to be precached, in addition to any entries that are
    * generated as part of the build configuration.
    *
@@ -112,10 +112,10 @@ class GenerateSW {
    * worker. Keeping the runtime separate means that users will not have to
    * re-download the Workbox code each time your top-level service worker changes.
    *
-   * @param {Array<workbox-build~ManifestTransform>} [config.manifestTransforms] One or more
-   * functions which will be applied sequentially against the generated manifest.
-   * If `modifyURLPrefix` or `dontCacheBustURLsMatching` are also specified, their
-   * corresponding transformations will be applied first.
+   * @param {Array<module:workbox-build~ManifestTransform>} [config.manifestTransforms]
+   * One or more functions which will be applied sequentially against the
+   * generated manifest. If `modifyURLPrefix` or `dontCacheBustURLsMatching` are
+   * also specified, their corresponding transformations will be applied first.
    *
    * @param {number} [config.maximumFileSizeToCacheInBytes=2097152] This value can be
    * used to determine the maximum size of files that will be precached. This
@@ -172,7 +172,7 @@ class GenerateSW {
    * will be passed in to the `initialize()` call, allowing you to customize the
    * behavior.
    *
-   * @param {Array<workbox-build~RuntimeCachingEntry>} [config.runtimeCaching]
+   * @param {Array<module:workbox-build~RuntimeCachingEntry>} [config.runtimeCaching]
    *
    * @param {boolean} [config.skipWaiting=false] Whether to add an
    * unconditional call to [`skipWaiting()`](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.core#.skipWaiting)
