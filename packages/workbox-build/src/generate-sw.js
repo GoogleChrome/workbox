@@ -171,7 +171,7 @@ const writeServiceWorkerUsingDefaultTemplate =
  * @param {boolean} [config.skipWaiting=false] Whether to add an
  * unconditional call to [`skipWaiting()`]{@link module:workbox-core.skipWaiting}
  * to the generated service worker. If `false`, then a `message` listener will
- * be added instead, all you to conditionally call `skipWaiting()`.
+ * be added instead, allowing you to conditionally call `skipWaiting()`.
  *
  * @param {boolean} [config.sourcemap=true] Whether to create a sourcemap
  * for the generated service worker files.
