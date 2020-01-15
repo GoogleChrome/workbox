@@ -31,7 +31,7 @@ import './_version.mjs';
  * @typedef {Object} RuntimeCachingEntry
  *
  * @property {string|module:workbox-routing~handlerCallback} handler
- * Either the name of one of the [built-in strategy classes](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.strategies),
+ * Either the name of one of the [built-in strategy classes]{@link module:workbox-strategies},
  * or custom handler callback to use when the generated route matches.
  *
  * @property {string|RegExp|module:workbox-routing~matchCallback} urlPattern
@@ -46,61 +46,64 @@ import './_version.mjs';
  *
  * @property {Object} [options.backgroundSync]
  *
- * @property {string} [options.backgroundSync.name] The
- * [`name` property](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.backgroundSync.Queue.html)
- * to use when creating the `BackgroundSyncPlugin`.
+ * @property {string} [options.backgroundSync.name] The `name` property to use
+ * when creating the
+ * [`BackgroundSyncPlugin`]{@link module:workbox-background-sync.BackgroundSyncPlugin}.
  *
- * @property {Object} [options.backgroundSync.options] The
- * [`options` property](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.backgroundSync.Queue.html)
- * to use when creating the `BackgroundSyncPlugin`.
+ * @property {Object} [options.backgroundSync.options] The `options` property
+ * to use when creating the
+ * [`BackgroundSyncPlugin`]{@link module:workbox-background-sync.BackgroundSyncPlugin}.
  *
  * @property {Object} [options.broadcastUpdate]
  *
- * @property {string} [options.broadcastUpdate.channelName]
- * The [`channelName` property](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.broadcastUpdate.BroadcastCacheUpdate)
- * to use when creating the `BroadcastCacheUpdatePlugin`.
+ * @property {string} [options.broadcastUpdate.channelName] The `channelName`
+ * property to use when creating the
+ * [`BroadcastCacheUpdatePlugin`]{@link module:workbox-broadcast-update.BroadcastUpdatePlugin}.
  *
- * @property {Object} [options.broadcastUpdate.options] The
- * [`options` property](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.broadcastUpdate.BroadcastCacheUpdate)
- * to use when creating the `BroadcastCacheUpdatePlugin`.
+ * @property {Object} [options.broadcastUpdate.options] The `options` property
+ * to use when creating the
+ * [`BroadcastCacheUpdatePlugin`]{@link module:workbox-broadcast-update.BroadcastUpdatePlugin}.
  *
  * @property {Object} [options.cacheableResponse]
  *
- * @property {Object} [options.cacheableResponse.headers]
- * The [`headers` property](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.cacheableResponse.CacheableResponse)
- * to use when creating the `CacheableResponsePlugin`.
+ * @property {Object} [options.cacheableResponse.headers] The `headers` property
+ * to use when creating the
+ * [`CacheableResponsePlugin`]{@link module:workbox-cacheable-response.CacheableResponsePlugin}.
  *
- * @property {Array<number>} [options.cacheableResponse.statuses]
- * The [`status` property](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.cacheableResponse.CacheableResponse)
- * to use when creating the `CacheableResponsePlugin`.
+ * @property {Array<number>} [options.cacheableResponse.statuses] `statuses`
+ * property to use when creating the
+ * [`CacheableResponsePlugin`]{@link module:workbox-cacheable-response.CacheableResponsePlugin}.
  *
- * @property {string} [options.cacheName] The `cacheName`
- * to use when constructing one of the [Workbox strategy classes](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.strategies).
+ * @property {string} [options.cacheName] The `cacheName` to use when
+ * constructing one of the
+ * [Workbox strategy classes]{@link module:workbox-strategies}.
  *
- * @property {Object} [options.fetchOptions]
- * The `fetchOptions` property value to use when creating the handler.
+ * @property {Object} [options.fetchOptions] The `fetchOptions` property value
+ * to use when constructing one of the
+ * [Workbox strategy classes]{@link module:workbox-strategies}.
  *
  * @property {Object} [options.expiration]
  *
- * @property {number} [options.expiration.maxAgeSeconds]
- * The [`maxAgeSeconds` property](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.expiration.CacheExpiration)
- * to use when creating the `CacheExpirationPlugin`.
+ * @property {number} [options.expiration.maxAgeSeconds] The `maxAgeSeconds`
+ * property to use when creating the
+ * [`ExpirationPlugin`]{@link module:workbox-expiration.ExpirationPlugin}.
  *
- * @property {number} [options.expiration.maxEntries]
- * The [`maxAgeSeconds` property](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.expiration.CacheExpiration)
- * to use when creating the `CacheExpirationPlugin`.
+ * @property {number} [options.expiration.maxEntries] The `maxAgeSeconds`
+ * property to use when creating the
+ * [`ExpirationPlugin`]{@link module:workbox-expiration.ExpirationPlugin}.
  *
- * @property {Object} [options.matchOptions]
- * The `matchOptions` property value to use when creating the handler.
+ * @property {Object} [options.matchOptions] The `matchOptions` property value
+ * to use when constructing one of the
+ * [Workbox strategy classes]{@link module:workbox-strategies}.
  *
- * @property {number} [options.networkTimeoutSeconds]
- * The `networkTimeoutSeconds` property value to use when creating a
- * `NetworkFirst` handler.
+ * @property {number} [options.networkTimeoutSeconds] The
+ * `networkTimeoutSeconds` property value to use when creating a
+ * [`NetworkFirst`]{@link module:workbox-strategies.NetworkFirst} strategy.
  *
  * @property {Array<Object>} [options.plugins]
  * One or more [additional plugins](https://developers.google.com/web/tools/workbox/guides/using-plugins#custom_plugins)
  * to apply to the handler. Useful when you want a plugin that doesn't have a
- * "shortcut" configuration, like `expiration` or `cacheableResponse`.
+ * "shortcut" configuration.
  *
  * @memberof module:workbox-build
  */

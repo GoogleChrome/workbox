@@ -169,7 +169,7 @@ const writeServiceWorkerUsingDefaultTemplate =
  * @param {Array<RuntimeCachingEntry>} [config.runtimeCaching]
  *
  * @param {boolean} [config.skipWaiting=false] Whether to add an
- * unconditional call to [`skipWaiting()`](https://developers.google.com/web/tools/workbox/reference-docs/latest/workbox.core#.skipWaiting)
+ * unconditional call to [`skipWaiting()`]{@link module:workbox-core.skipWaiting}
  * to the generated service worker. If `false`, then a `message` listener will
  * be added instead, all you to conditionally call `skipWaiting()`.
  *
