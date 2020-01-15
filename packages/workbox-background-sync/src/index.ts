@@ -12,7 +12,7 @@ import './_version.js';
 
 
 /**
- * @namespace workbox.backgroundSync
+ * @module workbox-background-sync
  */
 
 export {

@@ -14,7 +14,7 @@ import './_version.js';
 
 
 /**
- * @namespace workbox.streams
+ * @module workbox-streams
  */
 
 export {

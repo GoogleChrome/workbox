@@ -10,17 +10,18 @@ import {getOrCreateDefaultRouter} from './utils/getOrCreateDefaultRouter.js';
 import {Handler} from './_types.js';
 import './_version.js';
 
-
 /**
  * If a Route throws an error while handling a request, this `handler`
  * will be called and given a chance to provide a response.
  *
- * @param {workbox.routing.Route~handlerCallback} handler A callback
+ * @param {module:workbox-routing~handlerCallback} handler A callback
  * function that returns a Promise resulting in a Response.
  *
- * @alias workbox.routing.setCatchHandler
+ * @memberof module:workbox-routing
  */
-export const setCatchHandler = (handler: Handler) => {
+function setCatchHandler(handler: Handler) {
   const defaultRouter = getOrCreateDefaultRouter();
   defaultRouter.setCatchHandler(handler);
 };
+
+export {setCatchHandler}

@@ -21,10 +21,9 @@ import './_version.js';
  * @param {ServiceWorker} sw The service worker to send the message to.
  * @param {Object} data An object to send to the service worker.
  * @return {Promise<Object|undefined>}
- *
  * @memberof module:workbox-window
  */
-export function messageSW(sw: ServiceWorker, data: {}): Promise<any> {
+function messageSW(sw: ServiceWorker, data: {}): Promise<any> {
   return new Promise((resolve) => {
     let messageChannel = new MessageChannel();
     messageChannel.port1.onmessage = (event: MessageEvent) => {
@@ -33,3 +32,5 @@ export function messageSW(sw: ServiceWorker, data: {}): Promise<any> {
     sw.postMessage(data, [messageChannel.port2]);
   });
 };
+
+export {messageSW}

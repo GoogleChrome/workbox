@@ -36,7 +36,7 @@ interface CacheFirstOptions {
  * If the network request fails, and there is no cache match, this will throw
  * a `WorkboxError` exception.
  *
- * @memberof workbox.strategies
+ * @memberof module:workbox-strategies
  */
 class CacheFirst implements RouteHandlerObject {
   private _cacheName: string;
@@ -48,7 +48,7 @@ class CacheFirst implements RouteHandlerObject {
    * @param {Object} options
    * @param {string} options.cacheName Cache name to store and retrieve
    * requests. Defaults to cache names provided by
-   * [workbox-core]{@link workbox.core.cacheNames}.
+   * [workbox-core]{@link module:workbox-core.cacheNames}.
    * @param {Array<Object>} options.plugins [Plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}
    * to use in conjunction with this caching strategy.
    * @param {Object} options.fetchOptions Values passed along to the
@@ -66,7 +66,7 @@ class CacheFirst implements RouteHandlerObject {
   /**
    * This method will perform a request strategy and follows an API that
    * will work with the
-   * [Workbox Router]{@link workbox.routing.Router}.
+   * [Workbox Router]{@link module:workbox-routing.Router}.
    *
    * @param {Object} options
    * @param {Request|string} options.request A request to run this strategy for.

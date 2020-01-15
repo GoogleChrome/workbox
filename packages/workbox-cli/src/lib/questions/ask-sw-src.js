@@ -22,7 +22,7 @@ function askQuestion() {
     name,
     message: ol`Where's your existing service worker file? To be used with
       injectManifest, it should include a call to
-      'workbox.precaching.precacheAndRoute([])'`,
+      'self.__WB_MANIFEST'`,
     type: 'input',
   }]);
 }

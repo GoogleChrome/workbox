@@ -12,7 +12,7 @@ import './_version.js';
 
 
 /**
- * @namespace workbox.expiration
+ * @module workbox-expiration
  */
 
 export {

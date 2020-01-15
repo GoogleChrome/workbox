@@ -13,7 +13,7 @@ import './_version.js';
 
 
 /**
- * @namespace workbox.broadcastUpdate
+ * @module workbox-broadcast-update
  */
 
 export {

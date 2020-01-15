@@ -12,7 +12,7 @@ import './_version.js';
 
 
 /**
- * @namespace workbox.cacheableResponse
+ * @module workbox-cacheable-response
  */
 
 export {

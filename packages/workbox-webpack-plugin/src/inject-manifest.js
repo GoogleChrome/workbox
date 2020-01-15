@@ -34,7 +34,7 @@ const _generatedAssetNames = new Set();
  * [`plugins` array](https://webpack.js.org/concepts/plugins/#usage) of a
  * webpack config.
  *
- * @module workbox-webpack-plugin
+ * @memberof module:workbox-webpack-plugin
  */
 class InjectManifest {
   /**

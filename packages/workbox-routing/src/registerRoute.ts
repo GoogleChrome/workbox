@@ -21,30 +21,24 @@ import './_version.js';
  * strategy to a singleton Router instance.
  *
  * This method will generate a Route for you if needed and
- * call [Router.registerRoute()]{@link
- * workbox.routing.Router#registerRoute}.
+ * call [registerRoute()]{@link module:workbox-routing.Router#registerRoute}.
  *
- * @param {
- * RegExp|
- * string|
- * workbox.routing.Route~matchCallback|
- * workbox.routing.Route
- * } capture
+ * @param {RegExp|string|module:workbox-routing.Route~matchCallback|module:workbox-routing.Route} capture
  * If the capture param is a `Route`, all other arguments will be ignored.
- * @param {workbox.routing.Route~handlerCallback} [handler] A callback
+ * @param {module:workbox-routing~handlerCallback} [handler] A callback
  * function that returns a Promise resulting in a Response. This parameter
  * is required if `capture` is not a `Route` object.
  * @param {string} [method='GET'] The HTTP method to match the Route
  * against.
- * @return {workbox.routing.Route} The generated `Route`(Useful for
+ * @return {module:workbox-routing.Route} The generated `Route`(Useful for
  * unregistering).
  *
- * @alias workbox.routing.registerRoute
+ * @memberof module:workbox-routing
  */
-export const registerRoute = (
+function registerRoute(
     capture: RegExp | string | MatchCallback | Route,
     handler?: Handler,
-    method?: HTTPMethod): Route => {
+    method?: HTTPMethod): Route {
   let route;
 
   if (typeof capture === 'string') {
@@ -112,3 +106,5 @@ export const registerRoute = (
 
   return route;
 };
+
+export {registerRoute}

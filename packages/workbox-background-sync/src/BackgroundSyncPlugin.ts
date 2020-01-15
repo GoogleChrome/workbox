@@ -14,16 +14,16 @@ import './_version.js';
  * A class implementing the `fetchDidFail` lifecycle callback. This makes it
  * easier to add failed requests to a background sync Queue.
  *
- * @memberof workbox.backgroundSync
+ * @memberof module:workbox-background-sync
  */
 class BackgroundSyncPlugin implements WorkboxPlugin {
   private _queue: Queue;
 
   /**
-   * @param {string} name See the [Queue]{@link workbox.backgroundSync.Queue}
+   * @param {string} name See the [Queue]{@link module:workbox-background-sync.Queue}
    *     documentation for parameter details.
    * @param {Object} [options] See the
-   *     [Queue]{@link workbox.backgroundSync.Queue} documentation for
+   *     [Queue]{@link module:workbox-background-sync.Queue} documentation for
    *     parameter details.
    */
   constructor(name: string, options: QueueOptions) {

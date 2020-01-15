@@ -9,6 +9,10 @@
 const GenerateSW = require('./generate-sw');
 const InjectManifest = require('./inject-manifest');
 
+/**
+ * @module workbox-webpack-plugin
+ */
+
 module.exports = {
   GenerateSW,
   InjectManifest,
