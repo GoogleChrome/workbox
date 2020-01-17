@@ -13,8 +13,9 @@ import './_version.js';
 declare var self: ServiceWorkerGlobalScope;
 
 /**
- * Force a service worker to become active, instead of waiting. This is
- * normally used in conjunction with `clientsClaim()`.
+ * Force a service worker to activate immediately, instead of
+ * [waiting](https://developers.google.com/web/fundamentals/primers/service-workers/lifecycle#waiting)
+ * for existing clients to close.
  *
  * @memberof module:workbox-core
  */

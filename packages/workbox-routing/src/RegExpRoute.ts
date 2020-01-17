@@ -29,9 +29,9 @@ import './_version.js';
  */
 class RegExpRoute extends Route {
   /**
-   * If the regulard expression contains
+   * If the regular expression contains
    * [capture groups]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp#grouping-back-references},
-   * th ecaptured values will be passed to the
+   * the captured values will be passed to the
    * [handler's]{@link module:workbox-routing~handlerCallback} `params`
    * argument.
    *
