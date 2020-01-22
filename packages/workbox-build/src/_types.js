@@ -21,7 +21,7 @@ import './_version.mjs';
 
 /**
  * @typedef {Object} ManifestTransformResult
- * @property {Array<ManifestEntry>} manifest
+ * @property {Array<module:workbox-build.ManifestEntry>} manifest
  * @property {Array<string>|undefined} warnings
  *
  * @memberof module:workbox-build

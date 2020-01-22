@@ -21,9 +21,9 @@ const validate = require('./lib/validate-options');
  * @param {string} config.globDirectory The local directory you wish to match
  * `globPatterns` against. The path is relative to the current directory.
  *
- * @param {Array<ManifestEntry>} [config.additionalManifestEntries] A list of
- * entries to be precached, in addition to any entries that are generated as
- * part of the build configuration.
+ * @param {Array<module:workbox-build.ManifestEntry>} [config.additionalManifestEntries]
+ * A list of entries to be precached, in addition to any entries that are
+ * generated as part of the build configuration.
  *
  * @param {RegExp} [config.dontCacheBustURLsMatching] Assets that match this will be
  * assumed to be uniquely versioned via their URL, and exempted from the normal
@@ -53,7 +53,7 @@ const validate = require('./lib/validate-options');
  * definition of `strict` in the `glob`
  * [documentation](https://github.com/isaacs/node-glob#options).
  *
- * @param {Array<ManifestTransform>} [config.manifestTransforms] One or more
+ * @param {Array<module:workbox-build.ManifestTransform>} [config.manifestTransforms] One or more
  * functions which will be applied sequentially against the generated manifest.
  * If `modifyURLPrefix` or `dontCacheBustURLsMatching` are also specified, their
  * corresponding transformations will be applied first.

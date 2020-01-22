@@ -17,7 +17,7 @@ const noRevisionForURLsMatchingTransform =
 /**
  * A `ManifestTransform` function can be used to modify the modify the `url` or
  * `revision` properties of some or all of the
- * {@link module:workbox-build#ManifestEntry|ManifestEntries} in the manifest.
+ * {@link module:workbox-build.ManifestEntry|ManifestEntries} in the manifest.
  *
  * Deleting the `revision` property of an entry will cause
  * the corresponding `url` to be precached without cache-busting parameters
@@ -25,8 +25,8 @@ const noRevisionForURLsMatchingTransform =
  * proper versioning info. If the `revision` property is present, it must be
  * set to a string.
  *
- * @example <caption>A transformation that prepended the origin of a CDN for any
- * URL starting with '/assets/' could be implemented as:</caption>
+ * @example A transformation that prepended the origin of a CDN for any
+ * URL starting with '/assets/' could be implemented as:
  *
  * const cdnTransform = async (manifestEntries) => {
  *   const manifest = manifestEntries.map(entry => {
@@ -39,9 +39,9 @@ const noRevisionForURLsMatchingTransform =
  *   return {manifest, warnings: []};
  * };
  *
- * @example <caption>A transformation that nulls the revision field when the
+ * @example A transformation that nulls the revision field when the
  * URL contains an 8-character hash surrounded by '.', indicating that it
- * already contains revision information:</caption>
+ * already contains revision information:
  *
  * const removeRevisionTransform = async (manifestEntries) => {
  *   const manifest = manifestEntries.map(entry => {
