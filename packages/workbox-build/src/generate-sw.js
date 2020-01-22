@@ -35,9 +35,9 @@ const writeServiceWorkerUsingDefaultTemplate =
  * that will be created by the build process, relative to the current working
  * directory. It must end in '.js'.
  *
- * @param {Array<ManifestEntry>} [config.additionalManifestEntries] A list of
- * entries to be precached, in addition to any entries that are generated as
- * part of the build configuration.
+ * @param {Array<module:workbox-build.ManifestEntry>} [config.additionalManifestEntries]
+ * A list of entries to be precached, in addition to any entries that are
+ * generated as part of the build configuration.
  *
  * @param {Array<string>} [config.babelPresetEnvTargets=['chrome >= 56']]
  * The [targets](https://babeljs.io/docs/en/babel-preset-env#targets) to pass to
@@ -106,7 +106,7 @@ const writeServiceWorkerUsingDefaultTemplate =
  * worker. Keeping the runtime separate means that users will not have to
  * re-download the Workbox code each time your top-level service worker changes.
  *
- * @param {Array<ManifestTransform>} [config.manifestTransforms] One or more
+ * @param {Array<module:workbox-build.ManifestTransform>} [config.manifestTransforms] One or more
  * functions which will be applied sequentially against the generated manifest.
  * If `modifyURLPrefix` or `dontCacheBustURLsMatching` are also specified, their
  * corresponding transformations will be applied first.
@@ -136,21 +136,21 @@ const writeServiceWorkerUsingDefaultTemplate =
  * precache manifest. This is meant to be used in a Single Page App scenario, in
  * which you want all navigations to use common [App Shell HTML](https://developers.google.com/web/fundamentals/architecture/app-shell).
  *
- * @param {Array<RegExp>} [config.navigateFallbackBlacklist] An optional array
+ * @param {Array<RegExp>} [config.navigateFallbackDenylist] An optional array
  * of regular expressions that restricts which URLs the configured
  * `navigateFallback` behavior applies to. This is useful if only a subset of
  * your site's URLs should be treated as being part of a
  * [Single Page App](https://en.wikipedia.org/wiki/Single-page_application). If
- * both `navigateFallbackBlacklist` and `navigateFallbackWhitelist` are
- * configured, the blacklist takes precedent.
+ * both `navigateFallbackDenylist` and `navigateFallbackAllowlist` are
+ * configured, the denylist takes precedent.
  *
- * @param {Array<RegExp>} [config.navigateFallbackWhitelist] An optional array
+ * @param {Array<RegExp>} [config.navigateFallbackAllowlist] An optional array
  * of regular expressions that restricts which URLs the configured
  * `navigateFallback` behavior applies to. This is useful if only a subset of
  * your site's URLs should be treated as being part of a
  * [Single Page App](https://en.wikipedia.org/wiki/Single-page_application). If
- * both `navigateFallbackBlacklist` and `navigateFallbackWhitelist` are
- * configured, the blacklist takes precedent.
+ * both `navigateFallbackDenylist` and `navigateFallbackAllowlist` are
+ * configured, the denylist takes precedent.
  *
  * @param {boolean} [config.navigationPreload=false] Whether or not to enable
  * [navigation preload](https://developers.google.com/web/tools/workbox/modules/workbox-navigation-preload)

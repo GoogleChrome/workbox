@@ -46,7 +46,7 @@ class InjectManifest {
    * @param {string} config.swSrc An existing service worker file that will be
    * compiled and have a precache manifest injected into it.
    *
-   * @param {Array<module:workbox-build~ManifestEntry>} [config.additionalManifestEntries]
+   * @param {Array<module:workbox-build.ManifestEntry>} [config.additionalManifestEntries]
    * A list of entries to be precached, in addition to any entries that are
    * generated as part of the build configuration.
    *
@@ -83,7 +83,7 @@ class InjectManifest {
    * find inside of the `swSrc` file. Once found, it will be replaced by the
    * generated precache manifest.
    *
-   * @param {Array<module:workbox-build~ManifestTransform>} [config.manifestTransforms]
+   * @param {Array<module:workbox-build.ManifestTransform>} [config.manifestTransforms]
    * One or more functions which will be applied sequentially against the
    * generated manifest. If `modifyURLPrefix` or `dontCacheBustURLsMatching` are
    * also specified, their corresponding transformations will be applied first.
