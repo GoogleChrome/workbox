@@ -32,17 +32,18 @@ gulp.task('build:update-cdn-details', async function() {
       __dirname, '..', 'cdn-details.json'
   ));
 
-  const lernaPkg = await fs.readJSON(path.join(
-      __dirname, '..', 'lerna.json'
-  ));
-
-  cdnDetails.latestVersion = lernaPkg.version;
-
   const workboxBuildPath = path.join(
-      __dirname, '..', 'packages', 'workbox-build', 'src', 'cdn-details.json'
-  );
+      __dirname, '..', 'packages', 'workbox-build');
 
-  await fs.writeJson(workboxBuildPath, cdnDetails, {
+  const workboxBuildCdnDetailsPath = path.join(
+      workboxBuildPath, 'src', 'cdn-details.json');
+
+  const workboxBuildPkg = await fs.readJSON(path.join(
+      workboxBuildPath, 'package.json'));
+
+  cdnDetails.latestVersion = workboxBuildPkg.version;
+
+  await fs.writeJson(workboxBuildCdnDetailsPath, cdnDetails, {
     spaces: 2,
   });
 });
