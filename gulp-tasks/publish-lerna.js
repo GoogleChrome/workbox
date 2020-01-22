@@ -16,8 +16,10 @@ gulp.task('publish-lerna', () => {
     'run', 'local-lerna',
     '--',
     'publish',
+    // Make sure to publish all packages, regardless of what's changed
+    '--force-publish',
 
     // The following flags can be used if publishing non-stable versions
-    '--npm-tag', 'next',
+    // '--dist-tag=next',
   ]);
 });
