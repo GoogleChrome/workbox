@@ -39,7 +39,6 @@ gulp.task('publish-assets', gulp.series([
   'publish:clean',
   'publish-github',
   'publish-cdn',
-  'publish-demos',
 ]));
 
 gulp.task('publish', gulp.series([
