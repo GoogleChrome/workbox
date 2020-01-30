@@ -27,15 +27,15 @@ if (process.env.NODE_ENV !== 'production') {
 
 /**
  * Most consumers of this module will want to use the
- * [precacheAndRoute()]{@link workbox.precaching.precacheAndRoute}
+ * [precacheAndRoute()]{@link module:workbox-precaching.precacheAndRoute}
  * method to add assets to the Cache and respond to network requests with these
  * cached assets.
  *
  * If you require finer grained control, you can use the
- * [PrecacheController]{@link workbox.precaching.PrecacheController}
+ * [PrecacheController]{@link module:workbox-precaching.PrecacheController}
  * to determine when performed.
  *
- * @namespace workbox.precaching
+ * @module workbox-precaching
  */
 
 export {

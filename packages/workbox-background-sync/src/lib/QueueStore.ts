@@ -149,7 +149,7 @@ export class QueueStore {
   /**
    * Returns all entries in the store matching the `queueName`.
    *
-   * @param {Object} options See workbox.backgroundSync.Queue~getAll}
+   * @param {Object} options See {@link module:workbox-background-sync.Queue~getAll}
    * @return {Promise<Array<Object>>}
    * @private
    */

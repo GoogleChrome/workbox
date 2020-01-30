@@ -11,7 +11,7 @@ import './_version.js';
 
 
 /**
- * @namespace workbox.googleAnalytics
+ * @module workbox-google-analytics
  */
 
 export {

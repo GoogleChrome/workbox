@@ -20,7 +20,7 @@ module.exports = (regexp) => {
       }
 
       if (entry.url.match(regexp)) {
-        delete entry.revision;
+        entry.revision = null;
       }
 
       return entry;

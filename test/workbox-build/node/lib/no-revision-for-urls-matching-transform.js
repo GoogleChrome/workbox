@@ -60,10 +60,11 @@ describe(`[workbox-build] lib/no-revision-for-urls-matching-transform.js`, funct
     }
   });
 
-  it(`should remove revision info from a single matching entry`, function() {
+  it(`should set revision info to null in a single matching entry`, function() {
     const transform = noRevisionForURLsMatching(/first-match/);
     expect(transform(MANIFEST)).to.eql({manifest: [{
       url: '/first-match/12345/hello',
+      revision: null,
     }, {
       url: '/second-match/12345/hello',
       revision: '1234abcd',
@@ -72,14 +73,17 @@ describe(`[workbox-build] lib/no-revision-for-urls-matching-transform.js`, funct
     }]});
   });
 
-  it(`should remove revision info from multiple matching entries`, function() {
+  it(`should set revision info to null in multiple matching entries`, function() {
     const transform = noRevisionForURLsMatching(/12345/);
     expect(transform(MANIFEST)).to.eql({manifest: [{
       url: '/first-match/12345/hello',
+      revision: null,
     }, {
       url: '/second-match/12345/hello',
+      revision: null,
     }, {
       url: '/third-match/12345/hello',
+      revision: null,
     }]});
   });
 

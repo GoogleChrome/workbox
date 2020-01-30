@@ -16,8 +16,10 @@ declare var self: ServiceWorkerGlobalScope;
  * Claim any currently available clients once the service worker
  * becomes active. This is normally used in conjunction with `skipWaiting()`.
  *
- * @alias workbox.core.clientsClaim
+ * @memberof module:workbox-core
  */
-export const clientsClaim = () => {
+function clientsClaim() {
   self.addEventListener('activate', () => self.clients.claim());
 };
+
+export {clientsClaim}

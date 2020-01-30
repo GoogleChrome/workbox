@@ -22,7 +22,7 @@ declare var self: ServiceWorkerGlobalScope;
  * the value of the `Service-Worker-Navigation-Preload` header which will be
  * sent to the server when making the navigation request.
  *
- * @memberof workbox.navigationPreload
+ * @memberof module:workbox-navigation-preload
  */
 function enable(headerValue?: string) {
   if (isSupported()) {

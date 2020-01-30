@@ -14,7 +14,7 @@ import './_version.js';
  * Helper function that calls
  * {@link PrecacheController#matchPrecache} on the default
  * {@link PrecacheController} instance.
- * 
+ *
  * If you are creating your own {@link PrecacheController}, then call
  * {@link PrecacheController#matchPrecache} on that instance,
  * instead of using this function.
@@ -23,9 +23,11 @@ import './_version.js';
  * to look up in the precache.
  * @return {Promise<Response|undefined>}
  *
- * @alias workbox.precaching.matchPrecache
+ * @memberof module:workbox-precaching
  */
-export const matchPrecache = (request: string|Request) => {
+function matchPrecache(request: string|Request) {
   const precacheController = getOrCreatePrecacheController();
   return precacheController.matchPrecache(request);
 };
+
+export {matchPrecache}

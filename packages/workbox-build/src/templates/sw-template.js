@@ -47,9 +47,9 @@ self.addEventListener('message', (event) => {
  */
 <%= use('workbox-precaching', 'precacheAndRoute') %>(<%= JSON.stringify(manifestEntries, null, 2) %>, <%= precacheOptionsString %>);
 <% if (cleanupOutdatedCaches) { %><%= use('workbox-precaching', 'cleanupOutdatedCaches') %>();<% } %>
-<% if (navigateFallback) { %><%= use('workbox-routing', 'registerRoute') %>(new <%= use('workbox-routing', 'NavigationRoute') %>(<%= use('workbox-precaching', 'createHandlerBoundToURL') %>(<%= JSON.stringify(navigateFallback) %>)<% if (navigateFallbackWhitelist || navigateFallbackBlacklist) { %>, {
-  <% if (navigateFallbackWhitelist) { %>whitelist: [<%= navigateFallbackWhitelist %>],<% } %>
-  <% if (navigateFallbackBlacklist) { %>blacklist: [<%= navigateFallbackBlacklist %>],<% } %>
+<% if (navigateFallback) { %><%= use('workbox-routing', 'registerRoute') %>(new <%= use('workbox-routing', 'NavigationRoute') %>(<%= use('workbox-precaching', 'createHandlerBoundToURL') %>(<%= JSON.stringify(navigateFallback) %>)<% if (navigateFallbackAllowlist || navigateFallbackDenylist) { %>, {
+  <% if (navigateFallbackAllowlist) { %>allowlist: [<%= navigateFallbackAllowlist %>],<% } %>
+  <% if (navigateFallbackDenylist) { %>denylist: [<%= navigateFallbackDenylist %>],<% } %>
 }<% } %>));<% } %>
 <% } %>
 

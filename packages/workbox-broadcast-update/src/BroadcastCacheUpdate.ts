@@ -52,7 +52,7 @@ function defaultPayloadGenerator(data: CacheDidUpdateCallbackParam): Object {
  * For efficiency's sake, the underlying response bodies are not compared;
  * only specific response headers are checked.
  *
- * @memberof workbox.broadcastUpdate
+ * @memberof module:workbox-broadcast-update
  */
 class BroadcastCacheUpdate {
   private _headersToCheck: string[];

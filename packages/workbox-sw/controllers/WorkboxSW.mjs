@@ -11,21 +11,77 @@ import '../_version.mjs';
 const CDN_PATH = `WORKBOX_CDN_ROOT_URL`;
 
 const MODULE_KEY_TO_NAME_MAPPING = {
-  // TODO(philipwalton): add jsdoc tags to associate these with their module.
-  // @name backgroundSync
-  // @memberof workbox
-  // @see module:workbox-background-sync
+  /**
+   * @name backgroundSync
+   * @memberof workbox
+   * @see module:workbox-background-sync
+   */
   backgroundSync: 'background-sync',
+  /**
+   * @name broadcastUpdate
+   * @memberof workbox
+   * @see module:workbox-broadcast-update
+   */
   broadcastUpdate: 'broadcast-update',
+  /**
+   * @name cacheableResponse
+   * @memberof workbox
+   * @see module:workbox-cacheable-response
+   */
   cacheableResponse: 'cacheable-response',
+  /**
+   * @name core
+   * @memberof workbox
+   * @see module:workbox-core
+   */
   core: 'core',
+  /**
+   * @name expiration
+   * @memberof workbox
+   * @see module:workbox-expiration
+   */
   expiration: 'expiration',
+  /**
+   * @name googleAnalytics
+   * @memberof workbox
+   * @see module:workbox-google-analytics
+   */
   googleAnalytics: 'offline-ga',
+  /**
+   * @name navigationPreload
+   * @memberof workbox
+   * @see module:workbox-navigation-preload
+   */
   navigationPreload: 'navigation-preload',
+  /**
+   * @name precaching
+   * @memberof workbox
+   * @see module:workbox-precaching
+   */
   precaching: 'precaching',
+  /**
+   * @name rangeRequests
+   * @memberof workbox
+   * @see module:workbox-range-requests
+   */
   rangeRequests: 'range-requests',
+  /**
+   * @name routing
+   * @memberof workbox
+   * @see module:workbox-routing
+   */
   routing: 'routing',
+  /**
+   * @name strategies
+   * @memberof workbox
+   * @see module:workbox-strategies
+   */
   strategies: 'strategies',
+  /**
+   * @name streams
+   * @memberof workbox
+   * @see module:workbox-streams
+   */
   streams: 'streams',
 };
 

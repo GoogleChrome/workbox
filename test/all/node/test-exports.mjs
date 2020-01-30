@@ -14,16 +14,6 @@ const glob = require('glob');
 const {getPackages} = require('../../../gulp-tasks/utils/get-packages');
 
 
-const deprecatedPackageExports = {
-  'workbox-strategies': [
-    'cacheFirst',
-    'cacheOnly',
-    'networkFirst',
-    'networkOnly',
-    'staleWhileRevalidate',
-  ],
-};
-
 describe(`[all] Window and SW packages`, function() {
   // Reading files can be slow.
   this.timeout(5 * 1000);
@@ -68,11 +58,8 @@ describe(`[all] Window and SW packages`, function() {
         cwd: packagePath,
       }).map((file) => path.basename(file, `.${ext}`));
 
-      const deprecatedExports = deprecatedPackageExports[pkg.name] || [];
-
       // Assert there's a 1-to-1 mapping between exports and top-level files.
-      expect(namedExports.sort())
-          .to.deep.equal(topLevelFiles.concat(deprecatedExports).sort());
+      expect(namedExports.sort()).to.deep.equal(topLevelFiles.sort());
     }
   });
 
@@ -118,11 +105,8 @@ describe(`[all] Window and SW packages`, function() {
       const topLevelFiles = glob.sync(`*.${ext}`, {cwd: privateDirectoryPath})
           .map((file) => path.basename(file, `.${ext}`));
 
-      const deprecatedExports = deprecatedPackageExports[pkg.name] || [];
-
       // Assert there's a 1-to-1 mapping between exports and top-level files.
-      expect(namedExports.sort())
-          .to.deep.equal(topLevelFiles.concat(deprecatedExports).sort());
+      expect(namedExports.sort()).to.deep.equal(topLevelFiles.sort());
     }
   });
 });

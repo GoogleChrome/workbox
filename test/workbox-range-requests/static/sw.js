@@ -14,7 +14,7 @@ importScripts('/__WORKBOX/buildFile/workbox-strategies');
 const cacheName = 'range-requests-integration-test';
 workbox.routing.registerRoute(
     new RegExp('this-file-doesnt-exist\\.txt$'),
-    workbox.strategies.cacheOnly({
+    new workbox.strategies.CacheOnly({
       cacheName,
       plugins: [
         new workbox.rangeRequests.RangeRequestsPlugin(),

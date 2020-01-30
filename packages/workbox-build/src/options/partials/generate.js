@@ -23,8 +23,12 @@ module.exports = {
   importScripts: joi.array().items(joi.string()),
   inlineWorkboxRuntime: joi.boolean().default(defaults.inlineWorkboxRuntime),
   navigateFallback: joi.string().default(defaults.navigateFallback),
-  navigateFallbackBlacklist: joi.array().items(regExpObject),
-  navigateFallbackWhitelist: joi.array().items(regExpObject),
+  navigateFallbackAllowlist: joi.array().items(regExpObject),
+  navigateFallbackBlacklist: joi.forbidden().error(new Error(
+      'navigateFallbackBlacklist has been renamed navigateFallbackDenylist.')),
+  navigateFallbackDenylist: joi.array().items(regExpObject),
+  navigateFallbackWhitelist: joi.forbidden().error(new Error(
+      'navigateFallbackWhitelist has been renamed navigateFallbackAllowlist.')),
   navigationPreload: joi.boolean().default(defaults.navigationPreload),
   offlineGoogleAnalytics: joi.alternatives().try(joi.boolean(), joi.object())
       .default(defaults.offlineGoogleAnalytics),
