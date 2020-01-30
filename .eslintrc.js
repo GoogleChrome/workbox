@@ -132,5 +132,12 @@ module.exports = {
     rules: {
       'header/header': [2, 'block', {pattern: 'Copyright \\d{4} Google LLC'}],
     },
+  }, {
+    files: [
+      'demos/**/*.js',
+    ],
+    rules: {
+      'no-console': 0,
+    },
   }],
 };

@@ -2,16 +2,17 @@ importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.0.0-beta.1/
 
 // Note: Ignore the error that Glitch raises about workbox being undefined.
 workbox.setConfig({
-  debug: true
+  debug: true,
 });
 
-const bgSyncPlugin = new workbox.backgroundSync.BackgroundSyncPlugin('myQueueName');
+const bgSyncPlugin = new workbox.backgroundSync.BackgroundSyncPlugin(
+    'myQueueName');
 
 workbox.routing.registerRoute(
-  ({url}) => url.pathname === '/example.txt',
-  new workbox.strategies.NetworkOnly({
-    plugins: [bgSyncPlugin],
-  }),
+    ({url}) => url.pathname === '/example.txt',
+    new workbox.strategies.NetworkOnly({
+      plugins: [bgSyncPlugin],
+    }),
 );
 
 workbox.core.skipWaiting();

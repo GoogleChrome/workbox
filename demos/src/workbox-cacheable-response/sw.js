@@ -1,7 +1,7 @@
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.0.0-beta.1/workbox-sw.js');
 
 workbox.setConfig({
-  debug: true
+  debug: true,
 });
 
 
@@ -14,15 +14,15 @@ const cacheable = new workbox.cacheableResponse.CacheableResponse({
 
 const handleCachableResponse = (event) => {
   return fetch(event.request)
-  .then((response) => {
-    if (cacheable.isResponseCacheable(response)) {
-      console.log("Response meets the criteria");
-    } else {
-      console.log("Response does NOT meet the criteria");
-    }
+      .then((response) => {
+        if (cacheable.isResponseCacheable(response)) {
+          console.log('Response meets the criteria');
+        } else {
+          console.log('Response does NOT meet the criteria');
+        }
 
-    return response;
-  });
+        return response;
+      });
 };
 
 self.addEventListener('fetch', (event) => {

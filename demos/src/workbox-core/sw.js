@@ -1,18 +1,18 @@
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.0.0-beta.1/workbox-sw.js');
+// To avoid async issues, we load core before we call it in the callback
+workbox.loadModule('workbox-core');
 
 // Note: Ignore the error that Glitch raises about workbox being undefined.
 workbox.setConfig({
-  debug: true
+  debug: true,
 });
-
-const {core} = workbox;
 
 const printLogs = () => {
   // ☠️ You should never so this - this is just so we can show off our logging.
   workbox.core._private.logger.debug(`🐛 Oh hai! I'm a debug message.`);
   workbox.core._private.logger.log(`🔧 Good ole log message.`);
   workbox.core._private.logger.warn(`⚠️ Uh Oh.... I'm a warning.`);
-  workbox.core._private.logger.error(`☠️ Eek, stuff is breaking. p.s. I'm an error.`);
+  workbox.core._private.logger.error(`☠️ Stuff is breaking. I'm an error.`);
 };
 
 const printCacheNames = () => {
@@ -24,7 +24,7 @@ const printCacheNames = () => {
 };
 
 self.addEventListener('message', (event) => {
-  switch(event.data.command) {
+  switch (event.data.command) {
     case 'printLogs':
       printLogs();
       break;

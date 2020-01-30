@@ -1,7 +1,7 @@
 importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.0.0-beta.1/workbox-sw.js');
 
 workbox.setConfig({
-  debug: true
+  debug: true,
 });
 
 // Enable navigation preload.
@@ -16,10 +16,10 @@ const strategy = new workbox.strategies.NetworkFirst({
 });
 
 const navigationRoute = new workbox.routing.NavigationRoute(strategy, {
-  // Optionally, provide a whitelist/blacklist of RegExp's to determine
+  // Optionally, provide a allowlist/denylist of RegExps to determine
   // which paths will match this route.
-  // whitelist: [],
-  // blacklist: [],
+  // allowlist: [],
+  // denylist: [],
 });
 
 workbox.routing.registerRoute(navigationRoute);
