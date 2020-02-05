@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>workbox-cacheable-response demo</title>
+    <meta name="workbox-cacheable-response demo" content="An example to demonstrate the workbox-cacheable-response module">
+    <link id="favicon" rel="icon" href="https://glitch.com/edit/favicon-app.ico" type="image/x-icon">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      body {
+        margin-left: 5%;
+        font-family: 'Open Sans', sans-serif
+      }
+      ol {
+        padding-left: 20px
+      }
+      li {
+        margin-bottom: 5px
+      }
+      button {
+        margin: 20px 0;
+        font-weight: bold
+      }
+    </style>
+  </head>
+  <body>
+
+    <header>      
+      <div>
+        <h1>workbox-cacheable-response Demo</h1>
+      </div>
+    </header>
+
+    <ol>
+      <li>Open DevTools</li>
+      <li>Go to the Console</li>
+      <li>Click any of the buttons below and view the logs and network responses:
+        <ul>
+          <li><p><button class="with-good-header">With 'X-Is-Cacheable: true' Header</button></p></li>
+          <li><p><button class="with-bad-header">With 'X-Is-Cacheable: false' Header</button></p></li>
+          <li><p><button class="without-header">Without 'X-Is-Cacheable' Header</button></p></li>
+        </ul>
+      </li>
+    </ol>
+
+
+    <script>
+      const withGoodHeaderBtn = document.querySelector('.with-good-header');
+      const withBadHeaderBtn = document.querySelector('.with-bad-header');
+      const withoutHeaderBtn = document.querySelector('.without-header');
+
+      const DEMO_REQUEST_URL = '/api/is-response-cacheable';
+
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+        .then(() => {
+          
+          withGoodHeaderBtn.addEventListener('click', () => {
+            fetch(DEMO_REQUEST_URL, {
+              headers: {
+                'X-Is-Cacheable': true
+              }
+            });
+          });
+
+          withBadHeaderBtn.addEventListener('click', () => {
+            fetch(DEMO_REQUEST_URL, {
+              headers: {
+                'X-Is-Cacheable': false
+              }
+            });
+          });
+
+          withoutHeaderBtn.addEventListener('click', () => {
+            fetch(DEMO_REQUEST_URL);
+          });
+       
+        });
+      });
+    </script>
+
+
+    <a href="https://developers.google.com/web/tools/workbox/modules">Back to Demos</a>
+
+    <p>
+
+    <a href="https://developers.google.com/web/tools/workbox">Docs</a> |
+    <a href="https://github.com/googlechrome/workbox">GitHub</a> |
+    <a href="https://twitter.com/workboxjs">@workboxjs</a>
+
+  </body>
+</html>

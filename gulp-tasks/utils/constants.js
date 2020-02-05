@@ -24,7 +24,4 @@ module.exports = {
     dev: 'dev',
     prod: 'production',
   },
-
-  // This is used in demos directory when referencing local files
-  LOCAL_BUILDS_DIR: 'local-builds',
 };

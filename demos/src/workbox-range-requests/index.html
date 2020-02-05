@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>workbox-range-requests demo</title>
+    <meta name="workbox-range-requests demo" content="An example to demonstrate the workbox-range-requests module">
+    <link id="favicon" rel="icon" href="https://glitch.com/edit/favicon-app.ico" type="image/x-icon">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      body {
+        margin-left: 5%;
+        font-family: 'Open Sans', sans-serif
+      }
+      ol {
+        padding-left: 20px
+      }
+      li {
+        margin-bottom: 5px
+      }
+      button {
+        margin: 20px 0;
+        font-weight: bold
+      }
+    </style>
+  </head>
+  <body>
+
+    <header>      
+      <div>
+        <h1>workbox-range-requests Demo</h1>
+      </div>
+    </header>
+
+    <ol>
+      <li>Open DevTools</li>
+      <li>Go to the Console</li>
+      <li>Click this button to request range 1 - 4 of 'hello, world.':<br /><button class="make-range-request">Make Range Request</button></li>
+      <li>Checkout the logs for info on the range request that was handled.</li>
+    </ol>
+
+
+    <script>
+      const makeRequestBtn = document.querySelector('.make-range-request');
+
+      caches.open('range-requests-demo')
+      .then((cache) => cache.put('/range-request-example', new Response('hello, world.')));
+
+      navigator.serviceWorker.register('./sw.js')
+      .then(() => {
+        makeRequestBtn.addEventListener('click', () => {
+          fetch(new Request('/range-request-example', {
+            headers: {
+              Range: `bytes=1-4`,
+            }
+          }))
+          .then((response) => response.text())
+          .then((responseText) => {
+            console.log(`Received response: '${responseText}'`);
+          });
+        });
+      });
+    </script>
+
+
+    <a href="https://developers.google.com/web/tools/workbox/modules">Back to Demos</a>
+
+    <p>
+
+    <a href="https://developers.google.com/web/tools/workbox">Docs</a> |
+    <a href="https://github.com/googlechrome/workbox">GitHub</a> |
+    <a href="https://twitter.com/workboxjs">@workboxjs</a>
+
+  </body>
+</html>
