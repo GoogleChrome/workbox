@@ -40,7 +40,7 @@ export interface RequestData {
  * @private
  */
 class StorableRequest {
-  private _requestData: RequestData;
+  private readonly _requestData: RequestData;
 
   /**
    * Converts a Request object to a plain object that can be structured

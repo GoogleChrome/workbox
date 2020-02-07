@@ -35,8 +35,8 @@ interface CacheTimestampsModelEntry {
  * @private
  */
 class CacheTimestampsModel {
-  private _cacheName: string;
-  private _db: DBWrapper;
+  private readonly _cacheName: string;
+  private readonly _db: DBWrapper;
 
   /**
    *

@@ -43,21 +43,21 @@ const REGISTRATION_TIMEOUT_DURATION = 60000;
  * @memberof module:workbox-window
  */
 class Workbox extends WorkboxEventTarget {
-  private _scriptURL: string;
-  private _registerOptions: RegistrationOptions = {};
+  private readonly _scriptURL: string;
+  private readonly _registerOptions: RegistrationOptions = {};
   private _updateFoundCount = 0;
 
   // Deferreds we can resolve later.
-  private _swDeferred: Deferred<ServiceWorker> = new Deferred();
-  private _activeDeferred: Deferred<ServiceWorker> = new Deferred();
-  private _controllingDeferred: Deferred<ServiceWorker> = new Deferred();
+  private readonly _swDeferred: Deferred<ServiceWorker> = new Deferred();
+  private readonly _activeDeferred: Deferred<ServiceWorker> = new Deferred();
+  private readonly _controllingDeferred: Deferred<ServiceWorker> = new Deferred();
 
   private _registrationTime: DOMHighResTimeStamp = 0;
   private _isUpdate?: boolean;
   private _compatibleControllingSW?: ServiceWorker;
   private _registration?: ServiceWorkerRegistration;
   private _sw?: ServiceWorker;
-  private _ownSWs: Set<ServiceWorker> = new Set();
+  private readonly _ownSWs: Set<ServiceWorker> = new Set();
   private _externalSW?: ServiceWorker;
   private _waitingTimeout?: number;
 
@@ -322,7 +322,7 @@ class Workbox extends WorkboxEventTarget {
   /**
    * @private
    */
-  private _onUpdateFound = () => {
+  private readonly _onUpdateFound = () => {
     // `this._registration` will never be `undefined` after an update is found.
     const registration = this._registration!;
     const installingSW = registration.installing as ServiceWorker;
@@ -392,7 +392,7 @@ class Workbox extends WorkboxEventTarget {
    * @private
    * @param {Event} originalEvent
    */
-  private _onStateChange = (originalEvent: Event) => {
+  private readonly _onStateChange = (originalEvent: Event) => {
     // `this._registration` will never be `undefined` after an update is found.
     const registration = this._registration!;
     const sw = originalEvent.target as ServiceWorker;
@@ -481,7 +481,7 @@ class Workbox extends WorkboxEventTarget {
    * @private
    * @param {Event} originalEvent
    */
-  private _onControllerChange = (originalEvent: Event) => {
+  private readonly _onControllerChange = (originalEvent: Event) => {
     const sw = this._sw;
     if (sw === navigator.serviceWorker.controller) {
       this.dispatchEvent(new WorkboxEvent('controlling', {
@@ -501,7 +501,7 @@ class Workbox extends WorkboxEventTarget {
    * @private
    * @param {Event} originalEvent
    */
-  private _onMessage = async (originalEvent: MessageEvent) => {
+  private readonly _onMessage = async (originalEvent: MessageEvent) => {
     const {data, source} = originalEvent;
 
     // Wait until there's an "own" service worker. This is used to buffer

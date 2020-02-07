@@ -18,7 +18,7 @@ import './_version.js';
  * @memberof module:workbox-cacheable-response
  */
 class CacheableResponsePlugin implements WorkboxPlugin {
-  private _cacheableResponse: CacheableResponse;
+  private readonly _cacheableResponse: CacheableResponse;
 
   /**
    * To construct a new CacheableResponsePlugin instance you must provide at

@@ -70,10 +70,10 @@ const convertEntry = (queueStoreEntry: UnidentifiedQueueStoreEntry): QueueEntry 
  * @memberof module:workbox-background-sync
  */
 class Queue {
-  private _name: string;
-  private _onSync: OnSyncCallback;
-  private _maxRetentionTime: number;
-  private _queueStore: QueueStore;
+  private readonly _name: string;
+  private readonly _onSync: OnSyncCallback;
+  private readonly _maxRetentionTime: number;
+  private readonly _queueStore: QueueStore;
   private _syncInProgress = false;
   private _requestsAddedDuringSync = false;
 
@@ -108,7 +108,8 @@ class Queue {
     }
 
     this._name = name;
-    this._onSync = onSync || this.replayRequests;
+    // TODO (philipwalton): Should this be bound?
+    this._onSync = onSync || this.replayRequests;  // eslint-disable-line @typescript-eslint/unbound-method
     this._maxRetentionTime = maxRetentionTime || MAX_RETENTION_TIME;
     this._queueStore = new QueueStore(this._name);
 
@@ -381,7 +382,8 @@ class Queue {
 
             let syncError;
             try {
-              await this._onSync({queue: this});
+              // TODO (philipwalton): Should the await be here?
+              await this._onSync({queue: this}); // eslint-disable-line @typescript-eslint/await-thenable
             } catch (error) {
               syncError = error;
 

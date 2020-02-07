@@ -35,10 +35,10 @@ interface GetAllMatchingOptions {
  * @private
  */
 export class DBWrapper {
-  private _name: string;
-  private _version: number;
-  private _onupgradeneeded?: DBWrapperOptions['onupgradeneeded'];
-  private _onversionchange: DBWrapperOptions['onversionchange'];
+  private readonly _name: string;
+  private readonly _version: number;
+  private readonly _onupgradeneeded?: DBWrapperOptions['onupgradeneeded'];
+  private readonly _onversionchange: DBWrapperOptions['onversionchange'];
   private _db: IDBDatabase | null = null;
 
   // The following IDBObjectStore methods are shadowed on this class.
@@ -269,7 +269,7 @@ export class DBWrapper {
       const objStore = txn.objectStore(storeName);
       // TODO(philipwalton): Fix this underlying TS2684 error.
       // @ts-ignore
-      const request = objStore[method].apply(objStore, args) as IDBRequest;
+      const request = objStore[method].apply(objStore, args);
 
       request.onsuccess = () => done(request.result);
     };

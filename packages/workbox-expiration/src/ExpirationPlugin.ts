@@ -38,8 +38,8 @@ import './_version.js';
  * @memberof module:workbox-expiration
  */
 class ExpirationPlugin implements WorkboxPlugin {
-  private _config: object;
-  private _maxAgeSeconds?: number;
+  private readonly _config: object;
+  private readonly _maxAgeSeconds?: number;
   private _cacheExpirations: Map<string, CacheExpiration>;
 
   /**

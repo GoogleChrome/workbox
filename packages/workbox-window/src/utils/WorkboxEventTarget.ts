@@ -18,7 +18,7 @@ export type ListenerCallback = (event: WorkboxEvent<any>) => any;
  * @private
  */
 export class WorkboxEventTarget {
-  private _eventListenerRegistry: Map<keyof WorkboxEventMap, Set<ListenerCallback>> = new Map();
+  private readonly _eventListenerRegistry: Map<keyof WorkboxEventMap, Set<ListenerCallback>> = new Map();
 
   /**
    * @param {string} type

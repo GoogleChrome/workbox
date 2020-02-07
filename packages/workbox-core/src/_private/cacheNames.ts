@@ -32,7 +32,7 @@ const _cacheNameDetails: CacheNameDetails = {
   precache: 'precache-v2',
   prefix: 'workbox',
   runtime: 'runtime',
-  suffix: typeof registration !== 'undefined' ? registration!.scope : '',
+  suffix: typeof registration !== 'undefined' ? registration.scope : '',
 };
 
 const _createCacheName = (cacheName: string): string => {
@@ -51,7 +51,7 @@ export const cacheNames = {
   updateDetails: (details: PartialCacheNameDetails) => {
     eachCacheNameDetail((key: CacheNameDetailsProp) => {
       if (typeof details[key] === 'string') {
-        _cacheNameDetails[key] = details[key] as string;
+        _cacheNameDetails[key] = details[key];
       }
     })
   },

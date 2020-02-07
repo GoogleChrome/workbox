@@ -33,8 +33,8 @@ export interface NavigationRouteMatchOptions {
  * @extends module:workbox-routing.Route
  */
 class NavigationRoute extends Route {
-  private _allowlist: RegExp[];
-  private _denylist: RegExp[];
+  private readonly _allowlist: RegExp[];
+  private readonly _denylist: RegExp[];
 
   /**
    * If both `denylist` and `allowlist` are provided, the `denylist` will

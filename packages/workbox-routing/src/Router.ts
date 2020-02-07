@@ -45,7 +45,7 @@ interface CacheURLsMessageData {
  * @memberof module:workbox-routing
  */
 class Router {
-  private _routes: Map<HTTPMethod, Route[]>;
+  private readonly _routes: Map<HTTPMethod, Route[]>;
   private _defaultHandler?: HandlerObject;
   private _catchHandler?: HandlerObject;
 

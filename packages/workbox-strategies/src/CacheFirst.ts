@@ -39,10 +39,10 @@ interface CacheFirstOptions {
  * @memberof module:workbox-strategies
  */
 class CacheFirst implements RouteHandlerObject {
-  private _cacheName: string;
-  private _plugins: WorkboxPlugin[];
-  private _fetchOptions?: RequestInit;
-  private _matchOptions?: CacheQueryOptions;
+  private readonly _cacheName: string;
+  private readonly _plugins: WorkboxPlugin[];
+  private readonly _fetchOptions?: RequestInit;
+  private readonly _matchOptions?: CacheQueryOptions;
 
   /**
    * @param {Object} options

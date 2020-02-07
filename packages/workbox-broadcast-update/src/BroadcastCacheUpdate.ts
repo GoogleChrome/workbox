@@ -55,8 +55,8 @@ function defaultPayloadGenerator(data: CacheDidUpdateCallbackParam): Record<stri
  * @memberof module:workbox-broadcast-update
  */
 class BroadcastCacheUpdate {
-  private _headersToCheck: string[];
-  private _generatePayload: (options: CacheDidUpdateCallbackParam) => Record<string, any>;
+  private readonly _headersToCheck: string[];
+  private readonly _generatePayload: (options: CacheDidUpdateCallbackParam) => Record<string, any>;
 
   /**
    * Construct a BroadcastCacheUpdate instance with a specific `channelName` to
@@ -136,7 +136,7 @@ class BroadcastCacheUpdate {
       return;
     }
 
-    if (!responsesAreSame(options.oldResponse!, options.newResponse, this._headersToCheck)) {
+    if (!responsesAreSame(options.oldResponse, options.newResponse, this._headersToCheck)) {
       if (process.env.NODE_ENV !== 'production') {
         logger.log(
             `Newer response found (and cached) for:`, options.request.url);

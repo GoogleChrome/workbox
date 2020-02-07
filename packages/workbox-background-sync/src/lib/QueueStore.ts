@@ -36,8 +36,8 @@ export interface QueueStoreEntry extends UnidentifiedQueueStoreEntry {
  * @private
  */
 export class QueueStore {
-  private _queueName: string;
-  private _db: DBWrapper;
+  private readonly _queueName: string;
+  private readonly _db: DBWrapper;
 
   /**
    * Associates this instance with a Queue instance, so entries added can be
@@ -49,7 +49,8 @@ export class QueueStore {
   constructor(queueName: string) {
     this._queueName = queueName;
     this._db = new DBWrapper(DB_NAME, DB_VERSION, {
-      onupgradeneeded: this._upgradeDb,
+      // TODO (philipwalton): Should this be bound?
+      onupgradeneeded: this._upgradeDb, // eslint-disable-line @typescript-eslint/unbound-method
     });
   }
 
