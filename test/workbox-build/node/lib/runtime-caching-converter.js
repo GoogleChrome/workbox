@@ -101,12 +101,12 @@ function validate(runtimeCachingOptions, convertedOptions) {
         if ('options' in options.backgroundSync) {
           expect(
               globalScope.workbox_background_sync_BackgroundSyncPlugin.calledWith(
-                  options.backgroundSync.name, options.backgroundSync.options)
+                  options.backgroundSync.name, options.backgroundSync.options),
           ).to.be.true;
         } else {
           expect(
               globalScope.workbox_background_sync_BackgroundSyncPlugin.calledWith(
-                  options.backgroundSync.name)
+                  options.backgroundSync.name),
           ).to.be.true;
         }
       }

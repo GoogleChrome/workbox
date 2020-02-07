@@ -31,7 +31,7 @@ const generateVariantTests = (itTitle, variants, func) => {
         // Use .call to get the correct `this` binding needed by mocha.
         // eslint-disable-next-line no-invalid-this
           return func.call(this, variant);
-        }
+        },
     );
   });
 };

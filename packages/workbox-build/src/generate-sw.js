@@ -121,7 +121,7 @@ const writeServiceWorkerUsingDefaultTemplate =
  * produced. If not explicitly configured here, the `process.env.NODE_ENV` value
  * will be used, and failing that, it will fall back to `'production'`.
  *
- * @param {Object<string, string>} [config.modifyURLPrefix] A mapping of prefixes
+ * @param {object<string, string>} [config.modifyURLPrefix] A mapping of prefixes
  * that, if present in an entry in the precache manifest, will be replaced with
  * the corresponding value. This can be used to, for example, remove or add a
  * path prefix from a manifest entry if your web hosting setup doesn't match

@@ -38,7 +38,7 @@ const streamsStrategy = workbox.streams.strategy([
 // Once the strategy is configured, the actual routing looks clean.
 workbox.routing.registerRoute(
     new RegExp('iframe$'),
-    streamsStrategy
+    streamsStrategy,
 );
 
 workbox.core.skipWaiting();

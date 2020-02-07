@@ -43,7 +43,7 @@ module.exports = {
     }
     plugins.push(babel(babelConfig));
 
-    let minifyBuild = buildType === constants.BUILD_TYPES.prod;
+    const minifyBuild = buildType === constants.BUILD_TYPES.prod;
     if (minifyBuild) {
       const terserOptions = {
         module: buildFormat === 'esm' ? true : false,

@@ -17,7 +17,7 @@ module.exports = (command, args, options = {}) => {
       if (code === 0) {
         resolve();
       } else {
-        reject(`Error ${code} returned from ${command} ${args}`);
+        reject(new Error(`Error ${code} returned from ${command} ${args}`));
       }
     });
   });

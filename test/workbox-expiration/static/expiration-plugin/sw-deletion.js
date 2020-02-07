@@ -26,7 +26,7 @@ workbox.routing.registerRoute(
       plugins: [
         expirationPlugin,
       ],
-    })
+    }),
 );
 
 self.addEventListener('message', async (event) => {

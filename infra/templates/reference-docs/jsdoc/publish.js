@@ -71,7 +71,7 @@ exports.publish = function(data, opts, tutorials) {
       docletHelper.getCategory('classes')
           .concat(docletHelper.getCategory('namespaces'))
           .concat(docletHelper.getCategory('interfaces')),
-    global.env.opts.query ? global.env.opts.query.basepath : ''
+    global.env.opts.query ? global.env.opts.query.basepath : '',
   );
   job.generateIndexAll(Object.keys(docletHelper.longname));
 };

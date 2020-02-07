@@ -267,7 +267,7 @@ describe(`CacheFirst`, function() {
             request,
             event,
           }),
-          'no-response'
+          'no-response',
       );
     });
 

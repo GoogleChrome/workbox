@@ -25,7 +25,7 @@ describe(`[workbox-build] lib/get-string-details.js`, function() {
       }],
     ]);
 
-    for (let [[url, string], expectedDetails] of inputToExpectedDetails) {
+    for (const [[url, string], expectedDetails] of inputToExpectedDetails) {
       const details = getStringDetails(url, string);
       expect(details).to.eql(expectedDetails);
     }

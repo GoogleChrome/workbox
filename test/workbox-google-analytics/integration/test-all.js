@@ -37,7 +37,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
    *     `executeAsyncScript()` method.
    */
   const messageSW = (data, done) => {
-    let messageChannel = new MessageChannel();
+    const messageChannel = new MessageChannel();
     messageChannel.port1.onmessage = (evt) => done(evt.data);
     navigator.serviceWorker.controller.postMessage(
         data, [messageChannel.port2]);

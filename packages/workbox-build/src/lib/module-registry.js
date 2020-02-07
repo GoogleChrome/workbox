@@ -12,6 +12,7 @@ const upath = require('upath');
 /**
  * Class for keeping track of which Workbox modules are used by the generated
  * service worker script.
+ *
  * @private
  */
 class ModuleRegistry {

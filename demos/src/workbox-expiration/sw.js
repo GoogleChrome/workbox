@@ -16,7 +16,7 @@ const updateEntry = async (entryID) => {
 
   openCache.put(
       `example-entry-${entryID}`,
-      new Response(`Hello from entry number ${entryID}`)
+      new Response(`Hello from entry number ${entryID}`),
   );
 
   expirationManager.updateTimestamp(`example-entry-${entryID}`);

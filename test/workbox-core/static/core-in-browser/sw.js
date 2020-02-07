@@ -8,8 +8,6 @@
 
 importScripts('/__WORKBOX/buildFile/workbox-core');
 
-/* globals workbox */
-
 if (!workbox.core.cacheNames.googleAnalytics) {
   throw new Error(`cacheNames.googleAnalytics is not defined`);
 }

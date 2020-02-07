@@ -26,8 +26,8 @@ const cleanTagName = (name) => {
 
 const findMissingCDNTags = async (tagsData) => {
   const missingTags = [];
-  for (let tagData of tagsData) {
-    let exists = await cdnUploadHelper.tagExists(cleanTagName(tagData.name));
+  for (const tagData of tagsData) {
+    const exists = await cdnUploadHelper.tagExists(cleanTagName(tagData.name));
 
     if (!exists) {
       missingTags.push(tagData);
@@ -66,7 +66,7 @@ gulp.task('publish-cdn:generate-from-tags', async () => {
     logHelper.log(`No tags missing from CDN.`);
   }
 
-  for (let tagData of missingTags) {
+  for (const tagData of missingTags) {
     // Override the git branch here since we aren't actually
     // using a tagged release.
     await handleCDNUpload(tagData.name, tagData.name);

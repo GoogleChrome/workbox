@@ -38,7 +38,7 @@ const runFiles = (filePaths) => {
     // Run the tests.
     mocha.run(function(failureCount) {
       if (failureCount > 0) {
-        return reject(`${failureCount} tests failed.`);
+        return reject(new Error(`${failureCount} tests failed.`));
       }
       resolve();
     });

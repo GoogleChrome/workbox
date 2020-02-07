@@ -37,7 +37,7 @@ describe(`[workbox-cacheable-response] Plugin`, function() {
     // Wait for the service worker to register and activate.
     await activateAndControlSW(swURL);
 
-    let error = await webdriver.executeAsyncScript((cb) => {
+    const error = await webdriver.executeAsyncScript((cb) => {
       fetch(`example-1.txt`).then(() => cb()).catch((err) => cb(err.message));
     });
     if (error) {
@@ -56,7 +56,7 @@ describe(`[workbox-cacheable-response] Plugin`, function() {
       'cacheable-response-cache',
     ]);
 
-    let cachedRequests = await runInSW('cacheURLs', keys[0]);
+    const cachedRequests = await runInSW('cacheURLs', keys[0]);
     expect(cachedRequests).to.eql([
       `${baseURL}example-1.txt`,
     ]);

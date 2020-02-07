@@ -215,7 +215,7 @@ describe(`ExpirationPlugin`, function() {
       const plugin = new ExpirationPlugin({maxAgeSeconds: 1});
       await expectError(
           () => plugin._getCacheExpiration(cacheNames.getRuntimeName()),
-          'expire-custom-caches-only'
+          'expire-custom-caches-only',
       );
     });
   });

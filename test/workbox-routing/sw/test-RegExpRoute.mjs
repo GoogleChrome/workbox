@@ -36,7 +36,7 @@ describe(`RegExpRoute`, function() {
             expect(error.details).to.have.property('className').that.equals('RegExpRoute');
             expect(error.details).to.have.property('funcName').that.equals('constructor');
             expect(error.details).to.have.property('paramName').that.equals('pattern');
-          }
+          },
       );
     });
   }

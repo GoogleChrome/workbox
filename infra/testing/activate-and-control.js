@@ -27,7 +27,7 @@ module.exports = async (swURL) => {
           return;
         }
 
-        let serviceWorker = registration.installing;
+        const serviceWorker = registration.installing;
 
         // We unregister all service workers after each test - this should
         // always trigger an install state change

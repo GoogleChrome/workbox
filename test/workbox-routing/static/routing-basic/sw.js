@@ -15,18 +15,18 @@ const handler = ({url}) => new Response(url);
 
 const routeObject = new workbox.routing.Route(
     ({url}) => url.pathname === '/routeObject',
-    handler
+    handler,
 );
 workbox.routing.registerRoute(routeObject);
 
 workbox.routing.registerRoute(
     '/sameOrigin',
-    handler
+    handler,
 );
 
 workbox.routing.registerRoute(
     'https://example.com/crossOrigin',
-    handler
+    handler,
 );
 
 self.addEventListener('install', () => self.skipWaiting());

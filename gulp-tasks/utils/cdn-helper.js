@@ -99,7 +99,7 @@ class CDNHelper {
         throw err;
       }
       publicUrls.push(
-          `${cdnDetails.origin}/${cdnDetails.bucketName}/${destination}`
+          `${cdnDetails.origin}/${cdnDetails.bucketName}/${destination}`,
       );
     }
 

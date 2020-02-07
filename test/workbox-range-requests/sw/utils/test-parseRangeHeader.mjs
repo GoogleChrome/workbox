@@ -21,7 +21,7 @@ describe(`parseRangeHeader()`, function() {
           expect(error.details).to.have.property('funcName', 'parseRangeHeader');
           expect(error.details).to.have.property('paramName', 'rangeHeader');
           expect(error.details).to.have.property('expectedType', 'string');
-        }
+        },
     );
   });
 
@@ -29,7 +29,7 @@ describe(`parseRangeHeader()`, function() {
     const rangeHeader = 'not-bytes=';
     await expectError(
         () => parseRangeHeader(rangeHeader),
-        'unit-must-be-bytes'
+        'unit-must-be-bytes',
     );
   });
 
@@ -37,7 +37,7 @@ describe(`parseRangeHeader()`, function() {
     const rangeHeader = 'bytes=1-2, 3-4';
     await expectError(
         () => parseRangeHeader(rangeHeader),
-        'single-range-only'
+        'single-range-only',
     );
   });
 
@@ -53,7 +53,7 @@ describe(`parseRangeHeader()`, function() {
       const rangeHeader = `bytes=${badRange}`;
       await expectError(
           () => parseRangeHeader(rangeHeader),
-          'invalid-range-values'
+          'invalid-range-values',
       );
     }
   });

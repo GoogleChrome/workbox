@@ -20,7 +20,7 @@ gulp.task('lerna-bootstrap', () => {
   // If it's not a star, we can scope the build to a specific project.
   return lernaWrapper.bootstrap(
       '--include-dependencies',
-      '--scope', global.packageOrStar
+      '--scope', global.packageOrStar,
   );
 });
 
@@ -29,7 +29,7 @@ gulp.task('lerna-bootstrap', () => {
 // Make sure this runs **before** lerna-bootstrap.
 gulp.task('build:update-cdn-details', async function() {
   const cdnDetails = await fs.readJSON(path.join(
-      __dirname, '..', 'cdn-details.json'
+      __dirname, '..', 'cdn-details.json',
   ));
 
   const workboxBuildPath = path.join(

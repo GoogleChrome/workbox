@@ -39,7 +39,7 @@ module.exports = {
         'HEAD',
         'PATCH',
         'POST',
-        'PUT'
+        'PUT',
     ),
     urlPattern: [regExpObject, joi.string(), joi.func()],
     handler: [

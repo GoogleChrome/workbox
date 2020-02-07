@@ -20,7 +20,7 @@ workbox.routing.registerRoute(
       plugins: [
         new workbox.broadcastUpdate.BroadcastUpdatePlugin(),
       ],
-    })
+    }),
 );
 
 workbox.routing.registerRoute(
@@ -30,7 +30,7 @@ workbox.routing.registerRoute(
       plugins: [
         new workbox.broadcastUpdate.BroadcastUpdatePlugin(),
       ],
-    })
+    }),
 );
 
 self.addEventListener('install', () => self.skipWaiting());

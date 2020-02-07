@@ -54,7 +54,7 @@ function checkConditions(asset, compilation, conditions = []) {
  * See https://github.com/webpack/webpack/issues/7073
  *
  * @param {Object} stats The webpack compilation stats.
- * @return {Object<string,Set<string>>}
+ * @return {object<string, Set<string>>}
  * @private
  */
 function assetToChunkNameMapping(stats) {

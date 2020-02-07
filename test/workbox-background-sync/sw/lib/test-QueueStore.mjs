@@ -542,7 +542,7 @@ describe(`QueueStore`, function() {
         metadata: {name: 'meta1'},
       });
 
-      let entries = await db.getAll('requests');
+      const entries = await db.getAll('requests');
       const firstId = entries[0].id;
 
       await queueStore2.pushEntry({
@@ -628,7 +628,7 @@ describe(`QueueStore`, function() {
         metadata: {name: 'meta1'},
       });
 
-      let entries = await db.getAll('requests');
+      const entries = await db.getAll('requests');
       const firstId = entries[0].id;
 
       await queueStore.pushEntry({

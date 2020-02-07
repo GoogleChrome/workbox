@@ -30,7 +30,7 @@ describe(`Route`, function() {
           expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
           expect(error.details).to.have.property('className').that.equals('Route');
           expect(error.details).to.have.property('funcName').that.equals('constructor');
-        }
+        },
     );
   });
 
@@ -45,7 +45,7 @@ describe(`Route`, function() {
           expect(error.details).to.have.property('className').that.equals('Route');
           expect(error.details).to.have.property('funcName').that.equals('constructor');
           expect(error.details).to.have.property('paramName').that.equals('handler');
-        }
+        },
     );
 
     await expectError(
@@ -56,7 +56,7 @@ describe(`Route`, function() {
           expect(error.details).to.have.property('className').that.equals('Route');
           expect(error.details).to.have.property('funcName').that.equals('constructor');
           expect(error.details).to.have.property('paramName').that.equals('handler');
-        }
+        },
     );
   });
 
@@ -71,7 +71,7 @@ describe(`Route`, function() {
           expect(error.details).to.have.property('className').that.equals('Route');
           expect(error.details).to.have.property('funcName').that.equals('constructor');
           expect(error.details).to.have.property('paramName').that.equals('match');
-        }
+        },
     );
   });
 
@@ -93,7 +93,7 @@ describe(`Route`, function() {
     await expectError(
         () => new Route(match, handler, invalidMethod),
         'invalid-value',
-        (error) => expect(error.details).to.have.property('paramName').that.equals('method')
+        (error) => expect(error.details).to.have.property('paramName').that.equals('method'),
     );
   });
 

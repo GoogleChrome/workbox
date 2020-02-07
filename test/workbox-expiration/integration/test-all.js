@@ -153,7 +153,7 @@ describe(`[workbox-expiration] Plugin`, function() {
       'expiration-plugin-deletion',
     ]);
 
-    let existence = await runInSW('doesDbExist', 'workbox-expiration');
+    const existence = await runInSW('doesDbExist', 'workbox-expiration');
     expect(existence).to.be.true;
 
     error = await webdriver.executeAsyncScript((cb) => {
