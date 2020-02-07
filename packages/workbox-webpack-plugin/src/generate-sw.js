@@ -38,7 +38,7 @@ class GenerateSW {
   /**
    * Creates an instance of GenerateSW.
    *
-   * @param {object} config The configuration to use.
+   * @param {Object} config The configuration to use.
    *
    * @param {Array<module:workbox-build.ManifestEntry>} [config.additionalManifestEntries]
    * A list of entries to be precached, in addition to any entries that are
@@ -164,7 +164,7 @@ class GenerateSW {
    * `runtimeCaching` to set up an appropriate response strategy that will match
    * navigation requests, and make use of the preloaded response.
    *
-   * @param {boolean|object} [config.offlineGoogleAnalytics=false] Controls
+   * @param {boolean|Object} [config.offlineGoogleAnalytics=false] Controls
    * whether or not to include support for
    * [offline Google Analytics](https://developers.google.com/web/tools/workbox/guides/enable-offline-analytics).
    * When `true`, the call to `workbox-google-analytics`'s `initialize()` will be
@@ -191,7 +191,7 @@ class GenerateSW {
   }
 
   /**
-   * @param {object} [compiler] default compiler object passed from webpack
+   * @param {Object} [compiler] default compiler object passed from webpack
    *
    * @private
    */
@@ -205,7 +205,7 @@ class GenerateSW {
   }
 
   /**
-   * @param {object} [compiler] default compiler object passed from webpack
+   * @param {Object} [compiler] default compiler object passed from webpack
    *
    * @private
    */
@@ -220,7 +220,7 @@ class GenerateSW {
   }
 
   /**
-   * @param {object} compilation The webpack compilation.
+   * @param {Object} compilation The webpack compilation.
    *
    * @private
    */

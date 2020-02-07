@@ -8,7 +8,7 @@
 
 /**
  * @callback VariantCallback
- * @param {object} variant
+ * @param {Object} variant
  */
 /**
  * This is a helper function that will auto-generate mocha unit tests
@@ -17,7 +17,7 @@
  * @param {string} itTitle This is the title that will be passed to the it()
  * function. The variant will be added to the end of this title to help
  * idenfity the failing test.
- * @param {Array<object>} variants This should be all the variations of the
+ * @param {Array<Object>} variants This should be all the variations of the
  * test you wish to generate.
  * @param {VariantCallback} func This is the function that will be called, with a
  * variant as the only argument. This function should perform the desired test.

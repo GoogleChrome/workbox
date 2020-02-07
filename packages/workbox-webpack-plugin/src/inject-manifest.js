@@ -41,7 +41,7 @@ class InjectManifest {
   /**
    * Creates an instance of InjectManifest.
    *
-   * @param {object} config The configuration to use.
+   * @param {Object} config The configuration to use.
    *
    * @param {string} config.swSrc An existing service worker file that will be
    * compiled and have a precache manifest injected into it.
@@ -110,7 +110,7 @@ class InjectManifest {
    * service worker file that will be created by this plugin. If omitted, the
    * name will be based on the `swSrc` name.
    *
-   * @param {Array<object>} [config.webpackCompilationPlugins] Optional `webpack`
+   * @param {Array<Object>} [config.webpackCompilationPlugins] Optional `webpack`
    * plugins that will be used when compiling the `swSrc` input file.
    */
   constructor(config = {}) {
@@ -119,7 +119,7 @@ class InjectManifest {
   }
 
   /**
-   * @param {object} [compiler] default compiler object passed from webpack
+   * @param {Object} [compiler] default compiler object passed from webpack
    *
    * @private
    */
@@ -132,7 +132,7 @@ class InjectManifest {
   }
 
   /**
-   * @param {object} [compiler] default compiler object passed from webpack
+   * @param {Object} [compiler] default compiler object passed from webpack
    *
    * @private
    */
@@ -153,8 +153,8 @@ class InjectManifest {
   }
 
   /**
-   * @param {object} compilation The webpack compilation.
-   * @param {object} parentCompiler The webpack parent compiler.
+   * @param {Object} compilation The webpack compilation.
+   * @param {Object} parentCompiler The webpack parent compiler.
    *
    * @private
    */
@@ -207,7 +207,7 @@ class InjectManifest {
   }
 
   /**
-   * @param {object} compilation The webpack compilation.
+   * @param {Object} compilation The webpack compilation.
    *
    * @private
    */

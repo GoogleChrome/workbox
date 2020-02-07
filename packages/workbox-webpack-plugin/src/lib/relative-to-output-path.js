@@ -9,7 +9,7 @@
 const upath = require('upath');
 
 /**
- * @param {object} compilation The webpack compilation.
+ * @param {Object} compilation The webpack compilation.
  * @param {string} swDest The original swDest value.
  *
  * @return {string} If swDest was not absolute, the returns swDest as-is.

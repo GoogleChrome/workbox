@@ -39,7 +39,7 @@ async function getSubdirectories() {
 }
 
 /**
- * @return {Promise<object>} The answers from inquirer.
+ * @return {Promise<Object>} The answers from inquirer.
  */
 async function askQuestion() {
   const subdirectories = await getSubdirectories();

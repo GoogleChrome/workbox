@@ -32,7 +32,7 @@ const validate = require('./lib/validate-options');
  * The final service worker file, with the manifest injected, is written to
  * disk at `swDest`.
  *
- * @param {object} config The configuration to use.
+ * @param {Object} config The configuration to use.
  *
  * @param {string} config.globDirectory The local directory you wish to match
  * `globPatterns` against. The path is relative to the current directory.
@@ -104,7 +104,7 @@ const validate = require('./lib/validate-options');
  * use the `manifestTransforms` option and provide a function that modifies the
  * entries in the manifest using whatever logic you provide.
  *
- * @param {object} [config.templatedURLs] If a URL is rendered based on some
+ * @param {Object} [config.templatedURLs] If a URL is rendered based on some
  * server-side logic, its contents may depend on multiple files or on some other
  * unique string value. The keys in this object are server-rendered URLs. If the
  * values are an array of strings, they will be interpreted as `glob` patterns,

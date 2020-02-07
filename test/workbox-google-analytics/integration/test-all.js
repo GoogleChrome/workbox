@@ -32,7 +32,7 @@ describe(`[workbox-google-analytics] initialize`, function() {
    * `done()` callback when the service worker responds, with any data value
    * passed to the event.
    *
-   * @param {object} data An object to send to the service worker.
+   * @param {Object} data An object to send to the service worker.
    * @param {Function} done The callback automatically passed via webdriver's
    *     `executeAsyncScript()` method.
    */

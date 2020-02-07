@@ -14,7 +14,7 @@ cache:
     - ~/.selenium-assistant
 
 node_js:
-  - 8
+  - 13
 
 install:
   - npm ci

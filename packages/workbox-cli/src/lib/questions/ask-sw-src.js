@@ -15,7 +15,7 @@ const assertValidSWSrc = require('../assert-valid-sw-src');
 const name = 'swSrc';
 
 /**
- * @return {Promise<object>} The answers from inquirer.
+ * @return {Promise<Object>} The answers from inquirer.
  */
 function askQuestion() {
   return inquirer.prompt([{

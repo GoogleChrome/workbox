@@ -20,7 +20,7 @@ const moduleRegistry = new ModuleRegistry();
  * Validates the method calls for a given set of runtimeCachingOptions.
  *
  * @private
- * @param {Array<object>} runtimeCachingOptions
+ * @param {Array<Object>} runtimeCachingOptions
  * @param {Array<string>} convertedOptions
  */
 function validate(runtimeCachingOptions, convertedOptions) {

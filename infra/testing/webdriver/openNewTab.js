@@ -17,7 +17,7 @@ const {webdriver} = global.__workbox;
  * is opened.
  *
  * @param {string} url
- * @param {object} options
+ * @param {Object} options
  * @return {string}
  */
 const openNewTab = async (url) => {

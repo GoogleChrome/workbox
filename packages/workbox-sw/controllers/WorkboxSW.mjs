@@ -129,7 +129,7 @@ export class WorkboxSW {
    * debug build and whether to use a CDN or a specific path when importing
    * other workbox-modules
    *
-   * @param {object} [options]
+   * @param {Object} [options]
    * @param {boolean} [options.debug] If true, `dev` builds are using, otherwise
    * `prod` builds are used. By default, `prod` is used unless on localhost.
    * @param {Function} [options.modulePathPrefix] To avoid using the CDN with
