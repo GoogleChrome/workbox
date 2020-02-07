@@ -204,17 +204,17 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
               importScripts: [],
               precacheAndRoute: [[[
                 {
-                  revision: '333',
-                  url: '/three',
-                }, {
-                  revision: null,
-                  url: '/two',
-                }, '/one', {
                   revision: '0fae6a991467bd40263a3ba8cd82835d',
                   url: 'entry1-43ba396bf52f8419e349.js',
                 }, {
                   revision: '0fae6a991467bd40263a3ba8cd82835d',
                   url: 'entry2-aa21f43434f29ed0c946.js',
+                }, '/one', {
+                  revision: '333',
+                  url: '/three',
+                }, {
+                  revision: null,
+                  url: '/two',
                 },
               ], {}]],
             },
