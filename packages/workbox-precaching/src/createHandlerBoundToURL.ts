@@ -30,6 +30,6 @@ import './_version.js';
 function createHandlerBoundToURL(url: string) {
   const precacheController = getOrCreatePrecacheController();
   return precacheController.createHandlerBoundToURL(url);
-};
+}
 
 export {createHandlerBoundToURL}

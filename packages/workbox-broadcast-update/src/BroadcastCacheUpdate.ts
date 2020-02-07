@@ -24,11 +24,11 @@ const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
 
 // Give TypeScript the correct global.
-declare var self: ServiceWorkerGlobalScope;
+declare let self: ServiceWorkerGlobalScope;
 
 export interface BroadcastCacheUpdateOptions {
   headersToCheck?: string[];
-  generatePayload?: (options: CacheDidUpdateCallbackParam) => Object;
+  generatePayload?: (options: CacheDidUpdateCallbackParam) => Record<string, any>;
 }
 
 /**
@@ -38,7 +38,7 @@ export interface BroadcastCacheUpdateOptions {
  * @return Object
  * @private
  */
-function defaultPayloadGenerator(data: CacheDidUpdateCallbackParam): Object {
+function defaultPayloadGenerator(data: CacheDidUpdateCallbackParam): Record<string, any> {
   return {
     cacheName: data.cacheName,
     updatedURL: data.request.url,
@@ -56,7 +56,7 @@ function defaultPayloadGenerator(data: CacheDidUpdateCallbackParam): Object {
  */
 class BroadcastCacheUpdate {
   private _headersToCheck: string[];
-  private _generatePayload: (options: CacheDidUpdateCallbackParam) => Object;
+  private _generatePayload: (options: CacheDidUpdateCallbackParam) => Record<string, any>;
 
   /**
    * Construct a BroadcastCacheUpdate instance with a specific `channelName` to

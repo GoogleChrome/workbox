@@ -45,7 +45,7 @@ const REGISTRATION_TIMEOUT_DURATION = 60000;
 class Workbox extends WorkboxEventTarget {
   private _scriptURL: string;
   private _registerOptions: RegistrationOptions = {};
-  private _updateFoundCount: number = 0;
+  private _updateFoundCount = 0;
 
   // Deferreds we can resolve later.
   private _swDeferred: Deferred<ServiceWorker> = new Deferred();
@@ -325,7 +325,7 @@ class Workbox extends WorkboxEventTarget {
   private _onUpdateFound = () => {
     // `this._registration` will never be `undefined` after an update is found.
     const registration = this._registration!;
-    const installingSW = <ServiceWorker> registration.installing;
+    const installingSW = registration.installing as ServiceWorker;
 
     // If the script URL passed to `navigator.serviceWorker.register()` is
     // different from the current controlling SW's script URL, we know any
@@ -339,7 +339,7 @@ class Workbox extends WorkboxEventTarget {
     // script it registered or from a registration attempt made by a newer
     // version of the page running in another tab.
     // To minimize the possibility of a false positive, we use the logic here:
-    let updateLikelyTriggeredExternally =
+    const updateLikelyTriggeredExternally =
         // Since we enforce only calling `register()` once, and since we don't
         // add the `updatefound` event listener until the `register()` call, if
         // `_updateFoundCount` is > 0 then it means this method has already
@@ -400,7 +400,7 @@ class Workbox extends WorkboxEventTarget {
     const isExternal = sw === this._externalSW;
     const eventPrefix = isExternal ? 'external' : '';
 
-    const eventProps: {sw: ServiceWorker, originalEvent: Event, isUpdate?: boolean} = {
+    const eventProps: {sw: ServiceWorker; originalEvent: Event; isUpdate?: boolean} = {
       sw,
       originalEvent
     };

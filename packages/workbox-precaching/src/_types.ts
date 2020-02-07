@@ -14,7 +14,7 @@ export interface InstallResult {
 }
 
 export interface CleanupResult {
-  deletedCacheRequests: string[],
+  deletedCacheRequests: string[];
 }
 
 export interface PrecacheEntry {

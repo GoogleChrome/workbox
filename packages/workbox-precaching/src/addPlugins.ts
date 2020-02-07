@@ -20,6 +20,6 @@ import './_version.js';
  */
 function addPlugins(newPlugins: WorkboxPlugin[]) {
   precachePlugins.add(newPlugins);
-};
+}
 
 export {addPlugins};

@@ -41,6 +41,6 @@ function addRoute(options?: FetchListenerOptions) {
     addFetchListener(options);
     listenerAdded = true;
   }
-};
+}
 
 export {addRoute}

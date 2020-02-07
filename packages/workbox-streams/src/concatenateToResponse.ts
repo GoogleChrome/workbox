@@ -31,7 +31,7 @@ import './_version.js';
  */
 function concatenateToResponse(
     sourcePromises: Promise<StreamSource>[],
-    headersInit: HeadersInit): {done: Promise<void>, response: Response} {
+    headersInit: HeadersInit): {done: Promise<void>; response: Response} {
   const {done, stream} = concatenate(sourcePromises);
 
   const headers = createHeaders(headersInit);

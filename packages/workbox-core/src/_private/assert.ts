@@ -89,7 +89,7 @@ const isArrayOfClass = (
     throw error;
   }
 
-  for (let item of value) {
+  for (const item of value) {
     if (!(item instanceof expectedClass)) {
       throw error;
     }

@@ -69,7 +69,7 @@ class StaleWhileRevalidate implements RouteHandlerObject {
     this._plugins = options.plugins || [];
 
     if (options.plugins) {
-      let isUsingCacheWillUpdate =
+      const isUsingCacheWillUpdate =
         options.plugins.some((plugin) => !!plugin.cacheWillUpdate);
       this._plugins = isUsingCacheWillUpdate ?
         options.plugins : [cacheOkAndOpaquePlugin, ...options.plugins];
@@ -149,7 +149,7 @@ class StaleWhileRevalidate implements RouteHandlerObject {
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
           messages.strategyStart('StaleWhileRevalidate', request));
-      for (let log of logs) {
+      for (const log of logs) {
         logger.log(log);
       }
       messages.printFinalResponse(response);
@@ -171,8 +171,8 @@ class StaleWhileRevalidate implements RouteHandlerObject {
    * @private
    */
   async _getFromNetwork({request, event}: {
-    request: Request,
-    event?: ExtendableEvent,
+    request: Request;
+    event?: ExtendableEvent;
   }): Promise<Response> {
     const response = await fetchWrapper.fetch({
       request,

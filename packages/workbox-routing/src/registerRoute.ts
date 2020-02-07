@@ -105,6 +105,6 @@ function registerRoute(
   defaultRouter.registerRoute(route);
 
   return route;
-};
+}
 
 export {registerRoute}

@@ -62,6 +62,6 @@ function setCacheNameDetails(details: PartialCacheNameDetails) {
   }
 
   cacheNames.updateDetails(details);
-};
+}
 
 export {setCacheNameDetails}

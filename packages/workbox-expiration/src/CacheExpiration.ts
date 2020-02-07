@@ -29,8 +29,8 @@ interface CacheExpirationConfig {
  * @memberof module:workbox-expiration
  */
 class CacheExpiration {
-  private _isRunning: boolean = false;
-  private _rerunRequested: boolean = false;
+  private _isRunning = false;
+  private _rerunRequested = false;
   private _maxEntries?: number;
   private _maxAgeSeconds?: number;
   private _cacheName: string;

@@ -13,8 +13,8 @@ import {Handler, MatchCallbackOptions} from './_types.js';
 import './_version.js';
 
 export interface NavigationRouteMatchOptions {
-  allowlist?: RegExp[],
-  denylist?: RegExp[],
+  allowlist?: RegExp[];
+  denylist?: RegExp[];
 }
 
 /**

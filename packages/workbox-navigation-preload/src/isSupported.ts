@@ -10,7 +10,7 @@ import './_version.js';
 
 
 // Give TypeScript the correct global.
-declare var self: ServiceWorkerGlobalScope;
+declare let self: ServiceWorkerGlobalScope;
 
 /**
  * @return {boolean} Whether or not the current browser supports enabling

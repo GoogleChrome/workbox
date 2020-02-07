@@ -127,7 +127,7 @@ class CacheFirst implements RouteHandlerObject {
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
           messages.strategyStart('CacheFirst', request));
-      for (let log of logs) {
+      for (const log of logs) {
         logger.log(log);
       }
       messages.printFinalResponse(response);

@@ -17,7 +17,7 @@ interface MessageMap {
   [messageID: string]: (param: MessageParam) => string;
 }
 
-export const messages : MessageMap = {
+export const messages: MessageMap = {
   'invalid-value': ({paramName, validValueDescription, value}) => {
     if (!paramName || !validValueDescription) {
       throw new Error(`Unexpected input to 'invalid-value' error.`);

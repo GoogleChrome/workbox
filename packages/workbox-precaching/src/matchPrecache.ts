@@ -28,6 +28,6 @@ import './_version.js';
 function matchPrecache(request: string|Request) {
   const precacheController = getOrCreatePrecacheController();
   return precacheController.matchPrecache(request);
-};
+}
 
 export {matchPrecache}

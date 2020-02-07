@@ -35,6 +35,6 @@ declare global {
 function precacheAndRoute(entries: Array<PrecacheEntry|string>, options?: FetchListenerOptions) {
   precache(entries);
   addRoute(options);
-};
+}
 
 export {precacheAndRoute}

@@ -34,13 +34,6 @@ module.exports = {
   plugins: [
     'jsdoc',
   ],
-  settings: {
-    jsdoc: {
-      preferredTypes: {
-        object: 'Object',
-      },
-    },
-  },
   overrides: [{
     files: ['test/**/*.{js,mjs}'],
     env: {
