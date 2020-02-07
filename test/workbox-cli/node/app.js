@@ -85,7 +85,7 @@ describe(`[workbox-cli] app.js`, function() {
         } catch (error) {
           expect(loggerErrorStub.calledOnce).to.be.true;
           expect(
-              loggerErrorStub.alwaysCalledWithExactly(errors['invalid-common-js-module'])
+              loggerErrorStub.alwaysCalledWithExactly(errors['invalid-common-js-module']),
           ).to.be.true;
 
           expect(error.message).to.have.string(INVALID_CONFIG_FILE);
@@ -150,7 +150,7 @@ describe(`[workbox-cli] app.js`, function() {
         } catch (error) {
           expect(loggerErrorStub.calledOnce).to.be.true;
           expect(
-              loggerErrorStub.alwaysCalledWithExactly(errors['workbox-build-runtime-error'])
+              loggerErrorStub.alwaysCalledWithExactly(errors['workbox-build-runtime-error']),
           ).to.be.true;
           expect(error).to.eql(PROXIED_ERROR);
         }

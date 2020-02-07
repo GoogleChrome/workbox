@@ -23,14 +23,14 @@ gulp.task('build-window-packages:window-bundle', gulp.series(
         'window',
         buildWindowBundle,
         constants.BUILD_TYPES[buildKey],
-    ))
+    )),
 ));
 
 gulp.task('build-window-packages:version-module', gulp.series(
     packageRunnner(
         'build-window-packages:version-module',
         'window',
-        versionModule)
+        versionModule),
 ));
 
 gulp.task('build-window-packages', gulp.series(

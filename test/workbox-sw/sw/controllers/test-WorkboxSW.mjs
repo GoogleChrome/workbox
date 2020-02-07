@@ -11,7 +11,7 @@ import generateTestVariants from '../../../../infra/testing/generate-variant-tes
 
 
 describe(`WorkboxSW`, function() {
-  let sandbox = sinon.createSandbox();
+  const sandbox = sinon.createSandbox();
 
   beforeEach(function() {
     sandbox.restore();

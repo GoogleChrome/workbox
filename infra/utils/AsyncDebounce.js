@@ -14,6 +14,7 @@ class AsyncDebounce {
 
   call() {
     if (!this._promise) {
+      /* eslint-disable no-async-promise-executor */
       this._promise = new Promise(async (resolve) => {
         do {
           this._needsRecall = false;

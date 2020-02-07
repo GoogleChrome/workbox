@@ -12,7 +12,7 @@ module.exports = (compositeURL, dependencyDetails) => {
   let totalSize = 0;
   let compositeHash = '';
 
-  for (let fileDetails of dependencyDetails) {
+  for (const fileDetails of dependencyDetails) {
     totalSize += fileDetails.size;
     compositeHash += fileDetails.hash;
   }

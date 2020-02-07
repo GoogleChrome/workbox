@@ -20,7 +20,7 @@ const moduleRegistry = new ModuleRegistry();
  * Validates the method calls for a given set of runtimeCachingOptions.
  *
  * @private
- * @param {Array<Object>} runtimeCachingOptions
+ * @param {Array<object>} runtimeCachingOptions
  * @param {Array<string>} convertedOptions
  */
 function validate(runtimeCachingOptions, convertedOptions) {
@@ -101,12 +101,12 @@ function validate(runtimeCachingOptions, convertedOptions) {
         if ('options' in options.backgroundSync) {
           expect(
               globalScope.workbox_background_sync_BackgroundSyncPlugin.calledWith(
-                  options.backgroundSync.name, options.backgroundSync.options)
+                  options.backgroundSync.name, options.backgroundSync.options),
           ).to.be.true;
         } else {
           expect(
               globalScope.workbox_background_sync_BackgroundSyncPlugin.calledWith(
-                  options.backgroundSync.name)
+                  options.backgroundSync.name),
           ).to.be.true;
         }
       }

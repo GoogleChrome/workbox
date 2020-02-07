@@ -45,7 +45,7 @@ const runNodeTestSuite = async (testPath, nodeEnv) => {
 };
 
 const runNodeTestsWithEnv = async (testGroup, nodeEnv) => {
-  let globConfig = {
+  const globConfig = {
     ignore: [
       '**/all/**',
     ],
@@ -83,7 +83,7 @@ gulp.task('test-node:coverage', () => {
     runOptions.push('--');
     runOptions.push('--include');
     runOptions.push(
-        path.posix.join('packages', global.packageOrStar, '**', '*')
+        path.posix.join('packages', global.packageOrStar, '**', '*'),
     );
   }
   return spawn(getNpmCmd(), runOptions);

@@ -87,7 +87,7 @@ describe(`NetworkOnly`, function() {
             request,
             event,
           }),
-          'no-response'
+          'no-response',
       );
     });
 

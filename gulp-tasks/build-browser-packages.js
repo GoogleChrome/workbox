@@ -23,14 +23,14 @@ gulp.task('build-browser-packages:browser-bundle', gulp.series(
         'browser',
         buildBrowserBundle,
         constants.BUILD_TYPES[buildKey],
-    ))
+    )),
 ));
 
 gulp.task('build-browser-packages:version-module', gulp.series(
     packageRunnner(
         'build-browser-packages:version-module',
         'browser',
-        versionModule)
+        versionModule),
 ));
 
 gulp.task('build-browser-packages', gulp.series(

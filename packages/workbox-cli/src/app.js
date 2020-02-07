@@ -22,7 +22,7 @@ const runWizard = require('./lib/run-wizard');
 /**
  * Runs the specified build command with the provided configuration.
  *
- * @param {Object} options
+ * @param {object} options
  */
 async function runBuildCommand({command, config, watch}) {
   try {

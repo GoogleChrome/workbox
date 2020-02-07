@@ -21,7 +21,7 @@ workbox.routing.registerRoute(
           maxAgeSeconds: 1,
         }),
       ],
-    })
+    }),
 );
 
 self.addEventListener('install', (event) => event.waitUntil(self.skipWaiting()));

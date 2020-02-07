@@ -35,7 +35,7 @@ const nextEvent = (obj, eventType) => {
 };
 
 const uniq = (() => {
-  let timestamp = Date.now();
+  const timestamp = Date.now();
   let uid = 0;
   return (scriptURL) => {
     const url = new URL(scriptURL, location);

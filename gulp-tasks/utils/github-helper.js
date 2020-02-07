@@ -6,12 +6,12 @@
   https://opensource.org/licenses/MIT.
 */
 
-const GitHubApi = require('@octokit/rest');
+const octokit = require('@octokit/rest').Octokit;
 const semver = require('semver');
 
 const constants = require('./constants');
 
-const github = new GitHubApi();
+const github = octokit();
 
 // github.authenticate() is synchronous, and it only stores the credentials for
 // the next request, so it should be called once per method that requires auth.

@@ -36,7 +36,6 @@ module.exports = {
   ],
   overrides: [{
     files: ['test/**/*.{js,mjs}'],
-    parser: 'babel-eslint',
     env: {
       mocha: true,
     },
@@ -140,4 +139,6 @@ module.exports = {
       'no-console': 0,
     },
   }],
+  // eslint can't parse some of these files.
+  ignorePatterns: ['**/wasm-project/**'],
 };

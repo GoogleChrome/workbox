@@ -12,10 +12,10 @@ const {SourceMapConsumer, SourceMapGenerator} = require('source-map');
  * Adapted from https://github.com/nsams/sourcemap-aware-replace, with modern
  * JavaScript updates, along with additional properties copied from originalMap.
  *
- * @param {Object} options
+ * @param {object} options
  * @param {string} options.jsFilename The name for the file whose contents
  * correspond to originalSource.
- * @param {Object} options.originalMap The sourcemap for originalSource,
+ * @param {object} options.originalMap The sourcemap for originalSource,
  * prior to any replacements.
  * @param {string} options.originalSource The source code, prior to any
  * replacements.

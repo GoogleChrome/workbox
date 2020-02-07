@@ -16,7 +16,7 @@ const validate = require('./lib/validate-options');
  * manifest", along with details about the number of entries and their size,
  * based on the options you provide.
  *
- * @param {Object} config The configuration to use.
+ * @param {object} config The configuration to use.
  *
  * @param {string} config.globDirectory The local directory you wish to match
  * `globPatterns` against. The path is relative to the current directory.
@@ -68,7 +68,7 @@ const validate = require('./lib/validate-options');
  * produced. If not explicitly configured here, the `process.env.NODE_ENV` value
  * will be used, and failing that, it will fall back to `'production'`.
  *
- * @param {Object<string, string>} [config.modifyURLPrefix] A mapping of prefixes
+ * @param {object<string, string>} [config.modifyURLPrefix] A mapping of prefixes
  * that, if present in an entry in the precache manifest, will be replaced with
  * the corresponding value. This can be used to, for example, remove or add a
  * path prefix from a manifest entry if your web hosting setup doesn't match
@@ -76,7 +76,7 @@ const validate = require('./lib/validate-options');
  * use the `manifestTransforms` option and provide a function that modifies the
  * entries in the manifest using whatever logic you provide.
  *
- * @param {Object} [config.templatedURLs] If a URL is rendered based on some
+ * @param {object} [config.templatedURLs] If a URL is rendered based on some
  * server-side logic, its contents may depend on multiple files or on some other
  * unique string value. The keys in this object are server-rendered URLs. If the
  * values are an array of strings, they will be interpreted as `glob` patterns,

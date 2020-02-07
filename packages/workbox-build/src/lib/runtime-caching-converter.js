@@ -16,7 +16,7 @@ const stringifyWithoutComments = require('./stringify-without-comments');
  * to the equivalent Workbox method calls.
  *
  * @param {ModuleRegistry} moduleRegistry
- * @param {Object} options See
+ * @param {object} options See
  *        https://developers.google.com/web/tools/workbox/modules/workbox-build#generateSW-runtimeCaching
  * @return {string} A JSON string representing the equivalent options.
  *

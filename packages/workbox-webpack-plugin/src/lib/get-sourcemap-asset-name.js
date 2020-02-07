@@ -17,7 +17,7 @@ const upath = require('upath');
  *
  * See https://github.com/GoogleChrome/workbox/issues/2235
  *
- * @param {Object} compilation The current webpack compilation.
+ * @param {object} compilation The current webpack compilation.
  * @param {string} swContents The contents of the swSrc file, which may or
  * may not include a valid sourcemap comment.
  * @param {string} swDest The configured swDest value.

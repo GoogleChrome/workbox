@@ -12,7 +12,7 @@ workbox.precaching.precacheAndRoute([
 // Demonstrates using default cache
 workbox.routing.registerRoute(
     new RegExp('.*\\.(?:js)'),
-    new workbox.strategies.NetworkFirst()
+    new workbox.strategies.NetworkFirst(),
 );
 
 // Demonstrates a custom cache name for a route.
@@ -25,5 +25,5 @@ workbox.routing.registerRoute(
           maxEntries: 3,
         }),
       ],
-    })
+    }),
 );

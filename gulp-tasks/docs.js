@@ -48,7 +48,7 @@ You can view a friendlier UI by running
 `);
       params.push(
           '--template', path.join(
-              __dirname, '..', 'infra', 'templates', 'reference-docs', 'jsdoc'
+              __dirname, '..', 'infra', 'templates', 'reference-docs', 'jsdoc',
           ),
           '--query', queryString,
       );

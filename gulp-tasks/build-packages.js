@@ -43,8 +43,8 @@ gulp.task('build-packages:clean', gulp.series(
     packageRunnner(
         'build-packages:clean',
         'all',
-        cleanPackage
-    )
+        cleanPackage,
+    ),
 ));
 
 gulp.task('build-packages:build', gulp.series(
@@ -55,5 +55,5 @@ gulp.task('build-packages:build', gulp.series(
 
 gulp.task('build-packages', gulp.series(
     'build-packages:clean',
-    'build-packages:build'
+    'build-packages:build',
 ));

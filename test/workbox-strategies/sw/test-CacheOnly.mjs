@@ -44,7 +44,7 @@ describe(`CacheOnly`, function() {
             request,
             event,
           }),
-          'no-response'
+          'no-response',
       );
     });
 
@@ -95,7 +95,7 @@ describe(`CacheOnly`, function() {
             request,
             event,
           }),
-          'no-response'
+          'no-response',
       );
     });
 

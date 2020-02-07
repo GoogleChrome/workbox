@@ -178,7 +178,7 @@ function validateMethodCalls({methodsToSpies, expectedMethodCalls, context}) {
  *
  * @param {string} [swFile]
  * @param {string} [swString]
- * @param {Object} expectedMethodCalls
+ * @param {object} expectedMethodCalls
  * @return {Promise} Resolves if all of the expected method calls were made.
  */
 module.exports = async ({

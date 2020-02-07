@@ -41,7 +41,7 @@ class InjectManifest {
   /**
    * Creates an instance of InjectManifest.
    *
-   * @param {Object} config The configuration to use.
+   * @param {object} config The configuration to use.
    *
    * @param {string} config.swSrc An existing service worker file that will be
    * compiled and have a precache manifest injected into it.
@@ -98,7 +98,7 @@ class InjectManifest {
    * configured here, the `mode` value configured in the current `webpack`
    * compilation will be used.
    *
-   * @param {Object<string, string>} [config.modifyURLPrefix] A mapping of prefixes
+   * @param {object<string, string>} [config.modifyURLPrefix] A mapping of prefixes
    * that, if present in an entry in the precache manifest, will be replaced with
    * the corresponding value. This can be used to, for example, remove or add a
    * path prefix from a manifest entry if your web hosting setup doesn't match
@@ -110,7 +110,7 @@ class InjectManifest {
    * service worker file that will be created by this plugin. If omitted, the
    * name will be based on the `swSrc` name.
    *
-   * @param {Array<Object>} [config.webpackCompilationPlugins] Optional `webpack`
+   * @param {Array<object>} [config.webpackCompilationPlugins] Optional `webpack`
    * plugins that will be used when compiling the `swSrc` input file.
    */
   constructor(config = {}) {
@@ -119,7 +119,7 @@ class InjectManifest {
   }
 
   /**
-   * @param {Object} [compiler] default compiler object passed from webpack
+   * @param {object} [compiler] default compiler object passed from webpack
    *
    * @private
    */
@@ -132,7 +132,7 @@ class InjectManifest {
   }
 
   /**
-   * @param {Object} [compiler] default compiler object passed from webpack
+   * @param {object} [compiler] default compiler object passed from webpack
    *
    * @private
    */
@@ -142,19 +142,19 @@ class InjectManifest {
     compiler.hooks.make.tapPromise(
         this.constructor.name,
         (compilation) => this.handleMake(compilation, compiler).catch(
-            (error) => compilation.errors.push(error))
+            (error) => compilation.errors.push(error)),
     );
 
     compiler.hooks.emit.tapPromise(
         this.constructor.name,
         (compilation) => this.handleEmit(compilation).catch(
-            (error) => compilation.errors.push(error))
+            (error) => compilation.errors.push(error)),
     );
   }
 
   /**
-   * @param {Object} compilation The webpack compilation.
-   * @param {Object} parentCompiler The webpack parent compiler.
+   * @param {object} compilation The webpack compilation.
+   * @param {object} parentCompiler The webpack parent compiler.
    *
    * @private
    */
@@ -177,7 +177,7 @@ class InjectManifest {
     const childCompiler = compilation.createChildCompiler(
         this.constructor.name,
         outputOptions,
-        this.config.webpackCompilationPlugins
+        this.config.webpackCompilationPlugins,
     );
 
     childCompiler.context = parentCompiler.context;
@@ -187,7 +187,7 @@ class InjectManifest {
     new SingleEntryPlugin(
         parentCompiler.context,
         this.config.swSrc,
-        this.constructor.name
+        this.constructor.name,
     ).apply(childCompiler);
 
     await new Promise((resolve, reject) => {
@@ -207,7 +207,7 @@ class InjectManifest {
   }
 
   /**
-   * @param {Object} compilation The webpack compilation.
+   * @param {object} compilation The webpack compilation.
    *
    * @private
    */

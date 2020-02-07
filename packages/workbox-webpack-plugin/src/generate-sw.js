@@ -38,7 +38,7 @@ class GenerateSW {
   /**
    * Creates an instance of GenerateSW.
    *
-   * @param {Object} config The configuration to use.
+   * @param {object} config The configuration to use.
    *
    * @param {Array<module:workbox-build.ManifestEntry>} [config.additionalManifestEntries]
    * A list of entries to be precached, in addition to any entries that are
@@ -127,7 +127,7 @@ class GenerateSW {
    * configured here, the `mode` value configured in the current `webpack` compiltion
    * will be used.
    *
-   * @param {Object<string, string>} [config.modifyURLPrefix] A mapping of prefixes
+   * @param {object<string, string>} [config.modifyURLPrefix] A mapping of prefixes
    * that, if present in an entry in the precache manifest, will be replaced with
    * the corresponding value. This can be used to, for example, remove or add a
    * path prefix from a manifest entry if your web hosting setup doesn't match
@@ -164,7 +164,7 @@ class GenerateSW {
    * `runtimeCaching` to set up an appropriate response strategy that will match
    * navigation requests, and make use of the preloaded response.
    *
-   * @param {boolean|Object} [config.offlineGoogleAnalytics=false] Controls
+   * @param {boolean|object} [config.offlineGoogleAnalytics=false] Controls
    * whether or not to include support for
    * [offline Google Analytics](https://developers.google.com/web/tools/workbox/guides/enable-offline-analytics).
    * When `true`, the call to `workbox-google-analytics`'s `initialize()` will be
@@ -191,7 +191,7 @@ class GenerateSW {
   }
 
   /**
-   * @param {Object} [compiler] default compiler object passed from webpack
+   * @param {object} [compiler] default compiler object passed from webpack
    *
    * @private
    */
@@ -205,7 +205,7 @@ class GenerateSW {
   }
 
   /**
-   * @param {Object} [compiler] default compiler object passed from webpack
+   * @param {object} [compiler] default compiler object passed from webpack
    *
    * @private
    */
@@ -215,12 +215,12 @@ class GenerateSW {
     compiler.hooks.emit.tapPromise(
         this.constructor.name,
         (compilation) => this.handleEmit(compilation).catch(
-            (error) => compilation.errors.push(error))
+            (error) => compilation.errors.push(error)),
     );
   }
 
   /**
-   * @param {Object} compilation The webpack compilation.
+   * @param {object} compilation The webpack compilation.
    *
    * @private
    */

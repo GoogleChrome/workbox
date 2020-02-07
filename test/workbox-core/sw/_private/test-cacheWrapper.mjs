@@ -11,7 +11,7 @@ import {registerQuotaErrorCallback} from 'workbox-core/registerQuotaErrorCallbac
 
 
 describe(`cacheWrapper`, function() {
-  let sandbox = sinon.createSandbox();
+  const sandbox = sinon.createSandbox();
 
   beforeEach(async function() {
     const cacheKeys = await caches.keys();

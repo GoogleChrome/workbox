@@ -32,7 +32,7 @@ describe(`calculateEffectiveBoundaries()`, function() {
           expect(error.details).to.have.property('funcName', 'calculateEffectiveBoundaries');
           expect(error.details).to.have.property('paramName', 'blob');
           expect(error.details).to.have.property('expectedClass', Blob);
-        }
+        },
     );
   });
 
@@ -41,7 +41,7 @@ describe(`calculateEffectiveBoundaries()`, function() {
     const end = 1;
     await expectError(
         () => calculateEffectiveBoundaries(SOURCE_BLOB, start, end),
-        'range-not-satisfiable'
+        'range-not-satisfiable',
     );
   });
 
@@ -50,7 +50,7 @@ describe(`calculateEffectiveBoundaries()`, function() {
     const end = SOURCE_BLOB_SIZE + 1;
     await expectError(
         () => calculateEffectiveBoundaries(SOURCE_BLOB, start, end),
-        'range-not-satisfiable'
+        'range-not-satisfiable',
     );
   });
 

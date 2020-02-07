@@ -610,7 +610,7 @@ describe(`PrecacheController`, function() {
 
       return expectError(
           () => precacheController.install(),
-          'bad-precaching-response'
+          'bad-precaching-response',
       );
     });
 
@@ -683,7 +683,7 @@ describe(`PrecacheController`, function() {
       // will be thrown.
       return expectError(
           () => precacheController.install({plugins}),
-          'bad-precaching-response'
+          'bad-precaching-response',
       );
     });
   });

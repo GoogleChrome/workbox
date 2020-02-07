@@ -19,7 +19,7 @@ workbox.routing.registerRoute(
       plugins: [
         new workbox.rangeRequests.RangeRequestsPlugin(),
       ],
-    })
+    }),
 );
 
 self.addEventListener('install', (event) => {

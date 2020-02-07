@@ -31,5 +31,5 @@ app.get('/api/is-response-cacheable',
       } else {
         res.send(`This response has no 'X-Is-Cacheable' header`);
       }
-    }
+    },
 );

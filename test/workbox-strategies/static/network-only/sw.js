@@ -19,6 +19,6 @@ workbox.routing.registerRoute(
 self.addEventListener('install', (event) => event.waitUntil(
     caches.open('network-only')
         .then((cache) => cache.put('/__WORKBOX/uniqueValue', new Response('Cached')))
-        .then(() => self.skipWaiting()))
+        .then(() => self.skipWaiting())),
 );
 self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim()));

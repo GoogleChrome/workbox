@@ -57,7 +57,7 @@ async function getAllFileExtensions(globDirectory) {
 
 /**
  * @param {string} globDirectory The directory used for the root of globbing.
- * @return {Promise<Object>} The answers from inquirer.
+ * @return {Promise<object>} The answers from inquirer.
  */
 async function askQuestion(globDirectory) {
   // We need to get a list of extensions corresponding to files in the directory

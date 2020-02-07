@@ -13,7 +13,7 @@ workbox.routing.registerRoute(
     new RegExp('/__WORKBOX/uniqueValue'),
     new workbox.strategies.StaleWhileRevalidate({
       cacheName: 'stale-while-revalidate',
-    })
+    }),
 );
 
 self.addEventListener('install', (event) => event.waitUntil(self.skipWaiting()));

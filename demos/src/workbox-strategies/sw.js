@@ -59,8 +59,8 @@ self.addEventListener('install', (event) => {
           .then((cache) => {
             return cache.put(
                 new Request('/public/cache-only-populated-cache'),
-                new Response('Hello from the populated cache.')
+                new Response('Hello from the populated cache.'),
             );
-          })
+          }),
   );
 });

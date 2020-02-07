@@ -17,7 +17,7 @@ const errors = require('../errors');
 const name = 'configLocation';
 
 /**
- * @return {Promise<Object>} The answers from inquirer.
+ * @return {Promise<object>} The answers from inquirer.
  */
 function askQuestion() {
   return inquirer.prompt([{

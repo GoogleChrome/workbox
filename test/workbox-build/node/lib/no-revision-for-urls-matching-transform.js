@@ -35,7 +35,7 @@ describe(`[workbox-build] lib/no-revision-for-urls-matching-transform.js`, funct
     const transform = noRevisionForURLsMatching(/ignored/);
     for (const badInput of badInputs) {
       expect(
-          () => transform([{url: badInput}])
+          () => transform([{url: badInput}]),
       ).to.throw(errors['manifest-entry-bad-url']);
     }
   });
@@ -55,7 +55,7 @@ describe(`[workbox-build] lib/no-revision-for-urls-matching-transform.js`, funct
 
     for (const badInput of badInputs) {
       expect(
-          () => noRevisionForURLsMatching(badInput)
+          () => noRevisionForURLsMatching(badInput),
       ).to.throw(errors['invalid-dont-cache-bust']);
     }
   });

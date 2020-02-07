@@ -67,7 +67,7 @@ module.exports = async ({
   }
 
   if (templatedURLs) {
-    for (let url of Object.keys(templatedURLs)) {
+    for (const url of Object.keys(templatedURLs)) {
       assert(!fileSet.has(url), errors['templated-url-matches-glob']);
 
       const dependencies = templatedURLs[url];

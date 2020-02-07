@@ -27,7 +27,7 @@ module.exports = async (packagePath, buildType) => {
   // there is nothing to build
   if (!fs.existsSync(moduleBrowserPath)) {
     logHelper.error(ERROR_NO_MODULE_BROWSER + packageName);
-    return Promise.reject(ERROR_NO_MODULE_BROWSER + packageName);
+    return Promise.reject(new Error(ERROR_NO_MODULE_BROWSER + packageName));
   }
 
   const outputDirectory = path.join(

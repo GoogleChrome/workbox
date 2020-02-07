@@ -53,8 +53,8 @@ function checkConditions(asset, compilation, conditions = []) {
  * See https://github.com/GoogleChrome/workbox/issues/1859
  * See https://github.com/webpack/webpack/issues/7073
  *
- * @param {Object} stats The webpack compilation stats.
- * @return {Object<string,Set<string>>}
+ * @param {object} stats The webpack compilation stats.
+ * @return {object<string, Set<string>>}
  * @private
  */
 function assetToChunkNameMapping(stats) {
@@ -82,7 +82,7 @@ function assetToChunkNameMapping(stats) {
  * - include and exclude, for more general criteria.
  *
  * @param {Compilation} compilation The webpack compilation.
- * @param {Object} config The validated configuration, obtained from the plugin.
+ * @param {object} config The validated configuration, obtained from the plugin.
  * @return {Set<Asset>} The assets that should be included in the manifest,
  * based on the criteria provided.
  * @private

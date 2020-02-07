@@ -98,13 +98,13 @@ module.exports = async (packagePath, buildType) => {
   // there is nothing to build
   if (!fs.existsSync(packageIndex)) {
     logHelper.error(ERROR_NO_MODULE_INDEX + packageName);
-    return Promise.reject(ERROR_NO_MODULE_INDEX + packageName);
+    return Promise.reject(new Error(ERROR_NO_MODULE_INDEX + packageName));
   }
 
   const pkgJson = require(path.join(packagePath, 'package.json'));
   if (!pkgJson.workbox || !pkgJson.workbox.browserNamespace) {
     logHelper.error(ERROR_NO_NAMSPACE + ' ' + packageName);
-    return Promise.reject(ERROR_NO_NAMSPACE + ' ' + packageName);
+    return Promise.reject(new Error(ERROR_NO_NAMSPACE + ' ' + packageName));
   }
 
   let outputFilename = pkgJson.workbox.outputFilename || packageName;

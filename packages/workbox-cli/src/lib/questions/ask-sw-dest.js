@@ -17,7 +17,7 @@ const name = 'swDest';
 
 /**
  * @param {string} defaultDir
- * @return {Promise<Object>} The answers from inquirer.
+ * @return {Promise<object>} The answers from inquirer.
  */
 function askQuestion(defaultDir) {
   return inquirer.prompt([{
