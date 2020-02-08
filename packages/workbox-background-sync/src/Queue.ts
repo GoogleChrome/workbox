@@ -23,7 +23,7 @@ interface OnSyncCallbackOptions {
 }
 
 interface OnSyncCallback {
-  (options: OnSyncCallbackOptions): void;
+  (options: OnSyncCallbackOptions): void|Promise<void>;
 }
 
 export interface QueueOptions {
@@ -382,8 +382,7 @@ class Queue {
 
             let syncError;
             try {
-              // TODO (philipwalton): Should the await be here?
-              await this._onSync({queue: this}); // eslint-disable-line @typescript-eslint/await-thenable
+              await this._onSync({queue: this});
             } catch (error) {
               syncError = error;
 
