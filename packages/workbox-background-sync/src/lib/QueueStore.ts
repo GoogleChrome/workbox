@@ -49,8 +49,7 @@ export class QueueStore {
   constructor(queueName: string) {
     this._queueName = queueName;
     this._db = new DBWrapper(DB_NAME, DB_VERSION, {
-      // TODO (philipwalton): Should this be bound?
-      onupgradeneeded: this._upgradeDb, // eslint-disable-line @typescript-eslint/unbound-method
+      onupgradeneeded: this._upgradeDb,
     });
   }
 

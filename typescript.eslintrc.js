@@ -24,6 +24,7 @@ module.exports = {
     '@typescript-eslint/no-non-null-assertion': 0,
     '@typescript-eslint/prefer-readonly': 2,
     '@typescript-eslint/require-await': 0,
+    '@typescript-eslint/unbound-method': 0,
     'no-cond-assign': 0,
     'prefer-spread': 0,
   },

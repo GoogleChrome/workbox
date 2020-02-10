@@ -108,8 +108,7 @@ class Queue {
     }
 
     this._name = name;
-    // TODO (philipwalton): Should this be bound?
-    this._onSync = onSync || this.replayRequests;  // eslint-disable-line @typescript-eslint/unbound-method
+    this._onSync = onSync || this.replayRequests;
     this._maxRetentionTime = maxRetentionTime || MAX_RETENTION_TIME;
     this._queueStore = new QueueStore(this._name);
 
