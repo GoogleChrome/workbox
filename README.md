@@ -1,8 +1,3 @@
-[![Travis Build Status][travis-image]][travis-url]
-[![AppVeyor Build status][appveyor-image]][appveyor-url]
-[![Dev Dependency Status][dev-dependency-image]][dev-dependency-url]
-[![TypeScript definitions on DefinitelyTyped](https://definitelytyped.org/badges/standard-flat.svg)](https://www.npmjs.com/package/@types/workbox-sw)
-
 <img src='https://user-images.githubusercontent.com/110953/28352645-7a8a66d8-6c0c-11e7-83af-752609e7e072.png' width='500px'/>
 
 # Welcome to Workbox!
@@ -71,12 +66,3 @@ pull requests.
 ## License
 
 MIT, see [LICENSE](LICENSE) for details.
-
-[npm-url]: https://npmjs.org/package/workbox
-[npm-image]: https://badge.fury.io/js/workbox.svg
-[travis-url]: https://travis-ci.org/GoogleChrome/workbox
-[travis-image]: https://travis-ci.org/GoogleChrome/workbox.svg?branch=master
-[appveyor-image]: https://ci.appveyor.com/api/projects/status/4ct8ph4d34c5ifnw?svg=true
-[appveyor-url]: https://ci.appveyor.com/project/gauntface/workbox
-[dev-dependency-url]: https://david-dm.org/GoogleChrome/workbox?type=dev
-[dev-dependency-image]: https://david-dm.org/GoogleChrome/workbox/dev-status.svg
