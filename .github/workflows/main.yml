@@ -1,0 +1,11 @@
+name: CI
+
+on: [pull_request]
+
+jobs:
+  test:
+    runs-on: macos-latest
+    
+    steps:
+    - name: Test
+      run: npx gulp test
