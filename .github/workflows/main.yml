@@ -26,6 +26,7 @@ jobs:
         node-version: 8
 
     - run: sudo /usr/bin/safaridriver --enable
+    - run: safaridriver -p 0 &
     - run: sudo defaults write com.apple.Safari AllowRemoteAutomation 1
     - run: npm ci
     - run: npx gulp test
