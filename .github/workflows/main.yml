@@ -1,27 +1,27 @@
-name: CI
+name: Test_Suite
 
 on: [pull_request]
 
 jobs:
-  Node_Tests_Windows:
-    runs-on: windows-latest
+#   Node_Tests_Windows:
+#     runs-on: windows-latest
     
-    steps:
-    - uses: actions/checkout@v2
+#     steps:
+#     - uses: actions/checkout@v2
       
-    - uses: actions/cache@v1
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
+#     - uses: actions/cache@v1
+#       with:
+#         path: ~/.npm
+#         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+#         restore-keys: |
+#           ${{ runner.os }}-node-
           
-    - uses: actions/setup-node@v1
-      with:
-        node-version: 13.x
+#     - uses: actions/setup-node@v1
+#       with:
+#         node-version: 13.x
 
-    - run: npm ci
-    - run: npx gulp test
+#     - run: npm ci
+#     - run: npx gulp test
 
   Full_Suite_Mac:
     runs-on: macos-latest
@@ -46,7 +46,9 @@ jobs:
         node-version: 8
 
     - run: |
-          sudo safaridriver --enable
-          safaridriver -p 0 &
+        defaults write com.apple.Safari IncludeDevelopMenu YES
+        defaults write com.apple.Safari AllowRemoteAutomation 1
+        sudo safaridriver --enable
+        safaridriver -p 0 &
     - run: npm ci
     - run: npx gulp test
