@@ -16,9 +16,16 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-node-
           
+    - uses: actions/cache@v1
+      with:
+        path: ~/.selenium-assistant
+        key: ${{ runner.os }}
+          
     - uses: actions/setup-node@v1
       with:
         node-version: 8
 
+    - run: sudo /usr/bin/safaridriver --enable
+    - run: sudo defaults write com.apple.Safari AllowRemoteAutomation 1
     - run: npm ci
     - run: npx gulp test
