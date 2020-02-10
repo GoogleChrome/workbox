@@ -7,5 +7,10 @@ jobs:
     runs-on: macos-latest
     
     steps:
-    - name: Test
-      run: npx gulp test
+    - uses: actions/checkout@v2
+    - name: Use Node.js 8
+      uses: actions/setup-node@v1
+      with:
+        node-version: 8
+    - run: npm install
+    - run: npx gulp test
