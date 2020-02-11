@@ -10,7 +10,7 @@ import './_version.js';
 
 
 // Give TypeScript the correct global.
-declare var self: ServiceWorkerGlobalScope;
+declare let self: ServiceWorkerGlobalScope;
 
 /**
  * Force a service worker to activate immediately, instead of
@@ -23,6 +23,6 @@ function skipWaiting() {
   // We need to explicitly call `self.skipWaiting()` here because we're
   // shadowing `skipWaiting` with this local function.
   self.addEventListener('install', () => self.skipWaiting());
-};
+}
 
 export {skipWaiting}

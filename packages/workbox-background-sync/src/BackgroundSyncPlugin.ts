@@ -17,7 +17,7 @@ import './_version.js';
  * @memberof module:workbox-background-sync
  */
 class BackgroundSyncPlugin implements WorkboxPlugin {
-  private _queue: Queue;
+  private readonly _queue: Queue;
 
   /**
    * @param {string} name See the [Queue]{@link module:workbox-background-sync.Queue}

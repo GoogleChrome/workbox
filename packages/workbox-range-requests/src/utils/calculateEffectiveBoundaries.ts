@@ -22,7 +22,7 @@ import '../_version.js';
  * @private
  */
 function calculateEffectiveBoundaries(
-    blob: Blob, start?: number, end?: number): {start: number, end: number} {
+    blob: Blob, start?: number, end?: number): {start: number; end: number} {
   if (process.env.NODE_ENV !== 'production') {
     assert!.isInstance(blob, Blob, {
       moduleName: 'workbox-range-requests',

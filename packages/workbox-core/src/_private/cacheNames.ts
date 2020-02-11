@@ -9,7 +9,7 @@
 import '../_version.js';
 
 
-declare var registration : ServiceWorkerRegistration|undefined;
+declare let registration: ServiceWorkerRegistration|undefined;
 
 export interface CacheNameDetails {
   googleAnalytics: string; 
@@ -32,7 +32,7 @@ const _cacheNameDetails: CacheNameDetails = {
   precache: 'precache-v2',
   prefix: 'workbox',
   runtime: 'runtime',
-  suffix: typeof registration !== 'undefined' ? registration!.scope : '',
+  suffix: typeof registration !== 'undefined' ? registration.scope : '',
 };
 
 const _createCacheName = (cacheName: string): string => {
@@ -43,7 +43,7 @@ const _createCacheName = (cacheName: string): string => {
 
 const eachCacheNameDetail = (fn: Function): void => {
   for (const key of Object.keys(_cacheNameDetails)) {
-    fn(<CacheNameDetailsProp> key);
+    fn(key as CacheNameDetailsProp);
   }
 } 
 
@@ -51,7 +51,7 @@ export const cacheNames = {
   updateDetails: (details: PartialCacheNameDetails) => {
     eachCacheNameDetail((key: CacheNameDetailsProp) => {
       if (typeof details[key] === 'string') {
-        _cacheNameDetails[key] = <string> details[key];
+        _cacheNameDetails[key] = details[key];
       }
     })
   },

@@ -19,7 +19,7 @@ import '../_version.js';
  *
  * @private
  */
-function parseRangeHeader(rangeHeader: string): {start?: number, end?: number} {
+function parseRangeHeader(rangeHeader: string): {start?: number; end?: number} {
   if (process.env.NODE_ENV !== 'production') {
     assert!.isType(rangeHeader, 'string', {
       moduleName: 'workbox-range-requests',

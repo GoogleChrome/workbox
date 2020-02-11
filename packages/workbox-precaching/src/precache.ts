@@ -72,6 +72,6 @@ function precache(entries: Array<PrecacheEntry|string>) {
     self.addEventListener('install', installListener as EventListener);
     self.addEventListener('activate', activateListener as EventListener);
   }
-};
+}
 
 export {precache}

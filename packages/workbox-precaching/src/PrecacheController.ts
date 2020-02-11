@@ -30,10 +30,10 @@ import './_version.js';
  * @memberof module:workbox-precaching
  */
 class PrecacheController {
-  private _cacheName: string;
-  private _urlsToCacheKeys: Map<string, string>;
-  private _urlsToCacheModes: Map<string, "reload" | "default" | "no-store" | "no-cache" | "force-cache" | "only-if-cached">;
-  private _cacheKeysToIntegrities: Map<string, string>;
+  private readonly _cacheName: string;
+  private readonly _urlsToCacheKeys: Map<string, string>;
+  private readonly _urlsToCacheModes: Map<string, "reload" | "default" | "no-store" | "no-cache" | "force-cache" | "only-if-cached">;
+  private readonly _cacheKeysToIntegrities: Map<string, string>;
 
   /**
    * Create a new PrecacheController.
@@ -126,8 +126,8 @@ class PrecacheController {
    * @return {Promise<module:workbox-precaching.InstallResult>}
    */
   async install({event, plugins}: {
-    event?: ExtendableEvent,
-    plugins?: WorkboxPlugin[],
+    event?: ExtendableEvent;
+    plugins?: WorkboxPlugin[];
   } = {}) {
     if (process.env.NODE_ENV !== 'production') {
       if (plugins) {
@@ -140,7 +140,7 @@ class PrecacheController {
       }
     }
 
-    const toBePrecached: {cacheKey: string, url: string}[] = [];
+    const toBePrecached: {cacheKey: string; url: string}[] = [];
     const alreadyPrecached: string[] = [];
 
     const cache = await self.caches.open(this._cacheName);
@@ -229,12 +229,12 @@ class PrecacheController {
    * field when making the request.
    */
   async _addURLToCache({cacheKey, url, cacheMode, event, plugins, integrity}: {
-    cacheKey: string,
-    url: string,
-    cacheMode: "reload" | "default" | "no-store" | "no-cache" | "force-cache" | "only-if-cached" | undefined,
-    event?: ExtendableEvent,
-    plugins?: WorkboxPlugin[],
-    integrity?: string,
+    cacheKey: string;
+    url: string;
+    cacheMode: "reload" | "default" | "no-store" | "no-cache" | "force-cache" | "only-if-cached" | undefined;
+    event?: ExtendableEvent;
+    plugins?: WorkboxPlugin[];
+    integrity?: string;
   }) {
     const request = new Request(url, {
       integrity,

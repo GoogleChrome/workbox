@@ -21,4 +21,4 @@ import '../_version.js';
 export function urlsMatch(url1: string, url2: string): boolean {
   const {href} = location;
   return new URL(url1, href).href === new URL(url2, href).href;
-};
+}

@@ -32,6 +32,6 @@ import './_version.js';
 function getCacheKeyForURL(url: string) {
   const precacheController = getOrCreatePrecacheController();
   return precacheController.getCacheKeyForURL(url);
-};
+}
 
 export {getCacheKeyForURL}

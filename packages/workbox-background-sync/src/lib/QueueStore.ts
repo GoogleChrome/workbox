@@ -36,8 +36,8 @@ export interface QueueStoreEntry extends UnidentifiedQueueStoreEntry {
  * @private
  */
 export class QueueStore {
-  private _queueName: string;
-  private _db: DBWrapper;
+  private readonly _queueName: string;
+  private readonly _db: DBWrapper;
 
   /**
    * Associates this instance with a Queue instance, so entries added can be
@@ -203,7 +203,7 @@ export class QueueStore {
    * @private
    */
   private _upgradeDb(event: IDBVersionChangeEvent) {
-    const db = (<IDBOpenDBRequest> event.target).result;
+    const db = (event.target as IDBOpenDBRequest).result;
 
     if (event.oldVersion > 0 && event.oldVersion < DB_VERSION) {
       if (db.objectStoreNames.contains(OBJECT_STORE_NAME)) {

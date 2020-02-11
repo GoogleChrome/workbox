@@ -24,11 +24,11 @@ const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
 
 // Give TypeScript the correct global.
-declare var self: ServiceWorkerGlobalScope;
+declare let self: ServiceWorkerGlobalScope;
 
 export interface BroadcastCacheUpdateOptions {
   headersToCheck?: string[];
-  generatePayload?: (options: CacheDidUpdateCallbackParam) => Object;
+  generatePayload?: (options: CacheDidUpdateCallbackParam) => Record<string, any>;
 }
 
 /**
@@ -38,7 +38,7 @@ export interface BroadcastCacheUpdateOptions {
  * @return Object
  * @private
  */
-function defaultPayloadGenerator(data: CacheDidUpdateCallbackParam): Object {
+function defaultPayloadGenerator(data: CacheDidUpdateCallbackParam): Record<string, any> {
   return {
     cacheName: data.cacheName,
     updatedURL: data.request.url,
@@ -55,8 +55,8 @@ function defaultPayloadGenerator(data: CacheDidUpdateCallbackParam): Object {
  * @memberof module:workbox-broadcast-update
  */
 class BroadcastCacheUpdate {
-  private _headersToCheck: string[];
-  private _generatePayload: (options: CacheDidUpdateCallbackParam) => Object;
+  private readonly _headersToCheck: string[];
+  private readonly _generatePayload: (options: CacheDidUpdateCallbackParam) => Record<string, any>;
 
   /**
    * Construct a BroadcastCacheUpdate instance with a specific `channelName` to
@@ -136,7 +136,7 @@ class BroadcastCacheUpdate {
       return;
     }
 
-    if (!responsesAreSame(options.oldResponse!, options.newResponse, this._headersToCheck)) {
+    if (!responsesAreSame(options.oldResponse, options.newResponse, this._headersToCheck)) {
       if (process.env.NODE_ENV !== 'production') {
         logger.log(
             `Newer response found (and cached) for:`, options.request.url);

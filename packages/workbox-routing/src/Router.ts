@@ -23,7 +23,7 @@ type RequestArgs = string | [string, RequestInit?];
 interface CacheURLsMessageData {
   type: string;
   payload: {
-    urlsToCache: RequestArgs[],
+    urlsToCache: RequestArgs[];
   };
 }
 
@@ -45,7 +45,7 @@ interface CacheURLsMessageData {
  * @memberof module:workbox-routing
  */
 class Router {
-  private _routes: Map<HTTPMethod, Route[]>;
+  private readonly _routes: Map<HTTPMethod, Route[]>;
   private _defaultHandler?: HandlerObject;
   private _catchHandler?: HandlerObject;
 
@@ -150,8 +150,8 @@ class Router {
    *     route and there's no `defaultHandler`, `undefined` is returned.
    */
   handleRequest({request, event}: {
-    request: Request,
-    event?: ExtendableEvent,
+    request: Request;
+    event?: ExtendableEvent;
   }): Promise<Response> | undefined {
     if (process.env.NODE_ENV !== 'production') {
       assert!.isInstance(request, Request, {
@@ -171,10 +171,10 @@ class Router {
       return;
     }
 
-    let {params, route} = this.findMatchingRoute({url, request, event});
+    const {params, route} = this.findMatchingRoute({url, request, event});
     let handler = route && route.handler;
 
-    let debugMessages = [];
+    const debugMessages = [];
     if (process.env.NODE_ENV !== 'production') {
       if (handler) {
         debugMessages.push([
@@ -265,10 +265,10 @@ class Router {
    *     otherwise.
    */
   findMatchingRoute({url, request, event}: {
-    url: URL,
-    request: Request,
-    event?: ExtendableEvent
-  }): {route?: Route, params?: HandlerCallbackOptions['params']} {
+    url: URL;
+    request: Request;
+    event?: ExtendableEvent;
+  }): {route?: Route; params?: HandlerCallbackOptions['params']} {
     if (process.env.NODE_ENV !== 'production') {
       assert!.isInstance(url, URL, {
         moduleName: 'workbox-routing',
@@ -287,7 +287,7 @@ class Router {
     const routes = this._routes.get(request.method as HTTPMethod) || [];
     for (const route of routes) {
       let params;
-      let matchResult = route.match({url, request, event});
+      const matchResult = route.match({url, request, event});
       if (matchResult) {
         // See https://github.com/GoogleChrome/workbox/issues/2079
         params = matchResult;

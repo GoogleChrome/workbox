@@ -49,6 +49,6 @@ async function copyResponse(
       clonedResponse.body : await clonedResponse.blob();
 
   return new Response(body, modifiedResponseInit);
-};
+}
 
 export {copyResponse}

@@ -28,6 +28,6 @@ import './_version.js';
 function createHandler(fallbackToNetwork = true) {
   const precacheController = getOrCreatePrecacheController();
   return precacheController.createHandler(fallbackToNetwork);
-};
+}
 
 export {createHandler}

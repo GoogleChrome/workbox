@@ -32,6 +32,6 @@ function cleanupOutdatedCaches() {
       }
     }));
   }) as EventListener);
-};
+}
 
 export {cleanupOutdatedCaches}

@@ -37,7 +37,7 @@ class WorkboxError extends Error {
    * be added as a key on the context object.
    */
   constructor(errorCode: string, details?: WorkboxErrorDetails) {
-    let message = messageGenerator(errorCode, details);
+    const message = messageGenerator(errorCode, details);
 
     super(message);
 

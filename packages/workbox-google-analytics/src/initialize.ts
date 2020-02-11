@@ -31,7 +31,7 @@ import './_version.js';
 
 interface GoogleAnalyticsInitializeOptions {
   cacheName?: string;
-  parameterOverrides?: {[paramName: string]: string},
+  parameterOverrides?: {[paramName: string]: string};
   hitFilter?: (params: URLSearchParams) => void;
 }
 

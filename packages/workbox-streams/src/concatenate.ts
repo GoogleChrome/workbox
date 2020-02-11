@@ -45,8 +45,8 @@ function _getReaderFromSource(source: StreamSource): ReadableStreamReader {
  * @memberof module:workbox-streams
  */
 function concatenate(sourcePromises: Promise<StreamSource>[]): {
-  done: Promise<void>,
-  stream: ReadableStream,
+  done: Promise<void>;
+  stream: ReadableStream;
 } {
   if (process.env.NODE_ENV !== 'production') {
     assert!.isArray(sourcePromises, {
@@ -62,7 +62,7 @@ function concatenate(sourcePromises: Promise<StreamSource>[]): {
     });
   });
 
-  const streamDeferred:Deferred<void> = new Deferred();
+  const streamDeferred: Deferred<void> = new Deferred();
 
   let i = 0;
   const logMessages: any[] = [];

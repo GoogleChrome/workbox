@@ -43,21 +43,21 @@ const REGISTRATION_TIMEOUT_DURATION = 60000;
  * @memberof module:workbox-window
  */
 class Workbox extends WorkboxEventTarget {
-  private _scriptURL: string;
-  private _registerOptions: RegistrationOptions = {};
-  private _updateFoundCount: number = 0;
+  private readonly _scriptURL: string;
+  private readonly _registerOptions: RegistrationOptions = {};
+  private _updateFoundCount = 0;
 
   // Deferreds we can resolve later.
-  private _swDeferred: Deferred<ServiceWorker> = new Deferred();
-  private _activeDeferred: Deferred<ServiceWorker> = new Deferred();
-  private _controllingDeferred: Deferred<ServiceWorker> = new Deferred();
+  private readonly _swDeferred: Deferred<ServiceWorker> = new Deferred();
+  private readonly _activeDeferred: Deferred<ServiceWorker> = new Deferred();
+  private readonly _controllingDeferred: Deferred<ServiceWorker> = new Deferred();
 
   private _registrationTime: DOMHighResTimeStamp = 0;
   private _isUpdate?: boolean;
   private _compatibleControllingSW?: ServiceWorker;
   private _registration?: ServiceWorkerRegistration;
   private _sw?: ServiceWorker;
-  private _ownSWs: Set<ServiceWorker> = new Set();
+  private readonly _ownSWs: Set<ServiceWorker> = new Set();
   private _externalSW?: ServiceWorker;
   private _waitingTimeout?: number;
 
@@ -322,10 +322,10 @@ class Workbox extends WorkboxEventTarget {
   /**
    * @private
    */
-  private _onUpdateFound = () => {
+  private readonly _onUpdateFound = () => {
     // `this._registration` will never be `undefined` after an update is found.
     const registration = this._registration!;
-    const installingSW = <ServiceWorker> registration.installing;
+    const installingSW = registration.installing as ServiceWorker;
 
     // If the script URL passed to `navigator.serviceWorker.register()` is
     // different from the current controlling SW's script URL, we know any
@@ -339,7 +339,7 @@ class Workbox extends WorkboxEventTarget {
     // script it registered or from a registration attempt made by a newer
     // version of the page running in another tab.
     // To minimize the possibility of a false positive, we use the logic here:
-    let updateLikelyTriggeredExternally =
+    const updateLikelyTriggeredExternally =
         // Since we enforce only calling `register()` once, and since we don't
         // add the `updatefound` event listener until the `register()` call, if
         // `_updateFoundCount` is > 0 then it means this method has already
@@ -392,7 +392,7 @@ class Workbox extends WorkboxEventTarget {
    * @private
    * @param {Event} originalEvent
    */
-  private _onStateChange = (originalEvent: Event) => {
+  private readonly _onStateChange = (originalEvent: Event) => {
     // `this._registration` will never be `undefined` after an update is found.
     const registration = this._registration!;
     const sw = originalEvent.target as ServiceWorker;
@@ -400,7 +400,7 @@ class Workbox extends WorkboxEventTarget {
     const isExternal = sw === this._externalSW;
     const eventPrefix = isExternal ? 'external' : '';
 
-    const eventProps: {sw: ServiceWorker, originalEvent: Event, isUpdate?: boolean} = {
+    const eventProps: {sw: ServiceWorker; originalEvent: Event; isUpdate?: boolean} = {
       sw,
       originalEvent
     };
@@ -481,7 +481,7 @@ class Workbox extends WorkboxEventTarget {
    * @private
    * @param {Event} originalEvent
    */
-  private _onControllerChange = (originalEvent: Event) => {
+  private readonly _onControllerChange = (originalEvent: Event) => {
     const sw = this._sw;
     if (sw === navigator.serviceWorker.controller) {
       this.dispatchEvent(new WorkboxEvent('controlling', {
@@ -501,7 +501,7 @@ class Workbox extends WorkboxEventTarget {
    * @private
    * @param {Event} originalEvent
    */
-  private _onMessage = async (originalEvent: MessageEvent) => {
+  private readonly _onMessage = async (originalEvent: MessageEvent) => {
     const {data, source} = originalEvent;
 
     // Wait until there's an "own" service worker. This is used to buffer
