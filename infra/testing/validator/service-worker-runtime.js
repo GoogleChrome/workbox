@@ -18,6 +18,18 @@ function stringifyFunctionsInArray(arr) {
   return arr.map((item) => typeof item === 'function' ? item.toString() : item);
 }
 
+function validatePrecacheAndRoute({actual, expected}) {
+  for (const call of actual) {
+    for (const manifestEntry of call[0]) {
+      if (/[0-9a-f]{32}/.test(manifestEntry.revision)) {
+        manifestEntry.revision = '32_CHARACTER_HASH';
+      }
+    }
+  }
+
+  expect(expected).to.deep.equal(actual);
+}
+
 function setupSpiesAndContextForInjectManifest() {
   const cacheableResponsePluginSpy = sinon.spy();
   class CacheableResponsePlugin {
@@ -150,8 +162,17 @@ function validateMethodCalls({methodsToSpies, expectedMethodCalls, context}) {
 
       const args = spy.args.map(
           (arg) => Array.isArray(arg) ? stringifyFunctionsInArray(arg) : arg);
-      expect(args).to.deep.equal(expectedMethodCalls[method],
+
+      if (method === 'precacheAndRoute') {
+        validatePrecacheAndRoute({
+          actual: args,
+          expected: expectedMethodCalls.precacheAndRoute,
+        });
+      } else {
+        expect(args).to.deep.equal(expectedMethodCalls[method],
           `while testing method calls for ${method}`);
+      }
+      
     } else {
       expect(expectedMethodCalls[method],
           `while testing method calls for ${method}`).to.be.undefined;

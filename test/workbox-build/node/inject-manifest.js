@@ -178,22 +178,22 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
         expectedMethodCalls: {
           precacheAndRoute: [[[{
             url: 'index.html',
-            revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+            revision: '32_CHARACTER_HASH',
           }, {
             url: 'page-1.html',
-            revision: '544658ab25ee8762dc241e8b1c5ed96d',
+            revision: '32_CHARACTER_HASH',
           }, {
             url: 'page-2.html',
-            revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+            revision: '32_CHARACTER_HASH',
           }, {
             url: 'styles/stylesheet-1.css',
-            revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+            revision: '32_CHARACTER_HASH',
           }, {
             url: 'styles/stylesheet-2.css',
-            revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+            revision: '32_CHARACTER_HASH',
           }, {
             url: 'webpackEntry.js',
-            revision: '5b652181a25e96f255d0490203d3c47e',
+            revision: '32_CHARACTER_HASH',
           }]]],
         },
       });
@@ -230,22 +230,22 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
           importScripts: [['./sample-import.js']],
           precacheAndRoute: [[[{
             url: 'index.html',
-            revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+            revision: '32_CHARACTER_HASH',
           }, {
             url: 'page-1.html',
-            revision: '544658ab25ee8762dc241e8b1c5ed96d',
+            revision: '32_CHARACTER_HASH',
           }, {
             url: 'page-2.html',
-            revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+            revision: '32_CHARACTER_HASH',
           }, {
             url: 'styles/stylesheet-1.css',
-            revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+            revision: '32_CHARACTER_HASH',
           }, {
             url: 'styles/stylesheet-2.css',
-            revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+            revision: '32_CHARACTER_HASH',
           }, {
             url: 'webpackEntry.js',
-            revision: '5b652181a25e96f255d0490203d3c47e',
+            revision: '32_CHARACTER_HASH',
           }]], [[
             '/extra-assets/example.1234.css',
             '/extra-assets/example-2.1234.js',
@@ -274,22 +274,22 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
         expectedMethodCalls: {
           precacheAndRoute: [[[{
             url: 'index.html',
-            revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+            revision: '32_CHARACTER_HASH',
           }, {
             url: 'page-1.html',
-            revision: '544658ab25ee8762dc241e8b1c5ed96d',
+            revision: '32_CHARACTER_HASH',
           }, {
             url: 'page-2.html',
-            revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+            revision: '32_CHARACTER_HASH',
           }, {
             url: 'styles/stylesheet-1.css',
-            revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+            revision: '32_CHARACTER_HASH',
           }, {
             url: 'styles/stylesheet-2.css',
-            revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+            revision: '32_CHARACTER_HASH',
           }, {
             url: 'webpackEntry.js',
-            revision: '5b652181a25e96f255d0490203d3c47e',
+            revision: '32_CHARACTER_HASH',
           }]]],
         },
       });
@@ -314,22 +314,22 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
         expectedMethodCalls: {
           precacheAndRoute: [[[{
             url: 'index.html',
-            revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+            revision: '32_CHARACTER_HASH',
           }, {
             url: 'page-1.html',
-            revision: '544658ab25ee8762dc241e8b1c5ed96d',
+            revision: '32_CHARACTER_HASH',
           }, {
             url: 'page-2.html',
-            revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+            revision: '32_CHARACTER_HASH',
           }, {
             url: 'styles/stylesheet-1.css',
-            revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+            revision: '32_CHARACTER_HASH',
           }, {
             url: 'styles/stylesheet-2.css',
-            revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+            revision: '32_CHARACTER_HASH',
           }, {
             url: 'webpackEntry.js',
-            revision: '5b652181a25e96f255d0490203d3c47e',
+            revision: '32_CHARACTER_HASH',
           }], {
             cleanURLs: true,
           }]],
@@ -360,22 +360,22 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
         expectedMethodCalls: {
           precacheAndRoute: [[[{
             url: 'index.html',
-            revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+            revision: '32_CHARACTER_HASH',
           }, {
             url: 'page-1.html',
-            revision: '544658ab25ee8762dc241e8b1c5ed96d',
+            revision: '32_CHARACTER_HASH',
           }, {
             url: 'page-2.html',
-            revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+            revision: '32_CHARACTER_HASH',
           }, {
             url: 'styles/stylesheet-1.css',
-            revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+            revision: '32_CHARACTER_HASH',
           }, {
             url: 'styles/stylesheet-2.css',
-            revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+            revision: '32_CHARACTER_HASH',
           }, {
             url: 'webpackEntry.js',
-            revision: '5b652181a25e96f255d0490203d3c47e',
+            revision: '32_CHARACTER_HASH',
           }]]],
         },
       });
