@@ -170,9 +170,8 @@ function validateMethodCalls({methodsToSpies, expectedMethodCalls, context}) {
         });
       } else {
         expect(args).to.deep.equal(expectedMethodCalls[method],
-          `while testing method calls for ${method}`);
+            `while testing method calls for ${method}`);
       }
-      
     } else {
       expect(expectedMethodCalls[method],
           `while testing method calls for ${method}`).to.be.undefined;
