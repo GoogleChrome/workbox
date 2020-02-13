@@ -564,7 +564,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               upath.join(__dirname, '..', 'static', 'expected-service-worker.js.map'));
           const actualSourcemap = await fse.readJSON(
               upath.join(outputDir, 'subdir', 'service-worker.js.map'));
-          
+
           // The mappings will vary depending on the webpack version.
           delete expectedSourcemap.mappings;
           delete actualSourcemap.mappings;
