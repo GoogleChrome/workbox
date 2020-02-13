@@ -140,7 +140,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         __WB_DISABLE_DEV_LOGS: undefined,
-        importScripts: [],
+        importScripts: [['./workbox-8_CHARACTER_HASH']],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '32_CHARACTER_HASH',
@@ -180,7 +180,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         __WB_DISABLE_DEV_LOGS: true,
-        importScripts: [],
+        importScripts: [['./workbox-8_CHARACTER_HASH']],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '32_CHARACTER_HASH',
@@ -220,7 +220,10 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [[...importScripts]],
+        importScripts: [
+          ['./workbox-8_CHARACTER_HASH'],
+          [...importScripts],
+        ],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '32_CHARACTER_HASH',
@@ -266,7 +269,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [],
+        importScripts: [['./workbox-8_CHARACTER_HASH']],
         clientsClaim: [[]],
         skipWaiting: [[]],
         setCacheNameDetails: [[{prefix: cacheId}]],
@@ -316,7 +319,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [],
+        importScripts: [['./workbox-8_CHARACTER_HASH']],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '32_CHARACTER_HASH',
@@ -361,7 +364,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [],
+        importScripts: [['./workbox-8_CHARACTER_HASH']],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '32_CHARACTER_HASH',
@@ -413,7 +416,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         createHandlerBoundToURL: [[navigateFallback]],
-        importScripts: [],
+        importScripts: [['./workbox-8_CHARACTER_HASH']],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '32_CHARACTER_HASH',
@@ -461,7 +464,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [],
+        importScripts: [['./workbox-8_CHARACTER_HASH']],
         precacheAndRoute: [[[{
           url: 'link/index.html',
           revision: '32_CHARACTER_HASH',
@@ -505,7 +508,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [],
+        importScripts: [['./workbox-8_CHARACTER_HASH']],
         precacheAndRoute: [[[{
           url: 'link/index.html',
           revision: '32_CHARACTER_HASH',
@@ -538,7 +541,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [],
+        importScripts: [['./workbox-8_CHARACTER_HASH']],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '32_CHARACTER_HASH',
@@ -582,7 +585,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [],
+        importScripts: [['./workbox-8_CHARACTER_HASH']],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '32_CHARACTER_HASH',
@@ -717,7 +720,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       expect(size).to.eql(0);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [STRING_HANDLER]: [[]],
-        importScripts: [],
+        importScripts: [['./workbox-8_CHARACTER_HASH']],
         registerRoute: [[STRING_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD]],
       }});
     });
@@ -739,7 +742,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [STRING_HANDLER]: [[]],
-        importScripts: [],
+        importScripts: [['./workbox-8_CHARACTER_HASH']],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '32_CHARACTER_HASH',
@@ -780,7 +783,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [STRING_HANDLER]: [[]],
-        importScripts: [],
+        importScripts: [['./workbox-8_CHARACTER_HASH']],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '32_CHARACTER_HASH',
@@ -854,7 +857,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
         }]],
         ExpirationPlugin: [[firstRuntimeCachingOptions.expiration]],
         CacheableResponsePlugin: [[secondRuntimeCachingOptions.cacheableResponse]],
-        importScripts: [],
+        importScripts: [['./workbox-8_CHARACTER_HASH']],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '32_CHARACTER_HASH',
@@ -929,7 +932,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [handler]: [[runtimeCachingOptions]],
-        importScripts: [],
+        importScripts: [['./workbox-8_CHARACTER_HASH']],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '32_CHARACTER_HASH',
@@ -995,7 +998,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [],
+        importScripts: [['./workbox-8_CHARACTER_HASH']],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '32_CHARACTER_HASH',
@@ -1065,7 +1068,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [handler]: [[]],
-        importScripts: [],
+        importScripts: [['./workbox-8_CHARACTER_HASH']],
         precacheAndRoute: [[[{
           url: 'index.html',
           revision: '32_CHARACTER_HASH',

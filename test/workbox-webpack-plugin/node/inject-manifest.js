@@ -97,10 +97,10 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               precacheAndRoute: [[[
                 {
                   revision: '32_CHARACTER_HASH',
-                  url: 'entry1-43ba396bf52f8419e349.js',
+                  url: 'entry1-20_CHARACTER_HASH.js',
                 }, {
                   revision: '32_CHARACTER_HASH',
-                  url: 'entry2-aa21f43434f29ed0c946.js',
+                  url: 'entry2-20_CHARACTER_HASH.js',
                 },
               ], {}]],
             },
@@ -151,10 +151,10 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               precacheAndRoute: [[[
                 {
                   revision: '32_CHARACTER_HASH',
-                  url: 'entry1-46499ea335097c2d5d28.js',
+                  url: 'entry1-20_CHARACTER_HASH.js',
                 }, {
                   revision: '32_CHARACTER_HASH',
-                  url: 'entry2-3b4a9899eba6f4fd5880.js',
+                  url: 'entry2-20_CHARACTER_HASH.js',
                 },
               ], {}]],
             },
@@ -263,10 +263,10 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               precacheAndRoute: [[[
                 {
                   revision: '32_CHARACTER_HASH',
-                  url: 'entry1-46499ea335097c2d5d28.js',
+                  url: 'entry1-20_CHARACTER_HASH.js',
                 }, {
                   revision: '32_CHARACTER_HASH',
-                  url: 'entry2-3b4a9899eba6f4fd5880.js',
+                  url: 'entry2-20_CHARACTER_HASH.js',
                 },
               ], {}]],
             },
@@ -318,7 +318,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               precacheAndRoute: [[[
                 {
                   revision: '32_CHARACTER_HASH',
-                  url: 'entry1-46499ea335097c2d5d28.js',
+                  url: 'entry1-20_CHARACTER_HASH.js',
                 },
               ], {}]],
             },
@@ -370,10 +370,10 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               precacheAndRoute: [[[
                 {
                   revision: '32_CHARACTER_HASH',
-                  url: 'entry1-43ba396bf52f8419e349.js',
+                  url: 'entry1-20_CHARACTER_HASH.js',
                 }, {
                   revision: '32_CHARACTER_HASH',
-                  url: 'entry2-aa21f43434f29ed0c946.js',
+                  url: 'entry2-20_CHARACTER_HASH.js',
                 }, {
                   revision: '32_CHARACTER_HASH',
                   url: 'index.html',
@@ -505,6 +505,11 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           const expectedSourcemap = await fse.readJSON(
               upath.join(__dirname, '..', 'static', 'expected-service-worker.js.map'));
           const actualSourcemap = await fse.readJSON(upath.join(outputDir, 'service-worker.js.map'));
+
+          // The mappings will vary depending on the webpack version.
+          delete expectedSourcemap.mappings;
+          delete actualSourcemap.mappings;
+
           expect(actualSourcemap).to.eql(expectedSourcemap);
 
           await validateServiceWorkerRuntime({
@@ -559,6 +564,11 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               upath.join(__dirname, '..', 'static', 'expected-service-worker.js.map'));
           const actualSourcemap = await fse.readJSON(
               upath.join(outputDir, 'subdir', 'service-worker.js.map'));
+          
+          // The mappings will vary depending on the webpack version.
+          delete expectedSourcemap.mappings;
+          delete actualSourcemap.mappings;
+
           expect(actualSourcemap).to.eql(expectedSourcemap);
 
           await validateServiceWorkerRuntime({
@@ -931,7 +941,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               precacheAndRoute: [[[
                 {
                   revision: '32_CHARACTER_HASH',
-                  url: 'entry1-534729ef1c2ff611b64f.js',
+                  url: 'entry1-20_CHARACTER_HASH.js',
                 },
               ], {}]],
             },
@@ -993,7 +1003,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               precacheAndRoute: [[[
                 {
                   revision: '32_CHARACTER_HASH',
-                  url: 'entry1-534729ef1c2ff611b64f.js',
+                  url: 'entry1-20_CHARACTER_HASH.js',
                 },
                 {
                   revision: '32_CHARACTER_HASH',
@@ -1077,7 +1087,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               precacheAndRoute: [[[
                 {
                   revision: '32_CHARACTER_HASH',
-                  url: '/testing/entry1-4357f117964871c288d9.js',
+                  url: '/testing/entry1-20_CHARACTER_HASH.js',
                 },
               ], {}]],
             },
@@ -1142,14 +1152,14 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         mode: 'production',
         entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
         output: {
-          filename: '[name].[hash:6].js',
+          filename: '[name].[hash:20].js',
           path: outputDir,
         },
         plugins: [
           new InjectManifest({
             swSrc: SW_SRC,
             swDest: 'service-worker.js',
-            dontCacheBustURLsMatching: /\.[0-9a-f]{6}\./,
+            dontCacheBustURLsMatching: /\.[0-9a-f]{20}\./,
           }),
         ],
       };
@@ -1168,7 +1178,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
             entryPoint: 'injectManifest',
             expectedMethodCalls: {
               precacheAndRoute: [[[{
-                url: 'main.8be1a4.js',
+                url: 'main.20_CHARACTER_HASH.js',
                 revision: null,
               }], {}]],
             },
@@ -1187,7 +1197,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         mode: 'production',
         entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
         output: {
-          filename: '[name].[hash:6].js',
+          filename: '[name].[hash:20].js',
           path: outputDir,
           publicPath: '/public/',
         },
@@ -1217,7 +1227,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
             expectedMethodCalls: {
               precacheAndRoute: [[[{
                 revision: '32_CHARACTER_HASH',
-                url: 'https://example.org/main.ee21b0.js',
+                url: 'https://example.org/main.20_CHARACTER_HASH.js',
               }], {}]],
             },
           });
@@ -1236,7 +1246,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         mode: 'production',
         entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
         output: {
-          filename: '[name].[hash:6].js',
+          filename: '[name].[hash:20].js',
           path: outputDir,
         },
         plugins: [
@@ -1246,7 +1256,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
             manifestTransforms: [(manifest, compilation) => {
               expect(manifest).to.have.lengthOf(1);
               expect(manifest[0].size).to.eql(930);
-              expect(manifest[0].url).to.eql('main.8be1a4.js');
+              expect(manifest[0].url.startsWith('main.')).to.be.true;
               expect(manifest[0].revision).to.have.lengthOf(32);
               expect(compilation).to.exist;
 
@@ -1283,7 +1293,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
             expectedMethodCalls: {
               precacheAndRoute: [[[{
                 revision: null,
-                url: 'main.8be1a4.js-suffix',
+                url: 'main.20_CHARACTER_HASH.js-suffix',
               }], {}]],
             },
           });
@@ -1389,7 +1399,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         mode: 'production',
         entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
         output: {
-          filename: '[name].[hash:6].js',
+          filename: '[name].[hash:20].js',
           path: outputDir,
         },
         plugins: [
@@ -1423,7 +1433,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
             expectedMethodCalls: {
               precacheAndRoute: [[[{
                 revision: '32_CHARACTER_HASH',
-                url: 'main.94b7e7.js',
+                url: 'main.20_CHARACTER_HASH.js',
               }], {}]],
             },
           });
@@ -1434,7 +1444,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
             expectedMethodCalls: {
               precacheAndRoute: [[[{
                 revision: '32_CHARACTER_HASH',
-                url: 'main.94b7e7.js',
+                url: 'main.20_CHARACTER_HASH.js',
               }], {}]],
             },
           });
@@ -1454,7 +1464,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         mode: 'development',
         entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
         output: {
-          filename: '[name].[hash:6].js',
+          filename: '[name].[hash:20].js',
           path: outputDir,
         },
         plugins: [
@@ -1482,7 +1492,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
             expectedMethodCalls: {
               precacheAndRoute: [[[{
                 revision: '32_CHARACTER_HASH',
-                url: 'main.43096b.js',
+                url: 'main.20_CHARACTER_HASH.js',
               }], {}]],
             },
           });
