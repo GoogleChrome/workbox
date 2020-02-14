@@ -18,6 +18,31 @@ function stringifyFunctionsInArray(arr) {
   return arr.map((item) => typeof item === 'function' ? item.toString() : item);
 }
 
+function validatePrecacheAndRoute({actual, expected}) {
+  for (const call of actual) {
+    for (const manifestEntry of call[0]) {
+      if (/[0-9a-f]{32}/.test(manifestEntry.revision)) {
+        manifestEntry.revision = '32_CHARACTER_HASH';
+      }
+
+      if (manifestEntry.url) {
+        manifestEntry.url = manifestEntry.url.replace(/[0-9a-f]{20}/, '20_CHARACTER_HASH');
+      }
+    }
+  }
+
+  expect(actual).to.deep.equal(expected);
+}
+
+function validateImportScripts({actual, expected}) {
+  for (let i = 0; i < actual.length; i++) {
+    actual[i] = actual[i].map((script) => script.replace(/[0-9a-f]{20}/, '20_CHARACTER_HASH'));
+    actual[i] = actual[i].map((script) => script.replace(/[0-9a-f]{8}/, '8_CHARACTER_HASH'));
+  }
+
+  expect(actual).to.deep.equal(expected);
+}
+
 function setupSpiesAndContextForInjectManifest() {
   const cacheableResponsePluginSpy = sinon.spy();
   class CacheableResponsePlugin {
@@ -138,20 +163,23 @@ function setupSpiesAndContextForGenerateSW() {
 function validateMethodCalls({methodsToSpies, expectedMethodCalls, context}) {
   for (const [method, spy] of Object.entries(methodsToSpies)) {
     if (spy.called) {
-      // Special-case handling for importScripts(), as the first call may be
-      // to load in the workbox runtime. We don't want to have to hardcode the
-      // unique hash associated with the runtime into our test suite.
-      if (method === 'importScripts') {
-        if (spy.args[0] && spy.args[0][0].startsWith('./workbox-')) {
-          // Remove the first call.
-          spy.args.shift();
-        }
-      }
-
       const args = spy.args.map(
           (arg) => Array.isArray(arg) ? stringifyFunctionsInArray(arg) : arg);
-      expect(args).to.deep.equal(expectedMethodCalls[method],
-          `while testing method calls for ${method}`);
+
+      if (method === 'precacheAndRoute') {
+        validatePrecacheAndRoute({
+          actual: args,
+          expected: expectedMethodCalls.precacheAndRoute,
+        });
+      } else if (method === 'importScripts') {
+        validateImportScripts({
+          actual: args,
+          expected: expectedMethodCalls.importScripts,
+        });
+      } else {
+        expect(args).to.deep.equal(expectedMethodCalls[method],
+            `while testing method calls for ${method}`);
+      }
     } else {
       expect(expectedMethodCalls[method],
           `while testing method calls for ${method}`).to.be.undefined;

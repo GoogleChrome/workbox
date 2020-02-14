@@ -140,25 +140,25 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         __WB_DISABLE_DEV_LOGS: undefined,
-        importScripts: [],
+        importScripts: [['./workbox-8_CHARACTER_HASH']],
         precacheAndRoute: [[[{
           url: 'index.html',
-          revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'page-1.html',
-          revision: '544658ab25ee8762dc241e8b1c5ed96d',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'page-2.html',
-          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'styles/stylesheet-1.css',
-          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'styles/stylesheet-2.css',
-          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'webpackEntry.js',
-          revision: '5b652181a25e96f255d0490203d3c47e',
+          revision: '32_CHARACTER_HASH',
         }], {}]],
       }});
     });
@@ -180,25 +180,25 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         __WB_DISABLE_DEV_LOGS: true,
-        importScripts: [],
+        importScripts: [['./workbox-8_CHARACTER_HASH']],
         precacheAndRoute: [[[{
           url: 'index.html',
-          revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'page-1.html',
-          revision: '544658ab25ee8762dc241e8b1c5ed96d',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'page-2.html',
-          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'styles/stylesheet-1.css',
-          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'styles/stylesheet-2.css',
-          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'webpackEntry.js',
-          revision: '5b652181a25e96f255d0490203d3c47e',
+          revision: '32_CHARACTER_HASH',
         }], {}]],
       }});
     });
@@ -220,25 +220,28 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [[...importScripts]],
+        importScripts: [
+          ['./workbox-8_CHARACTER_HASH'],
+          [...importScripts],
+        ],
         precacheAndRoute: [[[{
           url: 'index.html',
-          revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'page-1.html',
-          revision: '544658ab25ee8762dc241e8b1c5ed96d',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'page-2.html',
-          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'styles/stylesheet-1.css',
-          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'styles/stylesheet-2.css',
-          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'webpackEntry.js',
-          revision: '5b652181a25e96f255d0490203d3c47e',
+          revision: '32_CHARACTER_HASH',
         }], {}]],
       }});
     });
@@ -266,28 +269,28 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [],
+        importScripts: [['./workbox-8_CHARACTER_HASH']],
         clientsClaim: [[]],
         skipWaiting: [[]],
         setCacheNameDetails: [[{prefix: cacheId}]],
         precacheAndRoute: [[[{
           url: 'index.html',
-          revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'page-1.html',
-          revision: '544658ab25ee8762dc241e8b1c5ed96d',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'page-2.html',
-          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'styles/stylesheet-1.css',
-          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'styles/stylesheet-2.css',
-          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'webpackEntry.js',
-          revision: '5b652181a25e96f255d0490203d3c47e',
+          revision: '32_CHARACTER_HASH',
         }], {directoryIndex, ignoreURLParametersMatching}]],
       }, addEventListenerValidation: (addEventListenerStub) => {
         // When skipWaiting is true, the 'message' addEventListener shouldn't be called.
@@ -316,25 +319,25 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [],
+        importScripts: [['./workbox-8_CHARACTER_HASH']],
         precacheAndRoute: [[[{
           url: 'index.html',
-          revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'page-1.html',
-          revision: '544658ab25ee8762dc241e8b1c5ed96d',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'page-2.html',
-          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'styles/stylesheet-1.css',
-          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'styles/stylesheet-2.css',
-          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'webpackEntry.js',
-          revision: '5b652181a25e96f255d0490203d3c47e',
+          revision: '32_CHARACTER_HASH',
         }, '/one', {
           revision: null,
           url: '/two',
@@ -361,25 +364,25 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [],
+        importScripts: [['./workbox-8_CHARACTER_HASH']],
         precacheAndRoute: [[[{
           url: 'index.html',
-          revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'page-1.html',
-          revision: '544658ab25ee8762dc241e8b1c5ed96d',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'page-2.html',
-          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'styles/stylesheet-1.css',
-          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'styles/stylesheet-2.css',
-          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'webpackEntry.js',
-          revision: '5b652181a25e96f255d0490203d3c47e',
+          revision: '32_CHARACTER_HASH',
         }], {}]],
       }, addEventListenerValidation: (addEventListenerStub) => {
         expect(addEventListenerStub.calledOnce).to.be.true;
@@ -413,25 +416,25 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         createHandlerBoundToURL: [[navigateFallback]],
-        importScripts: [],
+        importScripts: [['./workbox-8_CHARACTER_HASH']],
         precacheAndRoute: [[[{
           url: 'index.html',
-          revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'page-1.html',
-          revision: '544658ab25ee8762dc241e8b1c5ed96d',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'page-2.html',
-          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'styles/stylesheet-1.css',
-          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'styles/stylesheet-2.css',
-          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'webpackEntry.js',
-          revision: '5b652181a25e96f255d0490203d3c47e',
+          revision: '32_CHARACTER_HASH',
         }], {}]],
         registerRoute: [[{name: 'NavigationRoute'}]],
         NavigationRoute: [['/urlWithCacheKey', {
@@ -461,25 +464,25 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [],
+        importScripts: [['./workbox-8_CHARACTER_HASH']],
         precacheAndRoute: [[[{
           url: 'link/index.html',
-          revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'link/page-1.html',
-          revision: '544658ab25ee8762dc241e8b1c5ed96d',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'link/page-2.html',
-          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'link/styles/stylesheet-1.css',
-          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'link/styles/stylesheet-2.css',
-          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'link/webpackEntry.js',
-          revision: '5b652181a25e96f255d0490203d3c47e',
+          revision: '32_CHARACTER_HASH',
         }], {}]],
       }});
     });
@@ -505,19 +508,19 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [],
+        importScripts: [['./workbox-8_CHARACTER_HASH']],
         precacheAndRoute: [[[{
           url: 'link/index.html',
-          revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'link/page-1.html',
-          revision: '544658ab25ee8762dc241e8b1c5ed96d',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'link/page-2.html',
-          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'link/webpackEntry.js',
-          revision: '5b652181a25e96f255d0490203d3c47e',
+          revision: '32_CHARACTER_HASH',
         }], {}]],
       }});
     });
@@ -538,25 +541,25 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [],
+        importScripts: [['./workbox-8_CHARACTER_HASH']],
         precacheAndRoute: [[[{
           url: 'index.html',
-          revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'page-1.html',
-          revision: '544658ab25ee8762dc241e8b1c5ed96d',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'page-2.html',
-          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'styles/stylesheet-1.css',
-          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'styles/stylesheet-2.css',
-          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'webpackEntry.js',
-          revision: '5b652181a25e96f255d0490203d3c47e',
+          revision: '32_CHARACTER_HASH',
         }], {}]],
         initialize: [[{}]],
       }});
@@ -582,25 +585,25 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [],
+        importScripts: [['./workbox-8_CHARACTER_HASH']],
         precacheAndRoute: [[[{
           url: 'index.html',
-          revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'page-1.html',
-          revision: '544658ab25ee8762dc241e8b1c5ed96d',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'page-2.html',
-          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'styles/stylesheet-1.css',
-          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'styles/stylesheet-2.css',
-          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'webpackEntry.js',
-          revision: '5b652181a25e96f255d0490203d3c47e',
+          revision: '32_CHARACTER_HASH',
         }], {}]],
         initialize: [[{
           parameterOverrides: {
@@ -717,7 +720,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       expect(size).to.eql(0);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [STRING_HANDLER]: [[]],
-        importScripts: [],
+        importScripts: [['./workbox-8_CHARACTER_HASH']],
         registerRoute: [[STRING_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD]],
       }});
     });
@@ -739,25 +742,25 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [STRING_HANDLER]: [[]],
-        importScripts: [],
+        importScripts: [['./workbox-8_CHARACTER_HASH']],
         precacheAndRoute: [[[{
           url: 'index.html',
-          revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'page-1.html',
-          revision: '544658ab25ee8762dc241e8b1c5ed96d',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'page-2.html',
-          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'styles/stylesheet-1.css',
-          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'styles/stylesheet-2.css',
-          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'webpackEntry.js',
-          revision: '5b652181a25e96f255d0490203d3c47e',
+          revision: '32_CHARACTER_HASH',
         }], {}]],
         registerRoute: [[STRING_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD]],
       }});
@@ -780,25 +783,25 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [STRING_HANDLER]: [[]],
-        importScripts: [],
+        importScripts: [['./workbox-8_CHARACTER_HASH']],
         precacheAndRoute: [[[{
           url: 'index.html',
-          revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'page-1.html',
-          revision: '544658ab25ee8762dc241e8b1c5ed96d',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'page-2.html',
-          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'styles/stylesheet-1.css',
-          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'styles/stylesheet-2.css',
-          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'webpackEntry.js',
-          revision: '5b652181a25e96f255d0490203d3c47e',
+          revision: '32_CHARACTER_HASH',
         }], {}]],
         // See https://github.com/chaijs/chai/issues/697
         registerRoute: [['params => true', {name: STRING_HANDLER}, DEFAULT_METHOD]],
@@ -854,25 +857,25 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
         }]],
         ExpirationPlugin: [[firstRuntimeCachingOptions.expiration]],
         CacheableResponsePlugin: [[secondRuntimeCachingOptions.cacheableResponse]],
-        importScripts: [],
+        importScripts: [['./workbox-8_CHARACTER_HASH']],
         precacheAndRoute: [[[{
           url: 'index.html',
-          revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'page-1.html',
-          revision: '544658ab25ee8762dc241e8b1c5ed96d',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'page-2.html',
-          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'styles/stylesheet-1.css',
-          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'styles/stylesheet-2.css',
-          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'webpackEntry.js',
-          revision: '5b652181a25e96f255d0490203d3c47e',
+          revision: '32_CHARACTER_HASH',
         }], {}]],
         registerRoute: [
           [REGEXP_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD],
@@ -929,25 +932,25 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [handler]: [[runtimeCachingOptions]],
-        importScripts: [],
+        importScripts: [['./workbox-8_CHARACTER_HASH']],
         precacheAndRoute: [[[{
           url: 'index.html',
-          revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'page-1.html',
-          revision: '544658ab25ee8762dc241e8b1c5ed96d',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'page-2.html',
-          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'styles/stylesheet-1.css',
-          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'styles/stylesheet-2.css',
-          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'webpackEntry.js',
-          revision: '5b652181a25e96f255d0490203d3c47e',
+          revision: '32_CHARACTER_HASH',
         }], {}]],
         registerRoute: [
           [REGEXP_URL_PATTERN, {name: handler}, DEFAULT_METHOD],
@@ -995,25 +998,25 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [],
+        importScripts: [['./workbox-8_CHARACTER_HASH']],
         precacheAndRoute: [[[{
           url: 'index.html',
-          revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'page-1.html',
-          revision: '544658ab25ee8762dc241e8b1c5ed96d',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'page-2.html',
-          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'styles/stylesheet-1.css',
-          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'styles/stylesheet-2.css',
-          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'webpackEntry.js',
-          revision: '5b652181a25e96f255d0490203d3c47e',
+          revision: '32_CHARACTER_HASH',
         }], {}]],
       }});
     });
@@ -1065,25 +1068,25 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       expect(size).to.eql(2604);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [handler]: [[]],
-        importScripts: [],
+        importScripts: [['./workbox-8_CHARACTER_HASH']],
         precacheAndRoute: [[[{
           url: 'index.html',
-          revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'page-1.html',
-          revision: '544658ab25ee8762dc241e8b1c5ed96d',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'page-2.html',
-          revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'styles/stylesheet-1.css',
-          revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'styles/stylesheet-2.css',
-          revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+          revision: '32_CHARACTER_HASH',
         }, {
           url: 'webpackEntry.js',
-          revision: '5b652181a25e96f255d0490203d3c47e',
+          revision: '32_CHARACTER_HASH',
         }], {}]],
         enable: [[]],
         registerRoute: [[urlPattern, {name: handler}, 'GET']],
