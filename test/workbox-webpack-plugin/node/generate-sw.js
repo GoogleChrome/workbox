@@ -8,6 +8,7 @@
 
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MemoryFS = require('memory-fs');
 const WorkerPlugin = require('worker-plugin');
 const expect = require('chai').expect;
 const globby = require('globby');
@@ -1016,6 +1017,54 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           // only be true if the build was successful.
           const files = await globby(outputDir);
           expect(files).to.have.length(6);
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+  });
+
+  describe(`[workbox-webpack-plugin] Filesystem options`, function() {
+    it(`should support using MemoryFS as the outputFileSystem`, function(done) {
+      const memoryFS = new MemoryFS();
+      const outputDir = '/output/dir';
+      memoryFS.mkdirpSync(outputDir);
+
+      const config = {
+        mode: 'production',
+        entry: {
+          entry1: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        },
+        output: {
+          filename: '[name]-[chunkhash].js',
+          path: outputDir,
+        },
+        plugins: [
+          new GenerateSW(),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.outputFileSystem = memoryFS;
+
+      compiler.run(async (webpackError, stats) => {
+        try {
+          webpackBuildCheck(webpackError, stats);
+
+          const files = memoryFS.readdirSync(outputDir);
+          expect(files).to.have.length(3);
+
+          const swString = memoryFS.readFileSync(`${outputDir}/service-worker.js`, 'utf-8');
+
+          await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
+            importScripts: [['./workbox-8_CHARACTER_HASH']],
+            precacheAndRoute: [[[{
+              revision: '32_CHARACTER_HASH',
+              url: 'entry1-20_CHARACTER_HASH.js',
+            }], {}]],
+          }});
 
           done();
         } catch (error) {
