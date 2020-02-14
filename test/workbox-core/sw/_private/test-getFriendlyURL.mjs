@@ -21,6 +21,12 @@ describe(`getFriendlyURL()`, function() {
     expect(url).to.equal('/hi');
   });
 
+  it(`should include the URL's hash in the returned string`, function() {
+    const fullURL = new URL('/hi#test', self.location).toString();
+    const url = getFriendlyURL(fullURL);
+    expect(url).to.equal('/hi#test');
+  });
+
   it(`should return full URL for external origin 'https://external-example.com/example'`, function() {
     const url = getFriendlyURL('https://external-example.com/example');
     expect(url).to.equal('https://external-example.com/example');

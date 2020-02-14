@@ -11,7 +11,7 @@ import '../_version.js';
 const getFriendlyURL = (url: URL | string) => {
   const urlObj = new URL(String(url), location.href);
   if (urlObj.origin === location.origin) {
-    return urlObj.pathname;
+    return urlObj.pathname + urlObj.hash;
   }
   return urlObj.href;
 };
