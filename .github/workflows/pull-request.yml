@@ -40,10 +40,9 @@ jobs:
           .json
           .mjs
           .ts
-    - run: exit 0
-      if: steps.git-diff.outputs.diff == ''
 
     - uses: actions/cache@v1
+      if: env.GIT_DIFF
       with:
         path: ~/.npm
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -51,11 +50,13 @@ jobs:
           ${{ runner.os }}-node-
           
     - uses: actions/cache@v1
+      if: env.GIT_DIFF
       with:
         path: ~/.selenium-assistant
         key: ${{ runner.os }}
           
     - uses: actions/setup-node@v1
+      if: env.GIT_DIFF
       with:
         node-version: 8
 
@@ -64,5 +65,6 @@ jobs:
         defaults write com.apple.Safari AllowRemoteAutomation 1
         sudo safaridriver --enable
         safaridriver -p 0 &
-    - run: npm ci
-    - run: npx gulp test
+        npm ci
+        npx gulp test
+      if: env.GIT_DIFF
