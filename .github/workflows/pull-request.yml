@@ -29,15 +29,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - run: |
-      node infra/should-run-tests.js ${{ github.base_ref }} ${{ github.head_ref }}
-      if $?
-      then
-        echo "Skipping tests."
-        exit 0
-      fi
+    - run: node infra/should-run-tests.js ${{ github.base_ref }} ${{ github.head_ref }}
 
     - uses: actions/cache@v1
+      if: env.SHOULD_RUN_TESTS == 'true'
       with:
         path: ~/.npm
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -45,11 +40,13 @@ jobs:
           ${{ runner.os }}-node-
           
     - uses: actions/cache@v1
+      if: env.SHOULD_RUN_TESTS == 'true'
       with:
         path: ~/.selenium-assistant
         key: ${{ runner.os }}
           
     - uses: actions/setup-node@v1
+      if: env.SHOULD_RUN_TESTS == 'true'
       with:
         node-version: 8
 
@@ -58,5 +55,8 @@ jobs:
         defaults write com.apple.Safari AllowRemoteAutomation 1
         sudo safaridriver --enable
         safaridriver -p 0 &
+      if: env.SHOULD_RUN_TESTS == 'true'
     - run: npm ci
+      if: env.SHOULD_RUN_TESTS == 'true'
     - run: npx gulp test
+      if: env.SHOULD_RUN_TESTS == 'true'
