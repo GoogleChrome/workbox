@@ -28,7 +28,7 @@ global.packageOrStar = options.package || '*';
 global.cliOptions = options;
 
 // Forward referencing means the order of gulp-task
-// requires is important
+// requires is important.
 const gulpTaskFiles = [
   'transpile-typescript',
   'build-node-packages',
