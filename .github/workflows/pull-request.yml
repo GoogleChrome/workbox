@@ -3,7 +3,7 @@ name: Test Suite
 on: [pull_request]
 
 jobs:
-  # Node Tests (Windows):
+  # Node_Tests_Windows:
   #   runs-on: windows-latest
     
   #   steps:
@@ -23,7 +23,7 @@ jobs:
   #   - run: npm ci
   #   - run: npx gulp test
 
-  Full Suite (Mac):
+  Full_Suite_Mac:
     runs-on: macos-latest
     
     steps:
