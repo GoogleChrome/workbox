@@ -1,0 +1,68 @@
+name: Test Suite
+
+on: [pull_request]
+
+jobs:
+  # Node Tests (Windows):
+  #   runs-on: windows-latest
+    
+  #   steps:
+  #   - uses: actions/checkout@v2
+      
+  #   - uses: actions/cache@v1
+  #     with:
+  #       path: ~/.npm
+  #       key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+  #       restore-keys: |
+  #         ${{ runner.os }}-node-
+          
+  #   - uses: actions/setup-node@v1
+  #     with:
+  #       node-version: 13.x
+
+  #   - run: npm ci
+  #   - run: npx gulp test
+
+  Full Suite (Mac):
+    runs-on: macos-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: technote-space/get-diff-action@v1
+      id: git-diff
+      with:
+        # Everything; see https://git-scm.com/docs/git-diff
+        DIFF_FILTER: ACDMRTUXB
+        SUFFIX_FILTER: |
+          .js
+          .json
+          .mjs
+          .ts
+
+    - run: exit 0
+      if: steps.git-diff.outputs.diff == ''
+
+    - uses: actions/cache@v1
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+          
+    - uses: actions/cache@v1
+      with:
+        path: ~/.selenium-assistant
+        key: ${{ runner.os }}
+          
+    - uses: actions/setup-node@v1
+      with:
+        node-version: 8
+
+    - run: |
+        defaults write com.apple.Safari IncludeDevelopMenu YES
+        defaults write com.apple.Safari AllowRemoteAutomation 1
+        sudo safaridriver --enable
+        safaridriver -p 0 &
+    - run: npm ci
+    - run: npx gulp test
