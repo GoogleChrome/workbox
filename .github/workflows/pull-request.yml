@@ -31,7 +31,8 @@ jobs:
 
     - run: |
       node infra/should-run-tests.js ${{ github.base_ref }} ${{ github.head_ref }}
-      if $?; then
+      if $?
+      then
         echo "Skipping tests."
         exit 0
       fi
