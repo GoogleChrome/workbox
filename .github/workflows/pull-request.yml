@@ -30,8 +30,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - run: |
-      if ! git diff --name-only "master"..."${{ github.ref }}" \
-          | grep -E '\.(?:js|json|mjs|ts|yml)$'
+      if ! git diff --name-only "master"..."${{ github.ref }}" | grep -E '\.(?:js|json|mjs|ts|yml)$'
       then
         echo "Skipping tests."
         exit 0
