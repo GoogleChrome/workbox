@@ -29,7 +29,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - run: node infra/should-run-tests.js ${{ github.base_ref }} ${{ github.head_ref }}
+    - run: node infra/should-run-tests.js
 
     - uses: actions/cache@v1
       if: env.SHOULD_RUN_TESTS == 'true'

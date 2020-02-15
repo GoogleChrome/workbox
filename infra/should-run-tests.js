@@ -10,7 +10,7 @@ const {execSync} = require('child_process');
 
 console.log(process.argv);
 
-const stdout = execSync(`git diff --name-only "${process.argv[2]}"..."${process.argv[3]}"`);
+const stdout = execSync(`git diff --name-only "origin/master"..."${process.env.GITHUB_REF}"`);
 const output = stdout.toString();
 
 console.log('Files changed:', output);
