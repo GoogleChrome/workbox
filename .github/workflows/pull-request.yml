@@ -30,7 +30,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - run: |
-      node infra/should-run-tests.js
+      node infra/should-run-tests.js ${{ github.base_ref }} ${{ github.head_ref }}
       if $?; then
         echo "Skipping tests."
         exit 0
