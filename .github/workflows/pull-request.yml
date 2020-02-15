@@ -29,19 +29,13 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - uses: technote-space/get-diff-action@v1
-      id: git-diff
-      with:
-        # Everything; see https://git-scm.com/docs/git-diff
-        DIFF_FILTER: ACDMRTUXB
-        SUFFIX_FILTER: |
-          .js
-          .json
-          .mjs
-          .ts
-
-    - run: exit 0
-      if: steps.git-diff.outputs.diff == ''
+    - run: |
+      if ! git diff --name-only "master"..."${{ github.ref }}" \
+          | grep -E '\.(?:js|json|mjs|ts|yml)$'
+      then
+        echo "Skipping tests."
+        exit 0
+      fi
 
     - uses: actions/cache@v1
       with:
