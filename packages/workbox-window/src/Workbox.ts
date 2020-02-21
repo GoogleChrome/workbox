@@ -122,8 +122,8 @@ class Workbox extends WorkboxEventTarget {
     // SW, resolve active/controlling deferreds and add necessary listeners.
     if (this._compatibleControllingSW) {
       this._sw = this._compatibleControllingSW;
-      this._activeDeferred.resolve!(this._compatibleControllingSW);
-      this._controllingDeferred.resolve!(this._compatibleControllingSW);
+      this._activeDeferred.resolve(this._compatibleControllingSW);
+      this._controllingDeferred.resolve(this._compatibleControllingSW);
 
       this._compatibleControllingSW.addEventListener(
           'statechange', this._onStateChange, {once: true});
@@ -156,7 +156,7 @@ class Workbox extends WorkboxEventTarget {
 
     // If an "own" SW is already set, resolve the deferred.
     if (this._sw) {
-      this._swDeferred.resolve!(this._sw);
+      this._swDeferred.resolve(this._sw);
       this._ownSWs.add(this._sw);
     }
 
@@ -366,7 +366,7 @@ class Workbox extends WorkboxEventTarget {
       // SW is the one we registered, so we set it.
       this._sw = installingSW;
       this._ownSWs.add(installingSW);
-      this._swDeferred.resolve!(installingSW);
+      this._swDeferred.resolve(installingSW);
 
       // The `installing` state isn't something we have a dedicated
       // callback for, but we do log messages for it in development.
@@ -440,7 +440,7 @@ class Workbox extends WorkboxEventTarget {
     } else if (state === 'activating') {
       clearTimeout(this._waitingTimeout);
       if (!isExternal) {
-        this._activeDeferred.resolve!(sw);
+        this._activeDeferred.resolve(sw);
       }
     }
 
@@ -493,7 +493,7 @@ class Workbox extends WorkboxEventTarget {
       if (process.env.NODE_ENV !== 'production') {
         logger.log('Registered service worker now controlling this page.');
       }
-      this._controllingDeferred.resolve!(sw);
+      this._controllingDeferred.resolve(sw);
     }
   }
 
