@@ -29,20 +29,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - uses: technote-space/get-diff-action@v1
-      id: git-diff
-      with:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        # Everything; see https://git-scm.com/docs/git-diff
-        DIFF_FILTER: ACDMRTUXB
-        SUFFIX_FILTER: |
-          .js
-          .json
-          .mjs
-          .ts
-
     - uses: actions/cache@v1
-      if: env.GIT_DIFF
       with:
         path: ~/.npm
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -50,13 +37,11 @@ jobs:
           ${{ runner.os }}-node-
           
     - uses: actions/cache@v1
-      if: env.GIT_DIFF
       with:
         path: ~/.selenium-assistant
         key: ${{ runner.os }}
           
     - uses: actions/setup-node@v1
-      if: env.GIT_DIFF
       with:
         node-version: 8
 
@@ -67,4 +52,3 @@ jobs:
         safaridriver -p 0 &
         npm ci
         npx gulp test
-      if: env.GIT_DIFF
