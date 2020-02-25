@@ -47,10 +47,7 @@ jobs:
 
     - name: Setup
       run: |
-        defaults write com.apple.Safari IncludeDevelopMenu YES
-        defaults write com.apple.Safari AllowRemoteAutomation 1
         sudo safaridriver --enable
-        safaridriver -p 0 &
         npm ci
 
     - run: npx gulp test
