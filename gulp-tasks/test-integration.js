@@ -27,7 +27,7 @@ const runFiles = (filePaths) => {
 
   return new Promise((resolve, reject) => {
     const mocha = new Mocha({
-      retries: process.env.TRAVIS ? 4 : 1,
+      retries: (process.env.TRAVIS || process.env.GITHUB_ACTIONS) ? 4 : 1,
       timeout: 3 * 60 * 1000,
     });
 
