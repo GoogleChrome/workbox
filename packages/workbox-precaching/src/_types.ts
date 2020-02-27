@@ -23,6 +23,13 @@ export interface PrecacheEntry {
   revision?: string;
 }
 
+export interface FetchListenerOptions {
+  directoryIndex?: string;
+  ignoreURLParametersMatching?: RegExp[];
+  cleanURLs?: boolean;
+  urlManipulation?: urlManipulation;
+}
+
 export type urlManipulation = ({url}: {url: URL}) => URL[];
 
 // * * * IMPORTANT! * * *

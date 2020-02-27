@@ -243,8 +243,8 @@ export const messages: MessageMap = {
   },
 
   'bad-precaching-response': ({url, status}) => {
-    return `The precaching request for '${url}' failed with an HTTP ` +
-      `status of ${status}.`;
+    return `The precaching request for '${url}' failed` +
+        (status ? ` with an HTTP status of ${status}.` : `.`);
   },
 
   'non-precached-url': ({url}) => {

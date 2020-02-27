@@ -6,10 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {FetchListenerOptions} from './addFetchListener.js';
 import {getOrCreatePrecacheController} from './getOrCreatePrecacheController.js';
 import {generateURLVariations} from './generateURLVariations.js';
+import {FetchListenerOptions} from '../_types.js';
 import '../_version.js';
+
 
 /**
  * This function will take the request URL and manipulate it based on the
