@@ -21,7 +21,7 @@ jobs:
         node-version: 13.x
 
     - run: npm ci
-    - run: npx gulp test
+    - run: npx gulp test-node
 
   Full_Suite_Mac:
     runs-on: macos-latest
