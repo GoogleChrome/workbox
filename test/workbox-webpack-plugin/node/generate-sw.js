@@ -1394,7 +1394,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
             manifestTransforms: [(manifest, compilation) => {
               expect(manifest).to.have.lengthOf(1);
               expect(manifest[0].size).to.eql(930);
-              expect(manifest[0].url.startsWith('main\.')).to.be.true;
+              expect(manifest[0].url.startsWith('main.')).to.be.true;
               expect(manifest[0].revision).to.have.lengthOf(32);
               expect(compilation).to.exist;
 
