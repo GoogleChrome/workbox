@@ -87,14 +87,14 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
 
           await validateServiceWorkerRuntime({
             swFile, expectedMethodCalls: {
-              importScripts: [['./workbox-8_CHARACTER_HASH']],
+              importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
               precacheAndRoute: [[[
                 {
-                  revision: '32_CHARACTER_HASH',
-                  url: 'entry1-20_CHARACTER_HASH.js',
+                  revision: /^[0-9a-f]{32}$/,
+                  url: /^entry1-[0-9a-f]{20}\.js$/,
                 }, {
-                  revision: '32_CHARACTER_HASH',
-                  url: 'entry2-20_CHARACTER_HASH.js',
+                  revision: /^[0-9a-f]{32}$/,
+                  url: /^entry2-[0-9a-f]{20}\.js$/,
                 },
               ], {}]],
             },
@@ -147,13 +147,13 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
             swFile, expectedMethodCalls: {
               // imported-[chunkhash].js.map should *not* be included.
               importScripts: [
-                ['./workbox-8_CHARACTER_HASH'],
-                ['imported-20_CHARACTER_HASH.js'],
+                [/^\.\/workbox-[0-9a-f]{8}$/],
+                [/^imported-[0-9a-f]{20}\.js$/],
               ],
               // imported-[chunkhash].js should *not* be included.
               precacheAndRoute: [[[{
-                revision: '32_CHARACTER_HASH',
-                url: 'main-20_CHARACTER_HASH.js',
+                revision: /^[0-9a-f]{32}$/,
+                url: /^main-[0-9a-f]{20}\.js$/,
               }], {}]],
             },
           });
@@ -202,14 +202,14 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
 
           await validateServiceWorkerRuntime({
             swFile, expectedMethodCalls: {
-              importScripts: [['./workbox-8_CHARACTER_HASH']],
+              importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
               precacheAndRoute: [[[
                 {
-                  revision: '32_CHARACTER_HASH',
-                  url: 'entry1-20_CHARACTER_HASH.js',
+                  revision: /^[0-9a-f]{32}$/,
+                  url: /^entry1-[0-9a-f]{20}\.js$/,
                 }, {
-                  revision: '32_CHARACTER_HASH',
-                  url: 'entry2-20_CHARACTER_HASH.js',
+                  revision: /^[0-9a-f]{32}$/,
+                  url: /^entry2-[0-9a-f]{20}\.js$/,
                 }, {
                   revision: null,
                   url: 'one',
@@ -261,14 +261,14 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           expect(files).to.have.length(5);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [['./workbox-8_CHARACTER_HASH']],
+            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[
               {
-                revision: '32_CHARACTER_HASH',
-                url: 'entry1-20_CHARACTER_HASH.js',
+                revision: /^[0-9a-f]{32}$/,
+                url: /^entry1-[0-9a-f]{20}\.js$/,
               }, {
-                revision: '32_CHARACTER_HASH',
-                url: 'entry2-20_CHARACTER_HASH.js',
+                revision: /^[0-9a-f]{32}$/,
+                url: /^entry2-[0-9a-f]{20}\.js$/,
               },
             ], {}]],
           }});
@@ -314,13 +314,13 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           expect(files).to.have.length(4);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [['./workbox-8_CHARACTER_HASH']],
+            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[
               {
-                revision: '32_CHARACTER_HASH',
+                revision: /^[0-9a-f]{32}$/,
                 url: 'main.js',
               }, {
-                revision: '32_CHARACTER_HASH',
+                revision: /^[0-9a-f]{32}$/,
                 url: 'vendors~main.js',
               },
             ], {}]],
@@ -363,14 +363,14 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           expect(files).to.have.length(5);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [['./workbox-8_CHARACTER_HASH']],
+            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[
               {
-                revision: '32_CHARACTER_HASH',
-                url: 'entry1-20_CHARACTER_HASH.js',
+                revision: /^[0-9a-f]{32}$/,
+                url: /^entry1-[0-9a-f]{20}\.js$/,
               }, {
-                revision: '32_CHARACTER_HASH',
-                url: 'entry2-20_CHARACTER_HASH.js',
+                revision: /^[0-9a-f]{32}$/,
+                url: /^entry2-[0-9a-f]{20}\.js$/,
               },
             ], {}]],
           }});
@@ -413,11 +413,11 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           expect(files).to.have.length(5);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [['./workbox-8_CHARACTER_HASH']],
+            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[
               {
-                revision: '32_CHARACTER_HASH',
-                url: 'entry1-20_CHARACTER_HASH.js',
+                revision: /^[0-9a-f]{32}$/,
+                url: /^entry1-[0-9a-f]{20}\.js$/,
               },
             ], {}]],
           }});
@@ -459,16 +459,16 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           expect(files).to.have.length(5);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [['./workbox-8_CHARACTER_HASH']],
+            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[
               {
-                revision: '32_CHARACTER_HASH',
-                url: 'entry1-20_CHARACTER_HASH.js',
+                revision: /^[0-9a-f]{32}$/,
+                url: /^entry1-[0-9a-f]{20}\.js$/,
               }, {
-                revision: '32_CHARACTER_HASH',
-                url: 'entry2-20_CHARACTER_HASH.js',
+                revision: /^[0-9a-f]{32}$/,
+                url: /^entry2-[0-9a-f]{20}\.js$/,
               }, {
-                revision: '32_CHARACTER_HASH',
+                revision: /^[0-9a-f]{32}$/,
                 url: 'index.html',
               },
             ], {}]],
@@ -512,42 +512,42 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
 
           await validateServiceWorkerRuntime({
             swFile, expectedMethodCalls: {
-              importScripts: [['./workbox-8_CHARACTER_HASH']],
+              importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
               precacheAndRoute: [[[
                 {
-                  revision: '32_CHARACTER_HASH',
+                  revision: /^[0-9a-f]{32}$/,
                   url: 'images/example-jpeg.jpg',
                 },
                 {
-                  revision: '32_CHARACTER_HASH',
+                  revision: /^[0-9a-f]{32}$/,
                   url: 'images/web-fundamentals-icon192x192.png',
                 },
                 {
-                  revision: '32_CHARACTER_HASH',
+                  revision: /^[0-9a-f]{32}$/,
                   url: 'index.html',
                 },
                 {
-                  revision: '32_CHARACTER_HASH',
+                  revision: /^[0-9a-f]{32}$/,
                   url: 'page-1.html',
                 },
                 {
-                  revision: '32_CHARACTER_HASH',
+                  revision: /^[0-9a-f]{32}$/,
                   url: 'page-2.html',
                 },
                 {
-                  revision: '32_CHARACTER_HASH',
+                  revision: /^[0-9a-f]{32}$/,
                   url: 'splitChunksEntry.js',
                 },
                 {
-                  revision: '32_CHARACTER_HASH',
+                  revision: /^[0-9a-f]{32}$/,
                   url: 'styles/stylesheet-1.css',
                 },
                 {
-                  revision: '32_CHARACTER_HASH',
+                  revision: /^[0-9a-f]{32}$/,
                   url: 'styles/stylesheet-2.css',
                 },
                 {
-                  revision: '32_CHARACTER_HASH',
+                  revision: /^[0-9a-f]{32}$/,
                   url: 'webpackEntry.js',
                 },
               ], {}]],
@@ -591,15 +591,15 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           expect(files).to.have.length(9);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [['./workbox-8_CHARACTER_HASH']],
+            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[{
-              revision: '32_CHARACTER_HASH',
+              revision: /^[0-9a-f]{32}$/,
               url: 'manifest.json',
             }, {
-              revision: '32_CHARACTER_HASH',
+              revision: /^[0-9a-f]{32}$/,
               url: 'not-ignored.js',
             }, {
-              revision: '32_CHARACTER_HASH',
+              revision: /^[0-9a-f]{32}$/,
               url: 'webpackEntry.js',
             }], {}]],
           }});
@@ -638,12 +638,12 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           expect(files).to.have.length(6);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [['./workbox-8_CHARACTER_HASH']],
+            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[{
-              revision: '32_CHARACTER_HASH',
+              revision: /^[0-9a-f]{32}$/,
               url: 'webpackEntry.js',
             }, {
-              revision: '32_CHARACTER_HASH',
+              revision: /^[0-9a-f]{32}$/,
               url: 'webpackEntry.js.map',
             }], {}]],
           }});
@@ -685,15 +685,15 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           expect(files).to.have.length(11);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [['./workbox-8_CHARACTER_HASH']],
+            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[{
-              revision: '32_CHARACTER_HASH',
+              revision: /^[0-9a-f]{32}$/,
               url: 'index.html',
             }, {
-              revision: '32_CHARACTER_HASH',
+              revision: /^[0-9a-f]{32}$/,
               url: 'page-1.html',
             }, {
-              revision: '32_CHARACTER_HASH',
+              revision: /^[0-9a-f]{32}$/,
               url: 'page-2.html',
             }], {}]],
           }});
@@ -736,12 +736,12 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           expect(files).to.have.length(11);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [['./workbox-8_CHARACTER_HASH']],
+            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[{
-              revision: '32_CHARACTER_HASH',
+              revision: /^[0-9a-f]{32}$/,
               url: 'page-1.html',
             }, {
-              revision: '32_CHARACTER_HASH',
+              revision: /^[0-9a-f]{32}$/,
               url: 'page-2.html',
             }], {}]],
           }});
@@ -782,9 +782,9 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           expect(files).to.have.length(3);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [['./workbox-8_CHARACTER_HASH']],
+            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[{
-              revision: '32_CHARACTER_HASH',
+              revision: /^[0-9a-f]{32}$/,
               url: 'webpackEntry.js',
             }], {}]],
           }});
@@ -832,11 +832,11 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
 
           await validateServiceWorkerRuntime({
             swFile, expectedMethodCalls: {
-              importScripts: [['./workbox-8_CHARACTER_HASH']],
+              importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
               precacheAndRoute: [[[
                 {
-                  revision: '32_CHARACTER_HASH',
-                  url: 'entry1-20_CHARACTER_HASH.js',
+                  revision: /^[0-9a-f]{32}$/,
+                  url: /^entry1-[0-9a-f]{20}\.js$/,
                 },
               ], {}]],
             },
@@ -890,42 +890,42 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           expect(files).to.have.length(12);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [['./workbox-8_CHARACTER_HASH']],
+            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[
               {
-                revision: '32_CHARACTER_HASH',
-                url: 'entry1-20_CHARACTER_HASH.js',
+                revision: /^[0-9a-f]{32}$/,
+                url: /^entry1-[0-9a-f]{20}\.js$/,
               },
               {
-                revision: '32_CHARACTER_HASH',
+                revision: /^[0-9a-f]{32}$/,
                 url: 'images/web-fundamentals-icon192x192.png',
               },
               {
-                revision: '32_CHARACTER_HASH',
+                revision: /^[0-9a-f]{32}$/,
                 url: 'index.html',
               },
               {
-                revision: '32_CHARACTER_HASH',
+                revision: /^[0-9a-f]{32}$/,
                 url: 'page-1.html',
               },
               {
-                revision: '32_CHARACTER_HASH',
+                revision: /^[0-9a-f]{32}$/,
                 url: 'page-2.html',
               },
               {
-                revision: '32_CHARACTER_HASH',
+                revision: /^[0-9a-f]{32}$/,
                 url: 'splitChunksEntry.js',
               },
               {
-                revision: '32_CHARACTER_HASH',
+                revision: /^[0-9a-f]{32}$/,
                 url: 'styles/stylesheet-1.css',
               },
               {
-                revision: '32_CHARACTER_HASH',
+                revision: /^[0-9a-f]{32}$/,
                 url: 'styles/stylesheet-2.css',
               },
               {
-                revision: '32_CHARACTER_HASH',
+                revision: /^[0-9a-f]{32}$/,
                 url: 'webpackEntry.js',
               },
             ], {}]],
@@ -968,11 +968,11 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           expect(files).to.have.length(3);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [['./workbox-8_CHARACTER_HASH']],
+            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[
               {
-                revision: '32_CHARACTER_HASH',
-                url: '/testing/entry1-20_CHARACTER_HASH.js',
+                revision: /^[0-9a-f]{32}$/,
+                url: /^\/testing\/entry1-[0-9a-f]{20}\.js$/,
               },
             ], {}]],
           }});
@@ -1059,10 +1059,10 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           const swString = memoryFS.readFileSync(`${outputDir}/service-worker.js`, 'utf-8');
 
           await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
-            importScripts: [['./workbox-8_CHARACTER_HASH']],
+            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[{
-              revision: '32_CHARACTER_HASH',
-              url: 'entry1-20_CHARACTER_HASH.js',
+              revision: /^[0-9a-f]{32}$/,
+              url: /^entry1-[0-9a-f]{20}\.js$/,
             }], {}]],
           }});
 
@@ -1161,9 +1161,9 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           await validateServiceWorkerRuntime({
             swFile: sw1File,
             expectedMethodCalls: {
-              importScripts: [['./workbox-8_CHARACTER_HASH']],
+              importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
               precacheAndRoute: [[[{
-                revision: '32_CHARACTER_HASH',
+                revision: /^[0-9a-f]{32}$/,
                 url: 'index.js',
               }], {}]],
             },
@@ -1172,9 +1172,9 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           await validateServiceWorkerRuntime({
             swFile: sw2File,
             expectedMethodCalls: {
-              importScripts: [['./workbox-8_CHARACTER_HASH']],
+              importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
               precacheAndRoute: [[[{
-                revision: '32_CHARACTER_HASH',
+                revision: /^[0-9a-f]{32}$/,
                 url: 'index.js',
               }], {}]],
             },
@@ -1322,9 +1322,9 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           expect(files).to.have.length(3);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [['./workbox-8_CHARACTER_HASH']],
+            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[{
-              url: 'main.20_CHARACTER_HASH.js',
+              url: /^main\.[0-9a-f]{20}\.js$/,
               revision: null,
             }], {}]],
           }});
@@ -1365,10 +1365,10 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           expect(files).to.have.length(3);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [['./workbox-8_CHARACTER_HASH']],
+            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[{
-              revision: '32_CHARACTER_HASH',
-              url: 'https://example.org/main.20_CHARACTER_HASH.js',
+              revision: /^[0-9a-f]{32}$/,
+              url: /^https:\/\/example\.org\/main\.[0-9a-f]{20}\.js/,
             }], {}]],
           }});
 
@@ -1394,7 +1394,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
             manifestTransforms: [(manifest, compilation) => {
               expect(manifest).to.have.lengthOf(1);
               expect(manifest[0].size).to.eql(930);
-              expect(manifest[0].url.startsWith('main.')).to.be.true;
+              expect(manifest[0].url.startsWith('main\.')).to.be.true;
               expect(manifest[0].revision).to.have.lengthOf(32);
               expect(compilation).to.exist;
 
@@ -1426,10 +1426,10 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           expect(files).to.have.length(3);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [['./workbox-8_CHARACTER_HASH']],
+            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[{
               revision: null,
-              url: 'main.20_CHARACTER_HASH.js-suffix',
+              url: /^main\.[0-9a-f]{20}\.js-suffix$/,
             }], {}]],
           }});
 

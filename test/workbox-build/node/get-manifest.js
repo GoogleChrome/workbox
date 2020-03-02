@@ -6,10 +6,14 @@
   https://opensource.org/licenses/MIT.
 */
 
-const expect = require('chai').expect;
+const chai = require('chai');
+const chaiMatchPattern = require('chai-match-pattern');
 const fse = require('fs-extra');
 const upath = require('upath');
 const tempy = require('tempy');
+
+chai.use(chaiMatchPattern);
+const {expect} = chai;
 
 const getManifest = require('../../../packages/workbox-build/src/get-manifest');
 
@@ -86,24 +90,24 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function() {
 
       const {count, size, manifestEntries, warnings} = await getManifest(options);
       expect(warnings).to.be.empty;
-      expect(manifestEntries).to.deep.equal([{
+      expect(manifestEntries).to.matchPattern([{
         url: 'index.html',
-        revision: '32_CHARACTER_HASH',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'page-1.html',
-        revision: '32_CHARACTER_HASH',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'page-2.html',
-        revision: '32_CHARACTER_HASH',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'styles/stylesheet-1.css',
-        revision: '32_CHARACTER_HASH',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'styles/stylesheet-2.css',
-        revision: '32_CHARACTER_HASH',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'webpackEntry.js',
-        revision: '32_CHARACTER_HASH',
+        revision: /^[0-9a-f]{32}$/,
       }]);
       expect(count).to.eql(6);
       expect(size).to.eql(2604);
@@ -116,18 +120,18 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function() {
 
       const {count, size, manifestEntries, warnings} = await getManifest(options);
       expect(warnings).to.be.empty;
-      expect(manifestEntries).to.deep.equal([{
+      expect(manifestEntries).to.matchPattern([{
         url: 'index.html',
-        revision: '32_CHARACTER_HASH',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'page-1.html',
-        revision: '32_CHARACTER_HASH',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'page-2.html',
-        revision: '32_CHARACTER_HASH',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'webpackEntry.js',
-        revision: '32_CHARACTER_HASH',
+        revision: /^[0-9a-f]{32}$/,
       }]);
       expect(count).to.eql(4);
       expect(size).to.eql(2535);
@@ -140,12 +144,12 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function() {
 
       const {count, size, manifestEntries, warnings} = await getManifest(options);
       expect(warnings).to.be.empty;
-      expect(manifestEntries).to.deep.equal([{
+      expect(manifestEntries).to.matchPattern([{
         url: 'styles/stylesheet-1.css',
-        revision: '32_CHARACTER_HASH',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'styles/stylesheet-2.css',
-        revision: '32_CHARACTER_HASH',
+        revision: /^[0-9a-f]{32}$/,
       }]);
       expect(count).to.eql(2);
       expect(size).to.eql(69);
@@ -159,12 +163,12 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function() {
 
       const {count, size, manifestEntries, warnings} = await getManifest(options);
       expect(warnings).to.be.empty;
-      expect(manifestEntries).to.deep.equal([{
+      expect(manifestEntries).to.matchPattern([{
         url: 'styles/stylesheet-1.css',
-        revision: '32_CHARACTER_HASH',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'webpackEntry.js',
-        revision: '32_CHARACTER_HASH',
+        revision: /^[0-9a-f]{32}$/,
       }]);
       expect(count).to.eql(2);
       expect(size).to.eql(217);
@@ -177,17 +181,17 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function() {
 
       const {count, size, manifestEntries, warnings} = await getManifest(options);
       expect(warnings).to.have.lengthOf(2);
-      expect(manifestEntries).to.deep.equal([{
-        revision: '32_CHARACTER_HASH',
+      expect(manifestEntries).to.matchPattern([{
+        revision: /^[0-9a-f]{32}$/,
         url: 'page-1.html',
       }, {
-        revision: '32_CHARACTER_HASH',
+        revision: /^[0-9a-f]{32}$/,
         url: 'page-2.html',
       }, {
-        revision: '32_CHARACTER_HASH',
+        revision: /^[0-9a-f]{32}$/,
         url: 'styles/stylesheet-1.css',
       }, {
-        revision: '32_CHARACTER_HASH',
+        revision: /^[0-9a-f]{32}$/,
         url: 'styles/stylesheet-2.css',
       }]);
       expect(count).to.eql(4);
@@ -207,30 +211,30 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function() {
 
       const {count, size, manifestEntries, warnings} = await getManifest(options);
       expect(warnings).to.be.empty;
-      expect(manifestEntries).to.deep.equal([{
+      expect(manifestEntries).to.matchPattern([{
         url: 'index.html',
-        revision: '32_CHARACTER_HASH',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'page-1.html',
-        revision: '32_CHARACTER_HASH',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'page-2.html',
-        revision: '32_CHARACTER_HASH',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'styles/stylesheet-1.css',
-        revision: '32_CHARACTER_HASH',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'styles/stylesheet-2.css',
-        revision: '32_CHARACTER_HASH',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'webpackEntry.js',
-        revision: '32_CHARACTER_HASH',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'url1',
-        revision: '32_CHARACTER_HASH',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'url2',
-        revision: '32_CHARACTER_HASH',
+        revision: /^[0-9a-f]{32}$/,
       }]);
       expect(count).to.eql(8);
       expect(size).to.eql(4973);
@@ -259,12 +263,12 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function() {
 
       const {count, size, manifestEntries, warnings} = await getManifest(options);
       expect(warnings).to.be.empty;
-      expect(manifestEntries).to.deep.equal([{
+      expect(manifestEntries).to.matchPattern([{
         url: '/prefix/page-1.html',
-        revision: '32_CHARACTER_HASH',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: '/prefix/styles/stylesheet-1.css',
-        revision: '32_CHARACTER_HASH',
+        revision: /^[0-9a-f]{32}$/,
       }]);
       expect(count).to.eql(2);
       expect(size).to.eql(50);
@@ -282,18 +286,18 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function() {
 
       const {count, size, manifestEntries, warnings} = await getManifest(options);
       expect(warnings).to.be.empty;
-      expect(manifestEntries).to.deep.equal([{
+      expect(manifestEntries).to.matchPattern([{
         url: 'link/index.html',
-        revision: '32_CHARACTER_HASH',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'link/page-1.html',
-        revision: '32_CHARACTER_HASH',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'link/page-2.html',
-        revision: '32_CHARACTER_HASH',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'link/webpackEntry.js',
-        revision: '32_CHARACTER_HASH',
+        revision: /^[0-9a-f]{32}$/,
       }]);
       expect(count).to.eql(4);
       expect(size).to.eql(2535);

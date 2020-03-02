@@ -7,40 +7,19 @@
 */
 
 const assert = require('assert');
-const expect = require('chai').expect;
+const chai = require('chai');
+const chaiMatchPattern = require('chai-match-pattern');
 const fse = require('fs-extra');
 const makeServiceWorkerEnv = require('service-worker-mock');
 const sinon = require('sinon');
 const vm = require('vm');
 
+chai.use(chaiMatchPattern);
+const {expect} = chai;
+
 // See https://github.com/chaijs/chai/issues/697
 function stringifyFunctionsInArray(arr) {
   return arr.map((item) => typeof item === 'function' ? item.toString() : item);
-}
-
-function validatePrecacheAndRoute({actual, expected}) {
-  for (const call of actual) {
-    for (const manifestEntry of call[0]) {
-      if (/[0-9a-f]{32}/.test(manifestEntry.revision)) {
-        manifestEntry.revision = '32_CHARACTER_HASH';
-      }
-
-      if (manifestEntry.url) {
-        manifestEntry.url = manifestEntry.url.replace(/[0-9a-f]{20}/, '20_CHARACTER_HASH');
-      }
-    }
-  }
-
-  expect(actual).to.deep.equal(expected);
-}
-
-function validateImportScripts({actual, expected}) {
-  for (let i = 0; i < actual.length; i++) {
-    actual[i] = actual[i].map((script) => script.replace(/[0-9a-f]{20}/, '20_CHARACTER_HASH'));
-    actual[i] = actual[i].map((script) => script.replace(/[0-9a-f]{8}/, '8_CHARACTER_HASH'));
-  }
-
-  expect(actual).to.deep.equal(expected);
 }
 
 function setupSpiesAndContextForInjectManifest() {
@@ -166,20 +145,7 @@ function validateMethodCalls({methodsToSpies, expectedMethodCalls, context}) {
       const args = spy.args.map(
           (arg) => Array.isArray(arg) ? stringifyFunctionsInArray(arg) : arg);
 
-      if (method === 'precacheAndRoute') {
-        validatePrecacheAndRoute({
-          actual: args,
-          expected: expectedMethodCalls.precacheAndRoute,
-        });
-      } else if (method === 'importScripts') {
-        validateImportScripts({
-          actual: args,
-          expected: expectedMethodCalls.importScripts,
-        });
-      } else {
-        expect(args).to.deep.equal(expectedMethodCalls[method],
-            `while testing method calls for ${method}`);
-      }
+      expect(args).to.matchPattern(expectedMethodCalls[method]);
     } else {
       expect(expectedMethodCalls[method],
           `while testing method calls for ${method}`).to.be.undefined;
