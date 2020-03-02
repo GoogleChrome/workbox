@@ -87,7 +87,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(3);
 
           await validateServiceWorkerRuntime({
@@ -141,7 +141,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(4);
 
           await validateServiceWorkerRuntime({
@@ -199,7 +199,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(3);
 
           await validateServiceWorkerRuntime({
@@ -253,7 +253,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(4);
 
           await validateServiceWorkerRuntime({
@@ -308,7 +308,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(4);
 
           await validateServiceWorkerRuntime({
@@ -360,7 +360,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(4);
 
           await validateServiceWorkerRuntime({
@@ -418,7 +418,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(10);
 
           await validateServiceWorkerRuntime({
@@ -499,7 +499,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(4);
 
           const expectedSourcemap = await fse.readJSON(
@@ -557,7 +557,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(4);
 
           const expectedSourcemap = await fse.readJSON(
@@ -615,7 +615,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(2);
 
           await validateServiceWorkerRuntime({
@@ -665,7 +665,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(7);
 
           await validateServiceWorkerRuntime({
@@ -717,7 +717,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(4);
 
           await validateServiceWorkerRuntime({
@@ -772,7 +772,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(10);
 
           await validateServiceWorkerRuntime({
@@ -828,7 +828,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(10);
 
           await validateServiceWorkerRuntime({
@@ -877,7 +877,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(2);
 
           await validateServiceWorkerRuntime({
@@ -931,7 +931,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
             `The chunk 'doesNotExist' was provided in your Workbox chunks config, but was not found in the compilation.`,
           ]);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(2);
 
           await validateServiceWorkerRuntime({
@@ -993,7 +993,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
           const swFile = upath.join(outputDir, 'service-worker.js');
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(11);
 
           await validateServiceWorkerRuntime({
@@ -1077,7 +1077,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(2);
 
           await validateServiceWorkerRuntime({
@@ -1134,7 +1134,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           // different environments. Instead of hardcoding hash checks, just
           // confirm that we output the expected number of files, which will
           // only be true if the build was successful.
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(5);
 
           done();
@@ -1170,7 +1170,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(2);
 
           await validateServiceWorkerRuntime({
@@ -1218,7 +1218,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(2);
 
           await validateServiceWorkerRuntime({
@@ -1284,7 +1284,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           expect(statsJson.errors).to.be.empty;
           expect(statsJson.warnings).to.have.members([warningMessage]);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(2);
 
           await validateServiceWorkerRuntime({
@@ -1378,7 +1378,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
                 expect(statsJson.warnings).to.have.length(0);
               }
 
-              const files = await globby(outputDir);
+              const files = await globby('**', {cwd: outputDir});
               expect(files).to.have.length(2);
 
               resolve();
@@ -1424,7 +1424,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(3);
 
           await validateServiceWorkerRuntime({
@@ -1483,7 +1483,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(2);
 
           await validateServiceWorkerRuntime({

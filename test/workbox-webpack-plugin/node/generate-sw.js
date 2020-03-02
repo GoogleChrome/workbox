@@ -82,7 +82,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(4);
 
           await validateServiceWorkerRuntime({
@@ -140,7 +140,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           // There should be a warning logged, due to INVALID_CHUNK_NAME.
           expect(statsJson.warnings).to.have.length(1);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(8);
 
           await validateServiceWorkerRuntime({
@@ -197,7 +197,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           expect(statsJson.errors).to.be.empty;
           expect(statsJson.warnings).to.have.length(0);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(4);
 
           await validateServiceWorkerRuntime({
@@ -257,7 +257,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(5);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
@@ -310,7 +310,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(4);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
@@ -359,7 +359,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(5);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
@@ -409,7 +409,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(5);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
@@ -455,7 +455,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(5);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
@@ -507,7 +507,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(11);
 
           await validateServiceWorkerRuntime({
@@ -587,7 +587,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(9);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
@@ -634,7 +634,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(6);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
@@ -681,7 +681,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(11);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
@@ -732,7 +732,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(11);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
@@ -778,7 +778,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(3);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
@@ -827,7 +827,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
             `The chunk 'doesNotExist' was provided in your Workbox chunks config, but was not found in the compilation.`,
           ]);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(3);
 
           await validateServiceWorkerRuntime({
@@ -886,7 +886,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
 
           const swFile = upath.join(outputDir, 'service-worker.js');
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(12);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
@@ -964,7 +964,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(3);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
@@ -1015,7 +1015,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           // different environments. Instead of hardcoding hash checks, just
           // confirm that we output the expected number of files, which will
           // only be true if the build was successful.
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(6);
 
           done();
@@ -1113,7 +1113,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
                 expect(statsJson.warnings).to.have.length(0);
               }
 
-              const files = await globby(outputDir);
+              const files = await globby('**', {cwd: outputDir});
               expect(files).to.have.length(3);
 
               resolve();
@@ -1155,7 +1155,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(4);
 
           await validateServiceWorkerRuntime({
@@ -1214,7 +1214,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           // We can't really mock evaluation of the service worker script when
           // the Workbox runtime is inlined, so just check to make sure the
           // correct files are output.
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(2);
 
           done();
@@ -1250,7 +1250,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           // We can't really mock evaluation of the service worker script when
           // the Workbox runtime is inlined, so just check to make sure the
           // correct files are output.
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(3);
 
           done();
@@ -1318,7 +1318,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(3);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
@@ -1361,7 +1361,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(3);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
@@ -1422,7 +1422,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           expect(statsJson.errors, JSON.stringify(statsJson.errors)).to.be.empty;
           expect(statsJson.warnings).to.have.members([warningMessage]);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(3);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
