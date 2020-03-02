@@ -171,7 +171,7 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
       expect(size).to.be.oneOf([2604, 2686]);
-      expect(filePaths).to.have.members([swDest]);
+      expect(filePaths).to.have.members([upath.resolve(swDest)]);
 
       await validateServiceWorkerRuntime({
         entryPoint: 'injectManifest',
@@ -223,7 +223,7 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
       expect(size).to.be.oneOf([2604, 2686]);
-      expect(filePaths).to.have.members([swDest]);
+      expect(filePaths).to.have.members([upath.resolve(swDest)]);
 
       await validateServiceWorkerRuntime({
         entryPoint: 'injectManifest',
@@ -269,7 +269,7 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
       expect(size).to.be.oneOf([2604, 2686]);
-      expect(filePaths).to.have.members([swDest]);
+      expect(filePaths).to.have.members([upath.resolve(swDest)]);
 
       await validateServiceWorkerRuntime({
         entryPoint: 'injectManifest',
@@ -310,7 +310,7 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
       expect(size).to.be.oneOf([2604, 2686]);
-      expect(filePaths).to.have.members([swDest]);
+      expect(filePaths).to.have.members([upath.resolve(swDest)]);
 
       await validateServiceWorkerRuntime({
         entryPoint: 'injectManifest',
@@ -403,7 +403,7 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
       expect(size).to.be.oneOf([2604, 2686]);
-      expect(filePaths).to.have.members([swDest, sourcemapDest]);
+      expect(filePaths).to.have.members([upath.resolve(swDest), sourcemapDest]);
 
       const actualSourcemap = await fse.readJSON(sourcemapDest);
       const expectedSourcemap = await fse.readJSON(

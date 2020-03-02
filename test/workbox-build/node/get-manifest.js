@@ -110,7 +110,8 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function() {
         revision: /^[0-9a-f]{32}$/,
       }]);
       expect(count).to.eql(6);
-      expect(size).to.eql(2604);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([2604, 2686]);
     });
 
     it(`should use defaults when all the required parameters, and 'globPatterns' are present`, async function() {
@@ -134,7 +135,8 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function() {
         revision: /^[0-9a-f]{32}$/,
       }]);
       expect(count).to.eql(4);
-      expect(size).to.eql(2535);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([2535, 2611]);
     });
 
     it(`should use defaults when all the required parameters, and 'globIgnores' are present`, async function() {
@@ -152,7 +154,8 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function() {
         revision: /^[0-9a-f]{32}$/,
       }]);
       expect(count).to.eql(2);
-      expect(size).to.eql(69);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([69, 75]);
     });
 
     it(`should use defaults when all the required parameters, 'globIgnores', and 'globPatterns' are present`, async function() {
@@ -171,7 +174,8 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function() {
         revision: /^[0-9a-f]{32}$/,
       }]);
       expect(count).to.eql(2);
-      expect(size).to.eql(217);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([217, 220]);
     });
 
     it(`should use defaults when all the required parameters, and 'maximumFileSizeToCacheInBytes' are present`, async function() {
@@ -195,7 +199,8 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function() {
         url: 'styles/stylesheet-2.css',
       }]);
       expect(count).to.eql(4);
-      expect(size).to.eql(101);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([101, 109]);
     });
 
     it(`should use defaults when all the required parameters, and 'templatedURLs' are present`, async function() {
@@ -237,7 +242,8 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function() {
         revision: /^[0-9a-f]{32}$/,
       }]);
       expect(count).to.eql(8);
-      expect(size).to.eql(4973);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([4973, 5131]);
     });
 
     it(`should use defaults when all the required parameters, and 'manifestTransforms' are present`, async function() {
@@ -271,7 +277,8 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function() {
         revision: /^[0-9a-f]{32}$/,
       }]);
       expect(count).to.eql(2);
-      expect(size).to.eql(50);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([50, 54]);
     });
 
     it(`should use defaults when all the required parameters are present, with 'globFollow' and symlinks`, async function() {
@@ -300,7 +307,8 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function() {
         revision: /^[0-9a-f]{32}$/,
       }]);
       expect(count).to.eql(4);
-      expect(size).to.eql(2535);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([2535, 2611]);
     });
   });
 
