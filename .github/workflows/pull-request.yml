@@ -20,7 +20,11 @@ jobs:
       with:
         node-version: 13.x
 
-    - run: npm ci
+    - name: Setup
+      run: |
+        npm ci
+        gulp build
+
     - run: npx gulp test-node
 
   Full_Suite_Mac:
