@@ -62,6 +62,7 @@
     "bytes": "^3.1.0",
     "camelcase": "^5.3.1",
     "chai": "^4.2.0",
+    "chai-match-pattern": "^1.1.0",
     "chalk": "^3.0.0",
     "clear-require": "^3.0.0",
     "comlinkjs": "^3.2.0",

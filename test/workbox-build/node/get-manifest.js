@@ -6,10 +6,14 @@
   https://opensource.org/licenses/MIT.
 */
 
-const expect = require('chai').expect;
+const chai = require('chai');
+const chaiMatchPattern = require('chai-match-pattern');
 const fse = require('fs-extra');
 const upath = require('upath');
 const tempy = require('tempy');
+
+chai.use(chaiMatchPattern);
+const {expect} = chai;
 
 const getManifest = require('../../../packages/workbox-build/src/get-manifest');
 
@@ -86,27 +90,28 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function() {
 
       const {count, size, manifestEntries, warnings} = await getManifest(options);
       expect(warnings).to.be.empty;
-      expect(manifestEntries).to.deep.equal([{
+      expect(manifestEntries).to.matchPattern([{
         url: 'index.html',
-        revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'page-1.html',
-        revision: '544658ab25ee8762dc241e8b1c5ed96d',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'page-2.html',
-        revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'styles/stylesheet-1.css',
-        revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'styles/stylesheet-2.css',
-        revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'webpackEntry.js',
-        revision: '5b652181a25e96f255d0490203d3c47e',
+        revision: /^[0-9a-f]{32}$/,
       }]);
       expect(count).to.eql(6);
-      expect(size).to.eql(2604);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([2604, 2686]);
     });
 
     it(`should use defaults when all the required parameters, and 'globPatterns' are present`, async function() {
@@ -116,21 +121,22 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function() {
 
       const {count, size, manifestEntries, warnings} = await getManifest(options);
       expect(warnings).to.be.empty;
-      expect(manifestEntries).to.deep.equal([{
+      expect(manifestEntries).to.matchPattern([{
         url: 'index.html',
-        revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'page-1.html',
-        revision: '544658ab25ee8762dc241e8b1c5ed96d',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'page-2.html',
-        revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'webpackEntry.js',
-        revision: '5b652181a25e96f255d0490203d3c47e',
+        revision: /^[0-9a-f]{32}$/,
       }]);
       expect(count).to.eql(4);
-      expect(size).to.eql(2535);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([2535, 2611]);
     });
 
     it(`should use defaults when all the required parameters, and 'globIgnores' are present`, async function() {
@@ -140,15 +146,16 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function() {
 
       const {count, size, manifestEntries, warnings} = await getManifest(options);
       expect(warnings).to.be.empty;
-      expect(manifestEntries).to.deep.equal([{
+      expect(manifestEntries).to.matchPattern([{
         url: 'styles/stylesheet-1.css',
-        revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'styles/stylesheet-2.css',
-        revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+        revision: /^[0-9a-f]{32}$/,
       }]);
       expect(count).to.eql(2);
-      expect(size).to.eql(69);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([69, 75]);
     });
 
     it(`should use defaults when all the required parameters, 'globIgnores', and 'globPatterns' are present`, async function() {
@@ -159,15 +166,16 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function() {
 
       const {count, size, manifestEntries, warnings} = await getManifest(options);
       expect(warnings).to.be.empty;
-      expect(manifestEntries).to.deep.equal([{
+      expect(manifestEntries).to.matchPattern([{
         url: 'styles/stylesheet-1.css',
-        revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'webpackEntry.js',
-        revision: '5b652181a25e96f255d0490203d3c47e',
+        revision: /^[0-9a-f]{32}$/,
       }]);
       expect(count).to.eql(2);
-      expect(size).to.eql(217);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([217, 220]);
     });
 
     it(`should use defaults when all the required parameters, and 'maximumFileSizeToCacheInBytes' are present`, async function() {
@@ -177,21 +185,22 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function() {
 
       const {count, size, manifestEntries, warnings} = await getManifest(options);
       expect(warnings).to.have.lengthOf(2);
-      expect(manifestEntries).to.deep.equal([{
-        revision: '544658ab25ee8762dc241e8b1c5ed96d',
+      expect(manifestEntries).to.matchPattern([{
+        revision: /^[0-9a-f]{32}$/,
         url: 'page-1.html',
       }, {
-        revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+        revision: /^[0-9a-f]{32}$/,
         url: 'page-2.html',
       }, {
-        revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+        revision: /^[0-9a-f]{32}$/,
         url: 'styles/stylesheet-1.css',
       }, {
-        revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+        revision: /^[0-9a-f]{32}$/,
         url: 'styles/stylesheet-2.css',
       }]);
       expect(count).to.eql(4);
-      expect(size).to.eql(101);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([101, 109]);
     });
 
     it(`should use defaults when all the required parameters, and 'templatedURLs' are present`, async function() {
@@ -207,33 +216,34 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function() {
 
       const {count, size, manifestEntries, warnings} = await getManifest(options);
       expect(warnings).to.be.empty;
-      expect(manifestEntries).to.deep.equal([{
+      expect(manifestEntries).to.matchPattern([{
         url: 'index.html',
-        revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'page-1.html',
-        revision: '544658ab25ee8762dc241e8b1c5ed96d',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'page-2.html',
-        revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'styles/stylesheet-1.css',
-        revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'styles/stylesheet-2.css',
-        revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'webpackEntry.js',
-        revision: '5b652181a25e96f255d0490203d3c47e',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'url1',
-        revision: '69a043d97513b7015bf4bd95df3e308e',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'url2',
-        revision: 'c154bc7cdfbfbfb73e23f853bd8fcec0',
+        revision: /^[0-9a-f]{32}$/,
       }]);
       expect(count).to.eql(8);
-      expect(size).to.eql(4973);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([4973, 5131]);
     });
 
     it(`should use defaults when all the required parameters, and 'manifestTransforms' are present`, async function() {
@@ -259,15 +269,16 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function() {
 
       const {count, size, manifestEntries, warnings} = await getManifest(options);
       expect(warnings).to.be.empty;
-      expect(manifestEntries).to.deep.equal([{
+      expect(manifestEntries).to.matchPattern([{
         url: '/prefix/page-1.html',
-        revision: '544658ab25ee8762dc241e8b1c5ed96d',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: '/prefix/styles/stylesheet-1.css',
-        revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+        revision: /^[0-9a-f]{32}$/,
       }]);
       expect(count).to.eql(2);
-      expect(size).to.eql(50);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([50, 54]);
     });
 
     it(`should use defaults when all the required parameters are present, with 'globFollow' and symlinks`, async function() {
@@ -282,21 +293,22 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function() {
 
       const {count, size, manifestEntries, warnings} = await getManifest(options);
       expect(warnings).to.be.empty;
-      expect(manifestEntries).to.deep.equal([{
+      expect(manifestEntries).to.matchPattern([{
         url: 'link/index.html',
-        revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'link/page-1.html',
-        revision: '544658ab25ee8762dc241e8b1c5ed96d',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'link/page-2.html',
-        revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+        revision: /^[0-9a-f]{32}$/,
       }, {
         url: 'link/webpackEntry.js',
-        revision: '5b652181a25e96f255d0490203d3c47e',
+        revision: /^[0-9a-f]{32}$/,
       }]);
       expect(count).to.eql(4);
-      expect(size).to.eql(2535);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([2535, 2611]);
     });
   });
 

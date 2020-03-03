@@ -82,19 +82,19 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(4);
 
           await validateServiceWorkerRuntime({
             swFile, expectedMethodCalls: {
-              importScripts: [['./workbox-8_CHARACTER_HASH']],
+              importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
               precacheAndRoute: [[[
                 {
-                  revision: '32_CHARACTER_HASH',
-                  url: 'entry1-20_CHARACTER_HASH.js',
+                  revision: /^[0-9a-f]{32}$/,
+                  url: /^entry1-[0-9a-f]{20}\.js$/,
                 }, {
-                  revision: '32_CHARACTER_HASH',
-                  url: 'entry2-20_CHARACTER_HASH.js',
+                  revision: /^[0-9a-f]{32}$/,
+                  url: /^entry2-[0-9a-f]{20}\.js$/,
                 },
               ], {}]],
             },
@@ -140,20 +140,20 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           // There should be a warning logged, due to INVALID_CHUNK_NAME.
           expect(statsJson.warnings).to.have.length(1);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(8);
 
           await validateServiceWorkerRuntime({
             swFile, expectedMethodCalls: {
               // imported-[chunkhash].js.map should *not* be included.
               importScripts: [
-                ['./workbox-8_CHARACTER_HASH'],
-                ['imported-20_CHARACTER_HASH.js'],
+                [/^\.\/workbox-[0-9a-f]{8}$/],
+                [/^imported-[0-9a-f]{20}\.js$/],
               ],
               // imported-[chunkhash].js should *not* be included.
               precacheAndRoute: [[[{
-                revision: '32_CHARACTER_HASH',
-                url: 'main-20_CHARACTER_HASH.js',
+                revision: /^[0-9a-f]{32}$/,
+                url: /^main-[0-9a-f]{20}\.js$/,
               }], {}]],
             },
           });
@@ -197,19 +197,19 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           expect(statsJson.errors).to.be.empty;
           expect(statsJson.warnings).to.have.length(0);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(4);
 
           await validateServiceWorkerRuntime({
             swFile, expectedMethodCalls: {
-              importScripts: [['./workbox-8_CHARACTER_HASH']],
+              importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
               precacheAndRoute: [[[
                 {
-                  revision: '32_CHARACTER_HASH',
-                  url: 'entry1-20_CHARACTER_HASH.js',
+                  revision: /^[0-9a-f]{32}$/,
+                  url: /^entry1-[0-9a-f]{20}\.js$/,
                 }, {
-                  revision: '32_CHARACTER_HASH',
-                  url: 'entry2-20_CHARACTER_HASH.js',
+                  revision: /^[0-9a-f]{32}$/,
+                  url: /^entry2-[0-9a-f]{20}\.js$/,
                 }, {
                   revision: null,
                   url: 'one',
@@ -257,18 +257,18 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(5);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [['./workbox-8_CHARACTER_HASH']],
+            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[
               {
-                revision: '32_CHARACTER_HASH',
-                url: 'entry1-20_CHARACTER_HASH.js',
+                revision: /^[0-9a-f]{32}$/,
+                url: /^entry1-[0-9a-f]{20}\.js$/,
               }, {
-                revision: '32_CHARACTER_HASH',
-                url: 'entry2-20_CHARACTER_HASH.js',
+                revision: /^[0-9a-f]{32}$/,
+                url: /^entry2-[0-9a-f]{20}\.js$/,
               },
             ], {}]],
           }});
@@ -310,17 +310,17 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(4);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [['./workbox-8_CHARACTER_HASH']],
+            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[
               {
-                revision: '32_CHARACTER_HASH',
+                revision: /^[0-9a-f]{32}$/,
                 url: 'main.js',
               }, {
-                revision: '32_CHARACTER_HASH',
+                revision: /^[0-9a-f]{32}$/,
                 url: 'vendors~main.js',
               },
             ], {}]],
@@ -359,18 +359,18 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(5);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [['./workbox-8_CHARACTER_HASH']],
+            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[
               {
-                revision: '32_CHARACTER_HASH',
-                url: 'entry1-20_CHARACTER_HASH.js',
+                revision: /^[0-9a-f]{32}$/,
+                url: /^entry1-[0-9a-f]{20}\.js$/,
               }, {
-                revision: '32_CHARACTER_HASH',
-                url: 'entry2-20_CHARACTER_HASH.js',
+                revision: /^[0-9a-f]{32}$/,
+                url: /^entry2-[0-9a-f]{20}\.js$/,
               },
             ], {}]],
           }});
@@ -409,15 +409,15 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(5);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [['./workbox-8_CHARACTER_HASH']],
+            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[
               {
-                revision: '32_CHARACTER_HASH',
-                url: 'entry1-20_CHARACTER_HASH.js',
+                revision: /^[0-9a-f]{32}$/,
+                url: /^entry1-[0-9a-f]{20}\.js$/,
               },
             ], {}]],
           }});
@@ -455,20 +455,20 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(5);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [['./workbox-8_CHARACTER_HASH']],
+            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[
               {
-                revision: '32_CHARACTER_HASH',
-                url: 'entry1-20_CHARACTER_HASH.js',
+                revision: /^[0-9a-f]{32}$/,
+                url: /^entry1-[0-9a-f]{20}\.js$/,
               }, {
-                revision: '32_CHARACTER_HASH',
-                url: 'entry2-20_CHARACTER_HASH.js',
+                revision: /^[0-9a-f]{32}$/,
+                url: /^entry2-[0-9a-f]{20}\.js$/,
               }, {
-                revision: '32_CHARACTER_HASH',
+                revision: /^[0-9a-f]{32}$/,
                 url: 'index.html',
               },
             ], {}]],
@@ -507,47 +507,47 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(11);
 
           await validateServiceWorkerRuntime({
             swFile, expectedMethodCalls: {
-              importScripts: [['./workbox-8_CHARACTER_HASH']],
+              importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
               precacheAndRoute: [[[
                 {
-                  revision: '32_CHARACTER_HASH',
+                  revision: /^[0-9a-f]{32}$/,
                   url: 'images/example-jpeg.jpg',
                 },
                 {
-                  revision: '32_CHARACTER_HASH',
+                  revision: /^[0-9a-f]{32}$/,
                   url: 'images/web-fundamentals-icon192x192.png',
                 },
                 {
-                  revision: '32_CHARACTER_HASH',
+                  revision: /^[0-9a-f]{32}$/,
                   url: 'index.html',
                 },
                 {
-                  revision: '32_CHARACTER_HASH',
+                  revision: /^[0-9a-f]{32}$/,
                   url: 'page-1.html',
                 },
                 {
-                  revision: '32_CHARACTER_HASH',
+                  revision: /^[0-9a-f]{32}$/,
                   url: 'page-2.html',
                 },
                 {
-                  revision: '32_CHARACTER_HASH',
+                  revision: /^[0-9a-f]{32}$/,
                   url: 'splitChunksEntry.js',
                 },
                 {
-                  revision: '32_CHARACTER_HASH',
+                  revision: /^[0-9a-f]{32}$/,
                   url: 'styles/stylesheet-1.css',
                 },
                 {
-                  revision: '32_CHARACTER_HASH',
+                  revision: /^[0-9a-f]{32}$/,
                   url: 'styles/stylesheet-2.css',
                 },
                 {
-                  revision: '32_CHARACTER_HASH',
+                  revision: /^[0-9a-f]{32}$/,
                   url: 'webpackEntry.js',
                 },
               ], {}]],
@@ -587,19 +587,19 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(9);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [['./workbox-8_CHARACTER_HASH']],
+            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[{
-              revision: '32_CHARACTER_HASH',
+              revision: /^[0-9a-f]{32}$/,
               url: 'manifest.json',
             }, {
-              revision: '32_CHARACTER_HASH',
+              revision: /^[0-9a-f]{32}$/,
               url: 'not-ignored.js',
             }, {
-              revision: '32_CHARACTER_HASH',
+              revision: /^[0-9a-f]{32}$/,
               url: 'webpackEntry.js',
             }], {}]],
           }});
@@ -634,16 +634,16 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(6);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [['./workbox-8_CHARACTER_HASH']],
+            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[{
-              revision: '32_CHARACTER_HASH',
+              revision: /^[0-9a-f]{32}$/,
               url: 'webpackEntry.js',
             }, {
-              revision: '32_CHARACTER_HASH',
+              revision: /^[0-9a-f]{32}$/,
               url: 'webpackEntry.js.map',
             }], {}]],
           }});
@@ -681,19 +681,19 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(11);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [['./workbox-8_CHARACTER_HASH']],
+            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[{
-              revision: '32_CHARACTER_HASH',
+              revision: /^[0-9a-f]{32}$/,
               url: 'index.html',
             }, {
-              revision: '32_CHARACTER_HASH',
+              revision: /^[0-9a-f]{32}$/,
               url: 'page-1.html',
             }, {
-              revision: '32_CHARACTER_HASH',
+              revision: /^[0-9a-f]{32}$/,
               url: 'page-2.html',
             }], {}]],
           }});
@@ -732,16 +732,16 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(11);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [['./workbox-8_CHARACTER_HASH']],
+            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[{
-              revision: '32_CHARACTER_HASH',
+              revision: /^[0-9a-f]{32}$/,
               url: 'page-1.html',
             }, {
-              revision: '32_CHARACTER_HASH',
+              revision: /^[0-9a-f]{32}$/,
               url: 'page-2.html',
             }], {}]],
           }});
@@ -778,13 +778,13 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(3);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [['./workbox-8_CHARACTER_HASH']],
+            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[{
-              revision: '32_CHARACTER_HASH',
+              revision: /^[0-9a-f]{32}$/,
               url: 'webpackEntry.js',
             }], {}]],
           }});
@@ -827,16 +827,16 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
             `The chunk 'doesNotExist' was provided in your Workbox chunks config, but was not found in the compilation.`,
           ]);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(3);
 
           await validateServiceWorkerRuntime({
             swFile, expectedMethodCalls: {
-              importScripts: [['./workbox-8_CHARACTER_HASH']],
+              importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
               precacheAndRoute: [[[
                 {
-                  revision: '32_CHARACTER_HASH',
-                  url: 'entry1-20_CHARACTER_HASH.js',
+                  revision: /^[0-9a-f]{32}$/,
+                  url: /^entry1-[0-9a-f]{20}\.js$/,
                 },
               ], {}]],
             },
@@ -886,46 +886,46 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
 
           const swFile = upath.join(outputDir, 'service-worker.js');
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(12);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [['./workbox-8_CHARACTER_HASH']],
+            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[
               {
-                revision: '32_CHARACTER_HASH',
-                url: 'entry1-20_CHARACTER_HASH.js',
+                revision: /^[0-9a-f]{32}$/,
+                url: /^entry1-[0-9a-f]{20}\.js$/,
               },
               {
-                revision: '32_CHARACTER_HASH',
+                revision: /^[0-9a-f]{32}$/,
                 url: 'images/web-fundamentals-icon192x192.png',
               },
               {
-                revision: '32_CHARACTER_HASH',
+                revision: /^[0-9a-f]{32}$/,
                 url: 'index.html',
               },
               {
-                revision: '32_CHARACTER_HASH',
+                revision: /^[0-9a-f]{32}$/,
                 url: 'page-1.html',
               },
               {
-                revision: '32_CHARACTER_HASH',
+                revision: /^[0-9a-f]{32}$/,
                 url: 'page-2.html',
               },
               {
-                revision: '32_CHARACTER_HASH',
+                revision: /^[0-9a-f]{32}$/,
                 url: 'splitChunksEntry.js',
               },
               {
-                revision: '32_CHARACTER_HASH',
+                revision: /^[0-9a-f]{32}$/,
                 url: 'styles/stylesheet-1.css',
               },
               {
-                revision: '32_CHARACTER_HASH',
+                revision: /^[0-9a-f]{32}$/,
                 url: 'styles/stylesheet-2.css',
               },
               {
-                revision: '32_CHARACTER_HASH',
+                revision: /^[0-9a-f]{32}$/,
                 url: 'webpackEntry.js',
               },
             ], {}]],
@@ -964,15 +964,15 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(3);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [['./workbox-8_CHARACTER_HASH']],
+            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[
               {
-                revision: '32_CHARACTER_HASH',
-                url: '/testing/entry1-20_CHARACTER_HASH.js',
+                revision: /^[0-9a-f]{32}$/,
+                url: /^\/testing\/entry1-[0-9a-f]{20}\.js$/,
               },
             ], {}]],
           }});
@@ -1015,7 +1015,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           // different environments. Instead of hardcoding hash checks, just
           // confirm that we output the expected number of files, which will
           // only be true if the build was successful.
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(6);
 
           done();
@@ -1059,10 +1059,10 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           const swString = memoryFS.readFileSync(`${outputDir}/service-worker.js`, 'utf-8');
 
           await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
-            importScripts: [['./workbox-8_CHARACTER_HASH']],
+            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[{
-              revision: '32_CHARACTER_HASH',
-              url: 'entry1-20_CHARACTER_HASH.js',
+              revision: /^[0-9a-f]{32}$/,
+              url: /^entry1-[0-9a-f]{20}\.js$/,
             }], {}]],
           }});
 
@@ -1113,7 +1113,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
                 expect(statsJson.warnings).to.have.length(0);
               }
 
-              const files = await globby(outputDir);
+              const files = await globby('**', {cwd: outputDir});
               expect(files).to.have.length(3);
 
               resolve();
@@ -1155,15 +1155,15 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(4);
 
           await validateServiceWorkerRuntime({
             swFile: sw1File,
             expectedMethodCalls: {
-              importScripts: [['./workbox-8_CHARACTER_HASH']],
+              importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
               precacheAndRoute: [[[{
-                revision: '32_CHARACTER_HASH',
+                revision: /^[0-9a-f]{32}$/,
                 url: 'index.js',
               }], {}]],
             },
@@ -1172,9 +1172,9 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           await validateServiceWorkerRuntime({
             swFile: sw2File,
             expectedMethodCalls: {
-              importScripts: [['./workbox-8_CHARACTER_HASH']],
+              importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
               precacheAndRoute: [[[{
-                revision: '32_CHARACTER_HASH',
+                revision: /^[0-9a-f]{32}$/,
                 url: 'index.js',
               }], {}]],
             },
@@ -1214,7 +1214,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           // We can't really mock evaluation of the service worker script when
           // the Workbox runtime is inlined, so just check to make sure the
           // correct files are output.
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(2);
 
           done();
@@ -1250,7 +1250,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           // We can't really mock evaluation of the service worker script when
           // the Workbox runtime is inlined, so just check to make sure the
           // correct files are output.
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(3);
 
           done();
@@ -1318,13 +1318,13 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(3);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [['./workbox-8_CHARACTER_HASH']],
+            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[{
-              url: 'main.20_CHARACTER_HASH.js',
+              url: /^main\.[0-9a-f]{20}\.js$/,
               revision: null,
             }], {}]],
           }});
@@ -1361,14 +1361,14 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(3);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [['./workbox-8_CHARACTER_HASH']],
+            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[{
-              revision: '32_CHARACTER_HASH',
-              url: 'https://example.org/main.20_CHARACTER_HASH.js',
+              revision: /^[0-9a-f]{32}$/,
+              url: /^https:\/\/example\.org\/main\.[0-9a-f]{20}\.js/,
             }], {}]],
           }});
 
@@ -1422,14 +1422,14 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           expect(statsJson.errors, JSON.stringify(statsJson.errors)).to.be.empty;
           expect(statsJson.warnings).to.have.members([warningMessage]);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(3);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [['./workbox-8_CHARACTER_HASH']],
+            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[{
               revision: null,
-              url: 'main.20_CHARACTER_HASH.js-suffix',
+              url: /^main\.[0-9a-f]{20}\.js-suffix$/,
             }], {}]],
           }});
 
