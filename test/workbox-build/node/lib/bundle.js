@@ -45,8 +45,8 @@ describe(`[workbox-build] lib/bundle.js`, function() {
       'tempy': {
         file: sinon.stub().returns('sw.js'),
       },
-      'rollup-plugin-node-resolve': sinon.stub(),
-      'rollup-plugin-replace': sinon.stub(),
+      '@rollup/plugin-node-resolve': sinon.stub(),
+      '@rollup/plugin-replace': sinon.stub(),
       'rollup-plugin-babel': sinon.stub(),
       'rollup-plugin-terser': {
         terser: sinon.stub(),
@@ -103,7 +103,7 @@ describe(`[workbox-build] lib/bundle.js`, function() {
       mode,
     });
 
-    expect(stubs['rollup-plugin-replace'].args).to.eql([[{
+    expect(stubs['@rollup/plugin-replace'].args).to.eql([[{
       'process.env.NODE_ENV': `"${mode}"`,
     }]]);
   });

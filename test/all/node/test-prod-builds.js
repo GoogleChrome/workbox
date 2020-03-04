@@ -21,7 +21,7 @@ describe(`[all] prod builds`, function() {
     absolute: true,
   });
 
-  it(`should not have files with "console" or "%cworkbox"`, function() {
+  it(`should not have files with "console" or "%cworwbox"`, function() {
     const invalidFiles = [];
     buildFiles.forEach((filePath) => {
       const fileContents = fs.readFileSync(filePath).toString();

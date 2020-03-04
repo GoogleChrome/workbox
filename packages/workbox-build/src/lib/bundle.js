@@ -13,8 +13,8 @@ const babel = require('rollup-plugin-babel');
 const omt = require('@surma/rollup-plugin-off-main-thread');
 const upath = require('upath');
 const presetEnv = require('@babel/preset-env');
-const replace = require('rollup-plugin-replace');
-const resolve = require('rollup-plugin-node-resolve');
+const replace = require('@rollup/plugin-replace');
+const resolve = require('@rollup/plugin-node-resolve');
 const tempy = require('tempy');
 
 module.exports = async ({
