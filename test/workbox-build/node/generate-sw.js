@@ -134,31 +134,32 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       const {count, filePaths, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2604);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([2604, 2686]);
 
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         __WB_DISABLE_DEV_LOGS: undefined,
-        importScripts: [['./workbox-8_CHARACTER_HASH']],
+        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
         precacheAndRoute: [[[{
           url: 'index.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'page-1.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'page-2.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'styles/stylesheet-1.css',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'styles/stylesheet-2.css',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'webpackEntry.js',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }], {}]],
       }});
     });
@@ -174,31 +175,32 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       const {count, filePaths, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2604);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([2604, 2686]);
 
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         __WB_DISABLE_DEV_LOGS: true,
-        importScripts: [['./workbox-8_CHARACTER_HASH']],
+        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
         precacheAndRoute: [[[{
           url: 'index.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'page-1.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'page-2.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'styles/stylesheet-1.css',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'styles/stylesheet-2.css',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'webpackEntry.js',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }], {}]],
       }});
     });
@@ -215,33 +217,34 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       const {count, filePaths, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2604);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([2604, 2686]);
 
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [
-          ['./workbox-8_CHARACTER_HASH'],
+          [/^\.\/workbox-[0-9a-f]{8}$/],
           [...importScripts],
         ],
         precacheAndRoute: [[[{
           url: 'index.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'page-1.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'page-2.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'styles/stylesheet-1.css',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'styles/stylesheet-2.css',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'webpackEntry.js',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }], {}]],
       }});
     });
@@ -264,33 +267,34 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       const {count, filePaths, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2604);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([2604, 2686]);
 
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [['./workbox-8_CHARACTER_HASH']],
+        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
         clientsClaim: [[]],
         skipWaiting: [[]],
         setCacheNameDetails: [[{prefix: cacheId}]],
         precacheAndRoute: [[[{
           url: 'index.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'page-1.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'page-2.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'styles/stylesheet-1.css',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'styles/stylesheet-2.css',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'webpackEntry.js',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }], {directoryIndex, ignoreURLParametersMatching}]],
       }, addEventListenerValidation: (addEventListenerStub) => {
         // When skipWaiting is true, the 'message' addEventListener shouldn't be called.
@@ -314,30 +318,31 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       // The string additionalManifestEntries entry should lead to one warning.
       expect(warnings).to.have.length(1);
       expect(count).to.eql(9);
-      expect(size).to.eql(2604);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([2604, 2686]);
 
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [['./workbox-8_CHARACTER_HASH']],
+        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
         precacheAndRoute: [[[{
           url: 'index.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'page-1.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'page-2.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'styles/stylesheet-1.css',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'styles/stylesheet-2.css',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'webpackEntry.js',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, '/one', {
           revision: null,
           url: '/two',
@@ -359,30 +364,31 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       const {count, filePaths, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2604);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([2604, 2686]);
 
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [['./workbox-8_CHARACTER_HASH']],
+        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
         precacheAndRoute: [[[{
           url: 'index.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'page-1.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'page-2.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'styles/stylesheet-1.css',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'styles/stylesheet-2.css',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'webpackEntry.js',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }], {}]],
       }, addEventListenerValidation: (addEventListenerStub) => {
         expect(addEventListenerStub.calledOnce).to.be.true;
@@ -410,31 +416,32 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       const {count, filePaths, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2604);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([2604, 2686]);
 
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         createHandlerBoundToURL: [[navigateFallback]],
-        importScripts: [['./workbox-8_CHARACTER_HASH']],
+        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
         precacheAndRoute: [[[{
           url: 'index.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'page-1.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'page-2.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'styles/stylesheet-1.css',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'styles/stylesheet-2.css',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'webpackEntry.js',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }], {}]],
         registerRoute: [[{name: 'NavigationRoute'}]],
         NavigationRoute: [['/urlWithCacheKey', {
@@ -459,30 +466,31 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       const {count, filePaths, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2604);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([2604, 2686]);
 
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [['./workbox-8_CHARACTER_HASH']],
+        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
         precacheAndRoute: [[[{
           url: 'link/index.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'link/page-1.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'link/page-2.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'link/styles/stylesheet-1.css',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'link/styles/stylesheet-2.css',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'link/webpackEntry.js',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }], {}]],
       }});
     });
@@ -503,24 +511,25 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       const {count, filePaths, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(4);
-      expect(size).to.eql(2535);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([2535, 2611]);
 
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [['./workbox-8_CHARACTER_HASH']],
+        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
         precacheAndRoute: [[[{
           url: 'link/index.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'link/page-1.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'link/page-2.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'link/webpackEntry.js',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }], {}]],
       }});
     });
@@ -536,30 +545,31 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       const {count, filePaths, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2604);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([2604, 2686]);
 
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [['./workbox-8_CHARACTER_HASH']],
+        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
         precacheAndRoute: [[[{
           url: 'index.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'page-1.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'page-2.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'styles/stylesheet-1.css',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'styles/stylesheet-2.css',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'webpackEntry.js',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }], {}]],
         initialize: [[{}]],
       }});
@@ -580,30 +590,31 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       const {count, filePaths, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2604);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([2604, 2686]);
 
       confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [['./workbox-8_CHARACTER_HASH']],
+        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
         precacheAndRoute: [[[{
           url: 'index.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'page-1.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'page-2.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'styles/stylesheet-1.css',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'styles/stylesheet-2.css',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'webpackEntry.js',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }], {}]],
         initialize: [[{
           parameterOverrides: {
@@ -623,7 +634,8 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       const {count, filePaths, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2604);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([2604, 2686]);
 
       confirmDirectoryContains(outputDir, filePaths);
     });
@@ -639,7 +651,8 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       const {count, filePaths, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2604);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([2604, 2686]);
 
       confirmDirectoryContains(outputDir, filePaths);
       // We can't validate the generated sw.js file, unfortunately.
@@ -720,7 +733,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       expect(size).to.eql(0);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [STRING_HANDLER]: [[]],
-        importScripts: [['./workbox-8_CHARACTER_HASH']],
+        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
         registerRoute: [[STRING_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD]],
       }});
     });
@@ -739,28 +752,29 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       const {count, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2604);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([2604, 2686]);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [STRING_HANDLER]: [[]],
-        importScripts: [['./workbox-8_CHARACTER_HASH']],
+        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
         precacheAndRoute: [[[{
           url: 'index.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'page-1.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'page-2.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'styles/stylesheet-1.css',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'styles/stylesheet-2.css',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'webpackEntry.js',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }], {}]],
         registerRoute: [[STRING_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD]],
       }});
@@ -780,28 +794,29 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       const {count, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2604);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([2604, 2686]);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [STRING_HANDLER]: [[]],
-        importScripts: [['./workbox-8_CHARACTER_HASH']],
+        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
         precacheAndRoute: [[[{
           url: 'index.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'page-1.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'page-2.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'styles/stylesheet-1.css',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'styles/stylesheet-2.css',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'webpackEntry.js',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }], {}]],
         // See https://github.com/chaijs/chai/issues/697
         registerRoute: [['params => true', {name: STRING_HANDLER}, DEFAULT_METHOD]],
@@ -845,7 +860,8 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
 
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2604);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([2604, 2686]);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [STRING_HANDLER]: [[{
@@ -857,25 +873,25 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
         }]],
         ExpirationPlugin: [[firstRuntimeCachingOptions.expiration]],
         CacheableResponsePlugin: [[secondRuntimeCachingOptions.cacheableResponse]],
-        importScripts: [['./workbox-8_CHARACTER_HASH']],
+        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
         precacheAndRoute: [[[{
           url: 'index.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'page-1.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'page-2.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'styles/stylesheet-1.css',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'styles/stylesheet-2.css',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'webpackEntry.js',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }], {}]],
         registerRoute: [
           [REGEXP_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD],
@@ -929,28 +945,29 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       const {count, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2604);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([2604, 2686]);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [handler]: [[runtimeCachingOptions]],
-        importScripts: [['./workbox-8_CHARACTER_HASH']],
+        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
         precacheAndRoute: [[[{
           url: 'index.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'page-1.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'page-2.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'styles/stylesheet-1.css',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'styles/stylesheet-2.css',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'webpackEntry.js',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }], {}]],
         registerRoute: [
           [REGEXP_URL_PATTERN, {name: handler}, DEFAULT_METHOD],
@@ -996,27 +1013,28 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       const {count, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2604);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([2604, 2686]);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [['./workbox-8_CHARACTER_HASH']],
+        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
         precacheAndRoute: [[[{
           url: 'index.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'page-1.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'page-2.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'styles/stylesheet-1.css',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'styles/stylesheet-2.css',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'webpackEntry.js',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }], {}]],
       }});
     });
@@ -1065,28 +1083,29 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       const {count, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2604);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([2604, 2686]);
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         [handler]: [[]],
-        importScripts: [['./workbox-8_CHARACTER_HASH']],
+        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
         precacheAndRoute: [[[{
           url: 'index.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'page-1.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'page-2.html',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'styles/stylesheet-1.css',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'styles/stylesheet-2.css',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }, {
           url: 'webpackEntry.js',
-          revision: '32_CHARACTER_HASH',
+          revision: /^[0-9a-f]{32}$/,
         }], {}]],
         enable: [[]],
         registerRoute: [[urlPattern, {name: handler}, 'GET']],
