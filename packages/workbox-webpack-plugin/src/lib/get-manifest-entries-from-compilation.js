@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-const {matchPart} = require('webpack/lib/ModuleFilenameHelpers');
+const {matchPart} = require('webpack').ModuleFilenameHelpers;
 const transformManifest = require('workbox-build/build/lib/transform-manifest');
 
 const getAssetHash = require('./get-asset-hash');
@@ -30,7 +30,6 @@ function checkConditions(asset, compilation, conditions = []) {
         return true;
       }
     } else {
-      // See https://github.com/webpack/webpack/blob/bf3e869a423a60581dcb64e215b8d14403e997f2/lib/ModuleFilenameHelpers.js#L151-L159
       if (matchPart(asset.name, condition)) {
         return true;
       }

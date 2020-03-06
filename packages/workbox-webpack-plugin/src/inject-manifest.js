@@ -7,7 +7,7 @@
 */
 
 const {RawSource} = require('webpack-sources');
-const SingleEntryPlugin = require('webpack/lib/SingleEntryPlugin');
+const {SingleEntryPlugin} = require('webpack');
 const replaceAndUpdateSourceMap = require(
     'workbox-build/build/lib/replace-and-update-source-map');
 const stringify = require('fast-json-stable-stringify');
