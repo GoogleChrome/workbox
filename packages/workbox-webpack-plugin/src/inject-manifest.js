@@ -177,12 +177,17 @@ class InjectManifest {
     const childCompiler = compilation.createChildCompiler(
         this.constructor.name,
         outputOptions,
-        this.config.webpackCompilationPlugins,
     );
 
     childCompiler.context = parentCompiler.context;
     childCompiler.inputFileSystem = parentCompiler.inputFileSystem;
     childCompiler.outputFileSystem = parentCompiler.outputFileSystem;
+
+    if (Array.isArray(this.config.webpackCompilationPlugins)) {
+      for (const plugin of this.config.webpackCompilationPlugins) {
+        plugin.apply(childCompiler);
+      }
+    }
 
     new SingleEntryPlugin(
         parentCompiler.context,
