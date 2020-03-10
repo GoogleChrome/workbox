@@ -1239,7 +1239,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       });
     });
 
-    it(`•should use webpackCompilationPlugins with DefinePlugin`, function(done) {
+    it(`should use webpackCompilationPlugins with DefinePlugin`, function(done) {
       const prefix = 'replaced-by-define-plugin';
       const swSrc = upath.join(__dirname, '..', 'static', 'sw-src-define-plugin.js');
       const outputDir = tempy.directory();
