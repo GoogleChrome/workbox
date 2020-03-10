@@ -1269,7 +1269,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         try {
           webpackBuildCheck(webpackError, stats);
 
-          const files = await globby(outputDir);
+          const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(2);
           await validateServiceWorkerRuntime({
             swFile,
