@@ -1239,6 +1239,57 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       });
     });
 
+    it(`should use webpackCompilationPlugins with DefinePlugin`, function(done) {
+      const prefix = 'replaced-by-define-plugin';
+      const swSrc = upath.join(__dirname, '..', 'static', 'sw-src-define-plugin.js');
+      const outputDir = tempy.directory();
+      const config = {
+        mode: 'production',
+        entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        output: {
+          filename: '[name].[hash:20].js',
+          path: outputDir,
+        },
+        plugins: [
+          new InjectManifest({
+            swSrc,
+            swDest: 'service-worker.js',
+            webpackCompilationPlugins: [
+              new webpack.DefinePlugin({
+                __PREFIX__: JSON.stringify(prefix),
+              }),
+            ],
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError, stats) => {
+        const swFile = upath.join(outputDir, 'service-worker.js');
+        try {
+          webpackBuildCheck(webpackError, stats);
+
+          const files = await globby('**', {cwd: outputDir});
+          expect(files).to.have.length(2);
+          await validateServiceWorkerRuntime({
+            swFile,
+            entryPoint: 'injectManifest',
+            expectedMethodCalls: {
+              setCacheNameDetails: [[{prefix}]],
+              precacheAndRoute: [[[{
+                revision: /^[0-9a-f]{32}$/,
+                url: /^main\.[0-9a-f]{20}\.js$/,
+              }], {}]],
+            },
+          });
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+
     it(`should use manifestTransforms`, function(done) {
       const outputDir = tempy.directory();
       const warningMessage = 'test warning';
