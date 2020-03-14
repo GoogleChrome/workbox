@@ -96,7 +96,7 @@ describe(`NetworkFirst`, function() {
             request,
             event,
           }),
-          'no-response'
+          'no-response',
       );
 
       const injectedResponse = new Response('response body');
@@ -170,7 +170,7 @@ describe(`NetworkFirst`, function() {
       });
 
       const networkFirst = new NetworkFirst({networkTimeoutSeconds});
-      let handlePromise = networkFirst.handle({
+      const handlePromise = networkFirst.handle({
         request,
         event,
       });
@@ -300,7 +300,7 @@ describe(`NetworkFirst`, function() {
 
     it(`should use the CacheQueryOptions when performing a cache match`, async function() {
       const matchStub = sandbox.stub(Cache.prototype, 'match').resolves(generateUniqueResponse());
-      sandbox.stub(self, 'fetch').callsFake(() => Promise.reject());
+      sandbox.stub(self, 'fetch').callsFake(() => Promise.reject(new Error()));
 
       const matchOptions = {ignoreSearch: true};
       const networkFirst = new NetworkFirst({matchOptions});

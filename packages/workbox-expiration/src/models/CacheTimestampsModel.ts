@@ -35,8 +35,8 @@ interface CacheTimestampsModelEntry {
  * @private
  */
 class CacheTimestampsModel {
-  private _cacheName: string;
-  private _db: DBWrapper;
+  private readonly _cacheName: string;
+  private readonly _db: DBWrapper;
 
   /**
    *
@@ -60,7 +60,7 @@ class CacheTimestampsModel {
    * @private
    */
   private _handleUpgrade(event: IDBVersionChangeEvent) {
-    const db = (<IDBOpenDBRequest> event.target).result;
+    const db = (event.target as IDBOpenDBRequest).result;
 
     // TODO(philipwalton): EdgeHTML doesn't support arrays as a keyPath, so we
     // have to use the `id` keyPath here and create our own values (a

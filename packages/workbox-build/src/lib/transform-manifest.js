@@ -87,7 +87,7 @@ module.exports = async ({
     };
   });
 
-  let transformsToApply = [];
+  const transformsToApply = [];
 
   if (maximumFileSizeToCacheInBytes) {
     transformsToApply.push(maximumSizeTransform(maximumFileSizeToCacheInBytes));

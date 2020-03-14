@@ -50,5 +50,5 @@ workbox.routing.registerRoute(
     workbox.streams.strategy(getSourceFunctions(), {
       'content-type': 'text/plain',
       'x-test-case': 'strategy',
-    })
+    }),
 );

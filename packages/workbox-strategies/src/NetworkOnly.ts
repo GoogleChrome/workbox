@@ -33,8 +33,8 @@ interface NetworkFirstOptions {
  * @memberof module:workbox-strategies
  */
 class NetworkOnly implements RouteHandlerObject {
-  private _plugins: WorkboxPlugin[];
-  private _fetchOptions?: RequestInit;
+  private readonly _plugins: WorkboxPlugin[];
+  private readonly _fetchOptions?: RequestInit;
 
   /**
    * @param {Object} options

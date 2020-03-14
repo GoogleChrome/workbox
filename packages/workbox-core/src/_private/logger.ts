@@ -20,10 +20,10 @@ declare global {
 
 type LoggerMethods = 'debug'|'log'|'warn'|'error'|'groupCollapsed'|'groupEnd';
     
-const logger = <Console> (process.env.NODE_ENV === 'production' ? null : (() => {
+const logger = (process.env.NODE_ENV === 'production' ? null : (() => {
   // Don't overwrite this value if it's already set.
   // See https://github.com/GoogleChrome/workbox/pull/2284#issuecomment-560470923
-  if (!('__WB_DISABLE_DEV_LOGS' in self!)) {
+  if (!('__WB_DISABLE_DEV_LOGS' in self)) {
     self.__WB_DISABLE_DEV_LOGS = false;
   }
 
@@ -77,14 +77,14 @@ const logger = <Console> (process.env.NODE_ENV === 'production' ? null : (() => 
   const loggerMethods = Object.keys(methodToColorMap);
 
   for (const key of loggerMethods) {
-    const method = <LoggerMethods> key;
+    const method = key as LoggerMethods;
 
     api[method] = (...args: any[]) => {
       print(method, args);
     };
   }
 
-  return <unknown> api;
-})());
+  return api as unknown;
+})()) as Console;
 
 export {logger};

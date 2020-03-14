@@ -12,7 +12,7 @@ import './_version.js';
 
 
 // Give TypeScript the correct global.
-declare var self: ServiceWorkerGlobalScope;
+declare let self: ServiceWorkerGlobalScope;
 
 /**
  * If the browser supports Navigation Preload, then this will enable it.

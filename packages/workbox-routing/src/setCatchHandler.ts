@@ -22,6 +22,6 @@ import './_version.js';
 function setCatchHandler(handler: Handler) {
   const defaultRouter = getOrCreateDefaultRouter();
   defaultRouter.setCatchHandler(handler);
-};
+}
 
 export {setCatchHandler}

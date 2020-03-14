@@ -17,4 +17,4 @@ export const enum pluginEvents {
   FETCH_DID_FAIL = 'fetchDidFail',
   FETCH_DID_SUCCEED = 'fetchDidSucceed',
   REQUEST_WILL_FETCH = 'requestWillFetch',
-};
+}

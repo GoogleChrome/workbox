@@ -7,7 +7,7 @@
 */
 
 const {RawSource} = require('webpack-sources');
-const SingleEntryPlugin = require('webpack/lib/SingleEntryPlugin');
+const {SingleEntryPlugin} = require('webpack');
 const replaceAndUpdateSourceMap = require(
     'workbox-build/build/lib/replace-and-update-source-map');
 const stringify = require('fast-json-stable-stringify');
@@ -98,7 +98,7 @@ class InjectManifest {
    * configured here, the `mode` value configured in the current `webpack`
    * compilation will be used.
    *
-   * @param {Object<string, string>} [config.modifyURLPrefix] A mapping of prefixes
+   * @param {object<string, string>} [config.modifyURLPrefix] A mapping of prefixes
    * that, if present in an entry in the precache manifest, will be replaced with
    * the corresponding value. This can be used to, for example, remove or add a
    * path prefix from a manifest entry if your web hosting setup doesn't match
@@ -142,13 +142,13 @@ class InjectManifest {
     compiler.hooks.make.tapPromise(
         this.constructor.name,
         (compilation) => this.handleMake(compilation, compiler).catch(
-            (error) => compilation.errors.push(error))
+            (error) => compilation.errors.push(error)),
     );
 
     compiler.hooks.emit.tapPromise(
         this.constructor.name,
         (compilation) => this.handleEmit(compilation).catch(
-            (error) => compilation.errors.push(error))
+            (error) => compilation.errors.push(error)),
     );
   }
 
@@ -177,17 +177,22 @@ class InjectManifest {
     const childCompiler = compilation.createChildCompiler(
         this.constructor.name,
         outputOptions,
-        this.config.webpackCompilationPlugins
     );
 
     childCompiler.context = parentCompiler.context;
     childCompiler.inputFileSystem = parentCompiler.inputFileSystem;
     childCompiler.outputFileSystem = parentCompiler.outputFileSystem;
 
+    if (Array.isArray(this.config.webpackCompilationPlugins)) {
+      for (const plugin of this.config.webpackCompilationPlugins) {
+        plugin.apply(childCompiler);
+      }
+    }
+
     new SingleEntryPlugin(
         parentCompiler.context,
         this.config.swSrc,
-        this.constructor.name
+        this.constructor.name,
     ).apply(childCompiler);
 
     await new Promise((resolve, reject) => {

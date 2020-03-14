@@ -11,7 +11,7 @@ import {printInstallDetails} from 'workbox-precaching/utils/printInstallDetails.
 
 
 describe(`printInstallDetails()`, function() {
-  let sandbox = sinon.createSandbox();
+  const sandbox = sinon.createSandbox();
 
   beforeEach(function() {
     if (logger) {

@@ -43,7 +43,7 @@ describe(`normalizeHandler()`, function() {
           expect(error.details).to.have.property('className').that.equals('Route');
           expect(error.details).to.have.property('funcName').that.equals('constructor');
           expect(error.details).to.have.property('paramName').that.equals('handler');
-        }
+        },
     );
   });
 
@@ -58,7 +58,7 @@ describe(`normalizeHandler()`, function() {
           expect(error.details).to.have.property('className').that.equals('Route');
           expect(error.details).to.have.property('funcName').that.equals('constructor');
           expect(error.details).to.have.property('paramName').that.equals('handler');
-        }
+        },
     );
   });
 

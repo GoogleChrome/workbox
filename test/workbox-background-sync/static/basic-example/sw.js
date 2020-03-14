@@ -11,8 +11,6 @@ importScripts('/infra/testing/comlink/sw-interface.js');
 
 workbox.setConfig({modulePathPrefix: '/__WORKBOX/buildFile/'});
 
-/* globals workbox */
-
 const queue = new workbox.backgroundSync.Queue('myQueueName');
 
 self.addEventListener('fetch', (event) => {

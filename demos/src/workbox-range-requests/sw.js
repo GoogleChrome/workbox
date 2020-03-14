@@ -11,7 +11,7 @@ workbox.routing.registerRoute(
       plugins: [
         new workbox.rangeRequests.RangeRequestsPlugin(),
       ],
-    })
+    }),
 );
 
 workbox.core.skipWaiting();

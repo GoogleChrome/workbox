@@ -43,11 +43,11 @@ interface NetworkFirstOptions {
  * @memberof module:workbox-strategies
  */
 class NetworkFirst implements RouteHandlerObject {
-  private _cacheName: string;
-  private _plugins: WorkboxPlugin[];
-  private _fetchOptions?: RequestInit;
-  private _matchOptions?: CacheQueryOptions;
-  private _networkTimeoutSeconds: number;
+  private readonly _cacheName: string;
+  private readonly _plugins: WorkboxPlugin[];
+  private readonly _fetchOptions?: RequestInit;
+  private readonly _matchOptions?: CacheQueryOptions;
+  private readonly _networkTimeoutSeconds: number;
 
   /**
    * @param {Object} options
@@ -71,7 +71,7 @@ class NetworkFirst implements RouteHandlerObject {
     this._cacheName = cacheNames.getRuntimeName(options.cacheName);
 
     if (options.plugins) {
-      let isUsingCacheWillUpdate =
+      const isUsingCacheWillUpdate =
         options.plugins.some((plugin) => !!plugin.cacheWillUpdate);
       this._plugins = isUsingCacheWillUpdate ?
         options.plugins : [cacheOkAndOpaquePlugin, ...options.plugins];
@@ -149,7 +149,7 @@ class NetworkFirst implements RouteHandlerObject {
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
           messages.strategyStart('NetworkFirst', request));
-      for (let log of logs) {
+      for (const log of logs) {
         logger.log(log);
       }
       messages.printFinalResponse(response);
@@ -172,10 +172,10 @@ class NetworkFirst implements RouteHandlerObject {
    * @private
    */
   private _getTimeoutPromise({request, logs, event}: {
-    request: Request,
-    logs: any[],
-    event?: ExtendableEvent,
-  }): {promise: Promise<Response | undefined>, id?: number} {
+    request: Request;
+    logs: any[];
+    event?: ExtendableEvent;
+  }): {promise: Promise<Response | undefined>; id?: number} {
     let timeoutId;
     const timeoutPromise: Promise<Response | undefined> = new Promise((resolve) => {
       const onNetworkTimeout = async () => {
@@ -210,10 +210,10 @@ class NetworkFirst implements RouteHandlerObject {
    * @private
    */
   async _getNetworkPromise({timeoutId, request, logs, event}: {
-    request: Request,
-    logs: any[],
-    timeoutId?: number,
-    event?: ExtendableEvent,
+    request: Request;
+    logs: any[];
+    timeoutId?: number;
+    event?: ExtendableEvent;
   }): Promise<Response> {
     let error;
     let response;
@@ -290,8 +290,8 @@ class NetworkFirst implements RouteHandlerObject {
    * @private
    */
   private _respondFromCache({event, request}: {
-    request: Request,
-    event?: ExtendableEvent,
+    request: Request;
+    event?: ExtendableEvent;
   }): Promise<Response | undefined> {
     return cacheWrapper.match({
       cacheName: this._cacheName,

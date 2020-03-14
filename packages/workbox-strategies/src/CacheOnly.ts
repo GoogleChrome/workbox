@@ -35,9 +35,9 @@ interface CacheOnlyOptions {
  * @memberof module:workbox-strategies
  */
 class CacheOnly implements RouteHandlerObject {
-  private _cacheName: string;
-  private _plugins: WorkboxPlugin[];
-  private _matchOptions?: CacheQueryOptions;
+  private readonly _cacheName: string;
+  private readonly _plugins: WorkboxPlugin[];
+  private readonly _matchOptions?: CacheQueryOptions;
 
   /**
    * @param {Object} options

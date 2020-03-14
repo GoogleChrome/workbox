@@ -24,7 +24,7 @@ class CreateWebpackAssetPlugin {
         (compilation) => compilation.assets[this.name] = {
           source: () => this.name,
           size: () => this.name.length,
-        }
+        },
     );
   }
 }

@@ -26,6 +26,6 @@ import './_version.js';
 function setDefaultHandler(handler: Handler) {
   const defaultRouter = getOrCreateDefaultRouter();
   defaultRouter.setDefaultHandler(handler);
-};
+}
 
 export {setDefaultHandler}

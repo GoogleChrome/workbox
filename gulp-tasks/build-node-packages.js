@@ -15,6 +15,6 @@ gulp.task('build-node-packages', gulp.series(
     packageRunnner(
         'build-node-packages',
         'node',
-        buildNodePackage
-    )
+        buildNodePackage,
+    ),
 ));

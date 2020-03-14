@@ -6,7 +6,7 @@ workbox.setConfig({
 
 
 const broadcastUpdate = new workbox.broadcastUpdate.BroadcastCacheUpdate(
-    'broadcast-update-demo'
+    'broadcast-update-demo',
 );
 
 const initialResponse = new Response('Response 1', {

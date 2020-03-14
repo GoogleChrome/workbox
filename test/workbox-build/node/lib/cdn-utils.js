@@ -21,13 +21,13 @@ describe(`[workbox-build] lib/cdn-utils.js`, function() {
 
   it(`getModuleURL() should throw when moduleName is undefined`, function() {
     expect(
-        () => cdnUtils.getModuleURL()
+        () => cdnUtils.getModuleURL(),
     ).to.throw(errors['no-module-name']);
   });
 
   it(`getModuleURL('workbox-sw', 'dev') should throw`, function() {
     expect(
-        () => cdnUtils.getModuleURL('workbox-sw', 'dev')
+        () => cdnUtils.getModuleURL('workbox-sw', 'dev'),
     ).to.throw('workbox-sw');
   });
 

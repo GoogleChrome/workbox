@@ -43,7 +43,7 @@ const wrappedFetch = async ({
   fetchOptions,
   event,
   plugins = [],
-} : WrappedFetchOptions) => {
+}: WrappedFetchOptions) => {
 
   if (typeof request === 'string') {
     request = new Request(request);
@@ -83,15 +83,15 @@ const wrappedFetch = async ({
       request.clone() : null;
 
   try {
-    for (let plugin of plugins) {
+    for (const plugin of plugins) {
       if (pluginEvents.REQUEST_WILL_FETCH in plugin) {
         const pluginMethod = plugin[pluginEvents.REQUEST_WILL_FETCH]!;
-        const requestClone = (<Request> request).clone();
+        const requestClone = request.clone();
 
-        request = <Request> (await pluginMethod.call(plugin, {
+        request = await pluginMethod.call(plugin, {
           request: requestClone,
           event,
-        }));
+        }) as Request;
 
         if (process.env.NODE_ENV !== 'production') {
           if (request) {
@@ -113,7 +113,7 @@ const wrappedFetch = async ({
   // The request can be altered by plugins with `requestWillFetch` making
   // the original request (Most likely from a `fetch` event) to be different
   // to the Request we make. Pass both to `fetchDidFail` to aid debugging.
-  let pluginFilteredRequest = request.clone();
+  const pluginFilteredRequest = request.clone();
 
   try {
     let fetchResponse;

@@ -28,7 +28,7 @@ describe(`NavigationRoute`, function() {
           expect(error.details).to.have.property('className').that.equals('Route');
           expect(error.details).to.have.property('funcName').that.equals('constructor');
           expect(error.details).to.have.property('paramName').that.equals('handler');
-        }
+        },
     );
 
     await expectError(
@@ -39,7 +39,7 @@ describe(`NavigationRoute`, function() {
           expect(error.details).to.have.property('className').that.equals('Route');
           expect(error.details).to.have.property('funcName').that.equals('constructor');
           expect(error.details).to.have.property('paramName').that.equals('handler');
-        }
+        },
     );
   });
 

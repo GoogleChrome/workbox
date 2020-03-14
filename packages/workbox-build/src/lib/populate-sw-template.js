@@ -51,7 +51,7 @@ module.exports = ({
     precacheOptionsString = precacheOptionsString.replace(
         `"ignoreURLParametersMatching": []`,
         `"ignoreURLParametersMatching": [` +
-      `${ignoreURLParametersMatching.join(', ')}]`
+      `${ignoreURLParametersMatching.join(', ')}]`,
     );
   }
 

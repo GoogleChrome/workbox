@@ -83,7 +83,7 @@ gulp.task('publish-github:generate-from-tags', async () => {
     return;
   }
 
-  for (let tagInfo of tagsToBuild) {
+  for (const tagInfo of tagsToBuild) {
     await handleGithubRelease(
         tagInfo.name, tagInfo.name, taggedReleases[tagInfo.name]);
   }

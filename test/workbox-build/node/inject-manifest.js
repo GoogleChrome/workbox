@@ -169,8 +169,9 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
       const {count, filePaths, size, warnings} = await injectManifest(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2604);
-      expect(filePaths).to.have.members([swDest]);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([2604, 2686]);
+      expect(filePaths).to.have.members([upath.resolve(swDest)]);
 
       await validateServiceWorkerRuntime({
         entryPoint: 'injectManifest',
@@ -178,22 +179,22 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
         expectedMethodCalls: {
           precacheAndRoute: [[[{
             url: 'index.html',
-            revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+            revision: /^[0-9a-f]{32}$/,
           }, {
             url: 'page-1.html',
-            revision: '544658ab25ee8762dc241e8b1c5ed96d',
+            revision: /^[0-9a-f]{32}$/,
           }, {
             url: 'page-2.html',
-            revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+            revision: /^[0-9a-f]{32}$/,
           }, {
             url: 'styles/stylesheet-1.css',
-            revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+            revision: /^[0-9a-f]{32}$/,
           }, {
             url: 'styles/stylesheet-2.css',
-            revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+            revision: /^[0-9a-f]{32}$/,
           }, {
             url: 'webpackEntry.js',
-            revision: '5b652181a25e96f255d0490203d3c47e',
+            revision: /^[0-9a-f]{32}$/,
           }]]],
         },
       });
@@ -220,8 +221,9 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
       const {count, filePaths, size, warnings} = await injectManifest(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2604);
-      expect(filePaths).to.have.members([swDest]);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([2604, 2686]);
+      expect(filePaths).to.have.members([upath.resolve(swDest)]);
 
       await validateServiceWorkerRuntime({
         entryPoint: 'injectManifest',
@@ -230,22 +232,22 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
           importScripts: [['./sample-import.js']],
           precacheAndRoute: [[[{
             url: 'index.html',
-            revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+            revision: /^[0-9a-f]{32}$/,
           }, {
             url: 'page-1.html',
-            revision: '544658ab25ee8762dc241e8b1c5ed96d',
+            revision: /^[0-9a-f]{32}$/,
           }, {
             url: 'page-2.html',
-            revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+            revision: /^[0-9a-f]{32}$/,
           }, {
             url: 'styles/stylesheet-1.css',
-            revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+            revision: /^[0-9a-f]{32}$/,
           }, {
             url: 'styles/stylesheet-2.css',
-            revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+            revision: /^[0-9a-f]{32}$/,
           }, {
             url: 'webpackEntry.js',
-            revision: '5b652181a25e96f255d0490203d3c47e',
+            revision: /^[0-9a-f]{32}$/,
           }]], [[
             '/extra-assets/example.1234.css',
             '/extra-assets/example-2.1234.js',
@@ -265,8 +267,9 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
       const {count, filePaths, size, warnings} = await injectManifest(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2604);
-      expect(filePaths).to.have.members([swDest]);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([2604, 2686]);
+      expect(filePaths).to.have.members([upath.resolve(swDest)]);
 
       await validateServiceWorkerRuntime({
         entryPoint: 'injectManifest',
@@ -274,22 +277,22 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
         expectedMethodCalls: {
           precacheAndRoute: [[[{
             url: 'index.html',
-            revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+            revision: /^[0-9a-f]{32}$/,
           }, {
             url: 'page-1.html',
-            revision: '544658ab25ee8762dc241e8b1c5ed96d',
+            revision: /^[0-9a-f]{32}$/,
           }, {
             url: 'page-2.html',
-            revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+            revision: /^[0-9a-f]{32}$/,
           }, {
             url: 'styles/stylesheet-1.css',
-            revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+            revision: /^[0-9a-f]{32}$/,
           }, {
             url: 'styles/stylesheet-2.css',
-            revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+            revision: /^[0-9a-f]{32}$/,
           }, {
             url: 'webpackEntry.js',
-            revision: '5b652181a25e96f255d0490203d3c47e',
+            revision: /^[0-9a-f]{32}$/,
           }]]],
         },
       });
@@ -305,8 +308,9 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
       const {count, filePaths, size, warnings} = await injectManifest(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2604);
-      expect(filePaths).to.have.members([swDest]);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([2604, 2686]);
+      expect(filePaths).to.have.members([upath.resolve(swDest)]);
 
       await validateServiceWorkerRuntime({
         entryPoint: 'injectManifest',
@@ -314,22 +318,22 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
         expectedMethodCalls: {
           precacheAndRoute: [[[{
             url: 'index.html',
-            revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+            revision: /^[0-9a-f]{32}$/,
           }, {
             url: 'page-1.html',
-            revision: '544658ab25ee8762dc241e8b1c5ed96d',
+            revision: /^[0-9a-f]{32}$/,
           }, {
             url: 'page-2.html',
-            revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+            revision: /^[0-9a-f]{32}$/,
           }, {
             url: 'styles/stylesheet-1.css',
-            revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+            revision: /^[0-9a-f]{32}$/,
           }, {
             url: 'styles/stylesheet-2.css',
-            revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+            revision: /^[0-9a-f]{32}$/,
           }, {
             url: 'webpackEntry.js',
-            revision: '5b652181a25e96f255d0490203d3c47e',
+            revision: /^[0-9a-f]{32}$/,
           }], {
             cleanURLs: true,
           }]],
@@ -353,29 +357,30 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
       const {count, size, warnings} = await injectManifest(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2604);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([2604, 2686]);
       await validateServiceWorkerRuntime({
         entryPoint: 'injectManifest',
         swFile: swDest,
         expectedMethodCalls: {
           precacheAndRoute: [[[{
             url: 'index.html',
-            revision: '3883c45b119c9d7e9ad75a1b4a4672ac',
+            revision: /^[0-9a-f]{32}$/,
           }, {
             url: 'page-1.html',
-            revision: '544658ab25ee8762dc241e8b1c5ed96d',
+            revision: /^[0-9a-f]{32}$/,
           }, {
             url: 'page-2.html',
-            revision: 'a3a71ce0b9b43c459cf58bd37e911b74',
+            revision: /^[0-9a-f]{32}$/,
           }, {
             url: 'styles/stylesheet-1.css',
-            revision: '934823cbc67ccf0d67aa2a2eeb798f12',
+            revision: /^[0-9a-f]{32}$/,
           }, {
             url: 'styles/stylesheet-2.css',
-            revision: '884f6853a4fc655e4c2dc0c0f27a227c',
+            revision: /^[0-9a-f]{32}$/,
           }, {
             url: 'webpackEntry.js',
-            revision: '5b652181a25e96f255d0490203d3c47e',
+            revision: /^[0-9a-f]{32}$/,
           }]]],
         },
       });
@@ -396,8 +401,9 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
       const {count, filePaths, size, warnings} = await injectManifest(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
-      expect(size).to.eql(2604);
-      expect(filePaths).to.have.members([swDest, sourcemapDest]);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([2604, 2686]);
+      expect(filePaths).to.have.members([upath.resolve(swDest), sourcemapDest]);
 
       const actualSourcemap = await fse.readJSON(sourcemapDest);
       const expectedSourcemap = await fse.readJSON(

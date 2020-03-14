@@ -132,7 +132,7 @@ export interface FetchDidSucceedCallbackParam {
 }
 
 export interface FetchDidSucceedCallback {
-  (param: FetchDidSucceedCallbackParam): Promise<Response>
+  (param: FetchDidSucceedCallbackParam): Promise<Response>;
 }
 
 export interface RequestWillFetchCallbackParam {
@@ -140,7 +140,7 @@ export interface RequestWillFetchCallbackParam {
 }
 
 export interface RequestWillFetchCallback {
-  (param: RequestWillFetchCallbackParam): Promise<Request | void | null | undefined>
+  (param: RequestWillFetchCallbackParam): Promise<Request | void | null | undefined>;
 }
 
 /**

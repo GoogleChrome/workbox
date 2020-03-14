@@ -38,8 +38,8 @@ import './_version.js';
  * @memberof module:workbox-expiration
  */
 class ExpirationPlugin implements WorkboxPlugin {
-  private _config: object;
-  private _maxAgeSeconds?: number;
+  private readonly _config: object;
+  private readonly _maxAgeSeconds?: number;
   private _cacheExpirations: Map<string, CacheExpiration>;
 
   /**
@@ -142,7 +142,7 @@ class ExpirationPlugin implements WorkboxPlugin {
       return null;
     }
 
-    let isFresh = this._isResponseDateFresh(cachedResponse);
+    const isFresh = this._isResponseDateFresh(cachedResponse);
 
     // Expire entries to ensure that even if the expiration date has
     // expired, it'll only be used once.
@@ -161,7 +161,7 @@ class ExpirationPlugin implements WorkboxPlugin {
           if ('request' in event) {
             logger.warn(`Unable to ensure service worker stays alive when ` +
               `updating cache entry for ` +
-              `'${getFriendlyURL((<FetchEvent> event).request.url)}'.`);
+              `'${getFriendlyURL((event as FetchEvent).request.url)}'.`);
           }
         }
       }

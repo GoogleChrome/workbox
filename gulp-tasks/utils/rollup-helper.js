@@ -8,8 +8,8 @@
 
 const asyncToPromises = require('babel-plugin-transform-async-to-promises');
 const babel = require('rollup-plugin-babel');
-const replace = require('rollup-plugin-replace');
-const resolve = require('rollup-plugin-node-resolve');
+const replace = require('@rollup/plugin-replace');
+const resolve = require('@rollup/plugin-node-resolve');
 const terserPlugin = require('rollup-plugin-terser').terser;
 
 const constants = require('./constants');
@@ -43,7 +43,7 @@ module.exports = {
     }
     plugins.push(babel(babelConfig));
 
-    let minifyBuild = buildType === constants.BUILD_TYPES.prod;
+    const minifyBuild = buildType === constants.BUILD_TYPES.prod;
     if (minifyBuild) {
       const terserOptions = {
         module: buildFormat === 'esm' ? true : false,

@@ -20,11 +20,11 @@ interface DBWrapperOptions {
 }
 
 interface GetAllMatchingOptions {
-  index?: string,
-  query?: Query,
-  direction?: IDBCursorDirection,
-  count?: number,
-  includeKeys?: boolean,
+  index?: string;
+  query?: Query;
+  direction?: IDBCursorDirection;
+  count?: number;
+  includeKeys?: boolean;
 }
 
 /**
@@ -35,10 +35,10 @@ interface GetAllMatchingOptions {
  * @private
  */
 export class DBWrapper {
-  private _name: string;
-  private _version: number;
-  private _onupgradeneeded?: DBWrapperOptions['onupgradeneeded'];
-  private _onversionchange: DBWrapperOptions['onversionchange'];
+  private readonly _name: string;
+  private readonly _version: number;
+  private readonly _onupgradeneeded?: DBWrapperOptions['onupgradeneeded'];
+  private readonly _onversionchange: DBWrapperOptions['onversionchange'];
   private _db: IDBDatabase | null = null;
 
   // The following IDBObjectStore methods are shadowed on this class.
@@ -63,7 +63,7 @@ export class DBWrapper {
   constructor(name: string, version: number, {
     onupgradeneeded,
     onversionchange,
-  } : DBWrapperOptions = {}) {
+  }: DBWrapperOptions = {}) {
     this._name = name;
     this._version = version;
     this._onupgradeneeded = onupgradeneeded;
@@ -76,7 +76,7 @@ export class DBWrapper {
    *
    * @private
    */
-  get db() : IDBDatabase | null {
+  get db(): IDBDatabase | null {
     return this._db;
   }
 
@@ -194,7 +194,7 @@ export class DBWrapper {
     direction = 'next',
     count,
     includeKeys = false,
-  } : GetAllMatchingOptions = {}) : Promise<Array<IDBCursor | any>> {
+  }: GetAllMatchingOptions = {}): Promise<Array<IDBCursor | any>> {
     return await this.transaction([storeName], 'readonly', (txn, done) => {
       const store = txn.objectStore(storeName);
       const target = index ? store.index(index) : store;
@@ -238,7 +238,7 @@ export class DBWrapper {
     storeNames: string | string[],
     type: IDBTransactionMode,
     callback: (txn: IDBTransaction, done: Function) => void,
-  ) : Promise<any> {
+  ): Promise<any> {
     await this.open();
     return await new Promise((resolve, reject) => {
       const txn = this._db!.transaction(storeNames, type);
@@ -269,7 +269,7 @@ export class DBWrapper {
       const objStore = txn.objectStore(storeName);
       // TODO(philipwalton): Fix this underlying TS2684 error.
       // @ts-ignore
-      const request = <IDBRequest> objStore[method].apply(objStore, args);
+      const request = objStore[method].apply(objStore, args);
 
       request.onsuccess = () => done(request.result);
     };
@@ -312,12 +312,12 @@ for (const [mode, methods] of Object.entries(methodsToWrap)) {
   for (const method of methods) {
     if (method in IDBObjectStore.prototype) {
       // Don't use arrow functions here since we're outside of the class.
-      DBWrapper.prototype[<IDBObjectStoreMethods> method] =
+      DBWrapper.prototype[method as IDBObjectStoreMethods] =
           async function(storeName: string, ...args: any[]) {
             return await this._call(
-                <IDBObjectStoreMethods> method,
+                method as IDBObjectStoreMethods,
                 storeName,
-                <IDBTransactionMode> mode,
+                mode as IDBTransactionMode,
                 ...args);
           };
     }

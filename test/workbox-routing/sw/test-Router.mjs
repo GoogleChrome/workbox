@@ -73,7 +73,7 @@ describe(`Router`, function() {
             expect(error.details).to.have.property('funcName').that.eql('registerRoute');
             expect(error.details).to.have.property('paramName').that.eql('route');
             expect(error.details).to.have.property('expectedType').that.eql('object');
-          }
+          },
       );
     });
 
@@ -91,7 +91,7 @@ describe(`Router`, function() {
             expect(error.details).to.have.property('funcName').that.eql('registerRoute');
             expect(error.details).to.have.property('paramName').that.eql('route.method');
             expect(error.details).to.have.property('expectedType').that.eql('string');
-          }
+          },
       );
     });
 
@@ -108,7 +108,7 @@ describe(`Router`, function() {
             expect(error.details).to.have.property('funcName').that.eql('registerRoute');
             expect(error.details).to.have.property('paramName').that.eql('route.handler');
             expect(error.details).to.have.property('expectedMethod').that.eql('handle');
-          }
+          },
       );
     });
 
@@ -301,7 +301,7 @@ describe(`Router`, function() {
           'unregister-route-but-not-found-with-method',
           (error) => {
             expect(error.details).to.have.property('method').that.eql('PUT');
-          }
+          },
       );
     });
 
@@ -315,7 +315,7 @@ describe(`Router`, function() {
       router.registerRoute(getRoute1);
       return expectError(
           () => router.unregisterRoute(getRoute2),
-          'unregister-route-route-not-registered'
+          'unregister-route-route-not-registered',
       );
     });
   });
@@ -360,7 +360,7 @@ describe(`Router`, function() {
       const router = new Router();
       const route = new Route(
           () => true,
-          () => Promise.reject(),
+          () => Promise.reject(new Error()),
       );
       router.registerRoute(route);
       router.setCatchHandler(() => new Response(EXPECTED_RESPONSE_BODY));
@@ -480,7 +480,7 @@ describe(`Router`, function() {
             if (url.href !== 'https://unexpected.com') {
               return new Response(EXPECTED_RESPONSE_BODY);
             }
-          }
+          },
       );
       router.registerRoute(route);
 

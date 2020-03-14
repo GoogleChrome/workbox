@@ -25,5 +25,5 @@ gulp.task('watch', gulp.series(
           .on('change', function(path, stats) {
             logHelper.log(`gulp.watch() was triggered by '${path}'`);
           });
-    }
+    },
 ));

@@ -60,7 +60,7 @@ function registerRoute(
 
       // See https://github.com/pillarjs/path-to-regexp#parameters
       const wildcards = '[*:?+]';
-      if (valueToCheck.match(new RegExp(`${wildcards}`))) {
+      if ((new RegExp(`${wildcards}`)).exec(valueToCheck)) {
         logger.debug(
             `The '$capture' parameter contains an Express-style wildcard ` +
           `character (${wildcards}). Strings are now always interpreted as ` +
@@ -105,6 +105,6 @@ function registerRoute(
   defaultRouter.registerRoute(route);
 
   return route;
-};
+}
 
 export {registerRoute}

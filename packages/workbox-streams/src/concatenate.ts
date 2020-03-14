@@ -45,8 +45,8 @@ function _getReaderFromSource(source: StreamSource): ReadableStreamReader {
  * @memberof module:workbox-streams
  */
 function concatenate(sourcePromises: Promise<StreamSource>[]): {
-  done: Promise<void>,
-  stream: ReadableStream,
+  done: Promise<void>;
+  stream: ReadableStream;
 } {
   if (process.env.NODE_ENV !== 'production') {
     assert!.isArray(sourcePromises, {
@@ -62,7 +62,7 @@ function concatenate(sourcePromises: Promise<StreamSource>[]): {
     });
   });
 
-  const streamDeferred:Deferred<void> = new Deferred();
+  const streamDeferred: Deferred<void> = new Deferred();
 
   let i = 0;
   const logMessages: any[] = [];
@@ -95,7 +95,7 @@ function concatenate(sourcePromises: Promise<StreamSource>[]): {
                 }
 
                 controller.close();
-                streamDeferred.resolve!();
+                streamDeferred.resolve();
                 return;
               }
 
@@ -108,7 +108,7 @@ function concatenate(sourcePromises: Promise<StreamSource>[]): {
             if (process.env.NODE_ENV !== 'production') {
               logger.error('An error occurred:', error);
             }
-            streamDeferred.reject!(error);
+            streamDeferred.reject(error);
             throw error;
           });
     },
@@ -118,7 +118,7 @@ function concatenate(sourcePromises: Promise<StreamSource>[]): {
         logger.warn('The ReadableStream was cancelled.');
       }
 
-      streamDeferred.resolve!();
+      streamDeferred.resolve();
     },
   });
 

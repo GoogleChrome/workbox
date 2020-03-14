@@ -20,7 +20,7 @@ import './_version.js';
  * @memberof module:workbox-broadcast-update
  */
 class BroadcastUpdatePlugin implements WorkboxPlugin {
-  private _broadcastUpdate: BroadcastCacheUpdate;
+  private readonly _broadcastUpdate: BroadcastCacheUpdate;
 
   /**
    * Construct a BroadcastCacheUpdate instance with the passed options and
