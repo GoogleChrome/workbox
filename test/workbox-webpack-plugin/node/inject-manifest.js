@@ -1555,4 +1555,31 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       });
     });
   });
+
+  describe(`[workbox-webpack-plugin] Non-compilation scenarios`, function() {
+    it(`•should support injecting a valid JSON manifest`, function(done) {
+      const outputDir = tempy.directory();
+      console.log(outputDir);
+      const config = {
+        mode: 'production',
+        entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        output: {
+          filename: '[name].[hash:20].js',
+          path: outputDir,
+        },
+        plugins: [
+          new InjectManifest({
+            compileSrc: false,
+            swDest: 'injected-manifest.json',
+            swSrc: upath.join(__dirname, '..', 'static', 'injected-manifest.json'),
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError, stats) => {
+        done();
+      });
+    });
+  });
 });

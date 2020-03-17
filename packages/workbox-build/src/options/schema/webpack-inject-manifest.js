@@ -10,6 +10,7 @@ const joi = require('@hapi/joi');
 const upath = require('upath');
 
 const basePartial = require('../partials/base');
+const defaults = require('../defaults');
 const injectPartial = require('../partials/inject');
 const webpackPartial = require('../partials/webpack');
 
@@ -22,6 +23,7 @@ const swSrcBasename = (context) => {
 swSrcBasename.description = 'derived from the swSrc file name';
 
 const supportedOptions = Object.assign({
+  compileSrc: joi.boolean().default(defaults.compileSrc),
   webpackCompilationPlugins: joi.array().items(joi.object()),
 }, basePartial, injectPartial, webpackPartial);
 
