@@ -49,7 +49,7 @@ class InjectManifest {
    * @param {Array<module:workbox-build.ManifestEntry>} [config.additionalManifestEntries]
    * A list of entries to be precached, in addition to any entries that are
    * generated as part of the build configuration.
-   * 
+   *
    * @param {Array<string>} [config.chunks] One or more chunk names whose corresponding
    * output files should be included in the precache manifest.
    *
@@ -206,6 +206,12 @@ class InjectManifest {
     });
   }
 
+  /**
+   * @param {Object} compilation The webpack compilation.
+   * @param {Object} parentCompiler The webpack parent compiler.
+   *
+   * @private
+   */
   addSrcToAssets(compilation, parentCompiler) {
     const source = parentCompiler.inputFileSystem.readFileSync(
         this.config.swSrc).toString();

@@ -25,7 +25,7 @@ swSrcBasename.description = 'derived from the swSrc file name';
 const supportedOptions = Object.assign({
   compileSrc: joi.boolean().default(defaults.compileSrc),
   webpackCompilationPlugins: joi.array().items(joi.object()).when(
-    'compileSrc', {is: false, then: joi.forbidden()}),
+      'compileSrc', {is: false, then: joi.forbidden()}),
 }, basePartial, injectPartial, webpackPartial);
 
 module.exports = joi.object().keys(supportedOptions).keys({
