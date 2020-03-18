@@ -49,9 +49,14 @@ class InjectManifest {
    * @param {Array<module:workbox-build.ManifestEntry>} [config.additionalManifestEntries]
    * A list of entries to be precached, in addition to any entries that are
    * generated as part of the build configuration.
-   *
+   * 
    * @param {Array<string>} [config.chunks] One or more chunk names whose corresponding
    * output files should be included in the precache manifest.
+   *
+   * @param {boolean} [config.compileSrc=true] When `true` (the default), the
+   * `swSrc` file will be compiled by webpack. When `false`, compilation will
+   * not occur (and `webpackCompilationPlugins` can't be used.) Set to `false`
+   * if you want to inject the manifest into, e.g., a JSON file.
    *
    * @param {RegExp} [config.dontCacheBustURLsMatching] Assets that match this will be
    * assumed to be uniquely versioned via their URL, and exempted from the normal
@@ -158,17 +163,7 @@ class InjectManifest {
    *
    * @private
    */
-  async handleMake(compilation, parentCompiler) {
-    try {
-      this.config = validate(this.config, webpackInjectManifestSchema);
-    } catch (error) {
-      throw new Error(`Please check your ${this.constructor.name} plugin ` +
-        `configuration:\n${error.message}`);
-    }
-
-    this.config.swDest = relativeToOutputPath(compilation, this.config.swDest);
-    _generatedAssetNames.add(this.config.swDest);
-
+  async performChildCompilation(compilation, parentCompiler) {
     const outputOptions = {
       path: parentCompiler.options.output.path,
       filename: this.config.swDest,
@@ -211,6 +206,36 @@ class InjectManifest {
     });
   }
 
+  addSrcToAssets(compilation, parentCompiler) {
+    const source = parentCompiler.inputFileSystem.readFileSync(
+        this.config.swSrc).toString();
+    compilation.assets[this.config.swDest] = new RawSource(source);
+  }
+
+  /**
+   * @param {Object} compilation The webpack compilation.
+   * @param {Object} parentCompiler The webpack parent compiler.
+   *
+   * @private
+   */
+  async handleMake(compilation, parentCompiler) {
+    try {
+      this.config = validate(this.config, webpackInjectManifestSchema);
+    } catch (error) {
+      throw new Error(`Please check your ${this.constructor.name} plugin ` +
+        `configuration:\n${error.message}`);
+    }
+
+    this.config.swDest = relativeToOutputPath(compilation, this.config.swDest);
+    _generatedAssetNames.add(this.config.swDest);
+
+    if (this.config.compileSrc) {
+      await this.performChildCompilation(compilation, parentCompiler);
+    } else {
+      this.addSrcToAssets(compilation, parentCompiler);
+    }
+  }
+
   /**
    * @param {Object} compilation The webpack compilation.
    *
@@ -240,6 +265,7 @@ class InjectManifest {
 
     const swAsset = compilation.assets[config.swDest];
     const initialSWAssetString = swAsset.source();
+
     if (!initialSWAssetString.includes(config.injectionPoint)) {
       throw new Error(`Can't find ${config.injectionPoint} in your SW source.`);
     }
@@ -247,8 +273,11 @@ class InjectManifest {
     const manifestEntries = await getManifestEntriesFromCompilation(
         compilation, config);
 
-    // See https://github.com/GoogleChrome/workbox/issues/2263
-    const manifestString = stringify(manifestEntries).replace(/"/g, `'`);
+    let manifestString = stringify(manifestEntries);
+    if (this.config.compileSrc) {
+      // See https://github.com/GoogleChrome/workbox/issues/2263
+      manifestString = manifestString.replace(/"/g, `'`);
+    }
 
     const sourcemapAssetName = getSourcemapAssetName(
         compilation, initialSWAssetString, config.swDest);
