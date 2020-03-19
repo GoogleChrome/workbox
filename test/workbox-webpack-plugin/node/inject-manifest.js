@@ -6,20 +6,24 @@
   https://opensource.org/licenses/MIT.
 */
 
+const chai = require('chai');
+const chaiMatchPattern = require('chai-match-pattern');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const WorkerPlugin = require('worker-plugin');
-const expect = require('chai').expect;
 const fse = require('fs-extra');
 const globby = require('globby');
-const upath = require('upath');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const tempy = require('tempy');
+const upath = require('upath');
 const webpack = require('webpack');
+const WorkerPlugin = require('worker-plugin');
 
 const CreateWebpackAssetPlugin = require('../../../infra/testing/create-webpack-asset-plugin');
 const validateServiceWorkerRuntime = require('../../../infra/testing/validator/service-worker-runtime');
 const webpackBuildCheck = require('../../../infra/testing/webpack-build-check');
 const {InjectManifest} = require('../../../packages/workbox-webpack-plugin/src/index');
+
+chai.use(chaiMatchPattern);
+const {expect} = chai;
 
 describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
   const WEBPACK_ENTRY_FILENAME = 'webpackEntry.js';
@@ -1553,6 +1557,121 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           done(error);
         }
       });
+    });
+  });
+
+  describe(`[workbox-webpack-plugin] Non-compilation scenarios`, function() {
+    it(`should error when compileSrc is false and webpackCompilationPlugins is used`, function(done) {
+      const outputDir = tempy.directory();
+
+      const config = {
+        mode: 'production',
+        entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        output: {
+          filename: '[name].[hash:20].js',
+          path: outputDir,
+        },
+        plugins: [
+          new InjectManifest({
+            compileSrc: false,
+            swDest: 'injected-manifest.json',
+            swSrc: upath.join(__dirname, '..', 'static', 'injected-manifest.json'),
+            webpackCompilationPlugins: [{}],
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run((webpackError, stats) => {
+        expect(webpackError).not.to.exist;
+        const statsJson = stats.toJson();
+        expect(statsJson.warnings).to.be.empty;
+        expect(statsJson.errors).to.have.members([
+          `Please check your InjectManifest plugin configuration:\nchild "webpackCompilationPlugins" fails because ["webpackCompilationPlugins" is not allowed]`,
+        ]);
+
+        done();
+      });
+    });
+
+    it(`should support injecting a manifest into a JSON file`, function(done) {
+      const outputDir = tempy.directory();
+
+      const config = {
+        mode: 'production',
+        entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        output: {
+          filename: '[name].[hash:20].js',
+          path: outputDir,
+        },
+        plugins: [
+          new InjectManifest({
+            compileSrc: false,
+            swDest: 'injected-manifest.json',
+            swSrc: upath.join(__dirname, '..', 'static', 'injected-manifest.json'),
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError, stats) => {
+        try {
+          webpackBuildCheck(webpackError, stats);
+
+          const files = await globby('**', {cwd: outputDir});
+          expect(files).to.have.length(2);
+
+          const manifest = await fse.readJSON(upath.join(outputDir, 'injected-manifest.json'));
+          expect(manifest).to.matchPattern([{
+            revision: /^[0-9a-f]{32}$/,
+            url: /^main\.[0-9a-f]{20}\.js$/,
+          }]);
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+  });
+
+  it(`should support injecting a manifest into a CJS module`, function(done) {
+    const outputDir = tempy.directory();
+
+    const config = {
+      mode: 'production',
+      entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+      output: {
+        filename: '[name].[hash:20].js',
+        path: outputDir,
+      },
+      plugins: [
+        new InjectManifest({
+          compileSrc: false,
+          swDest: 'injected-manifest.js',
+          swSrc: upath.join(__dirname, '..', 'static', 'injected-manifest.js'),
+        }),
+      ],
+    };
+
+    const compiler = webpack(config);
+    compiler.run(async (webpackError, stats) => {
+      try {
+        webpackBuildCheck(webpackError, stats);
+
+        const files = await globby('**', {cwd: outputDir});
+        expect(files).to.have.length(2);
+
+        const manifest = require(upath.join(outputDir, 'injected-manifest.js'));
+        expect(manifest).to.matchPattern([{
+          revision: /^[0-9a-f]{32}$/,
+          url: /^main\.[0-9a-f]{20}\.js$/,
+        }]);
+
+        done();
+      } catch (error) {
+        done(error);
+      }
     });
   });
 });
