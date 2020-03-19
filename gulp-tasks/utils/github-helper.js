@@ -69,7 +69,7 @@ module.exports = {
       repo: constants.GITHUB_REPO,
     });
 
-    // We only want tags that are v3.0.0 or above.
+    // We only want tags that are v4.0.0 or above.
     const tagsData = tagsResponse.data;
     return tagsData.filter((tagData) => {
       return semver.gte(tagData.name, constants.MIN_RELEASE_TAG_TO_PUBLISH);
