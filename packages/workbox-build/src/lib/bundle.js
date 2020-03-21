@@ -15,6 +15,7 @@ const upath = require('upath');
 const presetEnv = require('@babel/preset-env');
 const replace = require('@rollup/plugin-replace');
 const resolve = require('@rollup/plugin-node-resolve');
+const pnpResolve = require('rollup-plugin-pnp-resolve');
 const tempy = require('tempy');
 
 module.exports = async ({
@@ -33,6 +34,7 @@ module.exports = async ({
   await writeFile(temporaryFile, unbundledCode);
 
   const plugins = [
+    pnpResolve(),
     resolve(),
     replace({'process.env.NODE_ENV': JSON.stringify(mode)}),
     babel({
