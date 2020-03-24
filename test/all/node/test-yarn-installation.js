@@ -6,9 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-const tempy = require('tempy');
-const util = require('util');
 const childProcess = require('child_process');
+const tempy = require('tempy');
+const upath = require('upath');
+const util = require('util');
 
 const exec = util.promisify(childProcess.exec);
 
@@ -28,7 +29,8 @@ describe('[all] Yarn Installation', function() {
   for (const packageToInstall of packagesToInstall) {
     it(`should install ${packageToInstall} using yarn`, async function() {
       try {
-        await exec(`yarn add ${packageToInstall}`, {cwd: temporaryDirectory});
+        const packagePath = upath.resolve('packages', packageToInstall);
+        await exec(`yarn add ${packagePath}`, {cwd: temporaryDirectory});
       } catch (error) {
         if (error.code === 127) {
           // Skip the test if yarn isn't installed.
