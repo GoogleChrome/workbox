@@ -39,7 +39,7 @@
     "source-map": "^0.7.3",
     "source-map-url": "^0.4.0",
     "stringify-object": "^3.3.0",
-    "strip-comments": "^2.0.1",
+    "strip-comments": "^1.0.2",
     "tempy": "^0.3.0",
     "upath": "^1.2.0",
     "workbox-background-sync": "^5.1.1",
