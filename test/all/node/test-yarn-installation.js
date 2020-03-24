@@ -39,5 +39,5 @@ describe('[all] Yarn Installation', function() {
         }
       }
     });
-  } 
+  }
 });
