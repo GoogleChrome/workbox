@@ -1,6 +1,6 @@
 {
   "name": "workbox-sw",
-  "version": "5.1.1",
+  "version": "5.1.2",
   "license": "MIT",
   "author": "Google's Web DevRel Team",
   "description": "This module makes it easy to get started with the Workbox service worker libraries.",

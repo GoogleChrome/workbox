@@ -1,6 +1,6 @@
 {
   "name": "workbox-routing",
-  "version": "5.1.1",
+  "version": "5.1.2",
   "license": "MIT",
   "author": "Google's Web DevRel Team",
   "description": "A service worker helper library to route request URLs to handlers.",
@@ -28,6 +28,6 @@
   "module": "index.mjs",
   "types": "index.d.ts",
   "dependencies": {
-    "workbox-core": "^5.1.1"
+    "workbox-core": "^5.1.2"
   }
 }
