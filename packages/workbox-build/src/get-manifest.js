@@ -84,9 +84,9 @@ const validate = require('./lib/validate-options');
  * version the URL. If used with a single string, it will be interpreted as
  * unique versioning information that you've generated for a given URL.
  *
- * @return {Promise<{count: number, filePaths: Array<string>, size: number, warnings: Array<string>}>}
- * A promise that resolves once the service worker and related files
- * (indicated by `filePaths`) has been written to `swDest`. The `size` property
+ * @return {Promise<{count: number, manifestEntries: Array<module:workbox-build.ManifestEntry>, size: number, warnings: Array<string>}>}
+ * A promise that resolves once the precache manifest (available in the
+ * `manifestEntries` property) has been determined. The `size` property
  * contains the aggregate size of all the precached entries, in bytes, and the
  * `count` property contains the total number of precached entries. Any
  * non-fatal warning messages will be returned via `warnings`.
