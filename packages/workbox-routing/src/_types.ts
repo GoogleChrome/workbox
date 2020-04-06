@@ -68,9 +68,8 @@ import './_version.js';
  *
  * @callback ~handlerCallback
  * @param {Object} context
- * @param {URL} context.url The URL that matched.
- * @param {Request} [context.request] The corresponding request,
- *     if available.
+ * @param {Request|string} context.request The corresponding request.
+ * @param {URL} [context.url] The URL that matched, if available.
  * @param {FetchEvent} [context.event] The corresponding event that triggered
  *     the request, if available.
  * @param {Object} [context.params] Array or Object parameters returned by the
