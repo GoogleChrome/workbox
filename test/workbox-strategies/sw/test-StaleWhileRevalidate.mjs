@@ -30,12 +30,6 @@ describe(`StaleWhileRevalidate`, function() {
   });
 
   describe(`handle()`, function() {
-    it(`should be able to make a request without an event`, async function() {
-      // TODO(philipwalton): Implement once this feature is added, so we can
-      // await the completion of the strategy without needing an event:
-      // https://github.com/GoogleChrome/workbox/issues/2115
-    });
-
     it(`should add the initial response to the cache`, async function() {
       sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
 
@@ -91,19 +85,13 @@ describe(`StaleWhileRevalidate`, function() {
       await cache.put(request, firstCachedResponse.clone());
 
       const staleWhileRevalidate = new StaleWhileRevalidate();
+
       const handleResponse = await staleWhileRevalidate.handle({
         request,
         event,
       });
 
-      let fetchThrewInWaitUntil = false;
-      try {
-        await eventDoneWaiting(event, {catchErrors: false});
-      } catch (error) {
-        fetchThrewInWaitUntil = true;
-      } finally {
-        expect(fetchThrewInWaitUntil).to.equal(true);
-      }
+      await eventDoneWaiting(event);
 
       await compareResponses(firstCachedResponse, handleResponse, true);
       const secondCachedResponse = await cache.match(request);
@@ -112,7 +100,6 @@ describe(`StaleWhileRevalidate`, function() {
 
     it(`should return the cached response and update the cache when the network request succeeds`, async function() {
       sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
-
 
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
@@ -168,7 +155,7 @@ describe(`StaleWhileRevalidate`, function() {
       const staleWhileRevalidate = new StaleWhileRevalidate({
         plugins,
       });
-      expect(staleWhileRevalidate._plugins).to.equal(plugins);
+      expect(staleWhileRevalidate.plugins).to.equal(plugins);
     });
 
     it(`should use the fetchOptions provided`, async function() {
@@ -178,11 +165,14 @@ describe(`StaleWhileRevalidate`, function() {
       const fetchStub = sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
 
       await staleWhileRevalidate.handle({
         request,
         event,
       });
+
+      await eventDoneWaiting(event);
 
       expect(fetchStub.calledOnce).to.be.true;
       expect(fetchStub.calledWith(request, fetchOptions)).to.be.true;
@@ -191,21 +181,26 @@ describe(`StaleWhileRevalidate`, function() {
     it(`should use the CacheQueryOptions when performing a cache match`, async function() {
       sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
 
-      const matchStub = sandbox.stub(Cache.prototype, 'match').resolves(generateUniqueResponse());
+      const matchStub = sandbox.stub(self.caches.constructor.prototype, 'match')
+          .resolves(generateUniqueResponse());
 
       const matchOptions = {ignoreSearch: true};
       const staleWhileRevalidate = new StaleWhileRevalidate({matchOptions});
 
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
 
       await staleWhileRevalidate.handle({
         request,
         event,
       });
 
-      expect(matchStub.calledOnce).to.be.true;
-      expect(matchStub.calledWith(request, matchOptions)).to.be.true;
+      await eventDoneWaiting(event);
+
+      expect(matchStub.callCount).to.equal(1);
+      expect(matchStub.firstCall.args[0]).to.equal(request);
+      expect(matchStub.firstCall.args[1].ignoreSearch).to.equal(true);
     });
 
     it(`should throw an error when the network request fails, and there's no cache match`, async function() {
@@ -213,6 +208,7 @@ describe(`StaleWhileRevalidate`, function() {
 
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
 
       const staleWhileRevalidate = new StaleWhileRevalidate();
       await expectError(
@@ -222,6 +218,8 @@ describe(`StaleWhileRevalidate`, function() {
           }),
           'no-response',
       );
+
+      await eventDoneWaiting(event);
     });
   });
 });

@@ -7,23 +7,14 @@
 */
 
 import {assert} from 'workbox-core/_private/assert.js';
-import {cacheNames} from 'workbox-core/_private/cacheNames.js';
-import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.js';
-import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.js';
-import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
 import {logger} from 'workbox-core/_private/logger.js';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
-import {RouteHandlerObject, RouteHandlerCallbackOptions, WorkboxPlugin} from 'workbox-core/types.js';
+
+import {Strategy} from './Strategy.js';
+import {StrategyHandler} from './StrategyHandler.js';
 import {messages} from './utils/messages.js';
 import './_version.js';
 
-
-interface CacheFirstOptions {
-  cacheName?: string;
-  plugins?: WorkboxPlugin[];
-  fetchOptions?: RequestInit;
-  matchOptions?: CacheQueryOptions;
-}
 
 /**
  * An implementation of a [cache-first]{@link https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#cache-falling-back-to-network}
@@ -36,49 +27,19 @@ interface CacheFirstOptions {
  * If the network request fails, and there is no cache match, this will throw
  * a `WorkboxError` exception.
  *
+ * @extends module:workbox-core.Strategy
  * @memberof module:workbox-strategies
  */
-class CacheFirst implements RouteHandlerObject {
-  private readonly _cacheName: string;
-  private readonly _plugins: WorkboxPlugin[];
-  private readonly _fetchOptions?: RequestInit;
-  private readonly _matchOptions?: CacheQueryOptions;
-
+class CacheFirst extends Strategy {
   /**
-   * @param {Object} options
-   * @param {string} options.cacheName Cache name to store and retrieve
-   * requests. Defaults to cache names provided by
-   * [workbox-core]{@link module:workbox-core.cacheNames}.
-   * @param {Array<Object>} options.plugins [Plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}
-   * to use in conjunction with this caching strategy.
-   * @param {Object} options.fetchOptions Values passed along to the
-   * [`init`](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch#Parameters)
-   * of all fetch() requests made by this strategy.
-   * @param {Object} options.matchOptions [`CacheQueryOptions`](https://w3c.github.io/ServiceWorker/#dictdef-cachequeryoptions)
-   */
-  constructor(options: CacheFirstOptions = {}) {
-    this._cacheName = cacheNames.getRuntimeName(options.cacheName);
-    this._plugins = options.plugins || [];
-    this._fetchOptions = options.fetchOptions;
-    this._matchOptions = options.matchOptions;
-  }
-
-  /**
-   * This method will perform a request strategy and follows an API that
-   * will work with the
-   * [Workbox Router]{@link module:workbox-routing.Router}.
-   *
-   * @param {Object} options
-   * @param {Request|string} options.request A request to run this strategy for.
-   * @param {Event} [options.event] The event that triggered the request.
+   * @private
+   * @param {Request|string} request A request to run this strategy for.
+   * @param {module:workbox-strategies.StrategyHandler} handler The event that
+   *     triggered the request.
    * @return {Promise<Response>}
    */
-  async handle({event, request}: RouteHandlerCallbackOptions): Promise<Response> {
+  async _handle(request: Request, handler: StrategyHandler): Promise<Response> {
     const logs = [];
-
-    if (typeof request === 'string') {
-      request = new Request(request);
-    }
 
     if (process.env.NODE_ENV !== 'production') {
       assert!.isInstance(request, Request, {
@@ -89,23 +50,17 @@ class CacheFirst implements RouteHandlerObject {
       });
     }
 
-    let response = await cacheWrapper.match({
-      cacheName: this._cacheName,
-      request,
-      event,
-      matchOptions: this._matchOptions,
-      plugins: this._plugins,
-    });
+    let response = await handler.cacheMatch(request);
 
     let error;
     if (!response) {
       if (process.env.NODE_ENV !== 'production') {
         logs.push(
-            `No response found in the '${this._cacheName}' cache. ` +
-          `Will respond with a network request.`);
+            `No response found in the '${this.cacheName}' cache. ` +
+            `Will respond with a network request.`);
       }
       try {
-        response = await this._getFromNetwork(request, event);
+        response = await handler.fetchAndCachePut(request);
       } catch (err) {
         error = err;
       }
@@ -120,7 +75,7 @@ class CacheFirst implements RouteHandlerObject {
     } else {
       if (process.env.NODE_ENV !== 'production') {
         logs.push(
-            `Found a cached response in the '${this._cacheName}' cache.`);
+            `Found a cached response in the '${this.cacheName}' cache.`);
       }
     }
 
@@ -137,47 +92,6 @@ class CacheFirst implements RouteHandlerObject {
     if (!response) {
       throw new WorkboxError('no-response', {url: request.url, error});
     }
-    return response;
-  }
-
-  /**
-   * Handles the network and cache part of CacheFirst.
-   *
-   * @param {Request} request
-   * @param {Event} [event]
-   * @return {Promise<Response>}
-   *
-   * @private
-   */
-  async _getFromNetwork(request: Request, event?: ExtendableEvent) {
-    const response = await fetchWrapper.fetch({
-      request,
-      event,
-      fetchOptions: this._fetchOptions,
-      plugins: this._plugins,
-    });
-
-    // Keep the service worker while we put the request to the cache
-    const responseClone = response.clone();
-    const cachePutPromise = cacheWrapper.put({
-      cacheName: this._cacheName,
-      request,
-      response: responseClone,
-      event,
-      plugins: this._plugins,
-    });
-
-    if (event) {
-      try {
-        event.waitUntil(cachePutPromise);
-      } catch (error) {
-        if (process.env.NODE_ENV !== 'production') {
-          logger.warn(`Unable to ensure service worker stays alive when ` +
-            `updating cache for '${getFriendlyURL(request.url)}'.`);
-        }
-      }
-    }
-
     return response;
   }
 }

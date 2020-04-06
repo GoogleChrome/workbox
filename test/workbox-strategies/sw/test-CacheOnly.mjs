@@ -9,6 +9,7 @@
 import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
 import {CacheOnly} from 'workbox-strategies/CacheOnly.mjs';
 import {compareResponses} from '../../../infra/testing/helpers/compareResponses.mjs';
+import {spyOnEvent} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
 import {generateUniqueResponse} from '../../../infra/testing/helpers/generateUniqueResponse.mjs';
 
 
@@ -28,15 +29,10 @@ describe(`CacheOnly`, function() {
   });
 
   describe(`handle()`, function() {
-    it(`should be able to make a request without an event`, async function() {
-      // TODO(philipwalton): Implement once this feature is added, so we can
-      // await the completion of the strategy without needing an event:
-      // https://github.com/GoogleChrome/workbox/issues/2115
-    });
-
     it(`should not return a response when the cache isn't populated`, async function() {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
 
       const cacheOnly = new CacheOnly();
       await expectError(
@@ -51,6 +47,7 @@ describe(`CacheOnly`, function() {
     it(`should return the cached response when the cache is populated`, async function() {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
 
       const injectedResponse = generateUniqueResponse();
       const cache = await caches.open(cacheNames.getRuntimeName());
@@ -68,6 +65,7 @@ describe(`CacheOnly`, function() {
       const stringRequest = 'http://example.io/test/';
       const request = new Request(stringRequest);
       const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
 
       const injectedResponse = generateUniqueResponse();
       const cache = await caches.open(cacheNames.getRuntimeName());
@@ -84,6 +82,7 @@ describe(`CacheOnly`, function() {
     it(`should return no cached response from custom cache name`, async function() {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
 
       const injectedResponse = generateUniqueResponse();
       const cache = await caches.open(cacheNames.getRuntimeName());
@@ -102,6 +101,7 @@ describe(`CacheOnly`, function() {
     it(`should return cached response from custom cache name`, async function() {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
 
       const injectedResponse = generateUniqueResponse();
       const cache = await caches.open(cacheNames.getRuntimeName('test-cache-name'));
@@ -118,6 +118,7 @@ describe(`CacheOnly`, function() {
     it(`should return the cached response from plugin.cachedResponseWillBeUsed`, async function() {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
 
       const injectedResponse = generateUniqueResponse();
       const cache = await caches.open(cacheNames.getRuntimeName());
@@ -141,13 +142,15 @@ describe(`CacheOnly`, function() {
     });
 
     it(`should use the CacheQueryOptions when performing a cache match`, async function() {
-      const matchStub = sandbox.stub(Cache.prototype, 'match').resolves(generateUniqueResponse());
+      const matchStub = sandbox.stub(self.caches.constructor.prototype, 'match')
+          .resolves(generateUniqueResponse());
 
       const matchOptions = {ignoreSearch: true};
       const cacheOnly = new CacheOnly({matchOptions});
 
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
 
       await cacheOnly.handle({
         request,
@@ -155,7 +158,8 @@ describe(`CacheOnly`, function() {
       });
 
       expect(matchStub.calledOnce).to.be.true;
-      expect(matchStub.calledWith(request, matchOptions)).to.be.true;
+      expect(matchStub.firstCall.args[0]).to.equal(request);
+      expect(matchStub.firstCall.args[1].ignoreSearch).to.equal(true);
     });
   });
 });

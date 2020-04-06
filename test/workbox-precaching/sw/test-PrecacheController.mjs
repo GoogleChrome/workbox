@@ -7,11 +7,12 @@
 */
 
 import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
-import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.mjs';
-import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.mjs';
 import {logger} from 'workbox-core/_private/logger.mjs';
 import {PrecacheController} from 'workbox-precaching/PrecacheController.mjs';
+import {cacheWrapper} from 'workbox-precaching/utils/cacheWrapper.mjs';
+import {fetchWrapper} from 'workbox-precaching/utils/fetchWrapper.mjs';
 import generateTestVariants from '../../../infra/testing/generate-variant-tests';
+
 
 describe(`PrecacheController`, function() {
   const sandbox = sinon.createSandbox();

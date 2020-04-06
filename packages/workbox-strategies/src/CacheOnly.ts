@@ -7,20 +7,14 @@
 */
 
 import {assert} from 'workbox-core/_private/assert.js';
-import {cacheNames} from 'workbox-core/_private/cacheNames.js';
-import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.js';
 import {logger} from 'workbox-core/_private/logger.js';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
-import {RouteHandlerObject, RouteHandlerCallbackOptions, WorkboxPlugin} from 'workbox-core/types.js';
+
+import {Strategy} from './Strategy.js';
+import {StrategyHandler} from './StrategyHandler.js';
 import {messages} from './utils/messages.js';
 import './_version.js';
 
-
-interface CacheOnlyOptions {
-  cacheName?: string;
-  plugins?: WorkboxPlugin[];
-  matchOptions?: CacheQueryOptions;
-}
 
 /**
  * An implementation of a
@@ -32,43 +26,18 @@ interface CacheOnlyOptions {
  *
  * If there is no cache match, this will throw a `WorkboxError` exception.
  *
+ * @extends module:workbox-core.Strategy
  * @memberof module:workbox-strategies
  */
-class CacheOnly implements RouteHandlerObject {
-  private readonly _cacheName: string;
-  private readonly _plugins: WorkboxPlugin[];
-  private readonly _matchOptions?: CacheQueryOptions;
-
+class CacheOnly extends Strategy {
   /**
-   * @param {Object} options
-   * @param {string} options.cacheName Cache name to store and retrieve
-   * requests. Defaults to cache names provided by
-   * [workbox-core]{@link module:workbox-core.cacheNames}.
-   * @param {Array<Object>} options.plugins [Plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}
-   * to use in conjunction with this caching strategy.
-   * @param {Object} options.matchOptions [`CacheQueryOptions`](https://w3c.github.io/ServiceWorker/#dictdef-cachequeryoptions)
-   */
-  constructor(options: CacheOnlyOptions = {}) {
-    this._cacheName = cacheNames.getRuntimeName(options.cacheName);
-    this._plugins = options.plugins || [];
-    this._matchOptions = options.matchOptions;
-  }
-
-  /**
-   * This method will perform a request strategy and follows an API that
-   * will work with the
-   * [Workbox Router]{@link module:workbox-routing.Router}.
-   *
-   * @param {Object} options
-   * @param {Request|string} options.request A request to run this strategy for.
-   * @param {Event} [options.event] The event that triggered the request.
+   * @private
+   * @param {Request|string} request A request to run this strategy for.
+   * @param {module:workbox-strategies.StrategyHandler} handler The event that
+   *     triggered the request.
    * @return {Promise<Response>}
    */
-  async handle({event, request}: RouteHandlerCallbackOptions): Promise<Response> {
-    if (typeof request === 'string') {
-      request = new Request(request);
-    }
-
+  async _handle(request: Request, handler: StrategyHandler): Promise<Response> {
     if (process.env.NODE_ENV !== 'production') {
       assert!.isInstance(request, Request, {
         moduleName: 'workbox-strategies',
@@ -78,23 +47,17 @@ class CacheOnly implements RouteHandlerObject {
       });
     }
 
-    const response = await cacheWrapper.match({
-      cacheName: this._cacheName,
-      request,
-      event,
-      matchOptions: this._matchOptions,
-      plugins: this._plugins,
-    });
+    const response = await handler.cacheMatch(request);
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
           messages.strategyStart('CacheOnly', request));
       if (response) {
-        logger.log(`Found a cached response in the '${this._cacheName}'` +
+        logger.log(`Found a cached response in the '${this.cacheName}'` +
           ` cache.`);
         messages.printFinalResponse(response);
       } else {
-        logger.log(`No response found in the '${this._cacheName}' cache.`);
+        logger.log(`No response found in the '${this.cacheName}' cache.`);
       }
       logger.groupEnd();
     }

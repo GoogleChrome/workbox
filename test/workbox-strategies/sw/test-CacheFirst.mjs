@@ -30,12 +30,6 @@ describe(`CacheFirst`, function() {
   });
 
   describe(`handle()`, function() {
-    it(`should be able to make a request without an event`, async function() {
-      // TODO(philipwalton): Implement once this feature is added, so we can
-      // await the completion of the strategy without needing an event:
-      // https://github.com/GoogleChrome/workbox/issues/2115
-    });
-
     it(`should be able to fetch and cache a request to default cache`, async function() {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
@@ -195,6 +189,7 @@ describe(`CacheFirst`, function() {
     it(`should return the plugin cache response`, async function() {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
 
       const injectedResponse = new Response('response body');
       const cache = await caches.open(cacheNames.getRuntimeName());
@@ -214,6 +209,9 @@ describe(`CacheFirst`, function() {
         request,
         event,
       });
+
+      // Wait until cache.put is finished.
+      await eventDoneWaiting(event);
 
       await compareResponses(firstHandleResponse, pluginResponse, true);
     });
@@ -239,6 +237,7 @@ describe(`CacheFirst`, function() {
           },
         ],
       });
+
       const firstHandleResponse = await cacheFirst.handle({
         request,
         event,
@@ -257,6 +256,7 @@ describe(`CacheFirst`, function() {
     it(`should be able to handle a network error`, async function() {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
 
       const injectedError = new Error(`Injected Error.`);
       sandbox.stub(self, 'fetch').rejects(injectedError);
@@ -267,8 +267,10 @@ describe(`CacheFirst`, function() {
             request,
             event,
           }),
-          'no-response',
-      );
+          'no-response');
+
+      // Wait until cache.put is finished.
+      await eventDoneWaiting(event);
     });
 
     it(`should use the fetchOptions provided`, async function() {
@@ -278,32 +280,43 @@ describe(`CacheFirst`, function() {
       const fetchStub = sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
 
       await cacheFirst.handle({
         request,
         event,
       });
+
+      // Wait until cache.put is finished.
+      await eventDoneWaiting(event);
 
       expect(fetchStub.calledOnce).to.be.true;
       expect(fetchStub.calledWith(request, fetchOptions)).to.be.true;
     });
 
     it(`should use the CacheQueryOptions when performing a cache match`, async function() {
-      const matchStub = sandbox.stub(Cache.prototype, 'match').resolves(generateUniqueResponse());
+      const matchStub = sandbox.stub(self.caches.constructor.prototype, 'match')
+          .resolves(generateUniqueResponse());
 
       const matchOptions = {ignoreSearch: true};
       const cacheFirst = new CacheFirst({matchOptions});
 
+      sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
 
       await cacheFirst.handle({
         request,
         event,
       });
 
+      // Wait until cache.put is finished.
+      await eventDoneWaiting(event);
+
       expect(matchStub.calledOnce).to.be.true;
-      expect(matchStub.calledWith(request, matchOptions)).to.be.true;
+      expect(matchStub.firstCall.args[0]).to.equal(request);
+      expect(matchStub.firstCall.args[1].ignoreSearch).to.equal(true);
     });
   });
 });

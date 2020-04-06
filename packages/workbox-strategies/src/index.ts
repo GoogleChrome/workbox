@@ -11,6 +11,8 @@ import {CacheOnly} from './CacheOnly.js';
 import {NetworkFirst} from './NetworkFirst.js';
 import {NetworkOnly} from './NetworkOnly.js';
 import {StaleWhileRevalidate} from './StaleWhileRevalidate.js';
+import {Strategy} from './Strategy.js';
+import {StrategyHandler} from './StrategyHandler.js';
 import './_version.js';
 
 
@@ -27,5 +29,7 @@ export {
   NetworkFirst,
   NetworkOnly,
   StaleWhileRevalidate,
+  Strategy,
+  StrategyHandler,
 };
 
