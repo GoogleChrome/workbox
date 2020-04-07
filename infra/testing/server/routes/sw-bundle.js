@@ -74,13 +74,11 @@ async function handler(req, res) {
     const {output} = await bundle.generate({format: 'iife'});
 
     console.log(`Successfully built: ${req.url}`);
-    res.write(output[0].code);
+    res.send(output[0].code);
   } catch (error) {
-    res.write('skipWaiting();self.registration.unregister();');
+    res.status(400).send('');
     console.error(error);
   }
-
-  res.end();
 }
 
 module.exports = {
