@@ -18,7 +18,7 @@ jobs:
           
     - uses: actions/setup-node@v1
       with:
-        node-version: 13.x
+        node-version: 8.x
 
     - name: Setup
       run: |
@@ -47,7 +47,7 @@ jobs:
           
     - uses: actions/setup-node@v1
       with:
-        node-version: 8
+        node-version: 13.x
 
     - name: Setup
       run: |
