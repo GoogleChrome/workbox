@@ -15,12 +15,14 @@ const match = '/test/:packageName/window/';
 
 async function handler(req, res) {
   const {packageName} = req.params;
+  const testFilter = req.query.filter || '**/test-*.mjs';
+
   const testFiles =
-      await globby(`test/${packageName}/window/**/test-*.mjs`) || [];
+      await globby(`test/${packageName}/window/**/${testFilter}`) || [];
 
   const testModules = testFiles.map((file) => '/' + file);
 
-  templateData.assign({packageName, testModules});
+  templateData.assign({packageName, testModules, testFilter});
 
   res.set('Content-Type', 'text/html');
 

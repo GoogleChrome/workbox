@@ -12,6 +12,9 @@ importScripts(
     '/node_modules/sinon/pkg/sinon-no-sourcemaps.js'
 );
 
+// Disable workbox logs in test mode.
+self.__WB_DISABLE_DEV_LOGS = true;
+
 self.expect = chai.expect;
 
 // TODO(philipwalton): Move these globals back into imports once the
@@ -111,4 +114,4 @@ addEventListener('install', (event) => {
   event.waitUntil(testsComplete);
 }, {once: true}); // Run once since `install` events are dispatched in tests.
 
-importScripts('sw-bundle.js');
+importScripts('sw-bundle.js?filter={{ testFilter }}');

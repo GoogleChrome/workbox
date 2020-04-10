@@ -15,20 +15,26 @@ const match = '/test/:packageName/sw/';
 
 async function handler(req, res) {
   const {packageName} = req.params;
-  const testFiles = await globby(`test/${packageName}/sw/**/test-*.mjs`) || [];
+  const testFilter = req.query.filter || '**/test-*.mjs';
+
+  const testFiles = await globby(`test/${packageName}/sw/${testFilter}`) || [];
   const testModules = testFiles.map((file) => '/' + file);
 
-  templateData.assign({packageName, testModules});
+  if (testFiles.length > 0) {
+    templateData.assign({packageName, testModules, testFilter});
 
-  res.set('Content-Type', 'text/html');
+    res.set('Content-Type', 'text/html');
 
-  // Since templates can change between tests without the URL changing,
-  // we need to make sure the browser doesn't cache the response.
-  res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
-  res.set('Expires', '0');
+    // Since templates can change between tests without the URL changing,
+    // we need to make sure the browser doesn't cache the response.
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.set('Expires', '0');
 
-  const file = path.join(__dirname, '..', 'templates', 'test-sw.html.njk');
-  res.render(file, templateData.get());
+    const file = path.join(__dirname, '..', 'templates', 'test-sw.html.njk');
+    res.render(file, templateData.get());
+  } else {
+    res.status(404).send(`No test files found for: ${testFilter}`);
+  }
 }
 
 module.exports = {

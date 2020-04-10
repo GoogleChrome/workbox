@@ -26,44 +26,59 @@ async function handler(req, res) {
   const env = process.env.NODE_ENV || 'development';
   const packageName = req.params.package;
 
-  // Ensure the TypeScript transpile step has completed first.
-  if (needsTranspile(packageName)) {
-    await queueTranspile(packageName);
-  }
-
-  const bundle = await rollup({
-    input: `./test/${packageName}/sw/**/test-*.mjs`,
-    plugins: [
-      multiEntry(),
-      resolve({
-        customResolveOptions: {
-          moduleDirectory: 'packages',
-        },
-      }),
-      // TODO(philipwalton): some of our shared testing helpers use commonjs
-      // so we have to support this for the time being.
-      commonjs({
-        exclude: '*.mjs',
-      }),
-      replace({
-        'process.env.NODE_ENV': JSON.stringify(env),
-        'BROWSER_NAMESPACES': JSON.stringify(BROWSER_NAMESPACES),
-        'WORKBOX_CDN_ROOT_URL': '/__WORKBOX/buildFile',
-      }),
-    ],
-    cache: caches[env],
-  });
-
-  // Update the cache so subsequent bundles are faster, and make sure it
-  // keep the dev/prod caches separate since the source files won't change
-  // between those builds, but the outputs will.
-  caches[env] = bundle.cache;
-
-  const {output} = await bundle.generate({format: 'iife'});
-
   res.set('Content-Type', 'text/javascript');
-  res.write(output[0].code);
-  res.end();
+
+  try {
+    // Ensure the TypeScript transpile step has completed first.
+    if (needsTranspile(packageName)) {
+      await queueTranspile(packageName);
+    }
+
+    // Allows you to selectively run tests by adding the `?test=` to the URL.
+    const testFilter = req.query.filter || '**/test-*.mjs';
+    const bundle = await rollup({
+      input: `./test/${packageName}/sw/` + testFilter,
+      plugins: [
+        multiEntry(),
+        resolve({
+          customResolveOptions: {
+            moduleDirectory: 'packages',
+          },
+        }),
+        // TODO(philipwalton): some of our shared testing helpers use commonjs
+        // so we have to support this for the time being.
+        commonjs({
+          exclude: '*.mjs',
+        }),
+        replace({
+          'process.env.NODE_ENV': JSON.stringify(env),
+          'BROWSER_NAMESPACES': JSON.stringify(BROWSER_NAMESPACES),
+          'WORKBOX_CDN_ROOT_URL': '/__WORKBOX/buildFile',
+        }),
+      ],
+      // Fail in the case of warning, so rebuilds work.
+      onwarn({loc, message}) {
+        if (loc) {
+          message = `${loc.file} (${loc.line}:${loc.column}) ${message}`;
+        }
+        throw new Error(message);
+      },
+      cache: caches[env],
+    });
+
+    // Update the cache so subsequent bundles are faster, and make sure it
+    // keep the dev/prod caches separate since the source files won't change
+    // between those builds, but the outputs will.
+    caches[env] = bundle.cache;
+
+    const {output} = await bundle.generate({format: 'iife'});
+
+    console.log(`Successfully built: ${req.url}`);
+    res.send(output[0].code);
+  } catch (error) {
+    res.status(400).send('');
+    console.error(error);
+  }
 }
 
 module.exports = {

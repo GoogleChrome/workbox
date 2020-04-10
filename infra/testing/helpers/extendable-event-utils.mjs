@@ -33,11 +33,13 @@ export const spyOnEvent = (event) => {
 
   if (event instanceof FetchEvent) {
     event.respondWith = sinon.stub().callsFake((responseOrPromise) => {
-      eventResponses.set(event, responseOrPromise);
-      promises.push(Promise.resolve(responseOrPromise));
+      const promise = Promise.resolve(responseOrPromise);
+
+      eventResponses.set(event, promise);
+      promises.push(promise);
 
       // TODO(philipwalton): we cannot currently call the native
-      // `respondWith()` due to this bug in Firefix:
+      // `respondWith()` due to this bug in Firefox:
       // https://bugzilla.mozilla.org/show_bug.cgi?id=1538756
       // FetchEvent.prototype.respondWith.call(event, responseOrPromise);
     });
