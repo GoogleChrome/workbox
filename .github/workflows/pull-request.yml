@@ -18,11 +18,12 @@ jobs:
           
     - uses: actions/setup-node@v1
       with:
-        node-version: 13.x
+        node-version: 8.x
 
     - name: Setup
       run: |
-        npm ci
+        # Use `npm i` to work around https://github.com/npm/cli/issues/558
+        npm i
         gulp build
 
     - run: npx gulp test-node
@@ -47,7 +48,7 @@ jobs:
           
     - uses: actions/setup-node@v1
       with:
-        node-version: 8
+        node-version: 13.x
 
     - name: Setup
       run: |
