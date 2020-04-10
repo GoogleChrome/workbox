@@ -102,7 +102,7 @@
     "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-terser": "^5.2.0",
     "rollup-plugin-typescript2": "^0.25.3",
-    "selenium-assistant": "^6.0.0",
+    "selenium-assistant": "^6.1.0",
     "semver": "^7.1.2",
     "serve-index": "^1.9.1",
     "service-worker-mock": "^1.9.3",
