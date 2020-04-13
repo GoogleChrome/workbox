@@ -137,7 +137,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       // Line ending differences lead to different sizes on Windows.
       expect(size).to.be.oneOf([2604, 2686]);
 
-      confirmDirectoryContains(outputDir, filePaths);
+      await confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         __WB_DISABLE_DEV_LOGS: undefined,
@@ -178,7 +178,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       // Line ending differences lead to different sizes on Windows.
       expect(size).to.be.oneOf([2604, 2686]);
 
-      confirmDirectoryContains(outputDir, filePaths);
+      await confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         __WB_DISABLE_DEV_LOGS: true,
@@ -220,7 +220,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       // Line ending differences lead to different sizes on Windows.
       expect(size).to.be.oneOf([2604, 2686]);
 
-      confirmDirectoryContains(outputDir, filePaths);
+      await confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [
@@ -270,7 +270,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       // Line ending differences lead to different sizes on Windows.
       expect(size).to.be.oneOf([2604, 2686]);
 
-      confirmDirectoryContains(outputDir, filePaths);
+      await confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
@@ -321,7 +321,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       // Line ending differences lead to different sizes on Windows.
       expect(size).to.be.oneOf([2604, 2686]);
 
-      confirmDirectoryContains(outputDir, filePaths);
+      await confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
@@ -367,7 +367,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       // Line ending differences lead to different sizes on Windows.
       expect(size).to.be.oneOf([2604, 2686]);
 
-      confirmDirectoryContains(outputDir, filePaths);
+      await confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
@@ -419,7 +419,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       // Line ending differences lead to different sizes on Windows.
       expect(size).to.be.oneOf([2604, 2686]);
 
-      confirmDirectoryContains(outputDir, filePaths);
+      await confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         createHandlerBoundToURL: [[navigateFallback]],
@@ -469,7 +469,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       // Line ending differences lead to different sizes on Windows.
       expect(size).to.be.oneOf([2604, 2686]);
 
-      confirmDirectoryContains(outputDir, filePaths);
+      await confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
@@ -514,7 +514,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       // Line ending differences lead to different sizes on Windows.
       expect(size).to.be.oneOf([2535, 2611]);
 
-      confirmDirectoryContains(outputDir, filePaths);
+      await confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
@@ -548,7 +548,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       // Line ending differences lead to different sizes on Windows.
       expect(size).to.be.oneOf([2604, 2686]);
 
-      confirmDirectoryContains(outputDir, filePaths);
+      await confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
@@ -593,7 +593,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       // Line ending differences lead to different sizes on Windows.
       expect(size).to.be.oneOf([2604, 2686]);
 
-      confirmDirectoryContains(outputDir, filePaths);
+      await confirmDirectoryContains(outputDir, filePaths);
 
       await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
         importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
@@ -637,7 +637,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       // Line ending differences lead to different sizes on Windows.
       expect(size).to.be.oneOf([2604, 2686]);
 
-      confirmDirectoryContains(outputDir, filePaths);
+      await confirmDirectoryContains(outputDir, filePaths);
     });
 
     it(`should inline the Workbox runtime when 'inlineWorkboxRuntime' is true`, async function() {
@@ -654,7 +654,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       // Line ending differences lead to different sizes on Windows.
       expect(size).to.be.oneOf([2604, 2686]);
 
-      confirmDirectoryContains(outputDir, filePaths);
+      await confirmDirectoryContains(outputDir, filePaths);
       // We can't validate the generated sw.js file, unfortunately.
     });
   });
