@@ -8,11 +8,11 @@
 
 const expect = require('chai').expect;
 const globby = require('globby');
-const path = require('path');
+const upath = require('upath');
 
 module.exports = async (directory, expectedContents) => {
-  const globbedFiles = await globby(directory);
-  const filesWithNativeSeparator =
-      globbedFiles.map((file) => file.replace(/\//g, path.sep));
-  expect(filesWithNativeSeparator).to.have.members(expectedContents);
+  const relativeFiles = await globby('**', {cwd: directory});
+  const absoluteFilesWithNativeSeparator = relativeFiles.map(
+      (file) => upath.resolve(directory, file).replace(/\//g, upath.sep));
+  expect(absoluteFilesWithNativeSeparator).to.have.members(expectedContents);
 };
