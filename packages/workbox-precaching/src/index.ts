@@ -6,8 +6,6 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.js';
-
 import {addPlugins} from './addPlugins.js';
 import {addRoute} from './addRoute.js';
 import {cleanupOutdatedCaches} from './cleanupOutdatedCaches.js';
@@ -20,10 +18,6 @@ import {precacheAndRoute} from './precacheAndRoute.js';
 import {PrecacheController} from './PrecacheController.js';
 
 import './_version.js';
-
-if (process.env.NODE_ENV !== 'production') {
-  assert!.isSWEnv('workbox-precaching');
-}
 
 /**
  * Most consumers of this module will want to use the

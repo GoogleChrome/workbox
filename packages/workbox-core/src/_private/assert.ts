@@ -9,16 +9,6 @@
 import {WorkboxError, WorkboxErrorDetails} from '../_private/WorkboxError.js';
 import '../_version.js';
 
-
-/*
- * This method returns true if the current context is a service worker.
- */
-const isSWEnv = (moduleName: string) => {
-  if (!('ServiceWorkerGlobalScope' in self)) {
-    throw new WorkboxError('not-in-sw', {moduleName});
-  }
-};
-
 /*
  * This method throws if the supplied value is not an array.
  * The destructed values are required to produce a meaningful error for users.
@@ -101,7 +91,6 @@ const finalAssertExports = process.env.NODE_ENV === 'production' ? null : {
   isArray,
   isInstance,
   isOneOf,
-  isSWEnv,
   isType,
   isArrayOfClass,
 };
