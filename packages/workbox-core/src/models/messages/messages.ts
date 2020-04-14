@@ -27,13 +27,6 @@ export const messages: MessageMap = {
       `${JSON.stringify(value)}.`;
   },
 
-  'not-in-sw': ({moduleName}) => {
-    if (!moduleName) {
-      throw new Error(`Unexpected input to 'not-in-sw' error.`);
-    }
-    return `The '${moduleName}' must be used in a service worker.`;
-  },
-
   'not-an-array': ({moduleName, className, funcName, paramName}) => {
     if (!moduleName || !className || !funcName || !paramName) {
       throw new Error(`Unexpected input to 'not-an-array' error.`);

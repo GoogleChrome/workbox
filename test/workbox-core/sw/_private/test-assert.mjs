@@ -16,42 +16,6 @@ describe(`assert`, function() {
     }
   });
 
-  describe(`isSWEnv`, function() {
-    let sandbox;
-    before(function() {
-      sandbox = sinon.createSandbox();
-    });
-
-    afterEach(function() {
-      sandbox.restore();
-    });
-
-    it(`should throw if ServiceWorkerGlobalScope is not defined`, async function() {
-      if (process.env.NODE_ENV === 'production') this.skip();
-
-      const originalServiceWorkerGlobalScope = self.ServiceWorkerGlobalScope;
-      delete self.ServiceWorkerGlobalScope;
-
-      await expectError(() => assert.isSWEnv('example-module'), 'not-in-sw');
-
-      self.ServiceWorkerGlobalScope = originalServiceWorkerGlobalScope;
-    });
-
-    it(`should return false if self is not an instance of ServiceWorkerGlobalScope`, function() {
-      if (process.env.NODE_ENV === 'production') this.skip();
-
-      sandbox.stub(self, 'self').value({});
-
-      return expectError(() => assert.isSWEnv('example-module'), 'not-in-sw');
-    });
-
-    it(`should not throw if self is an instance of ServiceWorkerGlobalScope`, function() {
-      if (process.env.NODE_ENV === 'production') this.skip();
-
-      assert.isSWEnv('example-module');
-    });
-  });
-
   describe(`isArray`, function() {
     it(`shouldn't throw when given an array`, function() {
       if (process.env.NODE_ENV === 'production') this.skip();
