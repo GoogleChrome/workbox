@@ -13,6 +13,11 @@ export interface MapLikeObject {
   [key: string]: any;
 }
 
+/**
+ * Using a plain `MapLikeObject` for now, but could extend/restrict this
+ * in the future.
+ */
+export type PluginState = MapLikeObject;
 
 /**
  * Options passed to a `RouteMatchCallback` function.
@@ -80,7 +85,7 @@ export type RouteHandler = RouteHandlerCallback | RouteHandlerObject;
 export interface HandlerWillStartCallbackParam {
   request: Request;
   event?: ExtendableEvent;
-  state?: MapLikeObject;
+  state?: PluginState;
 }
 
 export interface HandlerWillStartCallback {
@@ -93,7 +98,7 @@ export interface CacheDidUpdateCallbackParam {
   newResponse: Response;
   request: Request;
   event?: ExtendableEvent;
-  state?: MapLikeObject;
+  state?: PluginState;
 }
 
 export interface CacheDidUpdateCallback {
@@ -105,7 +110,7 @@ export interface CacheKeyWillBeUsedCallbackParam {
   mode: string;
   params?: any;
   event?: ExtendableEvent;
-  state?: MapLikeObject;
+  state?: PluginState;
 }
 
 export interface CacheKeyWillBeUsedCallback {
@@ -116,7 +121,7 @@ export interface CacheWillUpdateCallbackParam {
   response: Response;
   request: Request;
   event?: ExtendableEvent;
-  state?: MapLikeObject;
+  state?: PluginState;
 }
 
 export interface CacheWillUpdateCallback {
@@ -129,7 +134,7 @@ export interface CachedResponseWillBeUsedCallbackParam {
   matchOptions?: CacheQueryOptions;
   cachedResponse?: Response;
   event?: ExtendableEvent;
-  state?: MapLikeObject;
+  state?: PluginState;
 }
 
 export interface CachedResponseWillBeUsedCallback {
@@ -141,7 +146,7 @@ export interface FetchDidFailCallbackParam {
   error: Error;
   request: Request;
   event?: ExtendableEvent;
-  state?: MapLikeObject;
+  state?: PluginState;
 }
 
 export interface FetchDidFailCallback {
@@ -152,7 +157,7 @@ export interface FetchDidSucceedCallbackParam {
   request: Request;
   response: Response;
   event?: ExtendableEvent;
-  state?: MapLikeObject;
+  state?: PluginState;
 }
 
 export interface FetchDidSucceedCallback {
@@ -162,7 +167,7 @@ export interface FetchDidSucceedCallback {
 export interface RequestWillFetchCallbackParam {
   request: Request;
   event?: ExtendableEvent;
-  state?: MapLikeObject;
+  state?: PluginState;
 }
 
 export interface RequestWillFetchCallback {
@@ -173,7 +178,7 @@ export interface HandlerWillRespondCallbackParam {
   request: Request;
   response: Response;
   event?: ExtendableEvent;
-  state?: MapLikeObject;
+  state?: PluginState;
 }
 
 export interface HandlerWillRespondCallback {
@@ -184,7 +189,7 @@ export interface HandlerDidRespondCallbackParam {
   request: Request;
   response?: Response;
   event?: ExtendableEvent;
-  state?: MapLikeObject;
+  state?: PluginState;
 }
 
 export interface HandlerDidRespondCallback {
@@ -196,7 +201,7 @@ export interface HandlerDidCompleteCallbackParam {
   response?: Response;
   error?: Error;
   event?: ExtendableEvent;
-  state?: MapLikeObject;
+  state?: PluginState;
 }
 
 export interface HandlerDidCompleteCallback {
