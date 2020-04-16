@@ -72,7 +72,7 @@ describe(`Strategy`, function() {
     sandbox.restore();
   });
 
-  xdescribe('constructor()', function() {
+  describe('constructor()', function() {
     it('works when extended but not overridden', function() {
       const options = {
         cacheName: 'test-cache',

@@ -7,7 +7,7 @@
 */
 
 import {cacheNames} from 'workbox-core/_private/cacheNames.js';
-import {RouteHandlerObject, RouteHandlerCallbackOptions, WorkboxPlugin} from 'workbox-core/types.js';
+import {MapLikeObject, RouteHandlerObject, RouteHandlerCallbackOptions, WorkboxPlugin} from 'workbox-core/types.js';
 import {StrategyHandler} from './StrategyHandler.js';
 import './_version.js';
 
@@ -23,7 +23,7 @@ type StrategyHandlerOptions = {
   request: Request;
   event?: ExtendableEvent;
   response?: Response;
-  params?: any;
+  params?: string[] | MapLikeObject;
 }
 
 /**
@@ -150,16 +150,13 @@ abstract class Strategy implements RouteHandlerObject {
         event: options,
         request: options.request,
       };
-    } else {
+    } else if (typeof options.request === 'string') {
       // `options.request` can be a string, similar to what `fetch()` accepts.
-      if (typeof options.request === 'string') {
-        options.request = new Request(options.request);
-      }
+      options.request = new Request(options.request);
     }
 
     const {event, request, params} = options as StrategyHandlerOptions;
     const handler = new StrategyHandler(this, {event, request, params});
-
 
     const responseDone = this._getResponse(handler, request, event);
     const handlerDone = this._awaitComplete(responseDone, handler, request, event);

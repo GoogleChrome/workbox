@@ -7,6 +7,7 @@
 */
 
 import {assert} from 'workbox-core/_private/assert.js';
+import {MapLikeObject} from 'workbox-core/types.js';
 import '../_version.js';
 
 
@@ -25,13 +26,11 @@ const serializableProperties: SerializableProperties[] = [
   'keepalive',
 ];
 
-export interface RequestData {
+export interface RequestData extends MapLikeObject {
   url: string;
-  headers: {[headerName: string]: any};
+  headers: MapLikeObject;
   body?: ArrayBuffer;
-  [propName: string]: any;
 }
-
 
 /**
  * A class to make it easier to serialize and de-serialize requests so they

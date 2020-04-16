@@ -6,7 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {WorkboxError, WorkboxErrorDetails} from '../_private/WorkboxError.js';
+import {WorkboxError} from '../_private/WorkboxError.js';
+import {MapLikeObject} from '../types.js';
 import '../_version.js';
 
 /*
@@ -17,7 +18,7 @@ import '../_version.js';
  */
 const isArray = (
   value: any[],
-  details: WorkboxErrorDetails,
+  details: MapLikeObject,
 ) => {
   if (!Array.isArray(value)) {
     throw new WorkboxError('not-an-array', details);
@@ -25,9 +26,9 @@ const isArray = (
 };
 
 const hasMethod = (
-  object: {[key: string]: any},
+  object: MapLikeObject,
   expectedMethod: string,
-  details: WorkboxErrorDetails,
+  details: MapLikeObject,
 ) => {
   const type = typeof object[expectedMethod];
   if (type !== 'function') {
@@ -39,7 +40,7 @@ const hasMethod = (
 const isType = (
   object: {},
   expectedType: string,
-  details: WorkboxErrorDetails,
+  details: MapLikeObject,
 ) => {
   if (typeof object !== expectedType) {
     details['expectedType'] = expectedType;
@@ -50,7 +51,7 @@ const isType = (
 const isInstance = (
   object: {},
   expectedClass: Function,
-  details: WorkboxErrorDetails,
+  details: MapLikeObject,
 ) => {
   if (!(object instanceof expectedClass)) {
     details['expectedClass'] = expectedClass;
@@ -61,7 +62,7 @@ const isInstance = (
 const isOneOf = (
   value: any,
   validValues: any[],
-  details: WorkboxErrorDetails) => {
+  details: MapLikeObject) => {
   if (!validValues.includes(value)) {
     details['validValueDescription'] =
         `Valid values are ${JSON.stringify(validValues)}.`
@@ -72,7 +73,7 @@ const isOneOf = (
 const isArrayOfClass = (
   value: any,
   expectedClass: Function,
-  details: WorkboxErrorDetails,
+  details: MapLikeObject,
 ) => {
   const error = new WorkboxError('not-array-of-class', details);
   if (!Array.isArray(value)) {

@@ -614,7 +614,7 @@ describe(`StrategyHandler`, function() {
     });
   });
 
-  // These tests were copied from `test-cachWerapper` to ensure we don't
+  // These tests were copied from `test-cacheWrapper` to ensure we don't
   // lose any of the existing behavior in the update.
   describe(`.cacheMatch()`, function() {
     it(`should use the matchOptions that were provided to put()`, async function() {

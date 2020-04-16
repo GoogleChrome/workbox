@@ -12,7 +12,7 @@ import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
 import {logger} from 'workbox-core/_private/logger.js';
 import {timeout} from 'workbox-core/_private/timeout.js';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
-import {RouteHandlerCallbackOptions, WorkboxPlugin, WorkboxPluginCallbackParam} from 'workbox-core/types.js';
+import {MapLikeObject, RouteHandlerCallbackOptions, WorkboxPlugin, WorkboxPluginCallbackParam} from 'workbox-core/types.js';
 
 import {Strategy} from './Strategy.js';
 import './_version.js';
@@ -44,8 +44,7 @@ class StrategyHandler {
   private readonly _strategy: Strategy;
   private readonly _extendLifetimePromises: Promise<any>[];
   private readonly _handlerDeferred: Deferred<any>;
-  private readonly _pluginStateMap: Map<WorkboxPlugin, {[prop: string]: any}>;
-  [key: string]: any;
+  private readonly _pluginStateMap: Map<WorkboxPlugin, MapLikeObject>;
 
   /**
    * Creates a new instance associated with the passed strategy and event
