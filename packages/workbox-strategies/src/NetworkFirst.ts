@@ -7,23 +7,17 @@
 */
 
 import {assert} from 'workbox-core/_private/assert.js';
-import {cacheNames} from 'workbox-core/_private/cacheNames.js';
-import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.js';
-import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.js';
-import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
 import {logger} from 'workbox-core/_private/logger.js';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
-import {RouteHandlerObject, RouteHandlerCallbackOptions, WorkboxPlugin} from 'workbox-core/types.js';
-import {messages} from './utils/messages.js';
+
 import {cacheOkAndOpaquePlugin} from './plugins/cacheOkAndOpaquePlugin.js';
+import {Strategy, StrategyOptions} from './Strategy.js';
+import {StrategyHandler} from './StrategyHandler.js';
+import {messages} from './utils/messages.js';
 import './_version.js';
 
 
-interface NetworkFirstOptions {
-  cacheName?: string;
-  plugins?: WorkboxPlugin[];
-  fetchOptions?: RequestInit;
-  matchOptions?: CacheQueryOptions;
+interface NetworkFirstOptions extends StrategyOptions {
   networkTimeoutSeconds?: number;
 }
 
@@ -40,13 +34,10 @@ interface NetworkFirstOptions {
  * If the network request fails, and there is no cache match, this will throw
  * a `WorkboxError` exception.
  *
+ * @extends module:workbox-core.Strategy
  * @memberof module:workbox-strategies
  */
-class NetworkFirst implements RouteHandlerObject {
-  private readonly _cacheName: string;
-  private readonly _plugins: WorkboxPlugin[];
-  private readonly _fetchOptions?: RequestInit;
-  private readonly _matchOptions?: CacheQueryOptions;
+class NetworkFirst extends Strategy {
   private readonly _networkTimeoutSeconds: number;
 
   /**
@@ -68,16 +59,12 @@ class NetworkFirst implements RouteHandlerObject {
    * scenarios.
    */
   constructor(options: NetworkFirstOptions = {}) {
-    this._cacheName = cacheNames.getRuntimeName(options.cacheName);
+    super(options);
 
-    if (options.plugins) {
-      const isUsingCacheWillUpdate =
-        options.plugins.some((plugin) => !!plugin.cacheWillUpdate);
-      this._plugins = isUsingCacheWillUpdate ?
-        options.plugins : [cacheOkAndOpaquePlugin, ...options.plugins];
-    } else {
-      // No plugins passed in, use the default plugin.
-      this._plugins = [cacheOkAndOpaquePlugin];
+    // If this instance contains no plugins with a 'cacheWillUpdate' callback,
+    // prepend the `cacheOkAndOpaquePlugin` plugin to the plugins list.
+    if (!this.plugins.some((p) => 'cacheWillUpdate' in p)) {
+      this.plugins.unshift(cacheOkAndOpaquePlugin);
     }
 
     this._networkTimeoutSeconds = options.networkTimeoutSeconds || 0;
@@ -91,27 +78,17 @@ class NetworkFirst implements RouteHandlerObject {
         });
       }
     }
-
-    this._fetchOptions = options.fetchOptions;
-    this._matchOptions = options.matchOptions;
   }
 
   /**
-   * This method will perform a request strategy and follows an API that
-   * will work with the
-   * [Workbox Router]{@link module:workbox-routing.Router}.
-   *
-   * @param {Object} options
-   * @param {Request|string} options.request A request to run this strategy for.
-   * @param {Event} [options.event] The event that triggered the request.
+   * @private
+   * @param {Request|string} request A request to run this strategy for.
+   * @param {module:workbox-strategies.StrategyHandler} handler The event that
+   *     triggered the request.
    * @return {Promise<Response>}
    */
-  async handle({event, request}: RouteHandlerCallbackOptions): Promise<Response> {
+  async _handle(request: Request, handler: StrategyHandler): Promise<Response> {
     const logs: any[] = [];
-   
-    if (typeof request === 'string') {
-      request = new Request(request);
-    }
 
     if (process.env.NODE_ENV !== 'production') {
       assert!.isInstance(request, Request, {
@@ -126,14 +103,18 @@ class NetworkFirst implements RouteHandlerObject {
     let timeoutId: number | undefined;
 
     if (this._networkTimeoutSeconds) {
-      const {id, promise} = this._getTimeoutPromise({request, event, logs});
+      const {id, promise} = this._getTimeoutPromise({request, logs, handler});
       timeoutId = id;
       promises.push(promise);
     }
 
     const networkPromise =
-        this._getNetworkPromise({timeoutId, request, event, logs});
+        this._getNetworkPromise({timeoutId, request, logs, handler});
+
     promises.push(networkPromise);
+    for (const promise of promises) {
+      handler.waitUntil(promise);
+    }
 
     // Promise.race() will resolve as soon as the first promise resolves.
     let response = await Promise.race(promises);
@@ -171,10 +152,10 @@ class NetworkFirst implements RouteHandlerObject {
    *
    * @private
    */
-  private _getTimeoutPromise({request, logs, event}: {
+  private _getTimeoutPromise({request, logs, handler}: {
     request: Request;
     logs: any[];
-    event?: ExtendableEvent;
+    handler: StrategyHandler;
   }): {promise: Promise<Response | undefined>; id?: number} {
     let timeoutId;
     const timeoutPromise: Promise<Response | undefined> = new Promise((resolve) => {
@@ -183,10 +164,8 @@ class NetworkFirst implements RouteHandlerObject {
           logs.push(`Timing out the network response at ` +
             `${this._networkTimeoutSeconds} seconds.`);
         }
-
-        resolve(await this._respondFromCache({request, event}));
+        resolve(await handler.cacheMatch(request));
       };
-
       timeoutId = setTimeout(
           onNetworkTimeout,
           this._networkTimeoutSeconds * 1000,
@@ -209,23 +188,18 @@ class NetworkFirst implements RouteHandlerObject {
    *
    * @private
    */
-  async _getNetworkPromise({timeoutId, request, logs, event}: {
+  async _getNetworkPromise({timeoutId, request, logs, handler}: {
     request: Request;
     logs: any[];
     timeoutId?: number;
-    event?: ExtendableEvent;
-  }): Promise<Response> {
+    handler: StrategyHandler;
+  }): Promise<Response|undefined> {
     let error;
     let response;
     try {
-      response = await fetchWrapper.fetch({
-        request,
-        event,
-        fetchOptions: this._fetchOptions,
-        plugins: this._plugins,
-      });
-    } catch (err) {
-      error = err;
+      response = await handler.fetchAndCachePut(request);
+    } catch (fetchError) {
+      error = fetchError;
     }
 
     if (timeoutId) {
@@ -242,64 +216,19 @@ class NetworkFirst implements RouteHandlerObject {
     }
 
     if (error || !response) {
-      response = await this._respondFromCache({request, event});
+      response = await handler.cacheMatch(request);
+
       if (process.env.NODE_ENV !== 'production') {
         if (response) {
-          logs.push(`Found a cached response in the '${this._cacheName}'` +
+          logs.push(`Found a cached response in the '${this.cacheName}'` +
             ` cache.`);
         } else {
-          logs.push(`No response found in the '${this._cacheName}' cache.`);
-        }
-      }
-    } else {
-      // Keep the service worker alive while we put the request in the cache
-      const responseClone = response.clone();
-      const cachePut = cacheWrapper.put({
-        cacheName: this._cacheName,
-        request,
-        response: responseClone,
-        event,
-        plugins: this._plugins,
-      });
-
-      if (event) {
-        try {
-          // The event has been responded to so we can keep the SW alive to
-          // respond to the request
-          event.waitUntil(cachePut);
-        } catch (err) {
-          if (process.env.NODE_ENV !== 'production') {
-            logger.warn(`Unable to ensure service worker stays alive when ` +
-              `updating cache for '${getFriendlyURL(request.url)}'.`);
-          }
+          logs.push(`No response found in the '${this.cacheName}' cache.`);
         }
       }
     }
 
     return response;
-  }
-
-  /**
-   * Used if the network timeouts or fails to make the request.
-   *
-   * @param {Object} options
-   * @param {Request} request The request to match in the cache
-   * @param {Event} [options.event]
-   * @return {Promise<Object>}
-   *
-   * @private
-   */
-  private _respondFromCache({event, request}: {
-    request: Request;
-    event?: ExtendableEvent;
-  }): Promise<Response | undefined> {
-    return cacheWrapper.match({
-      cacheName: this._cacheName,
-      request,
-      event,
-      matchOptions: this._matchOptions,
-      plugins: this._plugins,
-    });
   }
 }
 

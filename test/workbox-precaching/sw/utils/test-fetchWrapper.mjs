@@ -6,7 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.mjs';
+import {fetchWrapper} from 'workbox-precaching/utils/fetchWrapper.mjs';
+import {spyOnEvent} from '../../../../infra/testing/helpers/extendable-event-utils.mjs';
 
 
 describe(`fetchWrapper`, function() {
@@ -99,6 +100,7 @@ describe(`fetchWrapper`, function() {
 
       const request = new Request('/test/requestWillFetch/0');
       const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
 
       await fetchWrapper.fetch({
         request,
@@ -217,6 +219,7 @@ describe(`fetchWrapper`, function() {
       });
 
       const event = new FetchEvent('fetch', {request: originalRequest});
+      spyOnEvent(event);
 
       const finalResponse = await fetchWrapper.fetch({
         event,

@@ -50,10 +50,14 @@ describe('[all] JSDocs', function() {
         'Find and fix this issue.');
     }
 
+    // We document this private method because we expect developers to
+    // override it in their extending classes.
+    const privateMethodAllowlist = /_handle$/;
+
     // Ensure no methods starting with an underscore are in the docs.
     // TODO(philipwalton): find a better way to do this than a RegExp...
     indexAllContents.replace(/<a href="([^"]+)">/g, (match, p1) => {
-      if (p1.includes('_')) {
+      if (p1.includes('_') && !p1.match(privateMethodAllowlist)) {
         throw new Error(`Private method found in jsdocs: ${p1}`);
       }
     });

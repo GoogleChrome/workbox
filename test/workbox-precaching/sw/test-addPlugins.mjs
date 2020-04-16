@@ -15,7 +15,7 @@ import {dispatchAndWaitUntilDone} from '../../../infra/testing/helpers/extendabl
 describe(`addPlugins()`, function() {
   const sandbox = sinon.createSandbox();
 
-  beforeEach(async function() {
+  beforeEach(function() {
     sandbox.restore();
 
     // Spy on all added event listeners so they can be removed.

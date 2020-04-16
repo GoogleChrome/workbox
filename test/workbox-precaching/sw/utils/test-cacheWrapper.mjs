@@ -6,8 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.mjs';
 import {registerQuotaErrorCallback} from 'workbox-core/registerQuotaErrorCallback.mjs';
+import {cacheWrapper} from 'workbox-precaching/utils/cacheWrapper.mjs';
+import {spyOnEvent} from '../../../../infra/testing/helpers/extendable-event-utils.mjs';
 
 
 describe(`cacheWrapper`, function() {
@@ -192,6 +193,7 @@ describe(`cacheWrapper`, function() {
       const putRequest = new Request('/test/string');
       const putResponse = new Response('Response for /test/string');
       const fetchEvent = new FetchEvent('fetch', {request: putRequest});
+      spyOnEvent(fetchEvent);
 
       await cacheWrapper.put({
         cacheName: 'TODO-CHANGE-ME',
@@ -254,48 +256,22 @@ describe(`cacheWrapper`, function() {
         ],
       });
 
-      expect(spyOne.calledOnceWith({
+      expect(spyOne.calledOnceWith(sinon.match({
         mode: 'write',
         request: initialRequest,
-      })).to.be.true;
+      }))).to.be.true;
       expect(spyOne.thisValues[0]).to.eql(firstPlugin);
 
-      expect(spyTwo.calledOnceWith({
+      expect(spyTwo.calledOnceWith(sinon.match({
         mode: 'write',
         request: firstPluginReturnValue,
-      })).to.be.true;
+      }))).to.be.true;
       expect(spyTwo.thisValues[0]).to.eql(secondPlugin);
 
       expect(cachePutStub.calledOnce).to.be.true;
       // Check the url of the Request passed to cache.put().
       expect(cachePutStub.args[0][0].url).to.eql(`${self.location.origin}/secondPlugin`);
       expect(cachePutStub.args[0][1]).to.eql(response);
-    });
-
-    it(`should throw an error in development when the cacheKeyWillBeUsed return is invalid `, async function() {
-      if (process.env.NODE_ENV === 'production') this.skip();
-
-      const request = new Request('/');
-      const response = new Response('');
-
-      const plugin = {
-        cacheKeyWillBeUsed: () => null,
-      };
-      const spy = sandbox.spy(plugin, 'cacheKeyWillBeUsed');
-
-      await expectError(async () => {
-        await cacheWrapper.put({
-          cacheName: 'test-cache-name',
-          request,
-          response,
-          plugins: [plugin],
-        });
-      }, 'incorrect-class');
-
-      expect(spy.calledOnceWith({
-        request,
-        mode: 'write',
-      })).to.be.true;
     });
 
     it(`should call the quota exceeded callbacks when there's a QuotaExceeded error`, async function() {
@@ -353,9 +329,7 @@ describe(`cacheWrapper`, function() {
       };
       const cacheName = 'test-cache';
 
-      const testCache = await caches.open(cacheName);
-      sandbox.stub(self.caches, 'open').resolves(testCache);
-      const matchSpy = sandbox.spy(testCache, 'match');
+      const matchSpy = sandbox.spy(self.caches, 'match');
 
       await cacheWrapper.put({
         cacheName,
@@ -368,7 +342,9 @@ describe(`cacheWrapper`, function() {
       });
 
       expect(matchSpy.calledOnce).to.be.true;
-      expect(matchSpy.args[0][1]).to.eql(matchOptions);
+      expect(matchSpy.args[0][1]).to.eql(Object.assign({}, matchOptions, {
+        cacheName,
+      }));
     });
 
     it(`should call cachedResponseWillBeUsed`, async function() {
@@ -446,9 +422,7 @@ describe(`cacheWrapper`, function() {
 
     it(`should call cacheKeyWillBeUsed`, async function() {
       const cacheName = 'cacheKeyWillBeUsed-test-cache';
-      const cache = await caches.open(cacheName);
-      sandbox.stub(caches, 'open').resolves(cache);
-      const cacheMatchStub = sandbox.stub(cache, 'match').resolves(
+      const cacheMatchStub = sandbox.stub(self.caches, 'match').resolves(
           new Response('Test response.'));
 
       const firstPluginReturnValue = new Request('/firstPlugin');
@@ -476,45 +450,21 @@ describe(`cacheWrapper`, function() {
         ],
       });
 
-      expect(spyOne.calledOnceWith({
+      expect(spyOne.calledOnceWith(sinon.match({
         mode: 'read',
         request: initialRequest,
-      })).to.be.true;
+      }))).to.be.true;
       expect(spyOne.thisValues[0]).to.eql(firstPlugin);
 
-      expect(spyTwo.calledOnceWith({
+      expect(spyTwo.calledOnceWith(sinon.match({
         mode: 'read',
         request: firstPluginReturnValue,
-      })).to.be.true;
+      }))).to.be.true;
       expect(spyTwo.thisValues[0]).to.eql(secondPlugin);
 
       expect(cacheMatchStub.calledOnce).to.be.true;
       // Check the url of the Request passed to cache.put().
       expect(cacheMatchStub.args[0][0].url).to.eql(`${self.location.origin}/secondPlugin`);
-    });
-
-    it(`should throw an error in development when the cacheKeyWillBeUsed return is invalid `, async function() {
-      if (process.env.NODE_ENV === 'production') this.skip();
-
-      const request = new Request('/');
-
-      const plugin = {
-        cacheKeyWillBeUsed: () => null,
-      };
-      const spy = sandbox.spy(plugin, 'cacheKeyWillBeUsed');
-
-      await expectError(async () => {
-        await cacheWrapper.match({
-          request,
-          cacheName: 'test-cache-name',
-          plugins: [plugin],
-        });
-      }, 'incorrect-class');
-
-      expect(spy.calledOnceWith({
-        request,
-        mode: 'read',
-      })).to.be.true;
     });
   });
 });

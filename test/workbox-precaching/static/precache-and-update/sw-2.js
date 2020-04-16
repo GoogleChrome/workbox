@@ -6,9 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-importScripts('/__WORKBOX/buildFile/workbox-core');
-importScripts('/__WORKBOX/buildFile/workbox-precaching');
+importScripts('/__WORKBOX/buildFile/workbox-sw');
 importScripts('/infra/testing/comlink/sw-interface.js');
+
+workbox.setConfig({modulePathPrefix: '/__WORKBOX/buildFile/'});
 
 workbox.precaching.precache([
   {

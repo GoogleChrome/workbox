@@ -31,12 +31,6 @@ describe(`NetworkFirst`, function() {
   });
 
   describe(`handle()`, function() {
-    it(`should be able to make a request without an event`, async function() {
-      // TODO(philipwalton): Implement once this feature is added, so we can
-      // await the completion of the strategy without needing an event:
-      // https://github.com/GoogleChrome/workbox/issues/2115
-    });
-
     it(`should add the network response to the cache`, async function() {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
@@ -88,16 +82,22 @@ describe(`NetworkFirst`, function() {
       sandbox.stub(self, 'fetch').rejects(new Error('Injected error.'));
 
       const request = new Request('http://example.io/test/');
-      const event = new FetchEvent('fetch', {request});
+      const event1 = new FetchEvent('fetch', {request});
+      const event2 = new FetchEvent('fetch', {request});
+      const event3 = new FetchEvent('fetch', {request});
+      spyOnEvent(event1);
+      spyOnEvent(event2);
+      spyOnEvent(event3);
 
       const networkFirst = new NetworkFirst();
       await expectError(
           () => networkFirst.handle({
             request,
-            event,
+            event: event1,
           }),
           'no-response',
       );
+      await eventDoneWaiting(event1);
 
       const injectedResponse = new Response('response body');
       const cache = await caches.open(cacheNames.getRuntimeName());
@@ -105,25 +105,30 @@ describe(`NetworkFirst`, function() {
 
       const cachedResponse = await networkFirst.handle({
         request,
-        event,
+        event: event2,
       });
+      await eventDoneWaiting(event2);
       await compareResponses(cachedResponse, injectedResponse, true);
 
       const secondCachedResponse = await networkFirst.handle({
         request,
-        event,
+        event: event3,
       });
+      await eventDoneWaiting(event3);
       await compareResponses(cachedResponse, secondCachedResponse, true);
     });
 
     it(`should return the cached response if the network request times out`, async function() {
-      const clock = sandbox.useFakeTimers();
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
 
-      const networkTimeoutSeconds = 5;
+      // Use a short timeout to not slow down the test.
+      // Note Sinon fake timers do not work with `await timeout()` used
+      // in the current `StrategyHandler` implementation.
+      const networkTimeoutSeconds = 0.5;
       const sleepLongerThanNetworkTimeout =
-          sleep(3 * networkTimeoutSeconds * 1000);
+          sleep(2 * networkTimeoutSeconds * 1000);
 
       sandbox.stub(self, 'fetch').callsFake(async (req) => {
         await sleepLongerThanNetworkTimeout;
@@ -141,24 +146,21 @@ describe(`NetworkFirst`, function() {
         event,
       });
 
-      // Tick for a shorter time than the network timeout to ensure the
-      // cached version is used.
-      clock.tick(2 * networkTimeoutSeconds * 1000);
+      await eventDoneWaiting(event);
 
       const populatedCacheResponse = await handlePromise;
       await compareResponses(populatedCacheResponse, injectedResponse, true);
     });
 
     it(`should return the network response if the timeout is exceeded, but there is no cached response`, async function() {
-      const clock = sandbox.useFakeTimers();
-
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
 
-      // To ensure an attempt to respond from cache is made.
-      sandbox.spy(NetworkFirst.prototype, '_respondFromCache');
-
-      const networkTimeoutSeconds = 5;
+      // Use a short timeout to not slow down the test.
+      // Note Sinon fake timers do not work with `await timeout()` used
+      // in the current `StrategyHandler` implementation.
+      const networkTimeoutSeconds = 0.5;
       const sleepLongerThanNetworkTimeout =
           sleep(2 * networkTimeoutSeconds * 1000);
 
@@ -169,22 +171,31 @@ describe(`NetworkFirst`, function() {
         return networkResponse;
       });
 
-      const networkFirst = new NetworkFirst({networkTimeoutSeconds});
+      // To ensure an attempt to respond from cache is made.
+      const cacheReadSpy = sandbox.spy();
+
+      const networkFirst = new NetworkFirst({
+        networkTimeoutSeconds,
+        plugins: [
+          {
+            cacheKeyWillBeUsed: ({request, mode}) => {
+              if (mode === 'read') {
+                cacheReadSpy(request);
+              }
+              return request;
+            },
+          },
+        ],
+      });
       const handlePromise = networkFirst.handle({
         request,
         event,
       });
 
-      // Tick for a longer time than the network timeout to ensure the
-      // network request can finish.
-      clock.tick(3 * networkTimeoutSeconds * 1000);
-
       const handlerResponse = await handlePromise;
 
       expect(handlerResponse).to.equal(networkResponse);
-      expect(NetworkFirst.prototype._respondFromCache.callCount).to.equal(1);
-      expect(NetworkFirst.prototype._respondFromCache.args[0][0].event)
-          .to.equal(event);
+      expect(cacheReadSpy.firstCall.args[0]).to.equal(request);
     });
 
     it(`should throw when NetworkFirst() is called with an invalid networkTimeoutSeconds parameter`, function() {
@@ -260,11 +271,7 @@ describe(`NetworkFirst`, function() {
 
       const networkFirst = new NetworkFirst({
         plugins: [
-          {
-            cacheWillUpdate: () => {
-              return null;
-            },
-          },
+          {cacheWillUpdate: () => null},
         ],
       });
 
@@ -288,18 +295,23 @@ describe(`NetworkFirst`, function() {
       const fetchStub = sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
 
       await networkFirst.handle({
         request,
         event,
       });
 
+      await eventDoneWaiting(event);
+
       expect(fetchStub.calledOnce).to.be.true;
       expect(fetchStub.calledWith(request, fetchOptions)).to.be.true;
     });
 
     it(`should use the CacheQueryOptions when performing a cache match`, async function() {
-      const matchStub = sandbox.stub(Cache.prototype, 'match').resolves(generateUniqueResponse());
+      const matchStub = sandbox.stub(self.caches.constructor.prototype, 'match')
+          .resolves(generateUniqueResponse());
+
       sandbox.stub(self, 'fetch').callsFake(() => Promise.reject(new Error()));
 
       const matchOptions = {ignoreSearch: true};
@@ -307,75 +319,18 @@ describe(`NetworkFirst`, function() {
 
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
 
       await networkFirst.handle({
         request,
         event,
       });
 
-      expect(matchStub.calledWith(request, matchOptions)).to.be.true;
-    });
+      await eventDoneWaiting(event);
 
-    it(`should not allow waitUntil if responded`, async function() {
-      const fakeTimer = sandbox.useFakeTimers({
-        toFake: ['Date'],
-      });
-
-      const request = new Request('http://example.io/test/');
-      const event = new FetchEvent('fetch', {request});
-
-      const cache = await caches.open(cacheNames.getRuntimeName());
-      await cache.put('http://example.io/test/', new Response('from cache'));
-
-      let fetchResolve;
-      sandbox.stub(self, 'fetch').callsFake(() => {
-        return new Promise((resolve) => {
-          fetchResolve = resolve;
-        });
-      });
-
-
-      let throwOnWaitUntil = false;
-      sandbox.stub(event, 'waitUntil').callsFake((newPromise) => {
-        if (throwOnWaitUntil) {
-          throw new Error('This should not be called after respondWith.');
-        }
-      });
-
-      // Edge case
-      // Timer and network request started
-      // Make the timeout occur
-      // Then make the fetch return
-      // Then make the fetch event get cached
-
-      const networkFirst = new NetworkFirst({
-        networkTimeoutSeconds: 1,
-      });
-
-      let networkPromise = null;
-      const origMethod = networkFirst._getNetworkPromise.bind(networkFirst);
-      sandbox.stub(networkFirst, '_getNetworkPromise').callsFake((...args) => {
-        networkPromise = origMethod(...args);
-        return networkPromise;
-      });
-
-      const handlePromise = networkFirst.handle({
-        request,
-        event,
-      });
-
-      // Let timer run
-      fakeTimer.tick(1001);
-
-      const reseponse = await handlePromise;
-      throwOnWaitUntil = true;
-      const resultText = await reseponse.text();
-      expect(resultText).to.equal('from cache');
-
-      fetchResolve(new Response('Network Response'));
-
-      // Wait for network promise to finish
-      await networkPromise;
+      expect(matchStub.callCount).to.equal(1);
+      expect(matchStub.firstCall.args[0]).to.equal(request);
+      expect(matchStub.firstCall.args[1].ignoreSearch).to.equal(true);
     });
   });
 });

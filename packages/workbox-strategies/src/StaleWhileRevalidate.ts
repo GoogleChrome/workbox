@@ -7,24 +7,15 @@
 */
 
 import {assert} from 'workbox-core/_private/assert.js';
-import {cacheNames} from 'workbox-core/_private/cacheNames.js';
-import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.js';
-import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.js';
-import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
 import {logger} from 'workbox-core/_private/logger.js';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
-import {RouteHandlerObject, RouteHandlerCallbackOptions, WorkboxPlugin} from 'workbox-core/types.js';
-import {messages} from './utils/messages.js';
+
 import {cacheOkAndOpaquePlugin} from './plugins/cacheOkAndOpaquePlugin.js';
+import {Strategy, StrategyOptions} from './Strategy.js';
+import {StrategyHandler} from './StrategyHandler.js';
+import {messages} from './utils/messages.js';
 import './_version.js';
 
-
-interface StaleWhileRevalidateOptions {
-  cacheName?: string;
-  plugins?: WorkboxPlugin[];
-  fetchOptions?: RequestInit;
-  matchOptions?: CacheQueryOptions;
-}
 
 /**
  * An implementation of a
@@ -44,14 +35,10 @@ interface StaleWhileRevalidateOptions {
  * If the network request fails, and there is no cache match, this will throw
  * a `WorkboxError` exception.
  *
+ * @extends module:workbox-core.Strategy
  * @memberof module:workbox-strategies
  */
-class StaleWhileRevalidate implements RouteHandlerObject {
-  private readonly _cacheName: string;
-  private readonly _plugins: WorkboxPlugin[];
-  private readonly _fetchOptions?: RequestInit;
-  private readonly _matchOptions?: CacheQueryOptions;
-
+class StaleWhileRevalidate extends Strategy {
   /**
    * @param {Object} options
    * @param {string} options.cacheName Cache name to store and retrieve
@@ -64,40 +51,25 @@ class StaleWhileRevalidate implements RouteHandlerObject {
    * of all fetch() requests made by this strategy.
    * @param {Object} options.matchOptions [`CacheQueryOptions`](https://w3c.github.io/ServiceWorker/#dictdef-cachequeryoptions)
    */
-  constructor(options: StaleWhileRevalidateOptions = {}) {
-    this._cacheName = cacheNames.getRuntimeName(options.cacheName);
-    this._plugins = options.plugins || [];
+  constructor(options: StrategyOptions) {
+    super(options);
 
-    if (options.plugins) {
-      const isUsingCacheWillUpdate =
-        options.plugins.some((plugin) => !!plugin.cacheWillUpdate);
-      this._plugins = isUsingCacheWillUpdate ?
-        options.plugins : [cacheOkAndOpaquePlugin, ...options.plugins];
-    } else {
-      // No plugins passed in, use the default plugin.
-      this._plugins = [cacheOkAndOpaquePlugin];
+    // If this instance contains no plugins with a 'cacheWillUpdate' callback,
+    // prepend the `cacheOkAndOpaquePlugin` plugin to the plugins list.
+    if (!this.plugins.some((p) => 'cacheWillUpdate' in p)) {
+      this.plugins.unshift(cacheOkAndOpaquePlugin);
     }
-
-    this._fetchOptions = options.fetchOptions;
-    this._matchOptions = options.matchOptions;
   }
 
   /**
-   * This method will perform a request strategy and follows an API that
-   * will work with the
-   * [Workbox Router]{@link module:workbox-routing.Router}.
-   *
-   * @param {Object} options
-   * @param {Request|string} options.request A request to run this strategy for.
-   * @param {Event} [options.event] The event that triggered the request.
+   * @private
+   * @param {Request|string} request A request to run this strategy for.
+   * @param {module:workbox-strategies.StrategyHandler} handler The event that
+   *     triggered the request.
    * @return {Promise<Response>}
    */
-  async handle({event, request}: RouteHandlerCallbackOptions): Promise<Response> {
+  async _handle(request: Request, handler: StrategyHandler): Promise<Response> {
     const logs = [];
-
-    if (typeof request === 'string') {
-      request = new Request(request);
-    }
 
     if (process.env.NODE_ENV !== 'production') {
       assert!.isInstance(request, Request, {
@@ -108,39 +80,30 @@ class StaleWhileRevalidate implements RouteHandlerObject {
       });
     }
 
-    const fetchAndCachePromise = this._getFromNetwork({request, event});
+    const fetchAndCachePromise = handler
+        .fetchAndCachePut(request)
+        .catch(() => {
+          // Swallow this error because a 'no-response' error will be thrown in
+          // main handler return flow. This will be in the `waitUntil()` flow.
+        });
 
-    let response = await cacheWrapper.match({
-      cacheName: this._cacheName,
-      request,
-      event,
-      matchOptions: this._matchOptions,
-      plugins: this._plugins,
-    });
+    let response = await handler.cacheMatch(request);
+
     let error;
     if (response) {
       if (process.env.NODE_ENV !== 'production') {
-        logs.push(`Found a cached response in the '${this._cacheName}'` +
+        logs.push(`Found a cached response in the '${this.cacheName}'` +
           ` cache. Will update with the network response in the background.`);
-      }
-
-      if (event) {
-        try {
-          event.waitUntil(fetchAndCachePromise);
-        } catch (error) {
-          if (process.env.NODE_ENV !== 'production') {
-            logger.warn(`Unable to ensure service worker stays alive when ` +
-              `updating cache for '${getFriendlyURL(request.url)}'.`);
-          }
-        }
       }
     } else {
       if (process.env.NODE_ENV !== 'production') {
-        logs.push(`No response found in the '${this._cacheName}' cache. ` +
+        logs.push(`No response found in the '${this.cacheName}' cache. ` +
           `Will wait for the network response.`);
       }
       try {
-        response = await fetchAndCachePromise;
+        // NOTE(philipwalton): Really annoying that we have to type cast here.
+        // https://github.com/microsoft/TypeScript/issues/20006
+        response = (await fetchAndCachePromise as Response | undefined);
       } catch (err) {
         error = err;
       }
@@ -159,47 +122,6 @@ class StaleWhileRevalidate implements RouteHandlerObject {
     if (!response) {
       throw new WorkboxError('no-response', {url: request.url, error});
     }
-    return response;
-  }
-
-  /**
-   * @param {Object} options
-   * @param {Request} options.request
-   * @param {Event} [options.event]
-   * @return {Promise<Response>}
-   *
-   * @private
-   */
-  async _getFromNetwork({request, event}: {
-    request: Request;
-    event?: ExtendableEvent;
-  }): Promise<Response> {
-    const response = await fetchWrapper.fetch({
-      request,
-      event,
-      fetchOptions: this._fetchOptions,
-      plugins: this._plugins,
-    });
-
-    const cachePutPromise = cacheWrapper.put({
-      cacheName: this._cacheName,
-      request,
-      response: response.clone(),
-      event,
-      plugins: this._plugins,
-    });
-
-    if (event) {
-      try {
-        event.waitUntil(cachePutPromise);
-      } catch (error) {
-        if (process.env.NODE_ENV !== 'production') {
-          logger.warn(`Unable to ensure service worker stays alive when ` +
-            `updating cache for '${getFriendlyURL(request.url)}'.`);
-        }
-      }
-    }
-
     return response;
   }
 }

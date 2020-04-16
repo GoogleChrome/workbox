@@ -6,15 +6,12 @@
   https://opensource.org/licenses/MIT.
 */
 
+import {MapLikeObject} from '../../types.js';
 import '../../_version.js';
 
 
-interface MessageParam {
-  [key: string]: any;
-}
-
 interface MessageMap {
-  [messageID: string]: (param: MessageParam) => string;
+  [messageID: string]: (param: MapLikeObject) => string;
 }
 
 export const messages: MessageMap = {

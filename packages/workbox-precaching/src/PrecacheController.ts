@@ -8,17 +8,15 @@
 
 import {assert} from 'workbox-core/_private/assert.js';
 import {cacheNames} from 'workbox-core/_private/cacheNames.js';
-import {cacheWrapper} from 'workbox-core/_private/cacheWrapper.js';
-import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.js';
 import {logger} from 'workbox-core/_private/logger.js';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
 import {copyResponse} from 'workbox-core/copyResponse.js';
-import {RouteHandlerCallback, RouteHandlerCallbackOptions}
-    from 'workbox-core/types.js';
-import {WorkboxPlugin} from 'workbox-core/types.js';
+import {RouteHandlerCallback, RouteHandlerCallbackOptions, WorkboxPlugin} from 'workbox-core/types.js';
 
 import {PrecacheEntry} from './_types.js';
+import {cacheWrapper} from './utils/cacheWrapper.js';
 import {createCacheKey} from './utils/createCacheKey.js';
+import {fetchWrapper} from './utils/fetchWrapper.js';
 import {printCleanupDetails} from './utils/printCleanupDetails.js';
 import {printInstallDetails} from './utils/printInstallDetails.js';
 
