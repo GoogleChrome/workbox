@@ -22,8 +22,7 @@ jobs:
 
     - name: Setup
       run: |
-        # Use `npm i` to work around https://github.com/npm/cli/issues/558
-        npm i
+        npm ci
         gulp build
 
     - run: npx gulp test-node
