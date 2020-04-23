@@ -10,15 +10,18 @@ import {copyResponse} from 'workbox-core/copyResponse.js';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
 import {logger} from 'workbox-core/_private/logger.js';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
-import {WorkboxPluginCallbackParam} from 'workbox-core/types.js';
+import {WorkboxPlugin} from 'workbox-core/types.js';
 import {Strategy, StrategyOptions} from 'workbox-strategies/Strategy.js';
 import {StrategyHandler} from 'workbox-strategies/StrategyHandler.js';
 
 import '../_version.js';
 
 
-async function copyRedirectedResponses({response}: WorkboxPluginCallbackParam['cacheWillUpdate']) {
-  return response.redirected ? await copyResponse(response) : response;
+
+const copyRedirectedCacheableResponsesPlugin: WorkboxPlugin = {
+  async cacheWillUpdate({response}) {
+    return response.redirected ? await copyResponse(response) : response;
+  }
 }
 
 
@@ -30,7 +33,7 @@ class PrecacheStrategy extends Strategy {
     // any redirected response must be "copied" rather than cloned, so the new
     // response doesn't contain the `redirected` flag. See:
     // https://bugs.chromium.org/p/chromium/issues/detail?id=669363&desc=2#c1
-    this.plugins.push({cacheWillUpdate: copyRedirectedResponses});
+    this.plugins.push(copyRedirectedCacheableResponsesPlugin);
   }
 
   _handle(request: Request, handler: StrategyHandler) {
@@ -125,13 +128,8 @@ class PrecacheStrategy extends Strategy {
    * @private
    */
   _usesCustomCacheableResponseLogic(): boolean {
-    for (const plugin of this.plugins) {
-      if (plugin.cacheWillUpdate &&
-          plugin.cacheWillUpdate !== copyRedirectedResponses) {
-        return true;
-      }
-    }
-    return false;
+    return this.plugins.some((plugin) => plugin.cacheWillUpdate &&
+        plugin !== copyRedirectedCacheableResponsesPlugin);
   }
 }
 
