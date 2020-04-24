@@ -48,6 +48,7 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
     'ignoreURLParametersMatching',
     'importScripts',
     'importWorkboxFrom',
+    'mode',
     'navigateFallback',
     'navigateFallbackAllowlist',
     'runtimeCaching',

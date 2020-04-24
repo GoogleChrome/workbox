@@ -19,6 +19,5 @@ module.exports = {
   manifestTransforms: joi.array().items(joi.func().minArity(1).maxArity(2)),
   maximumFileSizeToCacheInBytes: joi.number().min(1)
       .default(defaults.maximumFileSizeToCacheInBytes),
-  mode: joi.string().default(process.env.NODE_ENV || defaults.mode),
   modifyURLPrefix: joi.object(),
 };

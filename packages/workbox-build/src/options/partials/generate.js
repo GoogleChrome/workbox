@@ -22,6 +22,7 @@ module.exports = {
   ignoreURLParametersMatching: joi.array().items(regExpObject),
   importScripts: joi.array().items(joi.string()),
   inlineWorkboxRuntime: joi.boolean().default(defaults.inlineWorkboxRuntime),
+  mode: joi.string().default(process.env.NODE_ENV || defaults.mode),
   navigateFallback: joi.string().default(defaults.navigateFallback),
   navigateFallbackAllowlist: joi.array().items(regExpObject),
   navigateFallbackBlacklist: joi.forbidden().error(new Error(
