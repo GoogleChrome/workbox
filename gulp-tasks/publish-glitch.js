@@ -18,9 +18,9 @@ const exec = util.promisify(childProcess.exec);
 const glitchProjects = [
   'workbox-core',
   'workbox-sw',
-  // 'workbox-precaching',
-  // 'workbox-strategies',
-  // 'workbox-background-sync-demo',
+  'workbox-precaching',
+  'workbox-strategies',
+  'workbox-background-sync-demo',
   // 'workbox-routing',
   // 'workbox-expiration',
   // 'workbox-cacheable-response',

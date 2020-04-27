@@ -6,6 +6,6 @@ workbox.setConfig({
 
 workbox.precaching.precacheAndRoute([
   {url: '/', revision: '1'},
-  {url: 'public/test-file.txt', revision: '1'},
-  'public/hello-world.1234.txt',
+  {url: 'test-file.txt', revision: '1'},
+  'hello-world.1234.txt',
 ]);

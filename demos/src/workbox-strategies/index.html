@@ -64,44 +64,44 @@
         navigator.serviceWorker.register('./sw.js')
         .then(() => {
           cacheOnlyEmpty.addEventListener('click', () => {
-            fetch('./public/cache-only-empty-cache.txt').catch(() => {});
+            fetch('cache-only-empty-cache.txt').catch(() => {});
           });
 
           cacheOnlyPopulated.addEventListener('click', () => {
-            fetch('./public/cache-only-populated-cache')
+            fetch('cache-only-populated-cache')
             .then((response) => {
               return response.text();
             });
           });
 
           cacheFirst.addEventListener('click', () => {
-            fetch('./public/cache-first.txt')
+            fetch('cache-first.txt')
             .then((response) => {
               return response.text();
             });
           });
 
           networkOnly.addEventListener('click', () => {
-            fetch('./public/network-only.txt')
+            fetch('network-only.txt')
             .then((response) => {
               return response.text();
             });
           });
 
           networkFirstValid.addEventListener('click', () => {
-            fetch('./public/network-first.txt')
+            fetch('network-first.txt')
             .then((response) => {
               return response.text();
             });
           });
 
           networkFirstFailing.addEventListener('click', () => {
-            fetch('./public/network-first-404.txt')
+            fetch('network-first-404.txt')
             .catch(() => {});
           });
 
           staleWhileRevalidate.addEventListener('click', () => {
-            fetch('./public/stale-while-revalidate.txt')
+            fetch('stale-while-revalidate.txt')
             .then((response) => {
               return response.text();
             });
