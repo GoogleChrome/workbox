@@ -138,12 +138,14 @@ gulp.task('test-integration', async () => {
     const localBrowsers = seleniumAssistant.getLocalBrowsers();
     for (const localBrowser of localBrowsers) {
       switch (localBrowser.getId()) {
-        case 'chrome':
         case 'firefox':
           if (localBrowser.getReleaseName() !== 'unstable') {
             await runIntegrationForBrowser(localBrowser);
           }
           break;
+        // Temporarily only test the stable release of Chrome, until the next
+        // https://www.npmjs.com/package/chromedriver release.
+        case 'chrome':
         case 'safari':
           if (localBrowser.getReleaseName() === 'stable') {
             await runIntegrationForBrowser(localBrowser);
