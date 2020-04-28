@@ -60,13 +60,14 @@ gulp.task('publish-glitch', async () => {
       await exec(`git add -A`, {cwd: projectPath});
       await exec(`git commit -m'Commiting from gulp on ${date.toString()}'`,
           {cwd: projectPath});
-      await exec(`git push origin glitch --set-upstream --no-verify`,
+      await exec(`git push origin glitch -f --set-upstream --no-verify`,
           {cwd: projectPath});
       await exec(`curl -X POST "${'https://' + project + '.glitch.me/deploy?secret=' + process.env.GLITCH_WORKBOX_SECRET + '&repo=https://api.glitch.com/git/' + project}"`);
       await del(projectPath, {force: true});
+      console.log("Successfully pushed to " + project)
     } catch(e) {
       console.log(project);
-      console.log(e)
+      console.log(e.stdout)
     }
   }
 });

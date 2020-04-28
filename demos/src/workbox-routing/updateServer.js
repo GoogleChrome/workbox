@@ -10,6 +10,8 @@ app.get('/sw.js', (request, response) => {
   response.sendFile(path.resolve('sw.js'));
 });
 
+app.use(express.static('public'));
+
 /* /////////////////////////////////////////////////////////////////////////////
  The code below this comment is unrelated to the demo and used for maintenance
  vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv

@@ -1,0 +1,15 @@
+{
+    "name": "workbox-routing",
+    "version": "1.0.0",
+    "description": "Workbox Routing Demo Git Listener",
+    "scripts": {
+      "start": "node updateServer.js"
+    },
+    "dependencies": {
+      "express": "^4.17.1"
+    },
+    "engines": {
+      "node": "8.x"
+    },
+    "license": "MIT"
+  }
