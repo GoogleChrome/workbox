@@ -6,12 +6,12 @@ app.get('/', (request, response) => {
   response.sendFile(path.resolve('index.html'));
 });
 
-app.get('/sw1.js', (request, response) => {
-  response.sendFile(path.resolve('sw1.js'));
+app.get('/sw-1.js', (request, response) => {
+  response.sendFile(path.resolve('sw-1.js'));
 });
 
-app.get('/sw2.js', (request, response) => {
-  response.sendFile(path.resolve('sw2.js'));
+app.get('/sw-2.js', (request, response) => {
+  response.sendFile(path.resolve('sw-2.js'));
 });
 
 app.use(express.static('public'));

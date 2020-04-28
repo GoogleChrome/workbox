@@ -52,16 +52,21 @@ gulp.task('publish-glitch', async () => {
     const projectPath = tempy.directory();
     const date = new Date();
 
-    await exec(`git clone ${projectURL} ${projectPath}`);
-    await fse.copy('demos/src/' + project + '/', projectPath,
-        {overwrite: true});
-    await exec(`git checkout -b glitch`, {cwd: projectPath});
-    await exec(`git add -A`, {cwd: projectPath});
-    await exec(`git commit -m'Commiting from gulp on ${date.toString()}'`,
-        {cwd: projectPath});
-    await exec(`git push origin glitch --set-upstream --no-verify`,
-        {cwd: projectPath});
-    await exec(`curl -X POST "${'https://' + project + '.glitch.me/deploy?secret=' + process.env.GLITCH_WORKBOX_SECRET + '&repo=https://api.glitch.com/git/' + project}"`);
-    await del(projectPath, {force: true});
+    try {
+      await exec(`git clone ${projectURL} ${projectPath}`);
+      await fse.copy('demos/src/' + project + '/', projectPath,
+          {overwrite: true});
+      await exec(`git checkout -b glitch`, {cwd: projectPath});
+      await exec(`git add -A`, {cwd: projectPath});
+      await exec(`git commit -m'Commiting from gulp on ${date.toString()}'`,
+          {cwd: projectPath});
+      await exec(`git push origin glitch --set-upstream --no-verify`,
+          {cwd: projectPath});
+      await exec(`curl -X POST "${'https://' + project + '.glitch.me/deploy?secret=' + process.env.GLITCH_WORKBOX_SECRET + '&repo=https://api.glitch.com/git/' + project}"`);
+      await del(projectPath, {force: true});
+    } catch(e) {
+      console.log(project);
+      console.log(e)
+    }
   }
 });
