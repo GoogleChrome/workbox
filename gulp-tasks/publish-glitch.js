@@ -24,9 +24,9 @@ const glitchProjects = [
   'workbox-routing',
   'workbox-expiration',
   'workbox-cacheable-response',
-  // 'workbox-google-analytics',
-  // 'workbox-streams',
-  // 'workbox-range-requests',
+  'workbox-google-analytics',
+  'workbox-streams',
+  'workbox-range-requests',
   // 'workbox-broadcast-update-demo',
   // 'workbox-window',
   // 'workbox-navigation-preload'
@@ -64,7 +64,7 @@ gulp.task('publish-glitch', async () => {
           {cwd: projectPath});
       await exec(`curl -X POST "${'https://' + project + '.glitch.me/deploy?secret=' + process.env.GLITCH_WORKBOX_SECRET + '&repo=https://api.glitch.com/git/' + project}"`);
       await del(projectPath, {force: true});
-      console.log("Successfully pushed to " + project)
+      console.log("Push attempted to " + project)
     } catch(e) {
       console.log(project);
       console.log(e.stdout)
