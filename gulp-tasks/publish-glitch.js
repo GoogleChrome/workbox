@@ -27,9 +27,9 @@ const glitchProjects = [
   'workbox-google-analytics',
   'workbox-streams',
   'workbox-range-requests',
-  // 'workbox-broadcast-update-demo',
-  // 'workbox-window',
-  // 'workbox-navigation-preload'
+  'workbox-broadcast-update-demo',
+  'workbox-window',
+  'workbox-navigation-preload'
 ];
 
 
