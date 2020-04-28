@@ -43,6 +43,7 @@ const gulpTaskFiles = [
   'test-server',
   'analyze-properties',
   'publish-github',
+  'publish-glitch',
   'publish-cdn',
   'publish-lerna',
   'publish',

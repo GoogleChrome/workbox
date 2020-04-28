@@ -1,25 +1,15 @@
 {
-    "name": "hello-express",
-    "version": "1.0.0",
-    "description": "Serves a date",
-    "main": "server.js",
-    "scripts": {
-      "start": "node server.js"
-    },
-    "dependencies": {
-      "express": "^4.16.4"
-    },
-    "engines": {
-      "node": "8.x"
-    },
-    "repository": {
-      "url": "https://glitch.com/edit/#!/workbox-streams"
-    },
-    "license": "MIT",
-    "keywords": [
-      "node",
-      "glitch",
-      "express"
-    ]
-  }
-  
+  "name": "workbox-streams",
+  "version": "1.0.0",
+  "description": "Workbox Streams Demo Git Listener",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "engines": {
+    "node": "8.x"
+  },
+  "license": "MIT"
+}

@@ -1,11 +1,12 @@
-importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.0.0/workbox-sw.js');
-// To avoid async issues, we load core before we call it in the callback
-workbox.loadModule('workbox-core');
+importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js');
 
 // Note: Ignore the error that Glitch raises about workbox being undefined.
 workbox.setConfig({
   debug: true,
 });
+
+// To avoid async issues, we load core before we call it in the callback
+workbox.loadModule('workbox-core');
 
 const printLogs = () => {
   // ☠️ You should never so this - this is just so we can show off our logging.
