@@ -72,7 +72,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
           await generateSW(options);
           throw new Error('Unexpected success.');
         } catch (error) {
-          expect(error.name).to.eql('ValidationError');
+          expect(error.name).to.eql('ValidationError', error.message);
           expect(error.details[0].context.key).to.eql(requiredParam);
         }
       });
@@ -89,7 +89,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
           await generateSW(options);
           throw new Error('Unexpected success.');
         } catch (error) {
-          expect(error.name).to.eql('ValidationError');
+          expect(error.name).to.eql('ValidationError', error.message);
           expect(error.details[0].context.key).to.eql(unsupportedParam);
         }
       });
@@ -106,7 +106,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
           await generateSW(options);
           throw new Error('Unexpected success.');
         } catch (error) {
-          expect(error.name).to.eql('ValidationError');
+          expect(error.name).to.eql('ValidationError', error.message);
           expect(error.details[0].context.key).to.eql(param);
         }
       });
@@ -162,6 +162,23 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
           revision: /^[0-9a-f]{32}$/,
         }], {}]],
       }});
+    });
+
+    it(`should include the versioning strings in the generated bundle`, async function() {
+      const outputDir = tempy.directory();
+      const swDest = upath.join(outputDir, 'sw.js');
+      const options = Object.assign({}, BASE_OPTIONS, {
+        swDest,
+        inlineWorkboxRuntime: true,
+      });
+
+      const {count, warnings} = await generateSW(options);
+      expect(warnings).to.be.empty;
+      expect(count).to.eql(6);
+
+      const contents = await fse.readFile(swDest, 'utf8');
+      // This isn't the exact string, but it's close enough.
+      expect(contents).to.include(`workbox:core:`);
     });
 
     it(`should disable logging when disableDevLogs is set to true`, async function() {
@@ -676,8 +693,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
         await generateSW(options);
         throw new Error('Unexpected success.');
       } catch (error) {
-        expect(error.name).to.eql('ValidationError');
-        expect(error.details[0].context.key).to.eql('urlPattern');
+        expect(error.message).to.include(errors['urlPattern-is-required']);
       }
     });
 
@@ -691,8 +707,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
         await generateSW(options);
         throw new Error('Unexpected success.');
       } catch (error) {
-        expect(error.name).to.eql('ValidationError');
-        expect(error.details[0].context.key).to.eql('handler');
+        expect(error.message).to.include(errors['handler-is-required']);
       }
     });
 
@@ -709,7 +724,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
         await generateSW(options);
         throw new Error('Unexpected success.');
       } catch (error) {
-        expect(error.name).to.eql('ValidationError');
+        expect(error.name).to.eql('ValidationError', error.message);
         expect(error.details[0].context.key).to.eql('handler');
       }
     });
@@ -993,8 +1008,8 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
         await generateSW(options);
         throw new Error('Unexpected success.');
       } catch (error) {
-        expect(error.name).to.eql('ValidationError');
-        expect(error.details[0].context.key).to.eql('expiration');
+        expect(error.name).to.eql('ValidationError', error.message);
+        expect(error.details[0].context.main).to.eql('expiration');
       }
     });
 
@@ -1050,12 +1065,12 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
         await generateSW(options);
         throw new Error('Unexpected success.');
       } catch (error) {
-        expect(error.name).to.eql('ValidationError');
+        expect(error.name).to.eql('ValidationError', error.message);
         expect(error.details[0].context.key).to.eql('runtimeCaching');
       }
     });
 
-    it(`should reject with a ValidationError when 'navigationPreload' is true and 'runtimeCaching' is undefined`, async function() {
+    it(`should reject with a ValidationError when 'navigationPreload' is true and 'runtimeCaching' is invalid`, async function() {
       const options = Object.assign({}, BASE_OPTIONS, {
         runtimeCaching: 'invalid',
         navigationPreload: true,
@@ -1065,7 +1080,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
         await generateSW(options);
         throw new Error('Unexpected success.');
       } catch (error) {
-        expect(error.name).to.eql('ValidationError');
+        expect(error.name).to.eql('ValidationError', error.message);
         expect(error.details[0].context.key).to.eql('runtimeCaching');
       }
     });
@@ -1110,73 +1125,6 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
         enable: [[]],
         registerRoute: [[urlPattern, {name: handler}, 'GET']],
       }});
-    });
-  });
-
-  describe(`[workbox-build] removed options`, function() {
-    // These were removed in v5.
-    const navigateFallbackOptions = {
-      navigateFallbackBlacklist: [],
-      navigateFallbackWhitelist: [],
-    };
-
-    for (const [option, value] of Object.entries(navigateFallbackOptions)) {
-      it(`should fail validation when ${option} is used`, async function() {
-        const options = Object.assign({}, BASE_OPTIONS, {
-          [option]: value,
-        });
-
-        try {
-          await generateSW(options);
-          throw new Error('Unexpected success.');
-        } catch (error) {
-          // They fail by throwing an Error with a custom message,
-          // not a ValidationError.
-          expect(error.message).to.include(option);
-        }
-      });
-    }
-
-    // These were deprecated in v4, and formally removed in v5.
-    const oldOptionsToValue = {
-      dontCacheBustUrlsMatching: /ignored/,
-      ignoreUrlParametersMatching: [/ignored/],
-      modifyUrlPrefix: {
-        'ignored': 'ignored',
-      },
-      templatedUrls: {},
-    };
-
-    for (const [option, value] of Object.entries(oldOptionsToValue)) {
-      it(`should fail validation when ${option} is used`, async function() {
-        const options = Object.assign({}, BASE_OPTIONS, {
-          [option]: value,
-        });
-
-        try {
-          await generateSW(options);
-          throw new Error('Unexpected success.');
-        } catch (error) {
-          expect(error.name).to.eql('ValidationError');
-          expect(error.details[0].context.key).to.eql(option);
-        }
-      });
-    }
-
-    it(`should fail validation when a strategy function (lowercase) name is used`, async function() {
-      const runtimeCaching = [{
-        urlPattern: /abc/,
-        handler: 'cacheFirst',
-      }];
-      const options = Object.assign({}, BASE_OPTIONS, {runtimeCaching});
-
-      try {
-        await generateSW(options);
-        throw new Error('Unexpected success.');
-      } catch (error) {
-        expect(error.name).to.eql('ValidationError');
-        expect(error.details[0].context.key).to.eql('handler');
-      }
     });
   });
 });

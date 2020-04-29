@@ -76,9 +76,9 @@ module.exports = {
       fetchOptions: joi.object(),
       matchOptions: joi.object(),
     }).with('expiration', 'cacheName'),
-  }).requiredKeys('urlPattern', 'handler')).when('navigationPreload', {
+  })).when('navigationPreload', {
     is: true,
-    then: joi.required(),
+    then: joi.required('runtimeCaching'),
   }),
   skipWaiting: joi.boolean().default(defaults.skipWaiting),
   sourcemap: joi.boolean().default(defaults.sourcemap),
