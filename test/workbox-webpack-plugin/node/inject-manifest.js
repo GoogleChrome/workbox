@@ -1592,7 +1592,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           const statsJson = stats.toJson();
           expect(statsJson.warnings).to.be.empty;
           expect(statsJson.errors).to.have.members([
-            `Please check your InjectManifest plugin configuration:\n\"webpackCompilationPlugins\" is not allowed`,
+            `Please check your InjectManifest plugin configuration:\n"webpackCompilationPlugins" is not allowed`,
           ]);
 
           done();

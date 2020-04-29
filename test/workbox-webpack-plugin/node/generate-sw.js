@@ -51,7 +51,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           const statsJson = stats.toJson();
           expect(statsJson.warnings).to.be.empty;
           expect(statsJson.errors).to.have.members([
-            `Please check your GenerateSW plugin configuration:\n\"invalid\" is not allowed`,
+            `Please check your GenerateSW plugin configuration:\n"invalid" is not allowed`,
           ]);
 
           done();
