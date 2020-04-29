@@ -28,6 +28,8 @@ describe('[all] Yarn Installation', function() {
 
   for (const packageToInstall of packagesToInstall) {
     it(`should install ${packageToInstall} using yarn`, async function() {
+      this.timeout(5 * 60 * 1000);
+
       try {
         const packagePath = upath.resolve('packages', packageToInstall);
         await exec(`yarn add ${packagePath}`, {cwd: temporaryDirectory});
