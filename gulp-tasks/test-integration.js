@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-const clearRequire = require('clear-require');
+const clearModule = require('clear-module');
 const glob = require('glob');
 const gulp = require('gulp');
 const oneLine = require('common-tags').oneLine;
@@ -22,7 +22,7 @@ const spawn = require('./utils/spawn-promise-wrapper');
 const runFiles = (filePaths) => {
   // Mocha can't be run multiple times, which we need for NODE_ENV.
   // More info: https://github.com/mochajs/mocha/issues/995
-  clearRequire.all();
+  clearModule.all();
   const Mocha = require('mocha');
 
   return new Promise((resolve, reject) => {
