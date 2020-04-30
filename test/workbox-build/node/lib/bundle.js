@@ -47,7 +47,7 @@ describe(`[workbox-build] lib/bundle.js`, function() {
       },
       '@rollup/plugin-node-resolve': sinon.stub(),
       '@rollup/plugin-replace': sinon.stub(),
-      'rollup-plugin-babel': sinon.stub(),
+      '@rollup/plugin-babel': {babel: sinon.stub()},
       'rollup-plugin-terser': {
         terser: sinon.stub(),
       },
@@ -67,7 +67,8 @@ describe(`[workbox-build] lib/bundle.js`, function() {
       babelPresetEnvTargets,
     });
 
-    expect(stubs['rollup-plugin-babel'].args).to.eql([[{
+    expect(stubs['@rollup/plugin-babel'].babel.args).to.eql([[{
+      babelHelpers: 'bundled',
       babelrc: false,
       configFile: false,
       presets: [[stubs['@babel/preset-env'], {

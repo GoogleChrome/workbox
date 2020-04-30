@@ -52,14 +52,18 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
       const compiler = webpack(config);
       compiler.run((webpackError, stats) => {
-        expect(webpackError).not.to.exist;
-        const statsJson = stats.toJson();
-        expect(statsJson.warnings).to.be.empty;
-        expect(statsJson.errors).to.have.members([
-          `Please check your InjectManifest plugin configuration:\n"invalid" is not a supported parameter.`,
-        ]);
+        try {
+          expect(webpackError).not.to.exist;
+          const statsJson = stats.toJson();
+          expect(statsJson.warnings).to.be.empty;
+          expect(statsJson.errors).to.have.members([
+            `Please check your InjectManifest plugin configuration:\n"invalid" is not allowed`,
+          ]);
 
-        done();
+          done();
+        } catch (error) {
+          done(error);
+        }
       });
     });
   });
@@ -1583,14 +1587,18 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
       const compiler = webpack(config);
       compiler.run((webpackError, stats) => {
-        expect(webpackError).not.to.exist;
-        const statsJson = stats.toJson();
-        expect(statsJson.warnings).to.be.empty;
-        expect(statsJson.errors).to.have.members([
-          `Please check your InjectManifest plugin configuration:\nchild "webpackCompilationPlugins" fails because ["webpackCompilationPlugins" is not allowed]`,
-        ]);
+        try {
+          expect(webpackError).not.to.exist;
+          const statsJson = stats.toJson();
+          expect(statsJson.warnings).to.be.empty;
+          expect(statsJson.errors).to.have.members([
+            `Please check your InjectManifest plugin configuration:\n"webpackCompilationPlugins" is not allowed`,
+          ]);
 
-        done();
+          done();
+        } catch (error) {
+          done(error);
+        }
       });
     });
 
