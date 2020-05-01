@@ -286,7 +286,7 @@ describe(`PrecacheController`, function() {
         const response = new Response('Redirected Response');
         sandbox.replaceGetter(response, 'redirected', () => true);
         sandbox.replaceGetter(response, 'url',
-          () => (new URL(request.url, self.location.href)).href);
+            () => (new URL(request.url, self.location.href)).href);
         return response;
       });
 
