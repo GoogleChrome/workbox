@@ -8,7 +8,6 @@
 
 import {copyResponse} from 'workbox-core/copyResponse.mjs';
 
-
 describe(`copyResponse`, function() {
   const sandbox = sinon.createSandbox();
 
@@ -23,10 +22,28 @@ describe(`copyResponse`, function() {
   // In some browsers this is '' (Chrome) and in some it's 'OK' (Edge 18).
   const defaultStatusText = new Response().statusText;
 
-  const makeResponse = () => {
+  const makeResponse = (url) => {
     const body = new Blob(['console.log()'], {type: 'text/javascript'});
-    return new Response(body, {headers: {'X-One': '1'}});
+    const response = new Response(body, {headers: {'X-One': '1'}});
+
+    // Default to a "real" same-origin URL, unless there's one passed in.
+    if (url === undefined) {
+      url = (new URL('/app.js', self.location.origin)).href;
+    }
+    sandbox.replaceGetter(response, 'url', () => url);
+
+    return response;
   };
+
+  it(`should throw the expected exception when passed a cross-origin response`, async function() {
+    const crossOriginResponse = makeResponse('https://cross-origin.com/app.js');
+    await expectError(() => copyResponse(crossOriginResponse), 'cross-origin-copy-response');
+  });
+
+  it(`should throw the expected exception when passed an opaque response`, async function() {
+    const opaqueResponse = makeResponse('');
+    await expectError(() => copyResponse(opaqueResponse), 'cross-origin-copy-response');
+  });
 
   it(`should allow modifying a response via the modifier return value`, async function() {
     const oldResponse = makeResponse();
