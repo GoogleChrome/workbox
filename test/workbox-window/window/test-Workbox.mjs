@@ -8,7 +8,6 @@
 
 import {Workbox} from '/__WORKBOX/buildFile/workbox-window';
 
-
 const isDev = () => {
   return self.process && self.process.env &&
       self.process.env.NODE_ENV !== 'production';
@@ -44,7 +43,6 @@ const uniq = (() => {
     return url.toString();
   };
 })();
-
 
 const stubAlreadyControllingSW = async (scriptURL) => {
   await navigator.serviceWorker.register(scriptURL);
@@ -515,6 +513,41 @@ describe(`[workbox-window] Workbox`, function() {
 
       const response = await wb.messageSW({type: 'RESPOND_TO_MESSAGE'});
       expect(response).to.equal('Reply from SW!');
+    });
+  });
+
+  describe(`messageSkipWaiting`, function() {
+    it(`posts the expected message to the waiting service worker`, async function() {
+      const wb = new Workbox(uniq('sw-no-skip-waiting.js.njk'));
+      // Since we're messing with _registration, also stub out the
+      // _onUpdateFound callback to prevent Workbox from trying anything funny.
+      sandbox.replace(wb, '_onUpdateFound', () => {});
+      await wb.register();
+
+      const postMessageStub = sandbox.stub();
+      const waitingSW = sandbox.createStubInstance(ServiceWorker, {
+        postMessage: postMessageStub,
+      });
+      sandbox.replace(wb, '_registration', {waiting: waitingSW});
+
+      wb.messageSkipWaiting();
+
+      expect(postMessageStub.callCount).to.eql(1);
+      expect(postMessageStub.firstCall.args[0]).to.eql({type: 'SKIP_WAITING'});
+      expect(postMessageStub.firstCall.args[1][0]).to.be.instanceOf(MessagePort);
+    });
+
+    it(`does nothing if there's no waiting service worker`, async function() {
+      const wb = new Workbox(uniq('sw-no-skip-waiting.js.njk'));
+      // Since we're messing with _registration, also stub out the
+      // _onUpdateFound callback to prevent Workbox from trying anything funny.
+      sandbox.replace(wb, '_onUpdateFound', () => {});
+      await wb.register();
+
+      // This should be a no-op.
+      // Just ensure that there's no exceptions thrown, etc.
+      sandbox.replace(wb, '_registration', {waiting: null});
+      wb.messageSkipWaiting();
     });
   });
 

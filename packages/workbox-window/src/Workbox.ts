@@ -27,6 +27,10 @@ const WAITING_TIMEOUT_DURATION = 200;
 // that the registration didn't trigger an update.
 const REGISTRATION_TIMEOUT_DURATION = 60000;
 
+// The de facto standard message that a service worker should be listening for
+// to trigger a call to skipWaiting().
+const SKIP_WAITING_MESSAGE = {type: 'SKIP_WAITING'};
+
 /**
  * A class to aid in handling service worker registration, updates, and
  * reacting to service worker lifecycle events.
@@ -275,6 +279,19 @@ class Workbox extends WorkboxEventTarget {
   async messageSW(data: object) {
     const sw = await this.getSW();
     return messageSW(sw, data);
+  }
+
+  /**
+   * Sends a `{type: 'SKIP_WAITING'}` message to the service worker that's
+   * currently in the `waiting` state associated with the current registration.
+   * 
+   * If there is no current registration or no service worker is `waiting`,
+   * calling this will have no effect.
+   */
+  messageSkipWaiting() {
+    if (this._registration && this._registration.waiting) {
+      messageSW(this._registration.waiting, SKIP_WAITING_MESSAGE);
+    }
   }
 
   /**
