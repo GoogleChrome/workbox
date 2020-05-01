@@ -529,7 +529,7 @@ describe(`[workbox-window] Workbox`, function() {
       const waitingSW = await waitingSWPromise;
 
       const postMessageSpy = sandbox.spy(waitingSW, 'postMessage');
-  
+
       const controllingSWPromise = new Promise((resolve) => {
         wb.addEventListener('controlling', (event) => resolve(event.sw));
       });
