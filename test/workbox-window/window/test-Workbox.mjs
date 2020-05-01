@@ -518,35 +518,41 @@ describe(`[workbox-window] Workbox`, function() {
 
   describe(`messageSkipWaiting`, function() {
     it(`posts the expected message to the waiting service worker`, async function() {
-      const wb = new Workbox(uniq('sw-no-skip-waiting.js.njk'));
-      // Since we're messing with _registration, also stub out the
-      // _onUpdateFound callback to prevent Workbox from trying anything funny.
-      sandbox.replace(wb, '_onUpdateFound', () => {});
-      await wb.register();
+      const scriptURL = uniq('sw-skip-waiting-on-message.js.njk');
+      const wb = new Workbox(scriptURL);
 
-      const postMessageStub = sandbox.stub();
-      const waitingSW = sandbox.createStubInstance(ServiceWorker, {
-        postMessage: postMessageStub,
+      const waitingSWPromise = new Promise((resolve) => {
+        wb.addEventListener('waiting', (event) => resolve(event.sw));
       });
-      sandbox.replace(wb, '_registration', {waiting: waitingSW});
+
+      await wb.register();
+      const waitingSW = await waitingSWPromise;
+
+      const postMessageSpy = sandbox.spy(waitingSW, 'postMessage');
+  
+      const controllingSWPromise = new Promise((resolve) => {
+        wb.addEventListener('controlling', (event) => resolve(event.sw));
+      });
 
       wb.messageSkipWaiting();
 
-      expect(postMessageStub.callCount).to.eql(1);
-      expect(postMessageStub.firstCall.args[0]).to.eql({type: 'SKIP_WAITING'});
-      expect(postMessageStub.firstCall.args[1][0]).to.be.instanceOf(MessagePort);
+      // Confirm that the right postMessage() is sent.
+      expect(postMessageSpy.callCount).to.eql(1);
+      expect(postMessageSpy.firstCall.args[0]).to.eql({type: 'SKIP_WAITING'});
+      expect(postMessageSpy.firstCall.args[1][0]).to.be.instanceOf(MessagePort);
+
+      const controllingSW = await controllingSWPromise;
+
+      // Confirm that the service worker associated with this test takes control.
+      expect(controllingSW.scriptURL).to.eql(scriptURL);
     });
 
     it(`does nothing if there's no waiting service worker`, async function() {
-      const wb = new Workbox(uniq('sw-no-skip-waiting.js.njk'));
-      // Since we're messing with _registration, also stub out the
-      // _onUpdateFound callback to prevent Workbox from trying anything funny.
-      sandbox.replace(wb, '_onUpdateFound', () => {});
+      const wb = new Workbox(uniq('sw-skip-waiting.js.njk'));
       await wb.register();
 
       // This should be a no-op.
       // Just ensure that there's no exceptions thrown, etc.
-      sandbox.replace(wb, '_registration', {waiting: null});
       wb.messageSkipWaiting();
     });
   });
@@ -972,7 +978,7 @@ describe(`[workbox-window] Workbox`, function() {
           toFake: ['performance'],
         });
 
-        const scriptURL = uniq('sw-skip-waiting-on-mesage.js.njk');
+        const scriptURL = uniq('sw-skip-waiting-on-message.js.njk');
         const wb = new Workbox(scriptURL);
         const reg = await wb.register();
 
