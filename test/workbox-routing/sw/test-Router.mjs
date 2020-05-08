@@ -570,54 +570,48 @@ describe(`Router`, function() {
       expect(handlerCallbackStub.firstCall.args[0].params).to.eql(returnValue);
     });
 
-    it(`should not throw for router with no-routes set`, function() {
+    it(`should not throw for router with no-routes set`, async function() {
       const router = new Router();
 
       const request = new Request(location);
       const event = new FetchEvent('fetch', {request});
-      router.handleRequest({request, event});
+      await router.handleRequest({request, event});
+    });
+
+    it(`should set the matchCallback's sameOrigin to false when called with a cross-origin request`, async function() {
+      const router = new Router();
+      const matchCallbackStub = sandbox.stub();
+      const route = new Route(
+          matchCallbackStub,
+          () => new Response(),
+      );
+      router.registerRoute(route);
+
+      const request = new Request('https://cross-origin.example.com');
+      await router.handleRequest({request});
+
+      expect(matchCallbackStub.callCount).to.eql(1);
+      expect(matchCallbackStub.args[0][0].sameOrigin).to.be.false;
+    });
+
+    it(`should set the matchCallback's sameOrigin to true when called with a same-origin request`, async function() {
+      const router = new Router();
+      const matchCallbackStub = sandbox.stub();
+      const route = new Route(
+          matchCallbackStub,
+          () => new Response(),
+      );
+      router.registerRoute(route);
+
+      const request = new Request(location.href);
+      await router.handleRequest({request});
+
+      expect(matchCallbackStub.callCount).to.eql(1);
+      expect(matchCallbackStub.args[0][0].sameOrigin).to.be.true;
     });
   });
 
   describe(`findMatchingRoute()`, function() {
-    it(`should throw in dev when not passed a URL`, async function() {
-      if (process.env.NODE_ENV === 'production') return this.skip();
-
-      const router = new Router();
-      const url = new URL(location.href);
-      const request = new Request(url);
-      const event = new FetchEvent('fetch', {request});
-
-      await expectError(
-          () => router.findMatchingRoute({request, event}),
-          'incorrect-class',
-          (error) => {
-            expect(error.details).to.have.property('moduleName').that.eql('workbox-routing');
-            expect(error.details).to.have.property('className').that.eql('Router');
-            expect(error.details).to.have.property('funcName').that.eql('findMatchingRoute');
-            expect(error.details).to.have.property('paramName').that.eql('options.url');
-          });
-    });
-
-    it(`should throw in dev when not passed a request`, async function() {
-      if (process.env.NODE_ENV === 'production') return this.skip();
-
-      const router = new Router();
-      const url = new URL(location.href);
-      const request = new Request(url);
-      const event = new FetchEvent('fetch', {request});
-
-      await expectError(
-          () => router.findMatchingRoute({url, event}),
-          'incorrect-class',
-          (error) => {
-            expect(error.details).to.have.property('moduleName').that.eql('workbox-routing');
-            expect(error.details).to.have.property('className').that.eql('Router');
-            expect(error.details).to.have.property('funcName').that.eql('findMatchingRoute');
-            expect(error.details).to.have.property('paramName').that.eql('options.request');
-          });
-    });
-
     it(`should return the first matching route`, function() {
       const router = new Router();
 
@@ -636,8 +630,9 @@ describe(`Router`, function() {
       const url = new URL(location.href);
       const request = new Request(url);
       const event = new FetchEvent('fetch', {request});
+      const sameOrigin = true;
 
-      const {route} = router.findMatchingRoute({url, request, event});
+      const {route} = router.findMatchingRoute({url, sameOrigin, request, event});
 
       expect(match1.callCount).to.equal(1);
       expect(match2.callCount).to.equal(1);
@@ -660,18 +655,15 @@ describe(`Router`, function() {
       const url = new URL(location.href);
       const request = new Request(url);
       const event = new FetchEvent('fetch', {request});
+      const sameOrigin = true;
 
-      const {route} = router.findMatchingRoute({url, request, event});
+      const {route} = router.findMatchingRoute({url, sameOrigin, request, event});
 
       expect(match1.callCount).to.equal(1);
-      expect(match1.args[0][0].url).to.deep.equal(url);
-      expect(match1.args[0][0].request).to.equal(request);
-      expect(match1.args[0][0].event).to.equal(event);
+      expect(match1.args[0][0]).to.eql({url, sameOrigin, request, event});
 
       expect(match2.callCount).to.equal(1);
-      expect(match2.args[0][0].url).to.deep.equal(url);
-      expect(match2.args[0][0].request).to.equal(request);
-      expect(match2.args[0][0].event).to.equal(event);
+      expect(match2.args[0][0]).to.eql({url, sameOrigin, request, event});
 
       expect(route).to.equal(route2);
     });
@@ -692,28 +684,29 @@ describe(`Router`, function() {
       const url = new URL(location.href);
       const request = new Request(url);
       const event = new FetchEvent('fetch', {request});
+      const sameOrigin = true;
 
-      const result1 = router.findMatchingRoute({url, request, event});
+      const result1 = router.findMatchingRoute({url, sameOrigin, request, event});
       expect(result1.route).to.equal(route);
       expect(result1.params).to.equal(undefined);
 
-      const result2 = router.findMatchingRoute({url, request, event});
+      const result2 = router.findMatchingRoute({url, sameOrigin, request, event});
       expect(result2.route).to.equal(route);
       expect(result2.params).to.equal('truthy');
 
-      const result3 = router.findMatchingRoute({url, request, event});
+      const result3 = router.findMatchingRoute({url, sameOrigin, request, event});
       expect(result3.route).to.equal(route);
       expect(result3.params).to.deep.equal([1, 2, 3]);
 
-      const result4 = router.findMatchingRoute({url, request, event});
+      const result4 = router.findMatchingRoute({url, sameOrigin, request, event});
       expect(result4.route).to.equal(route);
       expect(result4.params).to.equal(undefined);
 
-      const result5 = router.findMatchingRoute({url, request, event});
+      const result5 = router.findMatchingRoute({url, sameOrigin, request, event});
       expect(result5.route).to.equal(route);
       expect(result5.params).to.deep.equal({a: 1});
 
-      const result6 = router.findMatchingRoute({url, request, event});
+      const result6 = router.findMatchingRoute({url, sameOrigin, request, event});
       expect(result6.route).to.equal(route);
       expect(result6.params).to.equal(undefined);
     });
