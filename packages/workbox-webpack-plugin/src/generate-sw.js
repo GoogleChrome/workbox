@@ -53,7 +53,7 @@ class GenerateSW {
    * may be served from the same `http://localhost:port` origin.
    *
    * @param {boolean} [config.cleanupOutdatedCaches=false] Whether or not Workbox
-   * should attempt to identify an delete any precaches created by older,
+   * should attempt to identify and delete any precaches created by older,
    * incompatible versions.
    *
    * @param {boolean} [config.clientsClaim=false] Whether or not the service
