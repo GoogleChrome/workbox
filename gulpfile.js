@@ -31,7 +31,7 @@ global.cliOptions = options;
 // requires is important.
 const taskFiles = [
   'transpile-typescript',
-  // 'build-node-packages',
+  'build-node-packages',
   // 'build-browser-packages',
   // 'build-window-packages',
   // 'build-packages',

@@ -6,15 +6,27 @@
   https://opensource.org/licenses/MIT.
 */
 
-const gulp = require('gulp');
+const {parallel} = require('gulp');
+const execa = require('execa');
+const fse = require('fs-extra');
+const upath = require('upath');
 
-const buildNodePackage = require('./utils/build-node-package');
+const constants = require('./utils/constants');
 const packageRunner = require('./utils/package-runner');
 
-gulp.task('build-node-packages', gulp.series(
-    packageRunner(
-        'build-node-packages',
-        'node',
-        buildNodePackage,
-    ),
-));
+async function buildNodePackage(packagePath) {
+  const outputDirectory = upath.join(packagePath,
+      constants.PACKAGE_BUILD_DIRNAME);
+
+  await fse.remove(outputDirectory);
+
+  await execa('babel', [
+    `${packagePath}/src`,
+    '--out-dir', outputDirectory,
+  ], {preferLocal: true});
+};
+
+module.exports = {
+  build_node_packages: parallel(packageRunner('build_node_packages', 'node',
+      buildNodePackage)),
+};
