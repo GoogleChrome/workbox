@@ -6,17 +6,18 @@
   https://opensource.org/licenses/MIT.
 */
 
-const gulp = require('gulp');
+const {series} = require('gulp');
 
+const {transpile_typescript, transpile_typescript_watch} = require('./transpile-typescript');
 const constants = require('./utils/constants');
 const testServer = require('../infra/testing/server/index');
 
-const handleExit = () => {
+function handleExit() {
   testServer.stop();
   process.exit(0);
-};
+}
 
-const startServer = () => {
+function startServer() {
   process.env.NODE_ENV = process.env.NODE_ENV || constants.BUILD_TYPES.dev;
 
   const eventNames = [
@@ -33,5 +34,6 @@ const startServer = () => {
   return testServer.start();
 };
 
-gulp.task('test-server', gulp.series(
-    'transpile-typescript', startServer, 'transpile-typescript:watch'));
+module.exports = {
+  test_server: series(transpile_typescript, startServer, transpile_typescript_watch),
+};

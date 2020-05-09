@@ -40,7 +40,7 @@ const taskFiles = [
   // 'test-node',
   // 'test-integration',
   // 'test',
-  // 'test-server',
+  'test-server',
   // 'analyze-properties',
   // 'publish-github',
   // 'publish-cdn',
