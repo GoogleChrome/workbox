@@ -4,8 +4,13 @@ const NODE_PACKAGES = [
   'workbox-webpack-plugin',
 ];
 
+/**
+ * @param {string} filename
+ * @param {Array<string>} packages
+ * @return {boolean} true iff filename belongs to one of the packages
+ */
 function isOneOf(filename, packages) {
-  return packages.some((package) => filename.includes(`/${package}/`));
+  return packages.some((pkg) => filename.includes(`/${pkg}/`));
 }
 
 module.exports = {

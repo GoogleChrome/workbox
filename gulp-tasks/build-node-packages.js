@@ -24,7 +24,7 @@ async function buildNodePackage(packagePath) {
     `${packagePath}/src`,
     '--out-dir', outputDirectory,
   ], {preferLocal: true});
-};
+}
 
 module.exports = {
   build_node_packages: parallel(packageRunner('build_node_packages', 'node',

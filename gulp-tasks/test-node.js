@@ -56,7 +56,7 @@ async function runNodeTestsWithEnv(testGroup, nodeEnv) {
   for (const packageToTest of packagesToTest) {
     await runNodeTestSuite(packageToTest, nodeEnv);
   }
-};
+}
 
 async function test_node_prod() {
   await runNodeTestsWithEnv(global.packageOrStar, constants.BUILD_TYPES.prod);
@@ -89,7 +89,7 @@ async function test_node_coverage() {
     '--reporter', 'text',
     ...runOptions,
   ], {preferLocal: true});
-};
+}
 
 module.exports = {
   test_node_all,
