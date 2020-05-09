@@ -37,7 +37,7 @@ const taskFiles = [
   // 'build-packages',
   // 'build',
   'lint',
-  // 'test-node',
+  'test-node',
   // 'test-integration',
   // 'test',
   'test-server',

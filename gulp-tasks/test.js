@@ -6,11 +6,12 @@
   https://opensource.org/licenses/MIT.
 */
 
-const gulp = require('gulp');
+const {parallel} = require('gulp');
 
-gulp.task('test', gulp.series(
-    'build',
-    'test-node',
-    'test-integration',
-    'lint',
-));
+const {lint} = require('./lint');
+// const {test_integration} = require('./test-integration');
+const {test_node} = require('./test-node');
+
+module.exports = {
+  test: parallel(lint, test_node),
+};
