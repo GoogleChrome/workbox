@@ -11,7 +11,7 @@ const replace = require('@rollup/plugin-replace');
 const resolve = require('@rollup/plugin-node-resolve');
 const multiEntry = require('@rollup/plugin-multi-entry');
 const commonjs = require('@rollup/plugin-commonjs');
-const {needsTranspile, queueTranspile} = require('../../../../gulp-tasks/transpile-typescript');
+const {needsTranspile, queueTranspile} = require('../../../../gulp-tasks/transpile-typescript').functions;
 const {getPackages} = require('../../../../gulp-tasks/utils/get-packages');
 
 

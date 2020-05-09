@@ -8,7 +8,7 @@
 
 const {series, watch} = require('gulp');
 const execa = require('execa');
-const fs = require('fs-extra');
+const fse = require('fs-extra');
 const upath = require('upath');
 
 const logHelper = require('../infra/utils/log-helper');
@@ -16,7 +16,7 @@ const logHelper = require('../infra/utils/log-helper');
 const DOCS_DIRECTORY = upath.join(__dirname, '..', 'docs');
 
 async function docs_build() {
-  await fs.remove(DOCS_DIRECTORY);
+  await fse.remove(DOCS_DIRECTORY);
 
   const queryString = [
     `projectRoot=/`,
@@ -51,10 +51,7 @@ You can view a friendlier UI by running
     params.push('--debug');
   }
 
-  await execa('jsdoc', params, {
-    cwd: upath.join(__dirname, '..'),
-    preferLocal: true,
-  });
+  await execa('jsdoc', params, {preferLocal: true});
 }
 
 function docs_watch() {

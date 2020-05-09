@@ -8,7 +8,7 @@
 
 const gulp = require('gulp');
 
-const {transpilePackageOrSkip} = require('./transpile-typescript');
+const {transpilePackageOrSkip} = require('./transpile-typescript').functions;
 const buildBrowserBundle = require('./utils/build-browser-bundle');
 const versionModule = require('./utils/version-module');
 const constants = require('./utils/constants');

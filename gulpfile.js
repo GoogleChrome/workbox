@@ -30,7 +30,7 @@ global.cliOptions = options;
 // Forward referencing means the order of gulp-task
 // requires is important.
 const taskFiles = [
-  // 'transpile-typescript',
+  'transpile-typescript',
   // 'build-node-packages',
   // 'build-browser-packages',
   // 'build-window-packages',
@@ -53,6 +53,9 @@ const taskFiles = [
 for (const taskFile of taskFiles) {
   const taskDefinitions = require(`./gulp-tasks/${taskFile}`);
   for (const [name, task] of Object.entries(taskDefinitions)) {
+    if (name === 'functions') {
+      continue;
+    }
     if (name in module.exports) {
       throw new Error(`Duplicate task definition: ${name} defined in` +
         ` ${taskFile} conflicts with another task.`);

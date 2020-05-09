@@ -8,17 +8,13 @@
 
 const {parallel} = require('gulp');
 const execa = require('execa');
-const upath = require('upath');
 
 async function lint_js() {
   await execa('eslint', [
     '**/*.{js,mjs}',
     '--config', 'javascript.eslintrc.js',
     '--ignore-path', '.gitignore',
-  ], {
-    cwd: upath.join(__dirname, '..'),
-    preferLocal: true,
-  });
+  ], {preferLocal: true});
 }
 
 async function lint_ts() {
@@ -26,10 +22,7 @@ async function lint_ts() {
     '**/*.ts',
     '--config', 'typescript.eslintrc.js',
     '--ignore-path', '.gitignore',
-  ], {
-    cwd: upath.join(__dirname, '..'),
-    preferLocal: true,
-  });
+  ], {preferLocal: true});
 }
 
 module.exports = {
