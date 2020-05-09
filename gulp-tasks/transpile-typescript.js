@@ -83,7 +83,7 @@ async function transpilePackageOrSkip(packagePath, options) {
     logHelper.log(ol`Skipping package '${packageName}', which has
         not yet been converted to typescript.`);
   }
-};
+}
 
 /**
  * Transpiles a package's source TypeScript files to `.js` and `.mjs` files
@@ -93,7 +93,7 @@ async function transpilePackageOrSkip(packagePath, options) {
  * @param {Object} [options]
  * @param {boolean} [options.failOnError=true]
  */
-async function transpilePackage (packageName, {failOnError = true} = {}) {
+async function transpilePackage(packageName, {failOnError = true} = {}) {
   try {
     // Compile TypeScript for the given project.
     // Reference the local `node_modules` version of `tsc` since on Windows
@@ -123,7 +123,7 @@ async function transpilePackage (packageName, {failOnError = true} = {}) {
 
     logHelper.error(error.stdout);
   }
-};
+}
 
 function transpile_typescript_watch() {
   const watcher = watch(`./${global.packageOrStar}/workbox-*/src/**/*.ts`);
