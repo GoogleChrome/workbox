@@ -10,16 +10,16 @@
 
 const minimist = require('minimist');
 const fs = require('fs');
-const path = require('path');
+const upath = require('upath');
 
 const options = minimist(process.argv.slice(2));
 
 if (options.package) {
-  // Ensure the project is valid before running tasks
+  // Ensure the package is valid before running tasks
   try {
-    fs.statSync(path.posix.join(__dirname, 'packages', options.package));
+    fs.statSync(upath.join(__dirname, 'packages', options.package));
   } catch (err) {
-    throw new Error(`The supplied project '${options.package}' is invalid.`);
+    throw new Error(`The supplied package '${options.package}' is invalid.`);
   }
 }
 
@@ -29,28 +29,34 @@ global.cliOptions = options;
 
 // Forward referencing means the order of gulp-task
 // requires is important.
-const gulpTaskFiles = [
-  'transpile-typescript',
-  'build-node-packages',
-  'build-browser-packages',
-  'build-window-packages',
-  'build-packages',
-  'build',
+const taskFiles = [
+  // 'transpile-typescript',
+  // 'build-node-packages',
+  // 'build-browser-packages',
+  // 'build-window-packages',
+  // 'build-packages',
+  // 'build',
   'lint',
-  'test-node',
-  'test-integration',
-  'test',
-  'test-server',
-  'analyze-properties',
-  'publish-github',
-  'publish-cdn',
-  'publish-lerna',
-  'publish',
-  'watch',
+  // 'test-node',
+  // 'test-integration',
+  // 'test',
+  // 'test-server',
+  // 'analyze-properties',
+  // 'publish-github',
+  // 'publish-cdn',
+  // 'publish-lerna',
+  // 'publish',
+  // 'watch',
   'docs',
 ];
 
-gulpTaskFiles.forEach((gulpTaskFile) => {
-  // Requiring will be enough to register the tasks with gulp.
-  require(path.join(__dirname, 'gulp-tasks', gulpTaskFile));
-});
+for (const taskFile of taskFiles) {
+  const taskDefinitions = require(`./gulp-tasks/${taskFile}`);
+  for (const [name, task] of Object.entries(taskDefinitions)) {
+    if (name in module.exports) {
+      throw new Error(`Duplicate task definition: ${name} defined in` +
+        ` ${taskFile} conflicts with another task.`);
+    }
+    module.exports[name] = task;
+  }
+}

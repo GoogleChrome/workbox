@@ -12,13 +12,13 @@ const {transpilePackageOrSkip} = require('./transpile-typescript');
 const buildWindowBundle = require('./utils/build-window-bundle');
 const versionModule = require('./utils/version-module');
 const constants = require('./utils/constants');
-const packageRunnner = require('./utils/package-runner');
+const packageRunner = require('./utils/package-runner');
 
 
 gulp.task('build-window-packages:window-bundle', gulp.series(
-    packageRunnner('build-window-packages:transpile-typescript',
+    packageRunner('build-window-packages:transpile-typescript',
         'window', transpilePackageOrSkip),
-    Object.keys(constants.BUILD_TYPES).map((buildKey) => packageRunnner(
+    Object.keys(constants.BUILD_TYPES).map((buildKey) => packageRunner(
         'build-window-packages:window-bundle',
         'window',
         buildWindowBundle,
@@ -27,7 +27,7 @@ gulp.task('build-window-packages:window-bundle', gulp.series(
 ));
 
 gulp.task('build-window-packages:version-module', gulp.series(
-    packageRunnner(
+    packageRunner(
         'build-window-packages:version-module',
         'window',
         versionModule),

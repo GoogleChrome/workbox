@@ -9,10 +9,10 @@
 const gulp = require('gulp');
 
 const buildNodePackage = require('./utils/build-node-package');
-const packageRunnner = require('./utils/package-runner');
+const packageRunner = require('./utils/package-runner');
 
 gulp.task('build-node-packages', gulp.series(
-    packageRunnner(
+    packageRunner(
         'build-node-packages',
         'node',
         buildNodePackage,

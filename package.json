@@ -4,17 +4,11 @@
     "node": ">=10.0.0"
   },
   "scripts": {
-    "bot": "pr-bot",
     "coverage-report": "nyc report --reporter lcov --reporter text",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
-    "demos-deploy": "firebase deploy --project workbox-demos",
-    "demos-serve": "firebase serve --only hosting,functions --project workbox-demos",
     "lint": "npm run lint-js && npm run lint-ts",
     "lint-js": "eslint '**/*.{js,mjs}' --config javascript.eslintrc.js --ignore-path .gitignore",
     "lint-ts": "eslint '**/*.ts' --config typescript.eslintrc.js --ignore-path .gitignore",
-    "local-jsdoc": "jsdoc",
-    "local-lerna": "lerna",
-    "local-tsc": "tsc",
     "test": "nyc --clean false --silent mocha --timeout 60000",
     "version": "git add -A packages"
   },
@@ -79,6 +73,7 @@
     "eslint-config-google": "^0.14.0",
     "eslint-plugin-header": "^3.0.0",
     "eslint-plugin-jsdoc": "^24.0.0",
+    "execa": "^4.0.1",
     "express": "^4.17.1",
     "fs-extra": "^9.0.0",
     "glob": "^7.1.6",

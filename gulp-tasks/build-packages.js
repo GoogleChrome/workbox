@@ -12,7 +12,7 @@ const gulp = require('gulp');
 const path = require('path');
 
 const constants = require('./utils/constants');
-const packageRunnner = require('./utils/package-runner');
+const packageRunner = require('./utils/package-runner');
 
 const cleanPackage = async (packagePath) => {
   // Delete generated files from the the TypeScript transpile.
@@ -40,7 +40,7 @@ const cleanPackage = async (packagePath) => {
 };
 
 gulp.task('build-packages:clean', gulp.series(
-    packageRunnner(
+    packageRunner(
         'build-packages:clean',
         'all',
         cleanPackage,

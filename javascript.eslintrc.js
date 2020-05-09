@@ -84,8 +84,9 @@ module.exports = {
       'infra/**/*.js',
     ],
     rules: {
-      'valid-jsdoc': 0,
+      'camelcase': 0,
       'require-jsdoc': 0,
+      'valid-jsdoc': 0,
     },
   }, {
     files: [

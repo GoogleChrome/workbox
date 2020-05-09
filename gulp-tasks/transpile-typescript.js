@@ -14,7 +14,7 @@ const path = require('upath');
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 
-const packageRunnner = require('./utils/package-runner');
+const packageRunner = require('./utils/package-runner');
 const logHelper = require('../infra/utils/log-helper');
 const {AsyncDebounce} = require('../infra/utils/AsyncDebounce');
 
@@ -127,7 +127,7 @@ const needsTranspile = (packageName) => {
   return pendingChangesMap[packageName] === true;
 };
 
-gulp.task('transpile-typescript', gulp.series(packageRunnner(
+gulp.task('transpile-typescript', gulp.series(packageRunner(
     'transpile-typescript', 'all', transpilePackageOrSkip)));
 
 gulp.task('transpile-typescript:watch', () => {
