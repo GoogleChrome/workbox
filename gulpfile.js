@@ -33,7 +33,7 @@ const taskFiles = [
   'transpile-typescript',
   'build-node-packages',
   // 'build-browser-packages',
-  // 'build-window-packages',
+  'build-window-packages',
   // 'build-packages',
   // 'build',
   'lint',

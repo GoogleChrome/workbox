@@ -15,7 +15,6 @@ const terserPlugin = require('rollup-plugin-terser').terser;
 const constants = require('./constants');
 const getVersionsCDNUrl = require('./versioned-cdn-url');
 
-
 module.exports = {
   // Every use of rollup should have minification and the replace
   // plugin set up and used to ensure as consist set of tests
@@ -24,7 +23,9 @@ module.exports = {
     const plugins = [resolve()];
 
     const babelConfig = {
+      babelHelpers: 'bundled',
       presets: [['@babel/preset-env', {
+        loose: true,
         targets: {
           browsers: es5 ?
               // If es5 is true, target IE11
@@ -35,7 +36,6 @@ module.exports = {
               // browser we currently support.
               ['chrome >= 56'],
         },
-        loose: true,
       }]],
     };
     if (es5) {
