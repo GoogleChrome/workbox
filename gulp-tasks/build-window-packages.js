@@ -53,19 +53,19 @@ async function buildWindowBundle(packagePath, buildType) {
   };
 
   const mjsBundle = await rollup({
-    input: moduleBrowserPath,
+    input: packageIndex,
     plugins: rollupHelper.getDefaultPlugins(buildType, 'esm', false),
     onwarn,
   });
 
   const es5Bundle = await rollup({
-    input: moduleBrowserPath,
+    input: packageIndex,
     plugins: rollupHelper.getDefaultPlugins(buildType, 'esm', true),
     onwarn,
   });
 
   const umdBundle = await rollup({
-    input: moduleBrowserPath,
+    input: packageIndex,
     plugins: rollupHelper.getDefaultPlugins(buildType, 'umd', true),
     onwarn,
   });

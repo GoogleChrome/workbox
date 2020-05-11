@@ -71,13 +71,13 @@ function globals(moduleId) {
     logHelper.error(`Unable to get browserNamespace for '${packageName}'`);
     throw err;
   }
-};
+}
 
 // This ensures all workbox-* modules are treated as external and are
 // referenced as globals.
 function externalAndPure(importPath) {
   return (importPath.indexOf('workbox-') === 0);
-};
+}
 
 async function buildSWBundle(packagePath, buildType) {
   const packageName = pkgPathToName(packagePath);
@@ -87,13 +87,12 @@ async function buildSWBundle(packagePath, buildType) {
   // there is nothing to build
   if (!(await fse.exists(packageIndex))) {
     throw new Error(`Could not find ${packageIndex}`);
-
   }
 
   const pkgJson = require(upath.join(packagePath, 'package.json'));
   if (!pkgJson.workbox || !pkgJson.workbox.browserNamespace) {
-    logHelper.error(ERROR_NO_NAMESPACE + ' ' + packageName);
-    return Promise.reject(new Error(ERROR_NO_NAMESPACE + ' ' + packageName));
+    throw new Error(ol`You must define a 'workbox.browserNamespace' property in
+        ${packageName}/package.json`);
   }
 
   let outputFilename = pkgJson.workbox.outputFilename || packageName;
@@ -162,7 +161,7 @@ function swBundleSequence() {
       parallel(builds),
   );
 }
-  
+
 module.exports = {
   build_sw_packages: series(
       parallel(packageRunner('build_sw_packages_version_module', 'sw',
