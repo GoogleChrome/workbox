@@ -49,7 +49,7 @@ module.exports = {
     globals: {
       expectError: false,
       waitUntil: false,
-      BROWSER_NAMESPACES: false,
+      SW_NAMESPACES: false,
     },
     rules: {
       'max-len': 0,

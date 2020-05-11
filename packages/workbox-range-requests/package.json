@@ -25,7 +25,7 @@
   },
   "workbox": {
     "browserNamespace": "workbox.rangeRequests",
-    "packageType": "browser"
+    "packageType": "sw"
   },
   "main": "index.js",
   "module": "index.mjs",

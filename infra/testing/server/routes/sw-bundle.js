@@ -15,7 +15,7 @@ const {needsTranspile, queueTranspile} = require('../../../../gulp-tasks/transpi
 const {getPackages} = require('../../../../gulp-tasks/utils/get-packages');
 
 
-const BROWSER_NAMESPACES = getPackages({type: 'browser'}).map((pkg) => {
+const SW_NAMESPACES = getPackages({type: 'sw'}).map((pkg) => {
   return pkg.workbox.browserNamespace;
 });
 
@@ -52,7 +52,7 @@ async function handler(req, res) {
         }),
         replace({
           'process.env.NODE_ENV': JSON.stringify(env),
-          'BROWSER_NAMESPACES': JSON.stringify(BROWSER_NAMESPACES),
+          'SW_NAMESPACES': JSON.stringify(SW_NAMESPACES),
           'WORKBOX_CDN_ROOT_URL': '/__WORKBOX/buildFile',
         }),
       ],

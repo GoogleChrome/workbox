@@ -22,7 +22,7 @@
   },
   "workbox": {
     "browserNamespace": "workbox.strategies",
-    "packageType": "browser"
+    "packageType": "sw"
   },
   "main": "index.js",
   "module": "index.mjs",

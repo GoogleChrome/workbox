@@ -20,20 +20,12 @@ const pkgPathToName = require('./utils/pkg-path-to-name');
 const rollupHelper = require('./utils/rollup-helper');
 const versionModule = require('./utils/version-module');
 
-// We can't cleanup inside of buildWindowBundle() because it's called multiple
-// times, once for each buildType.
-async function clean(packagePath) {
-  const outputDirectory = upath.join(packagePath,
-      constants.PACKAGE_BUILD_DIRNAME);
-  await fse.remove(outputDirectory);
-}
-
 async function buildWindowBundle(packagePath, buildType) {
   const packageName = pkgPathToName(packagePath);
-  const moduleBrowserPath = upath.join(packagePath, `index.mjs`);
+  const packageIndex = upath.join(packagePath, 'index.mjs');
 
-  if (!(await fse.exists(moduleBrowserPath))) {
-    throw new Error(`Could not find ${moduleBrowserPath}`);
+  if (!(await fse.exists(packageIndex))) {
+    throw new Error(`Could not find ${packageIndex}`);
   }
 
   const outputDirectory = upath.join(packagePath,
@@ -99,32 +91,25 @@ async function buildWindowBundle(packagePath, buildType) {
   ]);
 }
 
-function windowBundles() {
-  const cleanUps = packageRunner('build_window_packages_clean', 'window',
-      clean);
+// This reads a little cleaner with a function to generate the sub-sequences.
+function windowBundleSequence() {
   const transpilations = packageRunner(
       'build_window_packages_transpile_typescript', 'window',
       transpilePackageOrSkip);
   const builds = Object.keys(constants.BUILD_TYPES).map((type) => packageRunner(
-      'build_window_packages_window_bundle', 'window', buildWindowBundle,
+      'build_window_packages_bundle', 'window', buildWindowBundle,
       constants.BUILD_TYPES[type]));
 
   return series(
-      parallel(cleanUps),
       parallel(transpilations),
       parallel(builds),
   );
 }
 
-function versionModules() {
-  return parallel(packageRunner('build_window_packages_version_module',
-      'window', versionModule));
-}
-
 module.exports = {
-  // This reads a little cleaner with functions to generate the sub-sequences.
   build_window_packages: series(
-      versionModules(),
-      windowBundles(),
+      parallel(packageRunner('build_window_packages_version_module', 'window',
+          versionModule)),
+      windowBundleSequence(),
   ),
 };

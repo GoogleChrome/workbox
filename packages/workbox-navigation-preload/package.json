@@ -21,7 +21,7 @@
   },
   "workbox": {
     "browserNamespace": "workbox.navigationPreload",
-    "packageType": "browser"
+    "packageType": "sw"
   },
   "main": "index.js",
   "module": "index.mjs",

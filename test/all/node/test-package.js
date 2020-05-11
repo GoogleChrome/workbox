@@ -27,7 +27,7 @@ describe(`[all] Test package.json`, function() {
     packageFiles.forEach((packagePath) => {
       const pkg = require(packagePath);
       switch (pkg.workbox.packageType) {
-        case 'browser': {
+        case 'sw': {
           const propertiesToCheck = [
             'main',
             'module',
@@ -65,9 +65,9 @@ describe(`[all] Test package.json`, function() {
       absolute: true,
     });
     packageFiles.forEach((packagePath) => {
-      // skip non-browser modules
+      // skip non-sw modules
       const pkg = require(packagePath);
-      if (pkg.workbox.packageType !== 'browser') {
+      if (pkg.workbox.packageType !== 'sw') {
         return;
       }
 
@@ -112,7 +112,7 @@ describe(`[all] Test package.json`, function() {
     packageFiles.forEach((packagePath) => {
       // skip non-browser modules
       const pkg = require(packagePath);
-      if (pkg.workbox.packageType !== 'browser') {
+      if (pkg.workbox.packageType !== 'sw') {
         return;
       }
 
@@ -155,7 +155,7 @@ describe(`[all] Test package.json`, function() {
     packageFiles.forEach((packagePath) => {
       // skip non-browser modules
       const pkg = require(packagePath);
-      if (pkg.workbox.packageType !== 'browser') {
+      if (pkg.workbox.packageType !== 'sw') {
         return;
       }
 
@@ -190,7 +190,7 @@ describe(`[all] Test package.json`, function() {
   });
 
   it(`should only use a namespace that matches its package name`, function() {
-    const pkgs = getPackages({type: 'browser'});
+    const pkgs = getPackages({type: 'sw'});
 
     for (const pkg of pkgs) {
       // These rules don't apply to workbox-sw

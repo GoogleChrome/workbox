@@ -12,12 +12,12 @@ const {getPackages} = require('./get-packages');
 const outputFilenameToPkgMap = {};
 
 
-const windowAndBrowserPackages = [
-  ...getPackages({type: 'browser'}),
+const windowAndSWPackages = [
+  ...getPackages({type: 'sw'}),
   ...getPackages({type: 'window'}),
 ];
 
-windowAndBrowserPackages.forEach((pkg) => {
+windowAndSWPackages.forEach((pkg) => {
   // When no `outputFilename` property exists, the package name is used.
   const outputFilename = pkg.workbox.outputFilename || pkg.name;
 

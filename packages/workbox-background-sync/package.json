@@ -23,7 +23,7 @@
   },
   "workbox": {
     "browserNamespace": "workbox.backgroundSync",
-    "packageType": "browser"
+    "packageType": "sw"
   },
   "main": "index.js",
   "module": "index.mjs",

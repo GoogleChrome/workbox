@@ -22,7 +22,7 @@
   },
   "workbox": {
     "browserNamespace": "workbox.routing",
-    "packageType": "browser"
+    "packageType": "sw"
   },
   "main": "index.js",
   "module": "index.mjs",

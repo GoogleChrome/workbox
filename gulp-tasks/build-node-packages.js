@@ -8,7 +8,6 @@
 
 const {parallel} = require('gulp');
 const execa = require('execa');
-const fse = require('fs-extra');
 const upath = require('upath');
 
 const constants = require('./utils/constants');
@@ -17,8 +16,6 @@ const packageRunner = require('./utils/package-runner');
 async function buildNodePackage(packagePath) {
   const outputDirectory = upath.join(packagePath,
       constants.PACKAGE_BUILD_DIRNAME);
-
-  await fse.remove(outputDirectory);
 
   await execa('babel', [
     `${packagePath}/src`,
