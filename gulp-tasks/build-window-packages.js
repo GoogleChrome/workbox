@@ -24,7 +24,7 @@ const versionModule = require('./utils/version-module');
 // times, once for each buildType.
 async function clean(packagePath) {
   const outputDirectory = upath.join(packagePath,
-    constants.PACKAGE_BUILD_DIRNAME);
+      constants.PACKAGE_BUILD_DIRNAME);
   await fse.remove(outputDirectory);
 }
 
@@ -33,7 +33,7 @@ async function buildWindowBundle(packagePath, buildType) {
   const moduleBrowserPath = upath.join(packagePath, `index.mjs`);
 
   if (!(await fse.exists(moduleBrowserPath))) {
-    throw new Error(`Could not find ${moduleBrowserPath}`)
+    throw new Error(`Could not find ${moduleBrowserPath}`);
   }
 
   const outputDirectory = upath.join(packagePath,
@@ -47,7 +47,6 @@ async function buildWindowBundle(packagePath, buildType) {
     // This can occur when using rollup-plugin-replace.
     if (buildType === constants.BUILD_TYPES.prod &&
         warning.code === 'UNUSED_EXTERNAL_IMPORT') {
-
       logHelper.warn(`[${warning.code}] ${warning.message}`);
       return;
     }
@@ -102,7 +101,7 @@ async function buildWindowBundle(packagePath, buildType) {
 
 function windowBundles() {
   const cleanUps = packageRunner('build_window_packages_clean', 'window',
-    clean);
+      clean);
   const transpilations = packageRunner(
       'build_window_packages_transpile_typescript', 'window',
       transpilePackageOrSkip);
@@ -111,9 +110,9 @@ function windowBundles() {
       constants.BUILD_TYPES[type]));
 
   return series(
-    parallel(cleanUps),
-    parallel(transpilations),
-    parallel(builds),
+      parallel(cleanUps),
+      parallel(transpilations),
+      parallel(builds),
   );
 }
 
@@ -125,7 +124,7 @@ function versionModules() {
 module.exports = {
   // This reads a little cleaner with functions to generate the sub-sequences.
   build_window_packages: series(
-    versionModules(),
-    windowBundles(),
+      versionModules(),
+      windowBundles(),
   ),
 };
