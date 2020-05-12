@@ -15,11 +15,6 @@
     "streams",
     "readablestream"
   ],
-  "scripts": {
-    "build": "gulp build-packages --package workbox-streams",
-    "version": "npm run build",
-    "prepare": "npm run build"
-  },
   "workbox": {
     "browserNamespace": "workbox.streams",
     "packageType": "sw"

@@ -15,11 +15,6 @@
     "router",
     "routing"
   ],
-  "scripts": {
-    "build": "gulp build-packages --package workbox-strategies",
-    "version": "npm run build",
-    "prepare": "npm run build"
-  },
   "workbox": {
     "browserNamespace": "workbox.strategies",
     "packageType": "sw"

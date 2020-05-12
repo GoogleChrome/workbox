@@ -35,7 +35,7 @@ const taskFiles = [
   'build-sw-packages',
   'build-window-packages',
   'build-packages',
-  // 'build',
+  'build',
   'lint',
   'test-node',
   // 'test-integration',

@@ -16,11 +16,6 @@
     "google",
     "analytics"
   ],
-  "scripts": {
-    "build": "gulp build-packages --package workbox-google-analytics",
-    "version": "npm run build",
-    "prepare": "npm run build"
-  },
   "workbox": {
     "browserNamespace": "workbox.googleAnalytics",
     "outputFilename": "workbox-offline-ga",

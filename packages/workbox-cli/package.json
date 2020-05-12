@@ -20,9 +20,6 @@
   "engines": {
     "node": ">=10.0.0"
   },
-  "scripts": {
-    "prepublish": "gulp build-packages --package workbox-cli"
-  },
   "author": "Google's Web DevRel Team",
   "license": "MIT",
   "repository": "googlechrome/workbox",

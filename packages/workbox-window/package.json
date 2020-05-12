@@ -16,11 +16,6 @@
     "message",
     "postMessage"
   ],
-  "scripts": {
-    "build": "gulp build-packages --package workbox-window",
-    "version": "npm run build",
-    "prepare": "npm run build"
-  },
   "workbox": {
     "packageType": "window",
     "primaryBuild": "build/workbox-window.prod.mjs"
