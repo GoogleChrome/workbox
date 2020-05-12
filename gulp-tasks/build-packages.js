@@ -40,7 +40,7 @@ async function cleanPackage(packagePath) {
   }
   // Delete build files.
   await del(upath.join(packagePath, constants.PACKAGE_BUILD_DIRNAME));
-};
+}
 
 module.exports = {
   build_packages: series(
