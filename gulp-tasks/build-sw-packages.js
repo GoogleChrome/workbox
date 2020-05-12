@@ -165,7 +165,7 @@ function swBundleSequence() {
 
 module.exports = {
   build_sw_packages_transpile_typescript: parallel(packageRunner(
-    'build_sw_packages_transpile_typescript', 'sw', transpilePackageOrSkip)),
+      'build_sw_packages_transpile_typescript', 'sw', transpilePackageOrSkip)),
   build_sw_packages: series(
       parallel(packageRunner('build_sw_packages_version_module', 'sw',
           versionModule)),
