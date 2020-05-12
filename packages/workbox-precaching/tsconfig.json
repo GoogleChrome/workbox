@@ -9,6 +9,7 @@
     "src/**/*.ts"
   ],
   "references": [
-    { "path": "../workbox-core/" }
+    { "path": "../workbox-core/" },
+    { "path": "../workbox-strategies/" }
   ]
 }

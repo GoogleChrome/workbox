@@ -157,8 +157,7 @@ function swBundleSequence() {
       constants.BUILD_TYPES[type]));
 
   return series(
-      // TODO(jeffposnick): This only works in a series and not in parallel.
-      series(transpilations),
+      parallel(transpilations),
       parallel(builds),
   );
 }
