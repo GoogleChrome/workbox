@@ -42,9 +42,16 @@ async function cleanPackage(packagePath) {
   await del(upath.join(packagePath, constants.PACKAGE_BUILD_DIRNAME));
 }
 
+// Wrap this in a function since it's used multiple times.
+function cleanSequence() {
+  return parallel(packageRunner('build_packages_clean', 'all',
+      cleanPackage));
+}
+
 module.exports = {
+  build_packages_clean: cleanSequence(),
   build_packages: series(
-      parallel(packageRunner('build_packages_clean', 'all', cleanPackage)),
+      cleanSequence(),
       parallel(build_node_packages, build_sw_packages, build_window_packages),
   ),
 };
