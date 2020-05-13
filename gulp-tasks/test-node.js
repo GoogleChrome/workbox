@@ -17,7 +17,7 @@ const constants = require('./utils/constants');
 const logHelper = require('../infra/utils/log-helper');
 
 async function runNodeTestSuite(testPath, nodeEnv) {
-  logHelper.log(ol`Running Node test on ${logHelper.highlight(testPath)}
+  logHelper.log(ol`Running node test on ${logHelper.highlight(testPath)}
       with NODE_ENV '${nodeEnv}'`);
 
   const options = [];
@@ -28,7 +28,7 @@ async function runNodeTestSuite(testPath, nodeEnv) {
 
   process.env.NODE_ENV = nodeEnv;
   try {
-    await execa('nyc', [
+    const {stdout} = await execa('nyc', [
       '--clean', 'false',
       '--silent',
       'mocha',
@@ -36,6 +36,8 @@ async function runNodeTestSuite(testPath, nodeEnv) {
       `${testPath}/**/*.{js,mjs}`,
       ...options,
     ], {preferLocal: true});
+
+    console.log(stdout);
   } finally {
     process.env.NODE_ENV = originalNodeEnv;
   }
@@ -75,7 +77,7 @@ async function test_node_clean() {
 }
 
 async function test_node_coverage() {
-  const runOptions = ['run', 'coverage-report'];
+  const runOptions = [];
   if (global.packageOrStar !== '*') {
     runOptions.push('--include');
     runOptions.push(
@@ -83,12 +85,14 @@ async function test_node_coverage() {
     );
   }
 
-  await execa('nyc', [
+  const {stdout} = await execa('nyc', [
     'report',
     '--reporter', 'lcov',
     '--reporter', 'text',
     ...runOptions,
   ], {preferLocal: true});
+
+  console.log(stdout);
 }
 
 module.exports = {

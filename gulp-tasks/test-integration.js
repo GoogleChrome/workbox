@@ -7,19 +7,17 @@
 */
 
 const clearModule = require('clear-module');
+const execa = require('execa');
 const glob = require('glob');
-const gulp = require('gulp');
-const oneLine = require('common-tags').oneLine;
-const path = require('path');
+const ol = require('common-tags').oneLine;
+const upath = require('upath');
 const seleniumAssistant = require('selenium-assistant');
 
 const constants = require('./utils/constants');
-const getNpmCmd = require('./utils/get-npm-cmd');
 const logHelper = require('../infra/utils/log-helper');
 const server = require('../infra/testing/server/index');
-const spawn = require('./utils/spawn-promise-wrapper');
 
-const runFiles = (filePaths) => {
+function runFiles(filePaths) {
   // Mocha can't be run multiple times, which we need for NODE_ENV.
   // More info: https://github.com/mochajs/mocha/issues/995
   clearModule.all();
@@ -43,15 +41,12 @@ const runFiles = (filePaths) => {
       resolve();
     });
   });
-};
+}
 
-const runIntegrationTestSuite = async (testPath, nodeEnv, seleniumBrowser,
-  webdriver) => {
-  logHelper.log(oneLine`
-    Running Integration test on ${logHelper.highlight(testPath)}
-    with NODE_ENV '${nodeEnv}'
-    and browser '${logHelper.highlight(seleniumBrowser.getPrettyName())}'
-  `);
+async function runTestSuite(testPath, nodeEnv, seleniumBrowser, webdriver) {
+  logHelper.log(ol`Running integration test on ${logHelper.highlight(testPath)}
+      with NODE_ENV '${nodeEnv}' and browser
+      '${logHelper.highlight(seleniumBrowser.getPrettyName())}'`);
 
   const options = [];
   if (global.cliOptions.grep) {
@@ -68,25 +63,20 @@ const runIntegrationTestSuite = async (testPath, nodeEnv, seleniumBrowser,
       webdriver,
     };
 
-    const testFiles = glob.sync(
-        path.posix.join(__dirname, '..', testPath, 'test-*.js'));
+    const testFiles = glob.sync(upath.join(__dirname, '..', testPath,
+        'test-*.js'));
 
     await runFiles(testFiles);
-  } catch (err) {
-    // Log the error, so it's easier to debug failures.
-    console.error(err); // eslint-disable-line no-console
-    throw new Error(`'gulp test-integration' discovered errors.`);
   } finally {
     process.env.NODE_ENV = originalNodeEnv;
   }
-};
+}
 
-const runIntegrationForBrowser = async (browser) => {
+async function runIntegrationForBrowser(browser) {
   const packagesToTest = glob.sync(`test/${global.packageOrStar}/integration`);
 
   for (const buildKey of Object.keys(constants.BUILD_TYPES)) {
     const webdriver = await browser.getSeleniumDriver();
-    // Safari Tech Preview can take a long time when working with SW APIs
     const timeout = 2 * 60 * 1000;
     webdriver.manage().setTimeouts({
       implicit: timeout,
@@ -97,8 +87,7 @@ const runIntegrationForBrowser = async (browser) => {
     for (const packageToTest of packagesToTest) {
       const nodeEnv = constants.BUILD_TYPES[buildKey];
       try {
-        await runIntegrationTestSuite(packageToTest, nodeEnv, browser,
-            webdriver);
+        await runTestSuite(packageToTest, nodeEnv, browser, webdriver);
       } catch (error) {
         await seleniumAssistant.killWebDriver(webdriver);
         throw error;
@@ -107,9 +96,9 @@ const runIntegrationForBrowser = async (browser) => {
 
     await seleniumAssistant.killWebDriver(webdriver);
   }
-};
+}
 
-gulp.task('test-integration', async () => {
+async function test_integration() {
   if (process.platform === 'win32') {
     logHelper.warn(`Skipping integration tests on Windows.`);
     return;
@@ -117,10 +106,10 @@ gulp.task('test-integration', async () => {
 
   // Install the latest Chrome and Firefox webdrivers without referencing
   // package-lock.json, to ensure that they're up to date.
-  await spawn(getNpmCmd(),
-      `install --no-save chromedriver geckodriver`.split(' '));
+  await execa('npm', ['install', '--no-save', 'chromedriver', 'geckodriver'],
+      {preferLocal: true});
 
-  logHelper.log(`Downloading browsers......`);
+  logHelper.log(`Downloading browsers...`);
   const expiration = 24;
   await seleniumAssistant.downloadLocalBrowser('chrome', 'stable', expiration);
   await seleniumAssistant.downloadLocalBrowser('chrome', 'beta', expiration);
@@ -152,14 +141,15 @@ gulp.task('test-integration', async () => {
           }
           break;
         default:
-          logHelper.warn(oneLine`
-            Skipping integration tests for ${localBrowser.getPrettyName()}.
-          `);
+          logHelper.warn(ol`Skipping integration tests for
+              ${localBrowser.getPrettyName()}.`);
       }
     }
+  } finally {
     await server.stop();
-  } catch (err) {
-    await server.stop();
-    throw err;
   }
-});
+}
+
+module.exports = {
+  test_integration,
+};

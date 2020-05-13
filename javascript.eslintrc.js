@@ -82,6 +82,7 @@ module.exports = {
     files: [
       'gulp-tasks/**/*.js',
       'infra/**/*.js',
+      'test/**/*.js',
     ],
     rules: {
       'camelcase': 0,

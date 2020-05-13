@@ -73,7 +73,6 @@ async function handler(req, res) {
 
     const {output} = await bundle.generate({format: 'iife'});
 
-    console.log(`Successfully built: ${req.url}`);
     res.send(output[0].code);
   } catch (error) {
     res.status(400).send('');

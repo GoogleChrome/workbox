@@ -6,22 +6,22 @@
   https://opensource.org/licenses/MIT.
 */
 
-const camelCase = require('camelcase');
-const ol = require('common-tags').oneLine;
-const glob = require('glob');
-const path = require('path');
-const fs = require('fs-extra');
 const {expect} = require('chai');
-const constants = require('../../../gulp-tasks/utils/constants');
-const {getPackages} = require('../../../gulp-tasks/utils/get-packages');
-const pkgPathToName = require('../../../gulp-tasks/utils/pkg-path-to-name');
+const camelCase = require('camelcase');
+const fs = require('fs-extra');
+const glob = require('glob');
+const ol = require('common-tags').oneLine;
+const upath = require('path');
 
+const {getPackages} = require('../../../gulp-tasks/utils/get-packages');
+const constants = require('../../../gulp-tasks/utils/constants');
+const pkgPathToName = require('../../../gulp-tasks/utils/pkg-path-to-name');
 
 describe(`[all] Test package.json`, function() {
   it(`should expose correct main, browser and module fields`, function() {
     const packageFiles = glob.sync('packages/**/package.json', {
       ignore: ['packages/*/node_modules/**/*'],
-      cwd: path.join(__dirname, '..', '..', '..'),
+      cwd: upath.join(__dirname, '..', '..', '..'),
       absolute: true,
     });
     packageFiles.forEach((packagePath) => {
@@ -35,12 +35,12 @@ describe(`[all] Test package.json`, function() {
 
           propertiesToCheck.forEach((propertyName) => {
             if (!pkg[propertyName]) {
-              throw new Error(`The package.json at '${path.relative(process.cwd(), packagePath)}' isn't exposing a '${propertyName}' property`);
+              throw new Error(`The package.json at '${upath.relative(process.cwd(), packagePath)}' isn't exposing a '${propertyName}' property`);
             }
 
-            const fullPath = path.join(path.dirname(packagePath), pkg[propertyName]);
+            const fullPath = upath.join(upath.dirname(packagePath), pkg[propertyName]);
             if (!fs.existsSync(fullPath)) {
-              throw new Error(`${path.relative(process.cwd(), packagePath)} has an invalid '${propertyName}' property: '${pkg[propertyName]}'`);
+              throw new Error(`${upath.relative(process.cwd(), packagePath)} has an invalid '${propertyName}' property: '${pkg[propertyName]}'`);
             }
           });
           break;
@@ -52,7 +52,7 @@ describe(`[all] Test package.json`, function() {
           break;
         }
         default:
-          throw new Error(`Unknown package.json workbox.packageType: '${pkg.workbox.packageType}' in ${path.relative(process.cwd(), packagePath)}`);
+          throw new Error(`Unknown package.json workbox.packageType: '${pkg.workbox.packageType}' in ${upath.relative(process.cwd(), packagePath)}`);
       }
     });
   });
@@ -61,7 +61,7 @@ describe(`[all] Test package.json`, function() {
     // Find directories with package.json file
     const packageFiles = glob.sync('packages/*/package.json', {
       ignore: ['packages/*/node_modules/**/*'],
-      cwd: path.join(__dirname, '..', '..', '..'),
+      cwd: upath.join(__dirname, '..', '..', '..'),
       absolute: true,
     });
     packageFiles.forEach((packagePath) => {
@@ -76,14 +76,14 @@ describe(`[all] Test package.json`, function() {
       const ext = 'types' in pkg ? 'js' : 'mjs';
 
       // Glob for all js and mjs files in the package
-      const packageName = pkgPathToName(path.dirname(packagePath));
+      const packageName = pkgPathToName(upath.dirname(packagePath));
       const packageFiles = glob.sync(`packages/${packageName}/**/*.${ext}`, {
         ignore: [
           'packages/*/node_modules/**/*',
           `packages/*/_version.${ext}`,
           `packages/*/${constants.PACKAGE_BUILD_DIRNAME}/**/*`,
         ],
-        cwd: path.join(__dirname, '..', '..', '..'),
+        cwd: upath.join(__dirname, '..', '..', '..'),
         absolute: true,
       });
 
@@ -94,7 +94,7 @@ describe(`[all] Test package.json`, function() {
         const fileContents = fs.readFileSync(filePath).toString();
         const results = importRegex.exec(fileContents);
         if (!results) {
-          throw new Error(`Unable to find the workbox version in '${path.relative(process.cwd(), filePath)}'`);
+          throw new Error(`Unable to find the workbox version in '${upath.relative(process.cwd(), filePath)}'`);
         }
       });
     });
@@ -106,7 +106,7 @@ describe(`[all] Test package.json`, function() {
     // Find directories with package.json file
     const packageFiles = glob.sync('packages/*/package.json', {
       ignore: ['packages/*/node_modules/**/*'],
-      cwd: path.join(__dirname, '..', '..', '..'),
+      cwd: upath.join(__dirname, '..', '..', '..'),
       absolute: true,
     });
     packageFiles.forEach((packagePath) => {
@@ -117,10 +117,10 @@ describe(`[all] Test package.json`, function() {
       }
 
       // Glob for all js and mjs files in the package
-      const packageName = pkgPathToName(path.dirname(packagePath));
+      const packageName = pkgPathToName(upath.dirname(packagePath));
       const packageFiles = glob.sync(`packages/${packageName}/${constants.PACKAGE_BUILD_DIRNAME}/**/*.{js,mjs}`, {
         ignore: ['packages/*/node_modules/**/*'],
-        cwd: path.join(__dirname, '..', '..', '..'),
+        cwd: upath.join(__dirname, '..', '..', '..'),
         absolute: true,
       });
 
@@ -129,7 +129,7 @@ describe(`[all] Test package.json`, function() {
         const fileContents = fs.readFileSync(filePath).toString();
         const results = versionRegex.exec(fileContents);
         if (!results) {
-          throw new Error(`Unable to find the workbox version in '${path.relative(process.cwd(), filePath)}'`);
+          throw new Error(`Unable to find the workbox version in '${upath.relative(process.cwd(), filePath)}'`);
         }
 
         const metadata = results[1].split(':');
@@ -149,7 +149,7 @@ describe(`[all] Test package.json`, function() {
     // Find directories with package.json file
     const packageFiles = glob.sync('packages/*/package.json', {
       ignore: ['packages/*/node_modules/**/*'],
-      cwd: path.join(__dirname, '..', '..', '..'),
+      cwd: upath.join(__dirname, '..', '..', '..'),
       absolute: true,
     });
     packageFiles.forEach((packagePath) => {
@@ -163,10 +163,10 @@ describe(`[all] Test package.json`, function() {
       // typescript or typescript adds `.mjs` support.
       const ext = 'types' in pkg ? 'js' : 'mjs';
 
-      const packageName = pkgPathToName(path.dirname(packagePath));
+      const packageName = pkgPathToName(upath.dirname(packagePath));
       const versionFiles = glob.sync(`packages/${packageName}/_version.${ext}`, {
         ignore: ['packages/*/node_modules/**/*'],
-        cwd: path.join(__dirname, '..', '..', '..'),
+        cwd: upath.join(__dirname, '..', '..', '..'),
         absolute: true,
       });
 
@@ -175,7 +175,7 @@ describe(`[all] Test package.json`, function() {
         const fileContents = fs.readFileSync(filePath).toString();
         const results = versionRegex.exec(fileContents);
         if (!results) {
-          throw new Error(`Unable to find the workbox version in '${path.relative(process.cwd(), filePath)}'`);
+          throw new Error(`Unable to find the workbox version in '${upath.relative(process.cwd(), filePath)}'`);
         }
 
         const metadata = results[1].split(':');

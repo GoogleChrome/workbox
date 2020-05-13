@@ -29,7 +29,7 @@ async function docs_build() {
     '-d', DOCS_DIRECTORY,
   ];
 
-  if (!global.cliOptions.pretty) {
+  if (!(global.cliOptions && global.cliOptions.pretty)) {
     logHelper.warn(`
 
 These docs will look ugly, but they will more accurately match what
@@ -47,7 +47,7 @@ You can view a friendlier UI by running
     );
   }
 
-  if (global.cliOptions.debugDocs) {
+  if (global.cliOptions && global.cliOptions.debugDocs) {
     params.push('--debug');
   }
 

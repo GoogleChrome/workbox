@@ -20,6 +20,7 @@ async function buildNodePackage(packagePath) {
   await execa('babel', [
     `${packagePath}/src`,
     '--out-dir', outputDirectory,
+    '--copy-files',
   ], {preferLocal: true});
 }
 
