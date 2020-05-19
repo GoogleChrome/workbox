@@ -6,10 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
-/* eslint-disable no-console, valid-jsdoc */
-
+const fse = require('fs-extra');
+const glob = require('glob');
 const minimist = require('minimist');
-const fs = require('fs');
 const upath = require('upath');
 
 const options = minimist(process.argv.slice(2));
@@ -17,7 +16,7 @@ const options = minimist(process.argv.slice(2));
 if (options.package) {
   // Ensure the package is valid before running tasks
   try {
-    fs.statSync(upath.join(__dirname, 'packages', options.package));
+    fse.statSync(upath.join(__dirname, 'packages', options.package));
   } catch (err) {
     throw new Error(`The supplied package '${options.package}' is invalid.`);
   }
@@ -27,28 +26,10 @@ global.port = options.port || 3000;
 global.packageOrStar = options.package || '*';
 global.cliOptions = options;
 
-const taskFiles = [
-  'transpile-typescript',
-  'build-node-packages',
-  'build-sw-packages',
-  'build-window-packages',
-  'build-packages',
-  'build',
-  'lint',
-  'test-node',
-  'test-integration',
-  'test',
-  'test-server',
-  'analyze-properties',
-  'publish-github',
-  'publish-cdn',
-  'publish-lerna',
-  'publish',
-  'docs',
-];
+const taskFiles = glob.sync('./gulp-tasks/*.js');
 
 for (const taskFile of taskFiles) {
-  const taskDefinitions = require(`./gulp-tasks/${taskFile}`);
+  const taskDefinitions = require(taskFile);
   for (const [name, task] of Object.entries(taskDefinitions)) {
     if (name === 'functions') {
       continue;
