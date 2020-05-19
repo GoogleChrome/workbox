@@ -27,8 +27,6 @@ global.port = options.port || 3000;
 global.packageOrStar = options.package || '*';
 global.cliOptions = options;
 
-// Forward referencing means the order of gulp-task
-// requires is important.
 const taskFiles = [
   'transpile-typescript',
   'build-node-packages',
@@ -41,7 +39,7 @@ const taskFiles = [
   'test-integration',
   'test',
   'test-server',
-  // 'analyze-properties',
+  'analyze-properties',
   // 'publish-github',
   // 'publish-cdn',
   // 'publish-lerna',
