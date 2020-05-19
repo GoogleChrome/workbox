@@ -40,10 +40,10 @@ const taskFiles = [
   'test',
   'test-server',
   'analyze-properties',
-  // 'publish-github',
-  // 'publish-cdn',
-  // 'publish-lerna',
-  // 'publish',
+  'publish-github',
+  'publish-cdn',
+  'publish-lerna',
+  'publish',
   'docs',
 ];
 

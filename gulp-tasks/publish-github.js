@@ -6,58 +6,56 @@
   https://opensource.org/licenses/MIT.
 */
 
-const gulp = require('gulp');
-const path = require('path');
+const fse = require('fs-extra');
 const semver = require('semver');
-const fs = require('fs-extra');
+const upath = require('upath');
 
-const publishHelpers = require('./utils/publish-helpers');
 const githubHelper = require('./utils/github-helper');
 const logHelper = require('../infra/utils/log-helper');
+const publishHelpers = require('./utils/publish-helpers');
 
-const publishReleaseOnGithub =
-  async (tagName, releaseInfo, tarPath, zipPath) => {
-    if (!releaseInfo) {
-      const releaseData = await githubHelper.createRelease({
-        tag_name: tagName,
-        draft: true,
-        name: `Workbox ${tagName}`,
-        prerelease: semver.prerelease(tagName) !== null,
-      });
-      releaseInfo = releaseData.data;
-    }
-
-    const tarBuffer = await fs.readFile(tarPath);
-    await githubHelper.uploadAsset({
-      url: releaseInfo.upload_url,
-      file: tarBuffer,
-      contentType: 'application/gzip',
-      contentLength: tarBuffer.length,
-      name: path.basename(tarPath),
-      label: path.basename(tarPath),
+async function publishReleaseOnGithub(tagName, releaseInfo, tarPath, zipPath) {
+  if (!releaseInfo) {
+    const releaseData = await githubHelper.createRelease({
+      tag_name: tagName,
+      draft: true,
+      name: `Workbox ${tagName}`,
+      prerelease: semver.prerelease(tagName) !== null,
     });
+    releaseInfo = releaseData.data;
+  }
 
-    const zipBuffer = await fs.readFile(zipPath);
-    await githubHelper.uploadAsset({
-      url: releaseInfo.upload_url,
-      file: zipBuffer,
-      contentType: 'application/zip',
-      contentLength: zipBuffer.length,
-      name: path.basename(zipPath),
-      label: path.basename(zipPath),
-    });
-  };
+  const tarBuffer = await fse.readFile(tarPath);
+  await githubHelper.uploadAsset({
+    url: releaseInfo.upload_url,
+    file: tarBuffer,
+    contentType: 'application/gzip',
+    contentLength: tarBuffer.length,
+    name: upath.basename(tarPath),
+    label: upath.basename(tarPath),
+  });
 
-const handleGithubRelease = async (tagName, gitBranch, releaseInfo) => {
+  const zipBuffer = await fse.readFile(zipPath);
+  await githubHelper.uploadAsset({
+    url: releaseInfo.upload_url,
+    file: zipBuffer,
+    contentType: 'application/zip',
+    contentLength: zipBuffer.length,
+    name: upath.basename(zipPath),
+    label: upath.basename(zipPath),
+  });
+}
+
+async function handleGithubRelease(tagName, gitBranch, releaseInfo) {
   logHelper.log(`Creating GitHub release ${logHelper.highlight(tagName)}.`);
 
-  const {tarPath, zipPath} =
-    await publishHelpers.createBundles(tagName, gitBranch);
+  const {tarPath, zipPath} = await publishHelpers.createBundles(tagName,
+      gitBranch);
 
-  return publishReleaseOnGithub(tagName, releaseInfo, tarPath, zipPath);
-};
+  await publishReleaseOnGithub(tagName, releaseInfo, tarPath, zipPath);
+}
 
-const filterTagsWithReleaseBundles = (allTags, taggedReleases) => {
+function filterTagsWithReleaseBundles(allTags, taggedReleases) {
   return allTags.filter((tagInfo) => {
     const release = taggedReleases[tagInfo.name];
     if (release && release.assets.length > 0) {
@@ -69,26 +67,26 @@ const filterTagsWithReleaseBundles = (allTags, taggedReleases) => {
 
     return true;
   });
-};
+}
 
-gulp.task('publish-github:generate-from-tags', async () => {
+async function publish_github() {
   // Get all of the tags in the repo.
   const allTags = await githubHelper.getTags();
   const taggedReleases = await githubHelper.getTaggedReleases();
-  const tagsToBuild = await filterTagsWithReleaseBundles(
-      allTags, taggedReleases);
+  const tagsToBuild = filterTagsWithReleaseBundles(allTags,
+      taggedReleases);
 
   if (tagsToBuild.length === 0) {
     logHelper.log(`No tags missing from GitHub.`);
     return;
   }
 
-  for (const tagInfo of tagsToBuild) {
-    await handleGithubRelease(
-        tagInfo.name, tagInfo.name, taggedReleases[tagInfo.name]);
+  for (const tagToBuild of tagsToBuild) {
+    await handleGithubRelease(tagToBuild.name, tagToBuild.name,
+        taggedReleases[tagToBuild.name]);
   }
-});
+}
 
-gulp.task('publish-github', gulp.series(
-    'publish-github:generate-from-tags',
-));
+module.exports = {
+  publish_github,
+};
