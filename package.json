@@ -4,10 +4,6 @@
     "node": ">=10.0.0"
   },
   "scripts": {
-    "coveralls": "cat ./coverage/lcov.info | coveralls",
-    "lint": "npm run lint-js && npm run lint-ts",
-    "lint-js": "eslint '**/*.{js,mjs}' --config javascript.eslintrc.js --ignore-path .gitignore",
-    "lint-ts": "eslint '**/*.ts' --config typescript.eslintrc.js --ignore-path .gitignore",
     "version": "git add -A packages"
   },
   "nyc": {
