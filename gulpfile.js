@@ -44,7 +44,6 @@ const taskFiles = [
   // 'publish-cdn',
   // 'publish-lerna',
   // 'publish',
-  // 'watch',
   'docs',
 ];
 
