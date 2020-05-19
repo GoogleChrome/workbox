@@ -25,7 +25,7 @@ jobs:
         npm ci
         npx gulp build
 
-    - run: npx gulp test-node
+    - run: npx gulp test_node
 
   Full_Suite_Mac:
     runs-on: macos-latest
