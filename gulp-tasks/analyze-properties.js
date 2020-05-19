@@ -14,7 +14,7 @@ async function analyze_properties() {
   for (const result of results) {
     analysisTool.printDetails(result);
   }
-}
+};
 
 module.exports = {
   analyze_properties,
