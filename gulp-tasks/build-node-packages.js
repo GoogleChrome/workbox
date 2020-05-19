@@ -17,7 +17,11 @@ async function buildNodePackage(packagePath) {
   const outputDirectory = upath.join(packagePath,
       constants.PACKAGE_BUILD_DIRNAME);
 
+  const configFile = upath.join(__dirname, 'utils',
+      'node-projects-babel.config.json');
+
   await execa('babel', [
+    '--config-file', configFile,
     `${packagePath}/src`,
     '--out-dir', outputDirectory,
     '--copy-files',
