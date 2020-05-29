@@ -19,7 +19,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     const manifestEntries = ['ignored'];
 
     const populateSWTemplate = proxyquire(MODULE_PATH, {
-      'lodash.template': () => {
+      'lodash/template': () => {
         throw new Error();
       },
     });
@@ -34,7 +34,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
 
   it(`should throw an error if both manifestEntries and runtimeCaching are empty`, function() {
     const populateSWTemplate = proxyquire(MODULE_PATH, {
-      'lodash.template': () => {},
+      'lodash/template': () => {},
     });
 
     try {
@@ -54,7 +54,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     const innerStub = sinon.stub().returns('');
     const outerStub = sinon.stub().returns(innerStub);
     const populateSWTemplate = proxyquire(MODULE_PATH, {
-      'lodash.template': outerStub,
+      'lodash/template': outerStub,
       './runtime-caching-converter': () => runtimeCachingPlaceholder,
       '../templates/sw-template': swTemplate,
     });
@@ -114,7 +114,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     const templatePopulationStub = sinon.stub().returns('');
     const templateCreationStub = sinon.stub().returns(templatePopulationStub);
     const populateSWTemplate = proxyquire(MODULE_PATH, {
-      'lodash.template': templateCreationStub,
+      'lodash/template': templateCreationStub,
       './runtime-caching-converter': () => runtimeCachingPlaceholder,
       '../templates/sw-template': swTemplate,
     });
@@ -181,7 +181,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     const innerStub = sinon.stub().returns('');
     const outerStub = sinon.stub().returns(innerStub);
     const populateSWTemplate = proxyquire(MODULE_PATH, {
-      'lodash.template': outerStub,
+      'lodash/template': outerStub,
       './runtime-caching-converter': () => runtimeCachingPlaceholder,
       '../templates/sw-template': swTemplate,
     });
