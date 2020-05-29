@@ -24,6 +24,7 @@ export type PluginState = MapLikeObject;
  */
 export interface RouteMatchCallbackOptions {
   url: URL;
+  sameOrigin: boolean;
   request: Request;
   event?: ExtendableEvent;
 }

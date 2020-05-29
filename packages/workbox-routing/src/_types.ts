@@ -35,10 +35,11 @@ import './_version.js';
 /**
  * The "match" callback is used to determine if a `Route` should apply for a
  * particular URL. When matching occurs in response to a fetch event from the
- * client, the `event` and `request` objects are supplied in addition to the
- * URL. However, since the match callback can be invoked outside of a fetch
- * event, matching logic should not assume the `event` or `request` objects
- * will always be available (unlike URL, which is always available).
+ * client, the `event` object is supplied in addition to the `url`, `request`,
+ * and `sameOrigin` value. However, since the match callback can be invoked
+ * outside of a fetch event, matching logic should not assume the `event`
+ * object will always be available.
+ *
  * If the match callback returns a truthy value, the matching route's
  * [handler callback]{@link module:workbox-routing~handlerCallback} will be
  * invoked immediately. If the value returned is a non-empty array or object,
@@ -47,10 +48,11 @@ import './_version.js';
  * @callback ~matchCallback
  * @param {Object} context
  * @param {URL} context.url The request's URL.
- * @param {Request} [context.request] The corresponding request,
- *     if available.
+ * @param {boolean} context.sameOrigin The result of comparing `url.origin`
+ * against the current origin.
+ * @param {Request} context.request The corresponding request.
  * @param {FetchEvent} [context.event] The corresponding event that triggered
- *     the request, if available.
+ * the request, if available.
  * @return {*} To signify a match, return a truthy value.
  *
  * @memberof module:workbox-routing
