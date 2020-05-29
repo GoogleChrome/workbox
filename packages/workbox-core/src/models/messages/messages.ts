@@ -261,4 +261,9 @@ export const messages: MessageMap = {
   'missing-precache-entry': ({cacheName, url}) => {
     return `Unable to find a precached response in ${cacheName} for ${url}.`;
   },
+
+  'cross-origin-copy-response': ({origin}) => {
+    return `workbox-core.copyResponse() can only be used with same-origin ` +
+      `responses. It was passed a response with origin ${origin}.`;
+  },
 };

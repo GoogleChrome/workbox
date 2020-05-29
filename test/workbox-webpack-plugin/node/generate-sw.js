@@ -46,14 +46,18 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
 
       const compiler = webpack(config);
       compiler.run((webpackError, stats) => {
-        expect(webpackError).not.to.exist;
-        const statsJson = stats.toJson();
-        expect(statsJson.warnings).to.be.empty;
-        expect(statsJson.errors).to.have.members([
-          `Please check your GenerateSW plugin configuration:\n"invalid" is not a supported parameter.`,
-        ]);
+        try {
+          expect(webpackError).not.to.exist;
+          const statsJson = stats.toJson();
+          expect(statsJson.warnings).to.be.empty;
+          expect(statsJson.errors).to.have.members([
+            `Please check your GenerateSW plugin configuration:\n"invalid" is not allowed`,
+          ]);
 
-        done();
+          done();
+        } catch (error) {
+          done(error);
+        }
       });
     });
   });

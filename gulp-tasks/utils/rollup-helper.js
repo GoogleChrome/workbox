@@ -7,7 +7,7 @@
 */
 
 const asyncToPromises = require('babel-plugin-transform-async-to-promises');
-const babel = require('rollup-plugin-babel');
+const {babel} = require('@rollup/plugin-babel');
 const replace = require('@rollup/plugin-replace');
 const resolve = require('@rollup/plugin-node-resolve');
 const terserPlugin = require('rollup-plugin-terser').terser;

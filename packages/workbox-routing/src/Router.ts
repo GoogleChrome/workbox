@@ -8,7 +8,8 @@
 
 import {assert} from 'workbox-core/_private/assert.js';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
-import {Handler, HandlerObject, HandlerCallbackOptions} from './_types.js';
+import {Handler, HandlerObject, HandlerCallbackOptions, MatchCallbackOptions}
+    from './_types.js';
 import {HTTPMethod, defaultMethod} from './utils/constants.js';
 import {logger} from 'workbox-core/_private/logger.js';
 import {normalizeHandler} from './utils/normalizeHandler.js';
@@ -171,7 +172,13 @@ class Router {
       return;
     }
 
-    const {params, route} = this.findMatchingRoute({url, request, event});
+    const sameOrigin = url.origin === location.origin;
+    const {params, route} = this.findMatchingRoute({
+      event,
+      request,
+      sameOrigin,
+      url,
+    });
     let handler = route && route.handler;
 
     const debugMessages = [];
@@ -265,30 +272,12 @@ class Router {
    *     They are populated if a matching route was found or `undefined`
    *     otherwise.
    */
-  findMatchingRoute({url, request, event}: {
-    url: URL;
-    request: Request;
-    event?: ExtendableEvent;
-  }): {route?: Route; params?: HandlerCallbackOptions['params']} {
-    if (process.env.NODE_ENV !== 'production') {
-      assert!.isInstance(url, URL, {
-        moduleName: 'workbox-routing',
-        className: 'Router',
-        funcName: 'findMatchingRoute',
-        paramName: 'options.url',
-      });
-      assert!.isInstance(request, Request, {
-        moduleName: 'workbox-routing',
-        className: 'Router',
-        funcName: 'findMatchingRoute',
-        paramName: 'options.request',
-      });
-    }
-
+  findMatchingRoute({url, sameOrigin, request, event}: MatchCallbackOptions):
+      {route?: Route; params?: HandlerCallbackOptions['params']} {
     const routes = this._routes.get(request.method as HTTPMethod) || [];
     for (const route of routes) {
       let params;
-      const matchResult = route.match({url, request, event});
+      const matchResult = route.match({url, sameOrigin, request, event});
       if (matchResult) {
         // See https://github.com/GoogleChrome/workbox/issues/2079
         params = matchResult;

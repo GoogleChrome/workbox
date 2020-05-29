@@ -282,9 +282,11 @@ describe(`PrecacheController`, function() {
 
     it(`should clean redirected precache entries`, async function() {
       self.fetch.restore();
-      sandbox.stub(self, 'fetch').callsFake(() => {
+      sandbox.stub(self, 'fetch').callsFake((request) => {
         const response = new Response('Redirected Response');
-        sandbox.stub(response, 'redirected').value(true);
+        sandbox.replaceGetter(response, 'redirected', () => true);
+        sandbox.replaceGetter(response, 'url',
+            () => (new URL(request.url, self.location.href)).href);
         return response;
       });
 

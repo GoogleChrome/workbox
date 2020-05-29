@@ -20,7 +20,7 @@ const rollupHelper = require('./rollup-helper');
  * http://paulirish.github.io/source-map-visualization/#custom-choose
  */
 const ERROR_NO_MODULE_INDEX = `Could not find the module's index.mjs file: `;
-const ERROR_NO_NAMSPACE = oneLine`
+const ERROR_NO_NAMESPACE = oneLine`
   You must define a 'browserNamespace' parameter in the 'package.json'.
   Example: 'workbox-precaching' would have a browserNamespace param of
   'workbox.precaching' in 'package.json', meaning developers would use
@@ -103,8 +103,8 @@ module.exports = async (packagePath, buildType) => {
 
   const pkgJson = require(path.join(packagePath, 'package.json'));
   if (!pkgJson.workbox || !pkgJson.workbox.browserNamespace) {
-    logHelper.error(ERROR_NO_NAMSPACE + ' ' + packageName);
-    return Promise.reject(new Error(ERROR_NO_NAMSPACE + ' ' + packageName));
+    logHelper.error(ERROR_NO_NAMESPACE + ' ' + packageName);
+    return Promise.reject(new Error(ERROR_NO_NAMESPACE + ' ' + packageName));
   }
 
   let outputFilename = pkgJson.workbox.outputFilename || packageName;
