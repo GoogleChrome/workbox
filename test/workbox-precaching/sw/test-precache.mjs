@@ -9,6 +9,7 @@
 import {precache} from 'workbox-precaching/precache.mjs';
 import {PrecacheController} from 'workbox-precaching/PrecacheController.mjs';
 import {getOrCreatePrecacheController} from 'workbox-precaching/utils/getOrCreatePrecacheController.mjs';
+import {resetDefaultPrecacheController} from './resetDefaultPrecacheController.mjs';
 import {dispatchAndWaitUntilDone} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
 
 
@@ -17,6 +18,7 @@ describe(`precache()`, function() {
 
   beforeEach(async function() {
     sandbox.restore();
+    resetDefaultPrecacheController();
 
     // Spy on all added event listeners so they can be removed.
     sandbox.spy(self, 'addEventListener');
@@ -41,6 +43,7 @@ describe(`precache()`, function() {
     precache(['/']);
 
     await dispatchAndWaitUntilDone(new ExtendableEvent('install'));
+
     expect(PrecacheController.prototype.install.callCount).to.equal(1);
     expect(PrecacheController.prototype.activate.callCount).to.equal(0);
 

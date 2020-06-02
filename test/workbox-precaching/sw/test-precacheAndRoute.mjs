@@ -7,6 +7,8 @@
 */
 
 import {precacheAndRoute} from 'workbox-precaching/precacheAndRoute.mjs';
+import {PrecacheController} from 'workbox-precaching/PrecacheController.mjs';
+import {resetDefaultPrecacheController} from './resetDefaultPrecacheController.mjs';
 
 
 describe(`precacheAndRoute()`, function() {
@@ -14,6 +16,7 @@ describe(`precacheAndRoute()`, function() {
 
   beforeEach(async function() {
     sandbox.restore();
+    resetDefaultPrecacheController();
 
     // Spy on all added event listeners so they can be removed.
     sandbox.spy(self, 'addEventListener');
@@ -28,44 +31,31 @@ describe(`precacheAndRoute()`, function() {
     sandbox.restore();
   });
 
-  // TODO(philipwalton): the follow tests are copied from before #1830,
-  // but the can't be tested in the same way because we can no longer spy on
-  // the `precache()` and `addRoute()` functions. Find a way to test them.
-  // it(`should call precache() and addRoute() without args`, function() {
-  //   sandbox.stub(precaching, 'precache');
-  //   sandbox.stub(precaching, 'addRoute');
-  //   precacheAndRoute();
-  //   expect(precaching.precache.callCount).to.equal(1);
-  //   expect(precaching.precache.args[0]).to.deep.equal([undefined]);
-  //   expect(precaching.addRoute.callCount).to.equal(1);
-  //   expect(precaching.addRoute.args[0]).to.deep.equal([undefined]);
-  // });
-  // it(`should call precache() and addRoute() with args`, function() {
-  //   sandbox.stub(precaching, 'precache');
-  //   sandbox.stub(precaching, 'addRoute');
-  //   const precacheArgs = ['/'];
-  //   const routeOptions = {
-  //     ignoreURLParametersMatching: [/utm_/],
-  //     directoryIndex: 'example.html',
-  //   };
-  //   precacheAndRoute(precacheArgs, routeOptions);
-  //   expect(precaching.precache.callCount).to.equal(1);
-  //   expect(precaching.precache.args[0][0]).to.equal(precacheArgs);
-  //   expect(precaching.addRoute.callCount).to.equal(1);
-  //   expect(precaching.addRoute.args[0][0]).to.equal(routeOptions);
-  // });
+  it(`should call precache() and addRoute() without args`, function() {
+    const precache = sandbox.stub(PrecacheController.prototype, 'precache');
+    const addRoute = sandbox.stub(PrecacheController.prototype, 'addRoute');
 
-  it(`should call precache() and addRoute()`, function() {
-    precacheAndRoute(['/one']);
+    precacheAndRoute();
+    expect(precache.callCount).to.equal(1);
+    expect(precache.args[0]).to.deep.equal([undefined]);
+    expect(addRoute.callCount).to.equal(1);
+    expect(addRoute.args[0]).to.deep.equal([undefined]);
+  });
 
-    // If `addRoute()` was run before `precacheAndRoute()` in the tests, then
-    // the fetch listener will have already been added.
-    expect(self.addEventListener.callCount).to.be.oneOf([2, 3]);
-    expect(self.addEventListener.args[0][0]).to.equal('install');
-    expect(self.addEventListener.args[1][0]).to.equal('activate');
+  it(`should call precache() and addRoute() with args`, function() {
+    const precache = sandbox.stub(PrecacheController.prototype, 'precache');
+    const addRoute = sandbox.stub(PrecacheController.prototype, 'addRoute');
 
-    if (self.addEventListener.callCount === 3) {
-      expect(self.addEventListener.args[2][0]).to.equal('fetch');
-    }
+    const precacheArgs = ['/'];
+    const routeOptions = {
+      ignoreURLParametersMatching: [/utm_/],
+      directoryIndex: 'example.html',
+    };
+
+    precacheAndRoute(precacheArgs, routeOptions);
+    expect(precache.callCount).to.equal(1);
+    expect(precache.args[0][0]).to.equal(precacheArgs);
+    expect(addRoute.callCount).to.equal(1);
+    expect(addRoute.args[0][0]).to.equal(routeOptions);
   });
 });

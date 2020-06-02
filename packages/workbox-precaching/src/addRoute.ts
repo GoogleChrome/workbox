@@ -6,11 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {addFetchListener, FetchListenerOptions} from './utils/addFetchListener.js';
+import {getOrCreatePrecacheController} from './utils/getOrCreatePrecacheController.js';
+import {FetchListenerOptions} from './_types.js';
 import './_version.js';
 
-
-let listenerAdded = false;
 
 /**
  * Add a `fetch` listener to the service worker that will
@@ -37,10 +36,8 @@ let listenerAdded = false;
  * @memberof module:workbox-precaching
  */
 function addRoute(options?: FetchListenerOptions) {
-  if (!listenerAdded) {
-    addFetchListener(options);
-    listenerAdded = true;
-  }
+  const precacheController = getOrCreatePrecacheController();
+  return precacheController.addRoute(options);
 }
 
 export {addRoute}

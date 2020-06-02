@@ -7,16 +7,25 @@
 */
 
 import {cacheNames} from 'workbox-core/cacheNames.mjs';
-import {addFetchListener} from 'workbox-precaching/utils/addFetchListener.mjs';
+import {addRoute} from 'workbox-precaching/addRoute.mjs';
 import {precache} from 'workbox-precaching/precache.mjs';
-import {getOrCreatePrecacheController} from 'workbox-precaching/utils/getOrCreatePrecacheController.mjs';
+import {resetDefaultPrecacheController} from '../resetDefaultPrecacheController.mjs';
 import {dispatchAndWaitForResponse} from '../../../../infra/testing/helpers/extendable-event-utils.mjs';
 
-describe(`addFetchListener()`, function() {
+
+// TODO(philipwalton): move these tests into the `../test-addRoute.mjs` after
+// the initial PR has been merged, but keep them for now to make it clear
+// what tests have changed.
+describe(`addRoute()`, function() {
   const sandbox = sinon.createSandbox();
+
+  function getAddedFetchListeners() {
+    return self.addEventListener.args.filter(([type]) => type === 'fetch');
+  }
 
   beforeEach(async function() {
     sandbox.restore();
+    resetDefaultPrecacheController();
 
     // Spy on all added event listeners so they can be removed.
     sandbox.spy(self, 'addEventListener');
@@ -26,9 +35,6 @@ describe(`addFetchListener()`, function() {
     for (const cacheKey of cacheKeys) {
       await caches.delete(cacheKey);
     }
-
-    // Reset the `_urlsToCacheKeys` map on the default PrecacheController.
-    getOrCreatePrecacheController()._urlsToCacheKeys = new Map();
   });
 
   afterEach(function() {
@@ -39,14 +45,13 @@ describe(`addFetchListener()`, function() {
   });
 
   it(`should add a fetch listener when called`, function() {
-    addFetchListener();
+    addRoute();
 
-    expect(self.addEventListener.callCount).to.equal(1);
-    expect(self.addEventListener.args[0][0]).to.equal('fetch');
+    expect(getAddedFetchListeners().length).to.equal(1);
   });
 
-  it(`should add a fetch listener that only matches precached urls`, async function() {
-    addFetchListener();
+  it(`should only match precached urls`, async function() {
+    addRoute();
     precache(['/']);
 
     const cachedResponse = new Response('Injected Response');
@@ -76,7 +81,7 @@ describe(`addFetchListener()`, function() {
     const cache = await caches.open(cacheNames.precache);
     await cache.put(new URL(`/?${SEARCH_1}&${SEARCH_2}`, location).href, cachedResponse);
 
-    addFetchListener({
+    addRoute({
       ignoreURLParametersMatching: [/ignoreMe/],
     });
     precache([`/?${SEARCH_1}&${SEARCH_2}`]);
@@ -100,7 +105,7 @@ describe(`addFetchListener()`, function() {
     const cache = await caches.open(cacheNames.precache);
     await cache.put(new URL(`/?${SEARCH_1}&${SEARCH_2}`, location).href, cachedResponse);
 
-    addFetchListener({
+    addRoute({
       ignoreURLParametersMatching: [/ignoreMe/],
     });
     precache([`/?${SEARCH_1}&${SEARCH_2}`]);
@@ -121,7 +126,7 @@ describe(`addFetchListener()`, function() {
     const cache = await caches.open(cacheNames.precache);
     await cache.put(new URL(`/${DIRECTORY_INDEX}`, location).href, cachedResponse);
 
-    addFetchListener({
+    addRoute({
       directoryIndex: DIRECTORY_INDEX,
     });
     precache([`/${DIRECTORY_INDEX}`]);
@@ -143,7 +148,7 @@ describe(`addFetchListener()`, function() {
     const cache = await caches.open(cacheNames.precache);
     await cache.put(new URL(`/${DIRECTORY_INDEX}`, location).href, cachedResponse);
 
-    addFetchListener();
+    addRoute();
     precache([`/${DIRECTORY_INDEX}`]);
 
     const fetchEvent = new FetchEvent('fetch', {
@@ -163,7 +168,7 @@ describe(`addFetchListener()`, function() {
     const cache = await caches.open(cacheNames.precache);
     await cache.put(new URL(`/${PRECACHED_FILE}`, location).href, cachedResponse);
 
-    addFetchListener();
+    addRoute();
     precache([`/${PRECACHED_FILE}`]);
 
     const fetchEvent = new FetchEvent('fetch', {
@@ -182,7 +187,7 @@ describe(`addFetchListener()`, function() {
     const cache = await caches.open(cacheNames.precache);
     await cache.put(new URL(`/${PRECACHED_FILE}`, location).href, cachedResponse);
 
-    addFetchListener({
+    addRoute({
       cleanURLs: false,
     });
     precache([`/${PRECACHED_FILE}`]);
@@ -202,7 +207,7 @@ describe(`addFetchListener()`, function() {
     const cache = await caches.open(cacheNames.precache);
     await cache.put(new URL(`/${PRECACHED_FILE}`, location).href, cachedResponse);
 
-    addFetchListener({
+    addRoute({
       urlManipulation: ({url}) => {
         expect(url.pathname).to.equal('/');
         const customURL = new URL(url);
@@ -228,7 +233,7 @@ describe(`addFetchListener()`, function() {
     const cache = await caches.open(cacheNames.precache);
     await cache.put(new URL(`/something-else.html`, location).href, cachedResponse);
 
-    addFetchListener();
+    addRoute();
     precache([`/something-else.html`]);
 
     const fetchEvent = new FetchEvent('fetch', {
@@ -245,7 +250,7 @@ describe(`addFetchListener()`, function() {
 
     const url = '/some-url';
 
-    addFetchListener();
+    addRoute();
 
     // Because we're not triggering the install event in this test, a cache
     // entry for url won't be found, even though precache() is called.

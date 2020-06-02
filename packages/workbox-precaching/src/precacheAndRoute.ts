@@ -6,17 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {FetchListenerOptions} from './utils/addFetchListener.js';
-import {addRoute} from './addRoute.js';
-import {precache} from './precache.js';
-import {PrecacheEntry} from './_types.js';
+import {getOrCreatePrecacheController} from './utils/getOrCreatePrecacheController.js';
+import {FetchListenerOptions, PrecacheEntry} from './_types.js';
 import './_version.js';
 
-declare global {
-  interface WorkerGlobalScope {
-    __WB_MANIFEST: Array<PrecacheEntry|string>;
-  }
-}
 
 /**
  * This method will add entries to the precache list and add a route to
@@ -33,8 +26,9 @@ declare global {
  * @memberof module:workbox-precaching
  */
 function precacheAndRoute(entries: Array<PrecacheEntry|string>, options?: FetchListenerOptions) {
-  precache(entries);
-  addRoute(options);
+  const precacheController = getOrCreatePrecacheController();
+  precacheController.precacheAndRoute(entries, options);
+
 }
 
 export {precacheAndRoute}
