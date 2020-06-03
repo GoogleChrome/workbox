@@ -6,16 +6,27 @@
   https://opensource.org/licenses/MIT.
 */
 
-const gulp = require('gulp');
-const spawn = require('./utils/spawn-promise-wrapper');
-const getNpmCmd = require('./utils/get-npm-cmd');
-const logHelper = require('../infra/utils/log-helper');
+const {parallel} = require('gulp');
+const execa = require('execa');
 
-// Use npm run lint to ensure we are using local eslint
-gulp.task('lint', () => {
-  return spawn(getNpmCmd(), ['run', 'lint'])
-      .catch((err) => {
-        logHelper.error(err);
-        throw new Error(`[Workbox Error Msg] 'gulp lint' discovered errors.`);
-      });
-});
+async function lint_js() {
+  await execa('eslint', [
+    '**/*.{js,mjs}',
+    '--config', 'javascript.eslintrc.js',
+    '--ignore-path', '.gitignore',
+  ], {preferLocal: true});
+}
+
+async function lint_ts() {
+  await execa('eslint', [
+    '**/*.ts',
+    '--config', 'typescript.eslintrc.js',
+    '--ignore-path', '.gitignore',
+  ], {preferLocal: true});
+}
+
+module.exports = {
+  lint_js,
+  lint_ts,
+  lint: parallel(lint_js, lint_ts),
+};

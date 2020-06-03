@@ -14,14 +14,9 @@
     "sw",
     "navigation"
   ],
-  "scripts": {
-    "build": "gulp build-packages --package workbox-navigation-preload",
-    "version": "npm run build",
-    "prepare": "npm run build"
-  },
   "workbox": {
     "browserNamespace": "workbox.navigationPreload",
-    "packageType": "browser"
+    "packageType": "sw"
   },
   "main": "index.js",
   "module": "index.mjs",

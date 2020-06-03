@@ -184,7 +184,7 @@ describe(`WorkboxSW`, function() {
     });
   });
 
-  BROWSER_NAMESPACES.forEach((namespace) => {
+  SW_NAMESPACES.forEach((namespace) => {
     // Don't test workbox-sw, which exports the `workbox` namespace.
     if (namespace === 'workbox') return;
 

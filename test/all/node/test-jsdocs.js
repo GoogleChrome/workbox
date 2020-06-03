@@ -7,11 +7,11 @@
 */
 
 const {expect} = require('chai');
-const fs = require('fs-extra');
+const fse = require('fs-extra');
 const glob = require('glob');
-const path = require('path');
-const spawn = require('../../../gulp-tasks/utils/spawn-promise-wrapper');
+const upath = require('path');
 
+const {docs_build} = require('../../../gulp-tasks/docs.js');
 
 describe('[all] JSDocs', function() {
   it('should run JSDocs and have no unexpected results', async function() {
@@ -22,44 +22,42 @@ describe('[all] JSDocs', function() {
       this.skip();
       return;
     }
-    // Building docs takes time.
+
     this.timeout(60 * 1000);
 
-    const projectRoot = path.join(__dirname, '..', '..', '..');
-    const docsPath = path.join(projectRoot, 'docs');
-    await spawn('gulp', ['docs:build'], {
-      cwd: projectRoot,
-    });
+    const projectRoot = upath.join(__dirname, '..', '..', '..');
+    const docsPath = upath.join(projectRoot, 'docs');
+    await docs_build();
 
     const docs = glob.sync('*.html', {
       cwd: docsPath,
     });
 
     // global.html is only added when the docs have stray global values.
-    if (docs.indexOf('global.html') !== -1) {
-      throw new Error('There should be **no** globals in the JSDocs.');
-    }
+    expect(docs.includes('global.html'),
+        `'global.html' should not be present in ${docsPath}`).to.be.false;
 
     // On some occasions, module.exports can leak into JSDocs, and breaks
     // into the final template.
-    expect(docs.indexOf('index-all.html')).to.not.equal(-1);
-    const indexAllContents = fs.readFileSync(path.join(docsPath, 'index-all.html')).toString();
-
-    if (indexAllContents.indexOf('<a href="module.html#.exports">module.exports</a>') !== -1) {
-      throw new Error('There is a stray `module.exports` in the docs. ' +
-        'Find and fix this issue.');
-    }
+    const indexAllHTML = await fse.readFile(upath.join(docsPath, 'index-all.html'), 'utf8');
+    expect(indexAllHTML.includes('<a href="module.html#.exports">module.exports</a>'),
+        `'module.exports' was found in index-all.html`).to.be.false;
 
     // We document this private method because we expect developers to
     // override it in their extending classes.
-    const privateMethodAllowlist = /_handle$/;
+    const privateMethodAllowlist = [
+      '_handle',
+    ];
 
-    // Ensure no methods starting with an underscore are in the docs.
-    // TODO(philipwalton): find a better way to do this than a RegExp...
-    indexAllContents.replace(/<a href="([^"]+)">/g, (match, p1) => {
-      if (p1.includes('_') && !p1.match(privateMethodAllowlist)) {
-        throw new Error(`Private method found in jsdocs: ${p1}`);
+    // string.matchAll() isn't supported before node v12...
+    const regexp = /<a href="([^"]+)">/g;
+    let match;
+    while ((match = regexp.exec(indexAllHTML)) !== null) {
+      const href = match[1];
+      if (href.includes('#_') &&
+          !privateMethodAllowlist.some((allow) => href.endsWith(allow))) {
+        throw new Error(`Private method found in JSDocs: ${href}`);
       }
-    });
+    }
   });
 });

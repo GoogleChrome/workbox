@@ -13,7 +13,7 @@ const oneLine = require('common-tags').oneLine;
 const pkgPathToName = require('./pkg-path-to-name');
 
 /**
- * @param {string} typeFilter The type of packages to return: 'node', 'browser',
+ * @param {string} typeFilter The type of packages to return: 'node', 'sw',
  * or 'all'.
  * @return Array<string> Paths to package.json files for the matching packages.
  */
@@ -39,7 +39,7 @@ function getPackages(typeFilter) {
  * the package path that needs to be acted upon.
  *
  * The specific function might vary depending on whether a give project targets
- * Node or the browser, so you can specify 'browser', 'node', or 'all'.
+ * Node or the browser, so you can specify 'sw', 'node', or 'all'.
  *
  * If we ran gulp as `gulp build` we would want the
  * 'build' task to run against all packages.
@@ -99,8 +99,8 @@ function getPackages(typeFilter) {
  *
  * ```javascript
  * gulp.parallel(
- *   packageRunner(displayName, 'browser', func, true),
- *   packageRunner(displayName, 'browser', func, false),
+ *   packageRunner(displayName, 'sw', func, true),
+ *   packageRunner(displayName, 'sw', func, false),
  * )
  * ```
  *
@@ -111,7 +111,7 @@ function getPackages(typeFilter) {
  *
  * @param {string} displayName A friendly name to log.
  * @param Array<string> The type of package we want to run func against:
- * 'node', 'browser', or 'all'.
+ * 'node', 'sw', or 'all'.
  * @param {function} func The function that we want to run for each package.
  * @param {*} args Any arguments that should be passed in to the func.
  * @return Array<function> All of the function wrappers.

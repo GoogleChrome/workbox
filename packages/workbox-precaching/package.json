@@ -13,14 +13,9 @@
     "service worker",
     "sw"
   ],
-  "scripts": {
-    "build": "gulp build-packages --package workbox-precaching",
-    "version": "npm run build",
-    "prepare": "npm run build"
-  },
   "workbox": {
     "browserNamespace": "workbox.precaching",
-    "packageType": "browser"
+    "packageType": "sw"
   },
   "main": "index.js",
   "module": "index.mjs",

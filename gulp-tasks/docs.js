@@ -6,90 +6,60 @@
   https://opensource.org/licenses/MIT.
 */
 
-const fs = require('fs-extra');
-const path = require('path');
-const gulp = require('gulp');
-const getNpmCmd = require('./utils/get-npm-cmd');
+const {series, watch} = require('gulp');
+const execa = require('execa');
+const fse = require('fs-extra');
+const upath = require('upath');
 
-const spawn = require('./utils/spawn-promise-wrapper');
 const logHelper = require('../infra/utils/log-helper');
 
-const DOCS_DIRECTORY = path.join(__dirname, '..', 'docs');
+const DOCS_DIRECTORY = upath.join(__dirname, '..', 'docs');
 
-gulp.task('docs:clean', () => {
-  return fs.remove(DOCS_DIRECTORY);
-});
+async function docs_build() {
+  await fse.remove(DOCS_DIRECTORY);
 
-const getJSDocFunc = (debug) => {
-  return () => {
-    logHelper.log(`Building docs...`);
-    const queryString = [
-      `projectRoot=/`,
-      `basepath=/`,
-      `productName=Workbox`,
-    ].join('&');
+  const queryString = [
+    `projectRoot=/`,
+    `basepath=/`,
+    `productName=Workbox`,
+  ].join('&');
 
-    const params = [
-      'run', 'local-jsdoc', '--',
-      '-c', path.join(__dirname, '..', 'jsdoc.conf'),
-      '-d', DOCS_DIRECTORY,
-    ];
+  const params = [
+    '-c', upath.join(__dirname, '..', 'jsdoc.conf'),
+    '-d', DOCS_DIRECTORY,
+  ];
 
-
-    if (!global.cliOptions.pretty) {
-      logHelper.warn(`
+  if (!(global.cliOptions && global.cliOptions.pretty)) {
+    logHelper.warn(`
 
 These docs will look ugly, but they will more accurately match what
 is shown on developers.google.com.
 
 You can view a friendlier UI by running
 
-  'gulp docs --pretty'
+'gulp docs --pretty'
 `);
-      params.push(
-          '--template', path.join(
-              __dirname, '..', 'infra', 'templates', 'reference-docs', 'jsdoc',
-          ),
-          '--query', queryString,
-      );
-    }
+    params.push(
+        '--template', upath.join(
+            __dirname, '..', 'infra', 'templates', 'reference-docs', 'jsdoc',
+        ),
+        '--query', queryString,
+    );
+  }
 
-    if (debug) {
-      params.push('--debug');
-    }
+  if (global.cliOptions && global.cliOptions.debugDocs) {
+    params.push('--debug');
+  }
 
-    return spawn(getNpmCmd(), params, {
-      cwd: path.join(__dirname, '..'),
-    })
-        .then(() => {
-          logHelper.log(`Docs built successfully`);
-        })
-        .catch((err) => {
-          logHelper.error(`Docs failed to build: `, err);
-          throw err;
-        });
-  };
+  await execa('jsdoc', params, {preferLocal: true});
+}
+
+function docs_watch() {
+  const watcher = watch('packages/**/*', docs_build);
+  watcher.on('error', (err) => logHelper.error(`Docs failed to build: `, err));
+}
+
+module.exports = {
+  docs_build,
+  docs: series(docs_build, docs_watch),
 };
-
-gulp.task('docs:build-debug', gulp.series([
-  'docs:clean',
-  getJSDocFunc(true),
-]));
-
-gulp.task('docs:build', gulp.series([
-  'docs:clean',
-  getJSDocFunc(false),
-]));
-
-gulp.task('docs:watch', () => {
-  const watcher = gulp.watch('packages/**/*',
-      gulp.series(['docs:build']));
-  watcher.on('error', (err) => {
-    logHelper.error(`Docs failed to build: `, err);
-  });
-});
-
-gulp.task('docs', gulp.series([
-  'docs:build',
-  'docs:watch',
-]));

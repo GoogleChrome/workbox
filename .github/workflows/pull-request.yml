@@ -23,9 +23,9 @@ jobs:
     - name: Setup
       run: |
         npm ci
-        gulp build
+        npx gulp build
 
-    - run: npx gulp test-node
+    - run: npx gulp test_node
 
   Full_Suite_Mac:
     runs-on: macos-latest
@@ -53,5 +53,6 @@ jobs:
       run: |
         sudo safaridriver --enable
         npm ci
+        npx gulp build
 
     - run: npx gulp test

@@ -6,13 +6,12 @@
   https://opensource.org/licenses/MIT.
 */
 
-const glob = require('glob');
-const path = require('path');
-const fs = require('fs-extra');
 const {oneLine} = require('common-tags');
-const logHelper = require('../../../infra/utils/log-helper');
 const constants = require('../../../gulp-tasks/utils/constants');
-
+const fse = require('fs-extra');
+const glob = require('glob');
+const logHelper = require('../../../infra/utils/log-helper');
+const path = require('path');
 
 describe(`[all] prod builds`, function() {
   const buildFiles = glob.sync(`packages/*/${constants.PACKAGE_BUILD_DIRNAME}/*.prod.js`, {
@@ -24,7 +23,7 @@ describe(`[all] prod builds`, function() {
   it(`should not have files with "console" or "%cworwbox"`, function() {
     const invalidFiles = [];
     buildFiles.forEach((filePath) => {
-      const fileContents = fs.readFileSync(filePath).toString();
+      const fileContents = fse.readFileSync(filePath).toString();
       if ((fileContents.indexOf(`console`) > -1 &&
            // See https://github.com/GoogleChrome/workbox/issues/2259
            !filePath.includes('workbox-precaching')) ||
@@ -48,7 +47,7 @@ describe(`[all] prod builds`, function() {
   it(`should not have files with hasOwnProperty`, function() {
     const invalidFiles = [];
     buildFiles.forEach((filePath) => {
-      const fileContents = fs.readFileSync(filePath).toString();
+      const fileContents = fse.readFileSync(filePath).toString();
       if (fileContents.indexOf(`.hasOwnProperty('default')`) !== -1) {
         invalidFiles.push(filePath);
       }

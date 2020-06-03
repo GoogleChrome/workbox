@@ -6,30 +6,23 @@
   https://opensource.org/licenses/MIT.
 */
 
-const fs = require('fs-extra');
-const oneLine = require('common-tags').oneLine;
-const path = require('path');
+const {parallel, series} = require('gulp');
 const {rollup} = require('rollup');
-const constants = require('./constants');
-const logHelper = require('../../infra/utils/log-helper');
-const pkgPathToName = require('./pkg-path-to-name');
-const rollupHelper = require('./rollup-helper');
+const fse = require('fs-extra');
+const ol = require('common-tags').oneLine;
+const upath = require('upath');
 
-/*
- * To test sourcemaps are valid and working, use:
- * http://paulirish.github.io/source-map-visualization/#custom-choose
- */
-const ERROR_NO_MODULE_INDEX = `Could not find the module's index.mjs file: `;
-const ERROR_NO_NAMESPACE = oneLine`
-  You must define a 'browserNamespace' parameter in the 'package.json'.
-  Example: 'workbox-precaching' would have a browserNamespace param of
-  'workbox.precaching' in 'package.json', meaning developers would use
-  'workbox.precaching' in their JavaScript. Please fix for:
-`;
+const {transpilePackageOrSkip} = require('./transpile-typescript').functions;
+const constants = require('./utils/constants');
+const logHelper = require('../infra/utils/log-helper');
+const packageRunner = require('./utils/package-runner');
+const pkgPathToName = require('./utils/pkg-path-to-name');
+const rollupHelper = require('./utils/rollup-helper');
+const versionModule = require('./utils/version-module');
 
 // This makes Rollup assume workbox-* will be added to the global
-// scope and replace references with the core namespace
-const globals = (moduleId) => {
+// scope and replace references with the core namespace.
+function globals(moduleId) {
   if (moduleId === 'workbox') {
     return moduleId;
   }
@@ -40,19 +33,18 @@ const globals = (moduleId) => {
   }
 
   const packageName = splitImportPath.shift();
-  const packagePath = path.join(__dirname, '..', '..', 'packages', packageName);
+  const packagePath = upath.join(__dirname, '..', 'packages', packageName);
   const namespacePathParts = splitImportPath.map((importPathPiece) => {
     // The browser namespace will need the file extension removed
-    return path.basename(importPathPiece, path.extname(importPathPiece));
+    return upath.basename(importPathPiece, upath.extname(importPathPiece));
   });
 
   if (namespacePathParts.length === 0) {
     // Tried to pull in default export of module - this isn't allowed.
     // A specific file must be referenced
-    throw new Error(oneLine`
-        You cannot use a module directly - you must specify
-        file, this is to force a best practice for tree shaking (i.e. only
-        pulling in what you use). Please fix the import: '${moduleId}'`);
+    throw new Error(ol`You cannot use a module directly. Instead, you must
+        specify a named import, to facilitate tree-shaking. Please fix the
+        import: '${moduleId}'`);
   }
 
   let additionalNamespace;
@@ -60,51 +52,47 @@ const globals = (moduleId) => {
     if (namespacePathParts[0] !== '_private' || namespacePathParts.length > 2) {
       // Tried to pull in default export of module - this isn't allowed.
       // A specific file must be referenced
-      throw new Error(oneLine`
-          You cannot use nested files. It must be a top level (and public) file
-          or a file under '_private' in a module. Please fix the import:
-          '${moduleId}'`);
+      throw new Error(ol`You cannot use nested files. It must be a top level
+          (and public) file or a file under '_private' in a module. Please fix
+          the import: '${moduleId}'`);
     }
     additionalNamespace = namespacePathParts[0];
   }
 
   // Get a package's browserNamespace so we know where it will be
-  // on the global scope (i.e. workbox.<name space>)
+  // on the global scope (i.e. workbox.<browserNamespace>)
   try {
-    const pkg = require(path.join(packagePath, 'package.json'));
+    const pkg = require(upath.join(packagePath, 'package.json'));
     return [
       pkg.workbox.browserNamespace,
       additionalNamespace,
     ].filter((value) => (value && value.length > 0)).join('.');
   } catch (err) {
-    logHelper.error(`Unable to get browserNamespace for package: ` +
-        `'${packageName}'`);
-    logHelper.error(err);
+    logHelper.error(`Unable to get browserNamespace for '${packageName}'`);
     throw err;
   }
-};
+}
 
 // This ensures all workbox-* modules are treated as external and are
 // referenced as globals.
-const externalAndPure = (importPath) => {
+function externalAndPure(importPath) {
   return (importPath.indexOf('workbox-') === 0);
-};
+}
 
-module.exports = async (packagePath, buildType) => {
+async function buildSWBundle(packagePath, buildType) {
   const packageName = pkgPathToName(packagePath);
-  const packageIndex = path.join(packagePath, `index.mjs`);
+  const packageIndex = upath.join(packagePath, 'index.mjs');
 
   // First check if the bundle file exists, if it doesn't
   // there is nothing to build
-  if (!fs.existsSync(packageIndex)) {
-    logHelper.error(ERROR_NO_MODULE_INDEX + packageName);
-    return Promise.reject(new Error(ERROR_NO_MODULE_INDEX + packageName));
+  if (!(await fse.exists(packageIndex))) {
+    throw new Error(`Could not find ${packageIndex}`);
   }
 
-  const pkgJson = require(path.join(packagePath, 'package.json'));
+  const pkgJson = require(upath.join(packagePath, 'package.json'));
   if (!pkgJson.workbox || !pkgJson.workbox.browserNamespace) {
-    logHelper.error(ERROR_NO_NAMESPACE + ' ' + packageName);
-    return Promise.reject(new Error(ERROR_NO_NAMESPACE + ' ' + packageName));
+    throw new Error(ol`You must define a 'workbox.browserNamespace' property in
+        ${packageName}/package.json`);
   }
 
   let outputFilename = pkgJson.workbox.outputFilename || packageName;
@@ -121,15 +109,8 @@ module.exports = async (packagePath, buildType) => {
   outputFilename += '.js';
 
   const namespace = pkgJson.workbox.browserNamespace;
-  const outputDirectory = path.join(packagePath,
+  const outputDirectory = upath.join(packagePath,
       constants.PACKAGE_BUILD_DIRNAME);
-
-  logHelper.log(oneLine`
-    Building Browser Bundle for
-    ${logHelper.highlight(packageName)}.
-  `);
-  logHelper.log(`    Namespace: ${logHelper.highlight(namespace)}`);
-  logHelper.log(`    Filename: ${logHelper.highlight(outputFilename)}`);
 
   const plugins = rollupHelper.getDefaultPlugins(buildType);
 
@@ -159,10 +140,34 @@ module.exports = async (packagePath, buildType) => {
   });
 
   await bundle.write({
-    file: path.join(outputDirectory, outputFilename),
+    file: upath.join(outputDirectory, outputFilename),
     name: namespace,
     sourcemap: true,
     format: 'iife',
     globals,
   });
+}
+
+// This reads a little cleaner with a function to generate the sub-sequences.
+function swBundleSequence() {
+  const transpilations = packageRunner(
+      'build_sw_packages_transpile_typescript', 'sw', transpilePackageOrSkip);
+  const builds = Object.keys(constants.BUILD_TYPES).map((type) => packageRunner(
+      'build_sw_packages_bundle', 'sw', buildSWBundle,
+      constants.BUILD_TYPES[type]));
+
+  return series(
+      parallel(transpilations),
+      parallel(builds),
+  );
+}
+
+module.exports = {
+  build_sw_packages_transpile_typescript: parallel(packageRunner(
+      'build_sw_packages_transpile_typescript', 'sw', transpilePackageOrSkip)),
+  build_sw_packages: series(
+      parallel(packageRunner('build_sw_packages_version_module', 'sw',
+          versionModule)),
+      swBundleSequence(),
+  ),
 };

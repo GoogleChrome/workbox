@@ -15,14 +15,9 @@
     "router",
     "routing"
   ],
-  "scripts": {
-    "build": "gulp build-packages --package workbox-routing",
-    "version": "npm run build",
-    "prepare": "npm run build"
-  },
   "workbox": {
     "browserNamespace": "workbox.routing",
-    "packageType": "browser"
+    "packageType": "sw"
   },
   "main": "index.js",
   "module": "index.mjs",

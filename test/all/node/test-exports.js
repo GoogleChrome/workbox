@@ -18,13 +18,13 @@ describe(`[all] Window and SW packages`, function() {
   // Reading files can be slow.
   this.timeout(5 * 1000);
 
-  const windowAndBrowserPackages = [
-    ...getPackages({type: 'browser'}),
+  const windowAndSWPackages = [
+    ...getPackages({type: 'sw'}),
     ...getPackages({type: 'window'}),
   ];
 
   it(`should have top a level module for every export in index.mjs (and vise-versa)`, async function() {
-    for (const pkg of windowAndBrowserPackages) {
+    for (const pkg of windowAndSWPackages) {
       const packagePath = path.join(__dirname, '..', '..', '..', 'packages', pkg.name);
 
       // TODO(philipwalton): remove this once all packages are converted to
@@ -64,7 +64,7 @@ describe(`[all] Window and SW packages`, function() {
   });
 
   it(`should have top a level module for every export in _private.mjs (and vise-versa)`, async function() {
-    for (const pkg of windowAndBrowserPackages) {
+    for (const pkg of windowAndSWPackages) {
       // TODO(philipwalton): remove this once all packages are converted to
       // typescript or typescript adds `.mjs` support.
       const ext = 'types' in pkg ? 'js' : 'mjs';

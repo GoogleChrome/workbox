@@ -49,7 +49,7 @@ module.exports = {
     globals: {
       expectError: false,
       waitUntil: false,
-      BROWSER_NAMESPACES: false,
+      SW_NAMESPACES: false,
     },
     rules: {
       'max-len': 0,
@@ -82,10 +82,12 @@ module.exports = {
     files: [
       'gulp-tasks/**/*.js',
       'infra/**/*.js',
+      'test/**/*.js',
     ],
     rules: {
-      'valid-jsdoc': 0,
+      'camelcase': 0,
       'require-jsdoc': 0,
+      'valid-jsdoc': 0,
     },
   }, {
     files: [

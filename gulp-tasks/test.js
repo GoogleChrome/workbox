@@ -6,11 +6,14 @@
   https://opensource.org/licenses/MIT.
 */
 
-const gulp = require('gulp');
+const {parallel, series} = require('gulp');
 
-gulp.task('test', gulp.series(
-    'build',
-    'test-node',
-    'test-integration',
-    'lint',
-));
+const {lint} = require('./lint');
+const {test_integration} = require('./test-integration');
+const {test_node} = require('./test-node');
+
+module.exports = {
+  // The node and integration tests both muck with process.env.NODE_ENV, and
+  // therefore can't be run in parallel.
+  test: parallel(lint, series(test_node, test_integration)),
+};
