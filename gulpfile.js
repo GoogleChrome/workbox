@@ -7,7 +7,7 @@
 */
 
 const fse = require('fs-extra');
-const glob = require('glob');
+const globby = require('globby');
 const minimist = require('minimist');
 const upath = require('upath');
 
@@ -26,7 +26,7 @@ global.port = options.port || 3000;
 global.packageOrStar = options.package || '*';
 global.cliOptions = options;
 
-const taskFiles = glob.sync('./gulp-tasks/*.js');
+const taskFiles = globby.sync('./gulp-tasks/*.js');
 
 for (const taskFile of taskFiles) {
   const taskDefinitions = require(taskFile);
