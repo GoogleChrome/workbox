@@ -31,8 +31,9 @@ function canConstructResponseFromBodyStream(): boolean {
       } catch (error) {
         supportStatus = false;
       }
+    } else {
+      supportStatus = false;
     }
-    supportStatus = false;
   }
 
   return supportStatus;
