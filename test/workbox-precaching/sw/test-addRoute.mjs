@@ -7,13 +7,19 @@
 */
 
 import {addRoute} from 'workbox-precaching/addRoute.mjs';
+import {resetDefaultPrecacheController} from './resetDefaultPrecacheController.mjs';
 
 
 describe(`addRoute()`, function() {
   const sandbox = sinon.createSandbox();
 
+  function getAddedFetchListeners() {
+    return self.addEventListener.args.filter(([type]) => type === 'fetch');
+  }
+
   beforeEach(async function() {
     sandbox.restore();
+    resetDefaultPrecacheController();
 
     // Spy on all added event listeners so they can be removed.
     sandbox.spy(self, 'addEventListener');
@@ -29,7 +35,7 @@ describe(`addRoute()`, function() {
   it(`should add at most 1 fetch listener`, async function() {
     addRoute();
 
-    const callCountAfterFirstCall = self.addEventListener.callCount;
+    const callCountAfterFirstCall = getAddedFetchListeners().length;
 
     // Depending on the order of when tests run, this will be 0 or 1.
     expect(callCountAfterFirstCall).to.be.oneOf([0, 1]);
@@ -38,6 +44,6 @@ describe(`addRoute()`, function() {
     addRoute();
     addRoute();
 
-    expect(self.addEventListener.callCount).to.equal(callCountAfterFirstCall);
+    expect(getAddedFetchListeners().length).to.equal(callCountAfterFirstCall);
   });
 });

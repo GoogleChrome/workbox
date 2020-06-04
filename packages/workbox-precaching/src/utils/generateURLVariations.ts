@@ -6,8 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {FetchListenerOptions} from './addFetchListener.js';
 import {removeIgnoredSearchParams} from './removeIgnoredSearchParams.js';
+import {FetchListenerOptions} from '../_types.js';
 import '../_version.js';
 
 
@@ -22,9 +22,9 @@ import '../_version.js';
  * @memberof module:workbox-precaching
  */
 export function* generateURLVariations(url: string, {
-  ignoreURLParametersMatching,
-  directoryIndex,
-  cleanURLs,
+  ignoreURLParametersMatching = [/^utm_/],
+  directoryIndex = 'index.html',
+  cleanURLs = true,
   urlManipulation,
 }: FetchListenerOptions = {}) {
   const urlObject = new URL(url, location.href);

@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-const template = require('lodash.template');
+const template = require('lodash/template');
 const swTemplate = require('../templates/sw-template');
 
 const errors = require('./errors');

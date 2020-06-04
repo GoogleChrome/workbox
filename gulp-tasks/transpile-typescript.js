@@ -6,81 +6,21 @@
   https://opensource.org/licenses/MIT.
 */
 
-const fs = require('fs-extra');
-const gulp = require('gulp');
+const {parallel, watch} = require('gulp');
+const execa = require('execa');
+const fse = require('fs-extra');
 const globby = require('globby');
 const ol = require('common-tags').oneLine;
-const path = require('upath');
-const util = require('util');
-const exec = util.promisify(require('child_process').exec);
+const upath = require('upath');
 
-const packageRunnner = require('./utils/package-runner');
-const logHelper = require('../infra/utils/log-helper');
 const {AsyncDebounce} = require('../infra/utils/AsyncDebounce');
-
+const logHelper = require('../infra/utils/log-helper');
+const packageRunner = require('./utils/package-runner');
 
 /**
  * @type {string}
  */
-const packagesDir = path.join(__dirname, '..', 'packages');
-
-/**
- * Transpiles a package's source TypeScript files to `.js` and `.mjs` files
- * in the root package directory, along with the corresponding `.d.ts` files.
- *
- * @param {string} packageName
- * @param {Object} [options]
- * @param {boolean} [options.failOnError=true]
- */
-const transpilePackage = async (packageName, {failOnError = true} = {}) => {
-  try {
-    // Compile TypeScript for the given project.
-    // Reference the local `node_modules` version of `tsc` since on Windows
-    // it will call the version in `Microsoft SDKs/TypeScript`.
-    await exec(`npm run local-tsc -- -b packages/${packageName}`);
-
-    // Mirror all `.ts` files with `.mjs` files.
-    const tsFiles = await globby(`**/*.ts`, {
-      cwd: path.join('packages', packageName, 'src'),
-    });
-
-    for (const tsFile of tsFiles) {
-      const assetBasename = path.basename(tsFile, '.ts');
-      const mjsFile = path.join('packages',
-          packageName, path.dirname(tsFile), assetBasename + '.mjs');
-
-      if (!(await fs.pathExists(mjsFile))) {
-        const mjsSource = `export * from './${assetBasename}.js';`;
-
-        fs.outputFileSync(mjsFile, mjsSource);
-      }
-    }
-  } catch (error) {
-    if (failOnError) {
-      throw error;
-    } else {
-      logHelper.error(error.stdout);
-    }
-  }
-};
-
-/**
- * Transpiles a package iff it has TypeScript source files.
- *
- * @param {string} packagePath
- * @param {Object} [options]
- */
-const transpilePackageOrSkip = async (packagePath, options) => {
-  // `packagePath` will be posix style because it comes from `glob()`.
-  const packageName = packagePath.split('/').slice(-1)[0];
-
-  if (await fs.pathExists(path.join(packagePath, 'tsconfig.json'))) {
-    await queueTranspile(packageName, options);
-  } else {
-    logHelper.log(ol`Skipping package '${packageName}'
-        not yet converted to typescript.`);
-  }
-};
+const packagesDir = upath.join(__dirname, '..', 'packages');
 
 /**
  * A mapping between each package name and its corresponding `AsyncDebounce`
@@ -99,7 +39,7 @@ const debouncedTranspilerMap = {};
  * @param {string} packageName
  * @param {Object} [options]
  */
-const queueTranspile = async (packageName, options) => {
+async function queueTranspile(packageName, options) {
   if (!debouncedTranspilerMap[packageName]) {
     debouncedTranspilerMap[packageName] = new AsyncDebounce(async () => {
       await transpilePackage(packageName, options);
@@ -107,7 +47,7 @@ const queueTranspile = async (packageName, options) => {
   }
   await debouncedTranspilerMap[packageName].call();
   debouncedTranspilerMap[packageName] = null;
-};
+}
 
 /**
  * A mapping between package names and whether or not they have pending
@@ -123,26 +63,87 @@ const pendingChangesMap = {};
  *
  * @param {string} packageName
  */
-const needsTranspile = (packageName) => {
+function needsTranspile(packageName) {
   return pendingChangesMap[packageName] === true;
-};
+}
 
-gulp.task('transpile-typescript', gulp.series(packageRunnner(
-    'transpile-typescript', 'all', transpilePackageOrSkip)));
+/**
+ * Transpiles a package iff it has TypeScript source files.
+ *
+ * @param {string} packagePath
+ * @param {Object} [options]
+ */
+async function transpilePackageOrSkip(packagePath, options) {
+  // `packagePath` will be posix style because it comes from `glob()`.
+  const packageName = packagePath.split('/').slice(-1)[0];
 
-gulp.task('transpile-typescript:watch', () => {
-  const watcher = gulp.watch(`./${global.packageOrStar}/workbox-*/src/**/*.ts`);
+  if (await fse.pathExists(upath.join(packagePath, 'tsconfig.json'))) {
+    await queueTranspile(packageName, options);
+  } else {
+    logHelper.log(ol`Skipping package '${packageName}', which has
+        not yet been converted to typescript.`);
+  }
+}
+
+/**
+ * Transpiles a package's source TypeScript files to `.js` and `.mjs` files
+ * in the root package directory, along with the corresponding `.d.ts` files.
+ *
+ * @param {string} packageName
+ * @param {Object} [options]
+ * @param {boolean} [options.failOnError=true]
+ */
+async function transpilePackage(packageName, {failOnError = true} = {}) {
+  try {
+    // Compile TypeScript for the given project.
+    // Reference the local `node_modules` version of `tsc` since on Windows
+    // it will call the version in `Microsoft SDKs/TypeScript`.
+    await execa('tsc', ['-b', `packages/${packageName}`], {preferLocal: true});
+
+    // Mirror all `.ts` files with `.mjs` files.
+    const tsFiles = await globby(`**/*.ts`, {
+      cwd: upath.join('packages', packageName, 'src'),
+    });
+
+    for (const tsFile of tsFiles) {
+      const assetBasename = upath.basename(tsFile, '.ts');
+      const mjsFile = upath.join('packages',
+          packageName, upath.dirname(tsFile), `${assetBasename}.mjs`);
+
+      if (!(await fse.pathExists(mjsFile))) {
+        const mjsSource = `export * from './${assetBasename}.js';`;
+
+        await fse.outputFile(mjsFile, mjsSource);
+      }
+    }
+  } catch (error) {
+    if (failOnError) {
+      throw error;
+    }
+
+    logHelper.error(error.stdout);
+  }
+}
+
+function transpile_typescript_watch() {
+  const watcher = watch(`./${global.packageOrStar}/workbox-*/src/**/*.ts`);
   watcher.on('all', async (event, file) => {
-    const changedPkg = path.relative(packagesDir, file).split(path.sep)[0];
+    const changedPkg = upath.relative(packagesDir, file).split(upath.sep)[0];
 
     pendingChangesMap[changedPkg] = true;
     await queueTranspile(changedPkg, {failOnError: false});
     pendingChangesMap[changedPkg] = false;
   });
-});
+}
 
 module.exports = {
-  transpilePackageOrSkip,
-  queueTranspile,
-  needsTranspile,
+  // These are used as functions from other modules, not as gulp tasks.
+  functions: {
+    needsTranspile,
+    queueTranspile,
+    transpilePackageOrSkip,
+  },
+  transpile_typescript_watch,
+  transpile_typescript: parallel(packageRunner('transpile_typescript', 'all',
+      transpilePackageOrSkip)),
 };

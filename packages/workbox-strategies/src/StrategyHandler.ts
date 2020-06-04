@@ -44,6 +44,7 @@ class StrategyHandler {
   private readonly _strategy: Strategy;
   private readonly _extendLifetimePromises: Promise<any>[];
   private readonly _handlerDeferred: Deferred<any>;
+  private readonly _plugins: WorkboxPlugin[];
   private readonly _pluginStateMap: Map<WorkboxPlugin, MapLikeObject>;
 
   /**
@@ -108,8 +109,11 @@ class StrategyHandler {
     this._handlerDeferred = new Deferred();
     this._extendLifetimePromises = [];
 
+    // Copy the plugins list (since it's mutable on the strategy),
+    // so any mutations don't affect this handler instance.
+    this._plugins = [...strategy.plugins];
     this._pluginStateMap = new Map();
-    for (const plugin of strategy.plugins) {
+    for (const plugin of this._plugins) {
       this._pluginStateMap.set(plugin, {});
     }
 

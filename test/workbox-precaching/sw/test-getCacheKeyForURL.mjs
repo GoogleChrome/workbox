@@ -8,6 +8,7 @@
 
 import {getCacheKeyForURL} from 'workbox-precaching/getCacheKeyForURL.mjs';
 import {precache} from 'workbox-precaching/precache.mjs';
+import {resetDefaultPrecacheController} from './resetDefaultPrecacheController.mjs';
 
 
 describe(`getCacheKeyForURL()`, function() {
@@ -15,6 +16,7 @@ describe(`getCacheKeyForURL()`, function() {
 
   beforeEach(async function() {
     sandbox.restore();
+    resetDefaultPrecacheController();
 
     // Spy on all added event listeners so they can be removed.
     sandbox.spy(self, 'addEventListener');

@@ -8,19 +8,32 @@
 
 import {assert} from 'workbox-core/_private/assert.js';
 import {cacheNames} from 'workbox-core/_private/cacheNames.js';
+import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
 import {logger} from 'workbox-core/_private/logger.js';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
-import {copyResponse} from 'workbox-core/copyResponse.js';
-import {RouteHandlerCallback, RouteHandlerCallbackOptions, WorkboxPlugin} from 'workbox-core/types.js';
+import {RouteMatchCallbackOptions, RouteHandlerCallback, RouteHandlerCallbackOptions, WorkboxPlugin} from 'workbox-core/types.js';
 
-import {PrecacheEntry} from './_types.js';
-import {cacheWrapper} from './utils/cacheWrapper.js';
+import {Route} from 'workbox-routing/Route.js';
+import {Router} from 'workbox-routing/Router.js';
+import {Strategy} from 'workbox-strategies/Strategy.js';
+
 import {createCacheKey} from './utils/createCacheKey.js';
-import {fetchWrapper} from './utils/fetchWrapper.js';
+import {PrecacheStrategy} from './utils/PrecacheStrategy.js';
 import {printCleanupDetails} from './utils/printCleanupDetails.js';
 import {printInstallDetails} from './utils/printInstallDetails.js';
-
+import {generateURLVariations} from './utils/generateURLVariations.js';
+import {PrecacheEntry, FetchListenerOptions} from './_types.js';
 import './_version.js';
+
+
+// Give TypeScript the correct global.
+declare let self: ServiceWorkerGlobalScope;
+
+declare global {
+  interface WorkerGlobalScope {
+    __WB_MANIFEST: Array<PrecacheEntry|string>;
+  }
+}
 
 /**
  * Performs efficient precaching of assets.
@@ -33,6 +46,12 @@ class PrecacheController {
   private readonly _urlsToCacheModes: Map<string, "reload" | "default" | "no-store" | "no-cache" | "force-cache" | "only-if-cached">;
   private readonly _cacheKeysToIntegrities: Map<string, string>;
 
+  private _router?: Router;
+  private _strategy?: Strategy;
+  private _installed?: boolean = false;
+  private readonly _cacheKeyPlugin: WorkboxPlugin;
+  private readonly _plugins: WorkboxPlugin[] = [];
+
   /**
    * Create a new PrecacheController.
    *
@@ -44,15 +63,113 @@ class PrecacheController {
     this._urlsToCacheKeys = new Map();
     this._urlsToCacheModes = new Map();
     this._cacheKeysToIntegrities = new Map();
+
+    this._cacheKeyPlugin = {
+      cacheKeyWillBeUsed: async ({request, params}: {request: Request; params?: any}) => {
+        const cacheKey = params && params.cacheKey ||
+            this.getCacheKeyForURL(request.url);
+
+        return cacheKey || request;
+      },
+    };
+  }
+
+  /**
+   * Adds plugins to the precaching strategy.
+   *
+   * @param {Array<Object>} plugins
+   */
+  addPlugins(plugins: WorkboxPlugin[]) {
+    this._plugins.push(...plugins);
+  }
+
+  /**
+   * Creates a Workbox `Route` to handle requests for precached assets (based
+   * on the passed configuration options).
+   *
+   * @param {Object} [options]
+   * @param {string} [options.directoryIndex=index.html] The `directoryIndex`
+   * will check cache entries for a URLs ending with '/' to see if there is a
+   * hit when appending the `directoryIndex` value.
+   * @param {Array<RegExp>} [options.ignoreURLParametersMatching=[/^utm_/]] An
+   * array of regex's to remove search params when looking for a cache match.
+   * @param {boolean} [options.cleanURLs=true] The `cleanURLs` option will
+   * check the cache for the URL with a `.html` added to the end of the end.
+   * @param {module:workbox-precaching~urlManipulation} [options.urlManipulation]
+   * This is a function that should take a URL and return an array of
+   * alternative URLs that should be checked for precache matches.
+   */
+  addRoute(options?: FetchListenerOptions) {
+    if (!this._router) {
+      const matchCallback = this.createMatchCallback(options);
+      const handlerCallback = this.createHandler(true);
+      const route = new Route(matchCallback, handlerCallback);
+      const router = new Router();
+
+      router.registerRoute(route);
+      router.addFetchListener();
+      router.addCacheListener();
+
+      this._router = router;
+    }
+  }
+
+  /**
+   * Adds items to the precache list, removing any duplicates and
+   * stores the files in the
+   * ["precache cache"]{@link module:workbox-core.cacheNames} when the service
+   * worker installs.
+   *
+   * This method can be called multiple times.
+   *
+   * Please note: This method **will not** serve any of the cached files for you.
+   * It only precaches files. To respond to a network request you call
+   * [addRoute()]{@link module:workbox-precaching.PreacheController#addRoute}.
+   *
+   * If you have a single array of files to precache, you can just call
+   * [precacheAndRoute()]{@link module:workbox-precaching.precacheAndRoute}.
+   *
+   * @param {Array<Object|string>} [entries=[]] Array of entries to precache.
+   */
+  precache(entries: Array<PrecacheEntry|string>) {
+    this.addToCacheList(entries);
+
+    if (!this._installed) {
+      self.addEventListener('install', (event) => {
+        event.waitUntil(this.install({event}));
+      });
+      self.addEventListener('activate', (event) => {
+        event.waitUntil(this.activate());
+      });
+      this._installed = true;
+    }
+  }
+
+  /**
+   * This method will add entries to the precache list and add a route to
+   * respond to fetch events.
+   *
+   * This is a convenience method that will call
+   * [precache()]{@link module:workbox-precaching.PrecacheController#precache}
+   * and
+   * [addRoute()]{@link module:workbox-precaching.PrecacheController#addRoute}
+   * in a single call.
+   *
+   * @param {Array<Object|string>} entries Array of entries to precache.
+   * @param {Object} [options] See
+   * [addRoute() options]{@link module:workbox-precaching.PrecacheController#addRoute}.
+   */
+  precacheAndRoute(entries: Array<PrecacheEntry|string>, options?: FetchListenerOptions) {
+    this.precache(entries);
+    this.addRoute(options);
   }
 
   /**
    * This method will add items to the precache list, removing duplicates
    * and ensuring the information is valid.
    *
-   * @param {
-   * Array<module:workbox-precaching.PrecacheController.PrecacheEntry|string>
-   * } entries Array of entries to precache.
+   * @param {Array<module:workbox-precaching.PrecacheController.PrecacheEntry|string>} entries
+   *     Array of entries to precache.
    */
   addToCacheList(entries: Array<PrecacheEntry|string>) {
     if (process.env.NODE_ENV !== 'production') {
@@ -138,6 +255,10 @@ class PrecacheController {
       }
     }
 
+    if (plugins) {
+      this.addPlugins(plugins);
+    }
+
     const toBePrecached: {cacheKey: string; url: string}[] = [];
     const alreadyPrecached: string[] = [];
 
@@ -162,7 +283,6 @@ class PrecacheController {
         cacheMode,
         event,
         integrity,
-        plugins,
         url,
       });
     });
@@ -221,17 +341,14 @@ class PrecacheController {
    * @param {string} options.url The URL to fetch and cache.
    * @param {string} [options.cacheMode] The cache mode for the network request.
    * @param {Event} [options.event] The install event (if passed).
-   * @param {Array<Object>} [options.plugins] An array of plugins to apply to
-   * fetch and caching.
    * @param {string} [options.integrity] The value to use for the `integrity`
    * field when making the request.
    */
-  async _addURLToCache({cacheKey, url, cacheMode, event, plugins, integrity}: {
+  async _addURLToCache({cacheKey, url, cacheMode, event, integrity}: {
     cacheKey: string;
     url: string;
     cacheMode: "reload" | "default" | "no-store" | "no-cache" | "force-cache" | "only-if-cached" | undefined;
     event?: ExtendableEvent;
-    plugins?: WorkboxPlugin[];
     integrity?: string;
   }) {
     const request = new Request(url, {
@@ -240,59 +357,11 @@ class PrecacheController {
       credentials: 'same-origin',
     });
 
-    let response = await fetchWrapper.fetch({
-      event,
-      plugins,
+    await Promise.all(this._getStrategy().handleAll({
+      params: {cacheKey},
       request,
-    });
-
-    // Allow developers to override the default logic about what is and isn't
-    // valid by passing in a plugin implementing cacheWillUpdate(), e.g.
-    // a `CacheableResponsePlugin` instance.
-    let cacheWillUpdatePlugin;
-    for (const plugin of (plugins || [])) {
-      if ('cacheWillUpdate' in plugin) {
-        cacheWillUpdatePlugin = plugin;
-      }
-    }
-
-    const isValidResponse = cacheWillUpdatePlugin ?
-      // Use a callback if provided. It returns a truthy value if valid.
-      // NOTE: invoke the method on the plugin instance so the `this` context
-      // is correct.
-      await cacheWillUpdatePlugin.cacheWillUpdate!({event, request, response}) :
-      // Otherwise, default to considering any response status under 400 valid.
-      // This includes, by default, considering opaque responses valid.
-      response.status < 400;
-
-    // Consider this a failure, leading to the `install` handler failing, if
-    // we get back an invalid response.
-    if (!isValidResponse) {
-      throw new WorkboxError('bad-precaching-response', {
-        url,
-        status: response.status,
-      });
-    }
-
-    // Redirected responses cannot be used to satisfy a navigation request, so
-    // any redirected response must be "copied" rather than cloned, so the new
-    // response doesn't contain the `redirected` flag. See:
-    // https://bugs.chromium.org/p/chromium/issues/detail?id=669363&desc=2#c1
-    if (response.redirected) {
-      response = await copyResponse(response);
-    }
-
-    await cacheWrapper.put({
       event,
-      plugins,
-      response,
-      // `request` already uses `url`. We may be able to reuse it.
-      request: cacheKey === url ? request : new Request(cacheKey),
-      cacheName: this._cacheName,
-      matchOptions: {
-        ignoreSearch: true,
-      },
-    });
+    }));
   }
 
   /**
@@ -330,7 +399,8 @@ class PrecacheController {
   }
 
   /**
-   * This acts as a drop-in replacement for [`cache.match()`](https://developer.mozilla.org/en-US/docs/Web/API/Cache/match)
+   * This acts as a drop-in replacement for
+   * [`cache.match()`](https://developer.mozilla.org/en-US/docs/Web/API/Cache/match)
    * with the following differences:
    *
    * - It knows what the name of the precache is, and only checks in that cache.
@@ -357,6 +427,36 @@ class PrecacheController {
   }
 
   /**
+   * Creates a [`matchCallback`]{@link module:workbox-precaching~matchCallback}
+   * based on the passed configuration options) that with will identify
+   * requests in the precache and return a respective `params` object
+   * containing the `cacheKey` of the precached asset.
+   *
+   * This `cacheKey` can be used by a
+   * [`handlerCallback`]{@link module:workbox-precaching~handlerCallback}
+   * to get the precached asset from the cache.
+   *
+   * @param {Object} [options] See
+   * [addRoute() options]{@link module:workbox-precaching.PrecacheController#addRoute}.
+   */
+  createMatchCallback(options?: FetchListenerOptions) {
+    return ({request}: RouteMatchCallbackOptions) => {
+      const urlsToCacheKeys = this.getURLsToCacheKeys();
+      for (const possibleURL of generateURLVariations(request.url, options)) {
+        const cacheKey = urlsToCacheKeys.get(possibleURL);
+        if (cacheKey) {
+          return {cacheKey};
+        }
+      }
+      if (process.env.NODE_ENV !== 'production') {
+        logger.debug(`Precaching did not find a match for ` +
+            getFriendlyURL(request.url));
+      }
+      return;
+    }
+  }
+
+  /**
    * Returns a function that can be used within a
    * {@link module:workbox-routing.Route} that will find a response for the
    * incoming request against the precache.
@@ -370,30 +470,18 @@ class PrecacheController {
    * @return {module:workbox-routing~handlerCallback}
    */
   createHandler(fallbackToNetwork = true): RouteHandlerCallback {
-    return async ({request}: RouteHandlerCallbackOptions) => {
-      try {
-        const response = await this.matchPrecache(request);
-        if (response) {
-          return response;
-        }
+    return (options: RouteHandlerCallbackOptions) => {
+      const request = options.request instanceof Request ?
+          options.request : new Request(options.request);
 
-        // This shouldn't normally happen, but there are edge cases:
-        // https://github.com/GoogleChrome/workbox/issues/1441
-        throw new WorkboxError('missing-precache-entry', {
-          cacheName: this._cacheName,
-          url: request instanceof Request ? request.url : request,
-        });
-      } catch (error) {
-        if (fallbackToNetwork) {
-          if (process.env.NODE_ENV !== 'production') {
-            logger.debug(`Unable to respond with precached response. ` +
-                `Falling back to network.`, error);
-          }
-          return fetch(request);
-        }
+      options.params = options.params || {};
 
-        throw error;
+      options.params.fallbackToNetwork = fallbackToNetwork;
+      if (!options.params.cacheKey) {
+        options.params.cacheKey = this.getCacheKeyForURL(request.url);
       }
+
+      return this._getStrategy().handle(options);
     };
   }
 
@@ -419,7 +507,26 @@ class PrecacheController {
 
     const handler = this.createHandler(fallbackToNetwork);
     const request = new Request(url);
-    return () => handler({request});
+
+    return (options) => handler(Object.assign(options, {request}));
+  }
+
+  _getStrategy(): Strategy {
+    // NOTE: this needs to be done lazily to match v5 behavior, since the
+    // `addPlugins()` method can be called at any time.
+    if (!this._strategy) {
+      this._strategy = new PrecacheStrategy({
+        cacheName: this._cacheName,
+        matchOptions: {
+          ignoreSearch: true,
+        },
+        plugins: [
+          this._cacheKeyPlugin,
+          ...this._plugins,
+        ],
+      });
+    }
+    return this._strategy;
   }
 }
 

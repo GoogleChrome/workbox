@@ -11,11 +11,11 @@ const replace = require('@rollup/plugin-replace');
 const resolve = require('@rollup/plugin-node-resolve');
 const multiEntry = require('@rollup/plugin-multi-entry');
 const commonjs = require('@rollup/plugin-commonjs');
-const {needsTranspile, queueTranspile} = require('../../../../gulp-tasks/transpile-typescript');
+const {needsTranspile, queueTranspile} = require('../../../../gulp-tasks/transpile-typescript').functions;
 const {getPackages} = require('../../../../gulp-tasks/utils/get-packages');
 
 
-const BROWSER_NAMESPACES = getPackages({type: 'browser'}).map((pkg) => {
+const SW_NAMESPACES = getPackages({type: 'sw'}).map((pkg) => {
   return pkg.workbox.browserNamespace;
 });
 
@@ -52,7 +52,7 @@ async function handler(req, res) {
         }),
         replace({
           'process.env.NODE_ENV': JSON.stringify(env),
-          'BROWSER_NAMESPACES': JSON.stringify(BROWSER_NAMESPACES),
+          'SW_NAMESPACES': JSON.stringify(SW_NAMESPACES),
           'WORKBOX_CDN_ROOT_URL': '/__WORKBOX/buildFile',
         }),
       ],
@@ -73,7 +73,6 @@ async function handler(req, res) {
 
     const {output} = await bundle.generate({format: 'iife'});
 
-    console.log(`Successfully built: ${req.url}`);
     res.send(output[0].code);
   } catch (error) {
     res.status(400).send('');

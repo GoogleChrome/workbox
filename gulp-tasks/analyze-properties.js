@@ -6,17 +6,16 @@
   https://opensource.org/licenses/MIT.
 */
 
-const gulp = require('gulp');
-
 const AnalyseBuildForProperties = require('./utils/analyse-properties');
 
-gulp.task('analyze-properties:run', async () => {
+async function analyze_properties() {
   const analysisTool = new AnalyseBuildForProperties();
   const results = await analysisTool.run();
-  results.forEach((entry) => {
-    analysisTool.printDetails(entry);
-  });
-});
+  for (const result of results) {
+    analysisTool.printDetails(result);
+  }
+}
 
-gulp.task('analyze-properties',
-    gulp.series(['build', 'analyze-properties:run']));
+module.exports = {
+  analyze_properties,
+};

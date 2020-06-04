@@ -9,9 +9,7 @@
 const glob = require('glob');
 const path = require('path');
 
-
 const DEFAULT_ROOT = path.join(__dirname, '..', '..');
-
 
 const getPackages = ({type, root = DEFAULT_ROOT} = {}) => {
   const pathToPkgJsons = glob.sync('packages/*/package.json', {cwd: root});
