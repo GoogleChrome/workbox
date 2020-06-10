@@ -325,7 +325,7 @@ describe(`Router`, function() {
       const router = new Router();
       router.setDefaultHandler(HANDLER);
 
-      expect(router._defaultHandler.get('GET')).to.eql(HANDLER);
+      expect(router._defaultHandlerMap.get('GET')).to.eql(HANDLER);
     });
 
     it(`should update the expected internal state, with specific methods`, function() {
@@ -333,9 +333,9 @@ describe(`Router`, function() {
       router.setDefaultHandler(HANDLER, 'POST');
       router.setDefaultHandler(HANDLER, 'PUT');
 
-      expect(router._defaultHandler.get('POST')).to.eql(HANDLER);
-      expect(router._defaultHandler.get('PUT')).to.eql(HANDLER);
-      expect(router._defaultHandler.get('GET')).to.not.exist;
+      expect(router._defaultHandlerMap.get('POST')).to.eql(HANDLER);
+      expect(router._defaultHandlerMap.get('PUT')).to.eql(HANDLER);
+      expect(router._defaultHandlerMap.get('GET')).to.not.exist;
     });
 
     it(`should return a response from the default handler when there's no matching route`, async function() {
