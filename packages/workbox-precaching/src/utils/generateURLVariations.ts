@@ -22,7 +22,7 @@ import '../_version.js';
  * @memberof module:workbox-precaching
  */
 export function* generateURLVariations(url: string, {
-  ignoreURLParametersMatching = [/^utm_/],
+  ignoreURLParametersMatching = [/^utm_/, /^fbclid$/],
   directoryIndex = 'index.html',
   cleanURLs = true,
   urlManipulation,

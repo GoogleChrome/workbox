@@ -52,10 +52,15 @@ describe(`[workbox-precaching] Precache and Update`, function() {
     requestCounter = global.__workbox.server.startCountingRequests();
 
     // Request the page and check that the precached assets weren't requested from the network.
+    // Include the default ignoreURLParametersMatching query parameters.
     await global.__workbox.webdriver.get(`${baseURL}index.html`);
+    await global.__workbox.webdriver.get(`${baseURL}index.html?utm_source=test`);
+    await global.__workbox.webdriver.get(`${baseURL}index.html?fbclid=test`);
 
     expect(requestCounter.getURLCount('/test/workbox-precaching/static/precache-and-update/')).to.eql(0);
     expect(requestCounter.getURLCount('/test/workbox-precaching/static/precache-and-update/index.html')).to.eql(0);
+    expect(requestCounter.getURLCount('/test/workbox-precaching/static/precache-and-update/index.html?utm_source=test')).to.eql(0);
+    expect(requestCounter.getURLCount('/test/workbox-precaching/static/precache-and-update/index.html?fbclid=test')).to.eql(0);
     expect(requestCounter.getURLCount('/test/workbox-precaching/static/precache-and-update/styles/index.css')).to.eql(0);
 
     // Unregister the old counter, and start a new count.
