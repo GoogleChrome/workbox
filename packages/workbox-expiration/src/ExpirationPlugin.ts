@@ -48,12 +48,15 @@ class ExpirationPlugin implements WorkboxPlugin {
    * Entries used the least will be removed as the maximum is reached.
    * @param {number} [config.maxAgeSeconds] The maximum age of an entry before
    * it's treated as stale and removed.
+   * @param {Object} [config.matchOptions] The [`CacheQueryOptions`](https://developer.mozilla.org/en-US/docs/Web/API/Cache/delete#Parameters)
+   * that will be used when calling `delete()` on the cache.
    * @param {boolean} [config.purgeOnQuotaError] Whether to opt this cache in to
    * automatic deletion if the available storage quota has been exceeded.
    */
   constructor(config: {
     maxEntries?: number;
     maxAgeSeconds?: number;
+    matchOptions?: CacheQueryOptions;
     purgeOnQuotaError?: boolean;
   } = {}) {
     if (process.env.NODE_ENV !== 'production') {
