@@ -321,11 +321,21 @@ describe(`Router`, function() {
   });
 
   describe(`setDefaultHandler()`, function() {
-    it(`should update the expected internal state`, function() {
+    it(`should update the expected internal state, with the default method`, function() {
       const router = new Router();
       router.setDefaultHandler(HANDLER);
 
-      expect(router._defaultHandler).to.eql(HANDLER);
+      expect(router._defaultHandlerMap.get('GET')).to.eql(HANDLER);
+    });
+
+    it(`should update the expected internal state, with specific methods`, function() {
+      const router = new Router();
+      router.setDefaultHandler(HANDLER, 'POST');
+      router.setDefaultHandler(HANDLER, 'PUT');
+
+      expect(router._defaultHandlerMap.get('POST')).to.eql(HANDLER);
+      expect(router._defaultHandlerMap.get('PUT')).to.eql(HANDLER);
+      expect(router._defaultHandlerMap.get('GET')).to.not.exist;
     });
 
     it(`should return a response from the default handler when there's no matching route`, async function() {
@@ -345,6 +355,34 @@ describe(`Router`, function() {
       const responseBody = await response.text();
 
       expect(responseBody).to.eql(EXPECTED_RESPONSE_BODY);
+    });
+
+    it(`should return a response from the default handler when there's no matching route, for a custom method`, async function() {
+      const router = new Router();
+      const route = new Route(
+          () => false,
+          () => new Response(),
+      );
+      router.registerRoute(route);
+      router.setDefaultHandler(() => new Response(EXPECTED_RESPONSE_BODY), 'POST');
+
+      const postRequest = new Request(location, {method: 'POST'});
+      const postEvent = new FetchEvent('fetch', {request: postRequest});
+      const postResponse = await router.handleRequest({
+        request: postRequest,
+        event: postEvent,
+      });
+      expect(postResponse).to.exist;
+      const postResponseBody = await postResponse.text();
+      expect(postResponseBody).to.eql(EXPECTED_RESPONSE_BODY);
+
+      const getRequest = new Request(location, {method: 'GET'});
+      const getEvent = new FetchEvent('fetch', {request: getRequest});
+      const getResponse = await router.handleRequest({
+        request: getRequest,
+        event: getEvent,
+      });
+      expect(getResponse).to.not.exist;
     });
   });
 
