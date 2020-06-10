@@ -46,7 +46,7 @@ interface CacheURLsMessageData {
  */
 class Router {
   private readonly _routes: Map<HTTPMethod, Route[]>;
-  private readonly _defaultHandler: Map<HTTPMethod, HandlerObject>;
+  private readonly _defaultHandlerMap: Map<HTTPMethod, HandlerObject>;
   private _catchHandler?: HandlerObject;
 
   /**
@@ -54,7 +54,7 @@ class Router {
    */
   constructor() {
     this._routes = new Map();
-    this._defaultHandler = new Map();
+    this._defaultHandlerMap = new Map();
   }
 
   /**
@@ -199,12 +199,12 @@ class Router {
     // If we don't have a handler because there was no matching route, then
     // fall back to defaultHandler if that's defined.
     const method = request.method as HTTPMethod;
-    if (!handler && this._defaultHandler.has(method)) {
+    if (!handler && this._defaultHandlerMap.has(method)) {
       if (process.env.NODE_ENV !== 'production') {
         debugMessages.push(`Failed to find a matching route. Falling ` +
           `back to the default handler for ${method}.`);
       }
-      handler = this._defaultHandler.get(method);
+      handler = this._defaultHandlerMap.get(method);
     }
 
     if (!handler) {
@@ -318,7 +318,7 @@ class Router {
    * default handler. Each method has its own default.
    */
   setDefaultHandler(handler: Handler, method: HTTPMethod = defaultMethod) {
-    this._defaultHandler.set(method, normalizeHandler(handler));
+    this._defaultHandlerMap.set(method, normalizeHandler(handler));
   }
 
   /**
