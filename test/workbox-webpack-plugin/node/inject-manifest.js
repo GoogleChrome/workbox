@@ -1448,6 +1448,59 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         });
       }
     });
+
+    it(`should only log once per invocation when using multiple plugin instances`, async function() {
+      const outputDir = tempy.directory();
+      const config = {
+        mode: 'production',
+        entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        output: {
+          filename: '[name].[hash:6].js',
+          path: outputDir,
+        },
+        plugins: [
+          new InjectManifest({
+            swSrc: SW_SRC,
+            swDest: 'service-worker1.js',
+          }),
+          new InjectManifest({
+            swSrc: SW_SRC,
+            swDest: 'service-worker2.js',
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      for (const i of [1, 2, 3]) {
+        await new Promise((resolve, reject) => {
+          compiler.run(async (webpackError, stats) => {
+            try {
+              if (webpackError) {
+                throw new Error(webpackError.message);
+              }
+
+              const statsJson = stats.toJson('verbose');
+              expect(statsJson.errors).to.have.length(0);
+
+              // There should be a single warning logged after the first compilation.
+              // See https://github.com/GoogleChrome/workbox/issues/1790#issuecomment-640132556
+              if (i > 1) {
+                expect(statsJson.warnings).to.have.length(1);
+              } else {
+                expect(statsJson.warnings).to.have.length(0);
+              }
+
+              const files = await globby('**', {cwd: outputDir});
+              expect(files).to.have.length(3);
+
+              resolve();
+            } catch (error) {
+              reject(new Error(`Failure during compilation ${i}: ${error}`));
+            }
+          });
+        });
+      }
+    });
   });
 
   describe(`[workbox-webpack-plugin] Multiple plugin instances`, function() {
