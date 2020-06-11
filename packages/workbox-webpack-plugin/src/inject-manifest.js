@@ -251,14 +251,14 @@ class InjectManifest {
     // See https://github.com/GoogleChrome/workbox/issues/1790
     if (this.alreadyCalled) {
       const warningMessage = `${this.constructor.name} has been called ` +
-        `multiple times, perhaps due to running webpack in --watch mode. The ` +
-        `precache manifest generated after the first call may be inaccurate! ` +
-        `Please see https://github.com/GoogleChrome/workbox/issues/1790 for ` +
-        `more information.`;
+      `multiple times, perhaps due to running webpack in --watch mode. The ` +
+      `precache manifest generated after the first call may be inaccurate! ` +
+      `Please see https://github.com/GoogleChrome/workbox/issues/1790 for ` +
+      `more information.`;
 
-        if (!compilation.warnings.includes(warningMessage)) {
-          compilation.warnings.push(warningMessage);
-        }
+      if (!compilation.warnings.includes(warningMessage)) {
+        compilation.warnings.push(warningMessage);
+      }
     } else {
       this.alreadyCalled = true;
     }
