@@ -29,7 +29,7 @@ import './_version.js';
  * default runtime cache name.
  *
  * Whenever a cached request is used or updated, this plugin will look
- * at the associated and remove any old or extra requests.
+ * at the associated cache and remove any old or extra requests.
  *
  * When using `maxAgeSeconds`, requests may be used *once* after expiring
  * because the expiration clean up will not have occurred until *after* the
