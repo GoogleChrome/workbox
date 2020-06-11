@@ -8,4 +8,4 @@
 
 // A really light wrapper on top of Node's require() to make it easier to stub
 // out reading the configuration during tests.
-module.exports = (configFile) => require(configFile);
+export function readConfig(configFile: string):any{require(configFile)};

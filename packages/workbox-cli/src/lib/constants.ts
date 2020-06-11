@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-module.exports = {
+export const constants = {
   defaultConfigFile: 'workbox-config.js',
   ignoredDirectories: [
     'node_modules',

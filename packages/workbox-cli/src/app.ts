@@ -6,28 +6,44 @@
   https://opensource.org/licenses/MIT.
 */
 
-const assert = require('assert');
-const ol = require('common-tags').oneLine;
-const upath = require('upath');
-const prettyBytes = require('pretty-bytes');
-const watch = require('glob-watcher');
-const workboxBuild = require('workbox-build');
+import * as assert from 'assert';
+import {oneLine as ol} from 'common-tags';
+import * as upath from 'upath';
+import * as prettyBytes from 'pretty-bytes';
+import * as watch from 'glob-watcher';
+import * as workboxBuild from 'workbox-build';
 
-const constants = require('./lib/constants');
-const errors = require('./lib/errors');
-const logger = require('./lib/logger');
-const readConfig = require('./lib/read-config');
-const runWizard = require('./lib/run-wizard');
+import {constants} from './lib/constants.js';
+import {errors} from './lib/errors.js';
+import {logger} from './lib/logger.js';
+import {readConfig} from './lib/read-config.js';
+import {runWizard} from './lib/run-wizard.js';
+import * as meow from 'meow';
+
+
+interface BuildCommand {
+  command: string;
+  config: Config;
+  watch: boolean;
+}
+
+interface Config {
+  swDest: string;
+  globIgnores: string[];
+  globDirectory: string;
+  globPatterns: string[];
+}
 
 /**
  * Runs the specified build command with the provided configuration.
  *
  * @param {Object} options
  */
-async function runBuildCommand({command, config, watch}) {
+async function runBuildCommand({command, config, watch}: BuildCommand) {
   try {
     const {count, filePaths, size, warnings} =
-        await workboxBuild[command](config);
+        await (workboxBuild as any)[command](config); //FIX this is dubious
+        
 
     for (const warning of warnings) {
       logger.warn(warning);
@@ -38,7 +54,7 @@ async function runBuildCommand({command, config, watch}) {
     } else {
       const message = filePaths
           .sort()
-          .map((filePath) => `  • ${filePath}`)
+          .map((filePath: string) => `  • ${filePath}`)
           .join(`\n`);
       logger.log(`The service worker files were written to:\n${message}`);
     }
@@ -60,7 +76,7 @@ async function runBuildCommand({command, config, watch}) {
   }
 }
 
-module.exports = async (params = {}) => {
+export const app = async (params: meow.Result<any>) => {
   // This should not be a user-visible error, unless meow() messes something up.
   assert(Array.isArray(params.input), errors['missing-input']);
 
@@ -92,7 +108,7 @@ module.exports = async (params = {}) => {
       const configPath = upath.resolve(process.cwd(),
           option || constants.defaultConfigFile);
 
-      let config;
+      let config: Config;
       try {
         config = readConfig(configPath);
       } catch (error) {
@@ -104,7 +120,7 @@ module.exports = async (params = {}) => {
 
       // Determine whether we're in --watch mode, or one-off mode.
       if (params.flags && params.flags.watch) {
-        const options = {ignoreInitial: false};
+        const options: watch.WatchOptions = {ignoreInitial: false}
         if (config.globIgnores) {
           options.ignored = config.globIgnores;
         }
