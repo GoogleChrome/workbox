@@ -3,7 +3,7 @@
 # Welcome to Workbox!
 
 Workbox is a collection of JavaScript libraries for
-[Progressive Web Apps](https://developers.google.com/web/progressive-web-apps/).
+[Progressive Web Apps](https://web.dev/progressive-web-apps/).
 
 ## Documentation
 
