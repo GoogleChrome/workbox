@@ -8,7 +8,6 @@
 
 import {Workbox} from '/__WORKBOX/buildFile/workbox-window';
 
-
 const isDev = () => {
   return self.process && self.process.env &&
       self.process.env.NODE_ENV !== 'production';
@@ -44,7 +43,6 @@ const uniq = (() => {
     return url.toString();
   };
 })();
-
 
 const stubAlreadyControllingSW = async (scriptURL) => {
   await navigator.serviceWorker.register(scriptURL);
@@ -518,6 +516,47 @@ describe(`[workbox-window] Workbox`, function() {
     });
   });
 
+  describe(`messageSkipWaiting`, function() {
+    it(`posts the expected message to the waiting service worker`, async function() {
+      const scriptURL = uniq('sw-skip-waiting-on-message.js.njk');
+      const wb = new Workbox(scriptURL);
+
+      const waitingSWPromise = new Promise((resolve) => {
+        wb.addEventListener('waiting', (event) => resolve(event.sw));
+      });
+
+      await wb.register();
+      const waitingSW = await waitingSWPromise;
+
+      const postMessageSpy = sandbox.spy(waitingSW, 'postMessage');
+
+      const controllingSWPromise = new Promise((resolve) => {
+        wb.addEventListener('controlling', (event) => resolve(event.sw));
+      });
+
+      wb.messageSkipWaiting();
+
+      // Confirm that the right postMessage() is sent.
+      expect(postMessageSpy.callCount).to.eql(1);
+      expect(postMessageSpy.firstCall.args[0]).to.eql({type: 'SKIP_WAITING'});
+      expect(postMessageSpy.firstCall.args[1][0]).to.be.instanceOf(MessagePort);
+
+      const controllingSW = await controllingSWPromise;
+
+      // Confirm that the service worker associated with this test takes control.
+      expect(controllingSW.scriptURL).to.eql(scriptURL);
+    });
+
+    it(`does nothing if there's no waiting service worker`, async function() {
+      const wb = new Workbox(uniq('sw-skip-waiting.js.njk'));
+      await wb.register();
+
+      // This should be a no-op.
+      // Just ensure that there's no exceptions thrown, etc.
+      wb.messageSkipWaiting();
+    });
+  });
+
   describe(`events`, function() {
     describe(`message`, function() {
       it(`fires when a postMessage is received from the SW`, async function() {
@@ -939,7 +978,7 @@ describe(`[workbox-window] Workbox`, function() {
           toFake: ['performance'],
         });
 
-        const scriptURL = uniq('sw-skip-waiting-on-mesage.js.njk');
+        const scriptURL = uniq('sw-skip-waiting-on-message.js.njk');
         const wb = new Workbox(scriptURL);
         const reg = await wb.register();
 
