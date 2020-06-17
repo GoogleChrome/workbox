@@ -7,7 +7,7 @@
 */
 
 import * as assert from 'assert';
-import {prompt, Answers} from 'inquirer';
+import {prompt} from 'inquirer';
 import * as glob from 'glob';
 import * as ora from 'ora';
 import * as upath from 'upath';
@@ -23,7 +23,7 @@ const name = 'globPatterns';
  * @return {Promise<Array<string>>} The unique file extensions corresponding
  * to all of the files under globDirectory.
  */
-async function getAllFileExtensions(globDirectory: string): Promise<Array<string>> {
+async function getAllFileExtensions(globDirectory: string) {
   const files: string[] = await new Promise((resolve, reject) => {
     // Use a pattern to match any file that contains a '.', since that signifies
     // the presence of a file extension.
@@ -59,7 +59,7 @@ async function getAllFileExtensions(globDirectory: string): Promise<Array<string
  * @param {string} globDirectory The directory used for the root of globbing.
  * @return {Promise<Object>} The answers from inquirer.
  */
-async function askQuestion(globDirectory: string): Promise<Answers> {
+async function askQuestion(globDirectory: string) {
   // We need to get a list of extensions corresponding to files in the directory
   // to use when asking the next question. That could potentially take some
   // time, so we show a spinner and explanatory text.

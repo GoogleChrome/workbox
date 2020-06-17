@@ -17,6 +17,12 @@ import {cleanupStackTrace} from './lib/cleanup-stack-trace.js';
 import {helpText} from'./lib/help-text';
 import {logger} from './lib/logger';
 
+export interface SupportedFlags extends meow.AnyFlags {
+  debug: meow.BooleanFlag;
+  injectManifest: meow.BooleanFlag;
+  watch: meow.BooleanFlag;
+}
+
 (async () => {
   const params: meow.Result<any> = meow(helpText);
   updateNotifier({pkg: params.pkg as updateNotifier.Package}).notify(); //FIX This is dubious

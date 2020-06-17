@@ -18,21 +18,17 @@ import {errors} from './lib/errors.js';
 import {logger} from './lib/logger.js';
 import {readConfig} from './lib/read-config.js';
 import {runWizard} from './lib/run-wizard.js';
+import {SupportedFlags} from './bin.js'
 import * as meow from 'meow';
+import { InjectManifestConfig, GenerateSWConfig } from 'workbox-build';
 
 
 interface BuildCommand {
-  command: string;
-  config: Config;
+  command: 'generateSW'|'injectManifest';
+  config: GenerateSWConfig & InjectManifestConfig;
   watch: boolean;
 }
 
-interface Config {
-  swDest: string;
-  globIgnores: string[];
-  globDirectory: string;
-  globPatterns: string[];
-}
 
 /**
  * Runs the specified build command with the provided configuration.
@@ -42,7 +38,7 @@ interface Config {
 async function runBuildCommand({command, config, watch}: BuildCommand) {
   try {
     const {count, filePaths, size, warnings} =
-        await (workboxBuild as any)[command](config); //FIX this is dubious
+        await workboxBuild[command](config);
         
 
     for (const warning of warnings) {
@@ -54,7 +50,7 @@ async function runBuildCommand({command, config, watch}: BuildCommand) {
     } else {
       const message = filePaths
           .sort()
-          .map((filePath: string) => `  • ${filePath}`)
+          .map((filePath) => `  • ${filePath}`)
           .join(`\n`);
       logger.log(`The service worker files were written to:\n${message}`);
     }
@@ -76,7 +72,7 @@ async function runBuildCommand({command, config, watch}: BuildCommand) {
   }
 }
 
-export const app = async (params: meow.Result<any>) => {
+export const app = async (params: meow.Result<SupportedFlags>) => {
   // This should not be a user-visible error, unless meow() messes something up.
   assert(Array.isArray(params.input), errors['missing-input']);
 
@@ -108,7 +104,7 @@ export const app = async (params: meow.Result<any>) => {
       const configPath = upath.resolve(process.cwd(),
           option || constants.defaultConfigFile);
 
-      let config: Config;
+      let config: GenerateSWConfig & InjectManifestConfig;
       try {
         config = readConfig(configPath);
       } catch (error) {
@@ -127,9 +123,12 @@ export const app = async (params: meow.Result<any>) => {
         if (config.globDirectory) {
           options.cwd = config.globDirectory;
         }
-
-        watch(config.globPatterns, options,
+        
+        if (config.globPatterns) {
+          watch(config.globPatterns, options,
             () => runBuildCommand({command, config, watch: true}));
+        }
+        
       } else {
         await runBuildCommand({command, config, watch: false});
       }

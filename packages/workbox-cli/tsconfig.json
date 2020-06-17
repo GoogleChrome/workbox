@@ -2,7 +2,7 @@
   "extends": "../../tsconfig",
   "compilerOptions": {
     "module": "commonjs",
-    "outDir": "./",
+    "outDir": "./src",
     "rootDir": "./src",
     "target": "ES6",
     "tsBuildInfoFile": "./tsconfig.tsbuildinfo"

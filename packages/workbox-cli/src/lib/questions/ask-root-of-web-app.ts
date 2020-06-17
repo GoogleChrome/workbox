@@ -9,7 +9,7 @@
 import * as assert from 'assert';
 import * as fse from 'fs-extra';
 import * as glob from 'glob';
-import {prompt, Answers, Separator} from 'inquirer';
+import {prompt, Separator} from 'inquirer';
 import {oneLine as ol} from 'common-tags';
 
 import {errors} from '../errors';
@@ -41,7 +41,7 @@ async function getSubdirectories(): Promise<Array<string>> {
 /**
  * @return {Promise<Object>} The answers from inquirer.
  */
-async function askQuestion(): Promise<Answers> {
+async function askQuestion() {
   const subdirectories = await getSubdirectories();
 
   if (subdirectories.length > 0) {
@@ -52,12 +52,12 @@ async function askQuestion(): Promise<Answers> {
       message: ol`What is the root of your web app (i.e. which directory do
         you deploy)?`,
       choices: subdirectories.concat([
-        new Separator() as unknown as string, //FIX This is kinda funky, but was triggering type error
+        new Separator().toString(),
         manualEntryChoice,
       ]),
     }, {
       name,
-      when: (answers) => answers[name] === manualEntryChoice,
+      when: (answers: { [x: string]: string; }) => answers[name] === manualEntryChoice,
       message: ROOT_PROMPT,
     }]);
   } else {

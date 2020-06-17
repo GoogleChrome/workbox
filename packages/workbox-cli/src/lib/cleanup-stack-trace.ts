@@ -11,11 +11,14 @@
 // Removes every stack frame earlier than the last instance of moduleName,
 // since that's just frames related to the Node runtime/loader.
 export function cleanupStackTrace(error: Error, moduleName: string) {
-  const frames = error?.stack?.split(`\n`);
-  let startFrame = -1;
+  if (!error.stack) {
+    return '';
+  }
+  const frames = error.stack.split(`\n`);
+  let startFrame: number | undefined;
   let lastFrame = 0;
-  frames?.forEach((frame, index) => {
-    if (startFrame === -1 && frame.includes(`    at `)) {
+  frames.forEach((frame, index) => {
+    if (startFrame === undefined && frame.includes(`    at `)) {
       startFrame = index;
     }
 
@@ -23,5 +26,5 @@ export function cleanupStackTrace(error: Error, moduleName: string) {
       lastFrame = index;
     }
   });
-  return frames?.slice(startFrame, lastFrame + 1).join(`\n`);
+  return frames.slice(startFrame, lastFrame + 1).join(`\n`);
 };

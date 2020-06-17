@@ -7,7 +7,7 @@
 */
 
 import * as assert from 'assert';
-import {prompt, Answers} from 'inquirer';
+import {prompt} from 'inquirer';
 import {oneLine as ol} from 'common-tags';
 
 import {constants} from '../constants';
@@ -19,7 +19,7 @@ const name = 'configLocation';
 /**
  * @return {Promise<Object>} The answers from inquirer.
  */
-function askQuestion(): Promise<Answers> {
+function askQuestion() {
   return prompt([{
     name,
     message: ol`Where would you like to save these configuration options?`,
