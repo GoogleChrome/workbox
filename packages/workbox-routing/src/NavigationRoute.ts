@@ -8,8 +8,10 @@
 
 import {assert} from 'workbox-core/_private/assert.js';
 import {logger} from 'workbox-core/_private/logger.js';
+import {RouteHandler, RouteMatchCallbackOptions} from 'workbox-core/types.js';
+
 import {Route} from './Route.js';
-import {Handler, MatchCallbackOptions} from './_types.js';
+
 import './_version.js';
 
 export interface NavigationRouteMatchOptions {
@@ -55,7 +57,7 @@ class NavigationRoute extends Route {
    * match the URL's pathname and search parameter, the route will handle the
    * request (assuming the denylist doesn't match).
    */
-  constructor(handler: Handler,
+  constructor(handler: RouteHandler,
       {allowlist = [/./], denylist = []}: NavigationRouteMatchOptions = {}) {
     if (process.env.NODE_ENV !== 'production') {
       assert!.isArrayOfClass(allowlist, RegExp, {
@@ -72,7 +74,7 @@ class NavigationRoute extends Route {
       });
     }
 
-    super((options: MatchCallbackOptions) => this._match(options), handler);
+    super((options: RouteMatchCallbackOptions) => this._match(options), handler);
 
     this._allowlist = allowlist;
     this._denylist = denylist;
@@ -88,7 +90,7 @@ class NavigationRoute extends Route {
    *
    * @private
    */
-  private _match({url, request}: MatchCallbackOptions): boolean {
+  private _match({url, request}: RouteMatchCallbackOptions): boolean {
     if (request && request.mode !== 'navigate') {
       return false;
     }

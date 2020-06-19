@@ -6,24 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {
-  RouteHandler,
-  RouteHandlerObject,
-  RouteHandlerCallback,
-  RouteHandlerCallbackOptions,
-  RouteMatchCallback,
-  RouteMatchCallbackOptions
-} from 'workbox-core/types.js';
 import './_version.js';
-
- export {
-  RouteHandler as Handler,
-  RouteHandlerObject as HandlerObject,
-  RouteHandlerCallback as HandlerCallback,
-  RouteHandlerCallbackOptions as HandlerCallbackOptions,
-  RouteMatchCallback as MatchCallback,
-  RouteMatchCallbackOptions as MatchCallbackOptions,
-}
 
 // * * * IMPORTANT! * * *
 // ------------------------------------------------------------------------- //

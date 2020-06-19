@@ -12,15 +12,15 @@ import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
 import {logger} from 'workbox-core/_private/logger.js';
 import {timeout} from 'workbox-core/_private/timeout.js';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
-import {MapLikeObject, RouteHandlerCallbackOptions, WorkboxPlugin, WorkboxPluginCallbackParam} from 'workbox-core/types.js';
+import {
+  HandlerCallbackOptions,
+  MapLikeObject,
+  WorkboxPlugin,
+  WorkboxPluginCallbackParam,
+} from 'workbox-core/types.js';
 
 import {Strategy} from './Strategy.js';
 import './_version.js';
-
-
-export interface StrategyHandlerOptions extends RouteHandlerCallbackOptions {
-  request: Request;
-}
 
 function toRequest(input: RequestInfo) {
   return (typeof input === 'string') ? new Request(input) : input;
@@ -64,7 +64,7 @@ class StrategyHandler {
    *     [match callback]{@link module:workbox-routing~matchCallback},
    *     (if applicable).
    */
-  constructor(strategy: Strategy, options: StrategyHandlerOptions) {
+  constructor(strategy: Strategy, options: HandlerCallbackOptions) {
     /**
      * The request the strategy is performing (passed to the strategy's
      * `handle()` or `handleAll()` method).

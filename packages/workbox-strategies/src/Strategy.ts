@@ -7,23 +7,18 @@
 */
 
 import {cacheNames} from 'workbox-core/_private/cacheNames.js';
-import {MapLikeObject, RouteHandlerObject, RouteHandlerCallbackOptions, WorkboxPlugin} from 'workbox-core/types.js';
-import {StrategyHandler} from './StrategyHandler.js';
-import './_version.js';
+import {HandlerCallbackOptions, RouteHandlerObject, WorkboxPlugin}
+    from 'workbox-core/types.js';
 
+import {StrategyHandler} from './StrategyHandler.js';
+
+import './_version.js';
 
 export interface StrategyOptions {
   cacheName?: string;
   plugins?: WorkboxPlugin[];
   fetchOptions?: RequestInit;
   matchOptions?: CacheQueryOptions;
-}
-
-type StrategyHandlerOptions = {
-  request: Request;
-  event?: ExtendableEvent;
-  response?: Response;
-  params?: string[] | MapLikeObject;
 }
 
 /**
@@ -115,7 +110,7 @@ abstract class Strategy implements RouteHandlerObject {
    * @param {URL} [options.url]
    * @param {*} [options.params]
    */
-  handle(options: FetchEvent | RouteHandlerCallbackOptions): Promise<Response> {
+  handle(options: HandlerCallbackOptions): Promise<Response> {
     const [responseDone] = this.handleAll(options);
     return responseDone;
   }
@@ -140,7 +135,7 @@ abstract class Strategy implements RouteHandlerObject {
    *     promises that can be used to determine when the response resolves as
    *     well as when the handler has completed all its work.
    */
-  handleAll(options: FetchEvent | RouteHandlerCallbackOptions): [
+  handleAll(options: HandlerCallbackOptions | FetchEvent): [
     Promise<Response>,
     Promise<void>,
    ] {
@@ -150,12 +145,14 @@ abstract class Strategy implements RouteHandlerObject {
         event: options,
         request: options.request,
       };
-    } else if (typeof options.request === 'string') {
-      // `options.request` can be a string, similar to what `fetch()` accepts.
-      options.request = new Request(options.request);
     }
 
-    const {event, request, params} = options as StrategyHandlerOptions;
+    const event = options.event;
+    const request = typeof options.request === 'string' ?
+        new Request(options.request) :
+        options.request;
+    const params = 'params' in options ? options.params : undefined;
+
     const handler = new StrategyHandler(this, {event, request, params});
 
     const responseDone = this._getResponse(handler, request, event);
