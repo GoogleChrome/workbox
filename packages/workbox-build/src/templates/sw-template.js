@@ -29,7 +29,7 @@ importScripts(
 <% if (cacheId) { %><%= use('workbox-core', 'setCacheNameDetails') %>({prefix: <%= JSON.stringify(cacheId) %>});<% } %>
 
 <% if (skipWaiting) { %>
-<%= use('workbox-core', 'skipWaiting') %>();
+self.skipWaiting();
 <% } else { %>
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
