@@ -41,9 +41,6 @@ const SKIP_WAITING_MESSAGE = {type: 'SKIP_WAITING'};
  * @fires [controlling]{@link module:workbox-window.Workbox#controlling}
  * @fires [activated]{@link module:workbox-window.Workbox#activated}
  * @fires [redundant]{@link module:workbox-window.Workbox#redundant}
- * @fires [externalinstalled]{@link module:workbox-window.Workbox#externalinstalled}
- * @fires [externalwaiting]{@link module:workbox-window.Workbox#externalwaiting}
- * @fires [externalactivated]{@link module:workbox-window.Workbox#externalactivated}
  * @memberof module:workbox-window
  */
 class Workbox extends WorkboxEventTarget {
@@ -415,18 +412,22 @@ class Workbox extends WorkboxEventTarget {
     const sw = originalEvent.target as ServiceWorker;
     const {state} = sw;
     const isExternal = sw === this._externalSW;
-    const eventPrefix = isExternal ? 'external' : '';
 
-    const eventProps: {sw: ServiceWorker; originalEvent: Event; isUpdate?: boolean} = {
+    const eventProps: {
+      sw: ServiceWorker;
+      originalEvent: Event;
+      isUpdate?: boolean;
+      isExternal: boolean;
+    } = {
       sw,
+      isExternal,
       originalEvent
     };
     if (!isExternal && this._isUpdate) {
       eventProps.isUpdate = true;
     }
 
-    this.dispatchEvent(new WorkboxEvent(
-        eventPrefix + state as keyof WorkboxLifecycleEventMap, eventProps));
+    this.dispatchEvent(new WorkboxEvent(state as keyof WorkboxLifecycleEventMap, eventProps));
 
     if (state === 'installed') {
       // This timeout is used to ignore cases where the service worker calls
@@ -440,8 +441,7 @@ class Workbox extends WorkboxEventTarget {
       this._waitingTimeout = self.setTimeout(() => {
         // Ensure the SW is still waiting (it may now be redundant).
         if (state === 'installed' && registration.waiting === sw) {
-          this.dispatchEvent(new WorkboxEvent(
-              eventPrefix + 'waiting' as keyof WorkboxLifecycleEventMap, eventProps));
+          this.dispatchEvent(new WorkboxEvent('waiting', eventProps));
 
           if (process.env.NODE_ENV !== 'production') {
             if (isExternal) {
@@ -575,6 +575,8 @@ export {Workbox};
  *     event.
  * @property {boolean|undefined} isUpdate True if a service worker was already
  *     controlling when this `Workbox` instance called `register()`.
+ * @property {boolean|undefined} isExternal True if this event is associated
+ *     with an [external service worker]{@link https://developers.google.com/web/tools/workbox/modules/workbox-window#when_an_unexpected_version_of_the_service_worker_is_found}.
  * @property {string} type `installed`.
  * @property {Workbox} target The `Workbox` instance.
  */
@@ -598,6 +600,8 @@ export {Workbox};
  *     to before `.register()` was called.
  * @property {boolean|undefined} isUpdate True if a service worker was already
  *     controlling when this `Workbox` instance called `register()`.
+ * @property {boolean|undefined} isExternal True if this event is associated
+ *     with an [external service worker]{@link https://developers.google.com/web/tools/workbox/modules/workbox-window#when_an_unexpected_version_of_the_service_worker_is_found}.
  * @property {boolean|undefined} wasWaitingBeforeRegister True if a service worker with
  *     a matching `scriptURL` was already waiting when this `Workbox`
  *     instance called `register()`.
@@ -638,6 +642,8 @@ export {Workbox};
  *     event.
  * @property {boolean|undefined} isUpdate True if a service worker was already
  *     controlling when this `Workbox` instance called `register()`.
+ * @property {boolean|undefined} isExternal True if this event is associated
+ *     with an [external service worker]{@link https://developers.google.com/web/tools/workbox/modules/workbox-window#when_an_unexpected_version_of_the_service_worker_is_found}.
  * @property {string} type `activated`.
  * @property {Workbox} target The `Workbox` instance.
  */
@@ -659,44 +665,3 @@ export {Workbox};
  * @property {Workbox} target The `Workbox` instance.
  */
 
-/**
- * The `externalinstalled` event is dispatched if the state of an
- * [external service worker]{@link https://developers.google.com/web/tools/workbox/modules/workbox-window#when_an_unexpected_version_of_the_service_worker_is_found}
- * changes to `installed`.
- *
- * @event module:workbox-window.Workbox#externalinstalled
- * @type {WorkboxEvent}
- * @property {ServiceWorker} sw The service worker instance.
- * @property {Event} originalEvent The original [`statechange`]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker/onstatechange}
- *     event.
- * @property {string} type `externalinstalled`.
- * @property {Workbox} target The `Workbox` instance.
- */
-
-/**
- * The `externalwaiting` event is dispatched if the state of an
- * [external service worker]{@link https://developers.google.com/web/tools/workbox/modules/workbox-window#when_an_unexpected_version_of_the_service_worker_is_found}
- * changes to `waiting`.
- *
- * @event module:workbox-window.Workbox#externalwaiting
- * @type {WorkboxEvent}
- * @property {ServiceWorker} sw The service worker instance.
- * @property {Event} originalEvent The original [`statechange`]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker/onstatechange}
- *     event.
- * @property {string} type `externalwaiting`.
- * @property {Workbox} target The `Workbox` instance.
- */
-
-/**
- * The `externalactivated` event is dispatched if the state of an
- * [external service worker]{@link https://developers.google.com/web/tools/workbox/modules/workbox-window#when_an_unexpected_version_of_the_service_worker_is_found}
- * changes to `activated`.
- *
- * @event module:workbox-window.Workbox#externalactivated
- * @type {WorkboxEvent}
- * @property {ServiceWorker} sw The service worker instance.
- * @property {Event} originalEvent The original [`statechange`]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker/onstatechange}
- *     event.
- * @property {string} type `externalactivated`.
- * @property {Workbox} target The `Workbox` instance.
- */
