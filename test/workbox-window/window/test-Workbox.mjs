@@ -80,9 +80,9 @@ const updateVersion = async (version, scriptURL) => {
 const assertMatchesWorkboxEvent = (event, props) => {
   for (const [key, value] of Object.entries(props)) {
     if (key === 'originalEvent' && typeof value !== 'undefined') {
-      expect(event.originalEvent.type).to.equal(value.type);
+      expect(event.originalEvent.type, `${key} doesn't match`).to.equal(value.type);
     } else {
-      expect(event[key]).to.equal(value);
+      expect(event[key], `${key} doesn't match`).to.equal(value);
     }
   }
 };
@@ -654,16 +654,31 @@ describe(`[workbox-window] Workbox`, function() {
         await wb3.register();
         await nextEvent(wb3, 'installed');
 
-        expect(installed1Spy.callCount).to.equal(1);
+        expect(installed1Spy.callCount).to.equal(2);
         assertMatchesWorkboxEvent(installed1Spy.args[0][0], {
           type: 'installed',
           target: wb1,
           sw: await wb1.getSW(),
           originalEvent: {type: 'statechange'},
           isUpdate: true,
+          isExternal: false,
+        });
+        assertMatchesWorkboxEvent(installed1Spy.args[1][0], {
+          type: 'installed',
+          target: wb1,
+          sw: await wb3.getSW(),
+          originalEvent: {type: 'statechange'},
+          isExternal: true,
         });
 
-        expect(installed2Spy.callCount).to.equal(0);
+        expect(installed2Spy.callCount).to.equal(1);
+        assertMatchesWorkboxEvent(installed2Spy.args[0][0], {
+          type: 'installed',
+          target: wb2,
+          sw: await wb3.getSW(),
+          originalEvent: {type: 'statechange'},
+          isExternal: true,
+        });
 
         expect(installed3Spy.callCount).to.equal(1);
         assertMatchesWorkboxEvent(installed3Spy.args[0][0], {
@@ -672,6 +687,7 @@ describe(`[workbox-window] Workbox`, function() {
           sw: await wb3.getSW(),
           originalEvent: {type: 'statechange'},
           isUpdate: true,
+          isExternal: false,
         });
       });
     });
@@ -703,9 +719,19 @@ describe(`[workbox-window] Workbox`, function() {
           sw: await wb1.getSW(),
           originalEvent: {type: 'statechange'},
           wasWaitingBeforeRegister: undefined,
+          isExternal: false,
         });
 
-        expect(waiting2Spy.callCount).to.equal(0);
+        expect(waiting2Spy.callCount).to.equal(1);
+        assertMatchesWorkboxEvent(waiting1Spy.args[0][0], {
+          type: 'waiting',
+          target: wb1,
+          sw: await wb1.getSW(),
+          originalEvent: {type: 'statechange'},
+          wasWaitingBeforeRegister: undefined,
+          isExternal: false,
+
+        });
 
         expect(waiting3Spy.callCount).to.equal(1);
         assertMatchesWorkboxEvent(waiting3Spy.args[0][0], {
@@ -714,6 +740,7 @@ describe(`[workbox-window] Workbox`, function() {
           sw: await wb3.getSW(),
           originalEvent: {type: 'statechange'},
           wasWaitingBeforeRegister: undefined,
+          isExternal: false,
         });
       });
 
@@ -769,9 +796,17 @@ describe(`[workbox-window] Workbox`, function() {
           target: wb1,
           sw: await wb1.getSW(),
           originalEvent: {type: 'statechange'},
+          isExternal: false,
         });
 
-        expect(activated2Spy.callCount).to.equal(0);
+        expect(activated2Spy.callCount).to.equal(1);
+        assertMatchesWorkboxEvent(activated1Spy.args[0][0], {
+          type: 'activated',
+          target: wb1,
+          sw: await wb1.getSW(),
+          originalEvent: {type: 'statechange'},
+          isExternal: false,
+        });
 
         expect(activated3Spy.callCount).to.equal(1);
         assertMatchesWorkboxEvent(activated3Spy.args[0][0], {
@@ -779,6 +814,7 @@ describe(`[workbox-window] Workbox`, function() {
           target: wb3,
           sw: await wb3.getSW(),
           originalEvent: {type: 'statechange'},
+          isExternal: false,
         });
       });
     });
@@ -878,30 +914,44 @@ describe(`[workbox-window] Workbox`, function() {
       });
     });
 
-    describe(`externalinstalled`, function() {
+    describe(`isExternal logic`, function() {
       it(`runs when an external SW is found and installed`, async function() {
         const wb1 = new Workbox(uniq('sw-clients-claim.js.njk'));
         const externalInstalled1Spy = sandbox.spy();
-        wb1.addEventListener('externalinstalled', externalInstalled1Spy);
+        wb1.addEventListener('installed', externalInstalled1Spy);
         await wb1.register();
         await wb1.controlling;
 
         const wb2 = new Workbox(uniq('sw-no-skip-waiting.js.njk'));
         const externalInstalled2Spy = sandbox.spy();
-        wb2.addEventListener('externalinstalled', externalInstalled2Spy);
+        wb2.addEventListener('installed', externalInstalled2Spy);
         await wb2.register();
         await nextEvent(wb2, 'installed');
 
-        expect(externalInstalled1Spy.callCount).to.equal(1);
+        expect(externalInstalled1Spy.callCount).to.equal(2);
         assertMatchesWorkboxEvent(externalInstalled1Spy.args[0][0], {
-          type: 'externalinstalled',
+          type: 'installed',
+          target: wb1,
+          sw: await wb1.getSW(),
+          originalEvent: {type: 'statechange'},
+          isExternal: false,
+        });
+        assertMatchesWorkboxEvent(externalInstalled1Spy.args[1][0], {
+          type: 'installed',
           target: wb1,
           sw: await wb2.getSW(),
           originalEvent: {type: 'statechange'},
+          isExternal: true,
         });
 
-        // Assert the same method on the second instance isn't called.
-        expect(externalInstalled2Spy.callCount).to.equal(0);
+        expect(externalInstalled2Spy.callCount).to.equal(1);
+        assertMatchesWorkboxEvent(externalInstalled2Spy.args[0][0], {
+          type: 'installed',
+          target: wb2,
+          sw: await wb2.getSW(),
+          originalEvent: {type: 'statechange'},
+          isExternal: false,
+        });
       });
 
       it(`runs when an updated version of the registered SW is found after the update timeout`, async function() {
@@ -924,7 +974,7 @@ describe(`[workbox-window] Workbox`, function() {
         });
 
         const externalInstalledSpy = sandbox.spy();
-        wb.addEventListener('externalinstalled', externalInstalledSpy);
+        wb.addEventListener('installed', externalInstalledSpy);
 
         // Let more than an hour pass.
         clock.tick(60001);
@@ -934,146 +984,138 @@ describe(`[workbox-window] Workbox`, function() {
 
         expect(externalInstalledSpy.callCount).to.equal(1);
         assertMatchesWorkboxEvent(externalInstalledSpy.args[0][0], {
-          type: 'externalinstalled',
+          type: 'installed',
           target: wb,
           sw: updatedSW,
           originalEvent: {type: 'statechange'},
+          isExternal: true,
         });
       });
     });
 
-    describe(`externalwaiting`, function() {
-      it(`runs when an external SW is waiting`, async function() {
-        const wb1 = new Workbox(uniq('sw-clients-claim.js.njk'));
-        const waiting1Spy = sandbox.spy();
-        wb1.addEventListener('waiting', waiting1Spy);
-        const externalWaiting1Spy = sandbox.spy();
-        wb1.addEventListener('externalwaiting', externalWaiting1Spy);
-        await wb1.register();
-        await nextEvent(wb1, 'controlling');
+    it(`runs when an external SW is waiting`, async function() {
+      const wb1 = new Workbox(uniq('sw-clients-claim.js.njk'));
+      const externalWaiting1Spy = sandbox.spy();
+      wb1.addEventListener('waiting', externalWaiting1Spy);
+      await wb1.register();
+      await nextEvent(wb1, 'controlling');
 
-        const wb2 = new Workbox(uniq('sw-no-skip-waiting.js.njk'));
-        const waiting2Spy = sandbox.spy();
-        wb2.addEventListener('waiting', waiting2Spy);
-        const externalWaiting2Spy = sandbox.spy();
-        wb2.addEventListener('externalwaiting', externalWaiting2Spy);
-        await wb2.register();
-        await nextEvent(wb2, 'waiting');
+      const wb2 = new Workbox(uniq('sw-no-skip-waiting.js.njk'));
+      const externalWaiting2Spy = sandbox.spy();
+      wb2.addEventListener('waiting', externalWaiting2Spy);
+      await wb2.register();
+      await nextEvent(wb2, 'waiting');
 
-        expect(waiting1Spy.callCount).to.equal(0);
-        expect(externalWaiting1Spy.callCount).to.equal(1);
-        assertMatchesWorkboxEvent(externalWaiting1Spy.args[0][0], {
-          type: 'externalwaiting',
-          target: wb1,
-          sw: await wb2.getSW(),
-          originalEvent: {type: 'statechange'},
-        });
-
-        expect(waiting2Spy.callCount).to.equal(1);
-        expect(externalWaiting2Spy.callCount).to.equal(0);
+      expect(externalWaiting1Spy.callCount).to.equal(1);
+      assertMatchesWorkboxEvent(externalWaiting1Spy.args[0][0], {
+        type: 'waiting',
+        target: wb1,
+        sw: await wb2.getSW(),
+        originalEvent: {type: 'statechange'},
       });
 
-      it(`runs when an updated version of the registered SW is found after the update timeout and is waiting to activate`, async function() {
-        const clock = sandbox.useFakeTimers({
-          toFake: ['performance'],
-        });
-
-        const scriptURL = uniq('sw-skip-waiting-on-message.js.njk');
-        const wb = new Workbox(scriptURL);
-        const reg = await wb.register();
-
-        wb.messageSW({type: 'SKIP_WAITING'});
-        await wb.controlling;
-
-        // Update the SW after so an update check triggers an update.
-        await updateVersion('2.0.0', scriptURL);
-
-        let updatedSW;
-        reg.addEventListener('updatefound', () => {
-          updatedSW = reg.installing;
-        });
-
-        const externalWaitingSpy = sandbox.spy();
-        wb.addEventListener('externalwaiting', externalWaitingSpy);
-
-        // Let more than an hour pass.
-        clock.tick(60001);
-
-        wb.update();
-        await waitUntil(() => externalWaitingSpy.callCount === 1);
-
-        expect(externalWaitingSpy.callCount).to.equal(1);
-        assertMatchesWorkboxEvent(externalWaitingSpy.args[0][0], {
-          type: 'externalwaiting',
-          target: wb,
-          sw: updatedSW,
-          originalEvent: {type: 'statechange'},
-        });
+      expect(externalWaiting2Spy.callCount).to.equal(1);
+      assertMatchesWorkboxEvent(externalWaiting2Spy.args[0][0], {
+        type: 'waiting',
+        target: wb2,
+        sw: await wb2.getSW(),
+        originalEvent: {type: 'statechange'},
       });
     });
 
-    describe(`externalactivated`, function() {
-      it(`runs when an external SW is found and activated`, async function() {
-        const wb1 = new Workbox(uniq('sw-clients-claim.js.njk'));
-        const externalActivated1Spy = sandbox.spy();
-        wb1.addEventListener('externalactivated', externalActivated1Spy);
-
-        await wb1.register();
-        await wb1.controlling;
-
-        const wb2 = new Workbox(uniq('sw-skip-waiting.js.njk'));
-        const externalActivated2Spy = sandbox.spy();
-        wb2.addEventListener('externalactivated', externalActivated2Spy);
-        await wb2.register();
-        await nextEvent(wb2, 'activated');
-
-        expect(externalActivated1Spy.callCount).to.equal(1);
-        assertMatchesWorkboxEvent(externalActivated1Spy.args[0][0], {
-          type: 'externalactivated',
-          target: wb1,
-          sw: await wb2.getSW(),
-          originalEvent: {type: 'statechange'},
-        });
-
-        // Assert the same method on the second instance isn't called.
-        expect(externalActivated2Spy.callCount).to.equal(0);
+    it(`runs when an updated version of the registered SW is found after the update timeout and is waiting to activate`, async function() {
+      const clock = sandbox.useFakeTimers({
+        toFake: ['performance'],
       });
 
-      it(`runs when an updated version of the registered SW is found after the update timeout and has activated`, async function() {
-        const clock = sandbox.useFakeTimers({
-          toFake: ['performance'],
-        });
+      const scriptURL = uniq('sw-skip-waiting-on-message.js.njk');
+      const wb = new Workbox(scriptURL);
+      const reg = await wb.register();
 
-        const scriptURL = navigator.serviceWorker.controller.scriptURL;
+      wb.messageSW({type: 'SKIP_WAITING'});
+      await wb.controlling;
 
-        const wb = new Workbox(scriptURL);
-        const reg = await wb.register();
-        await wb.controlling;
+      // Update the SW after so an update check triggers an update.
+      await updateVersion('2.0.0', scriptURL);
 
-        // Update the SW after so an update check triggers an update.
-        await updateVersion('2.0.0', scriptURL);
+      let updatedSW;
+      reg.addEventListener('updatefound', () => {
+        updatedSW = reg.installing;
+      });
 
-        let updatedSW;
-        reg.addEventListener('updatefound', () => {
-          updatedSW = reg.installing;
-        });
+      const externalWaitingSpy = sandbox.spy();
+      wb.addEventListener('waiting', externalWaitingSpy);
 
-        const externalActivatedSpy = sandbox.spy();
-        wb.addEventListener('externalactivated', externalActivatedSpy);
+      // Let more than an hour pass.
+      clock.tick(60001);
 
-        // Let more than an hour pass.
-        clock.tick(60001);
+      wb.update();
+      await waitUntil(() => externalWaitingSpy.callCount === 1);
 
-        wb.update();
-        await waitUntil(() => externalActivatedSpy.callCount === 1);
+      expect(externalWaitingSpy.callCount).to.equal(1);
+      assertMatchesWorkboxEvent(externalWaitingSpy.args[0][0], {
+        type: 'waiting',
+        target: wb,
+        sw: updatedSW,
+        originalEvent: {type: 'statechange'},
+      });
+    });
 
-        expect(externalActivatedSpy.callCount).to.equal(1);
-        assertMatchesWorkboxEvent(externalActivatedSpy.args[0][0], {
-          type: 'externalactivated',
-          target: wb,
-          sw: updatedSW,
-          originalEvent: {type: 'statechange'},
-        });
+    it(`runs when an external SW is found and activated`, async function() {
+      const wb1 = new Workbox(uniq('sw-clients-claim.js.njk'));
+      await wb1.register();
+      await nextEvent(wb1, 'activated');
+
+      const externalActivated1Spy = sandbox.spy();
+      wb1.addEventListener('activated', externalActivated1Spy);
+
+      const wb2 = new Workbox(uniq('sw-skip-waiting.js.njk'));
+      await wb2.register();
+      await nextEvent(wb2, 'activated');
+
+      assertMatchesWorkboxEvent(externalActivated1Spy.args[0][0], {
+        type: 'activated',
+        target: wb1,
+        sw: await wb2.getSW(),
+        originalEvent: {type: 'statechange'},
+        isExternal: true,
+      });
+    });
+
+    it(`runs when an updated version of the registered SW is found after the update timeout and has activated`, async function() {
+      const clock = sandbox.useFakeTimers({
+        toFake: ['performance'],
+      });
+
+      const scriptURL = navigator.serviceWorker.controller.scriptURL;
+
+      const wb = new Workbox(scriptURL);
+      const reg = await wb.register();
+      await wb.controlling;
+
+      // Update the SW after so an update check triggers an update.
+      await updateVersion('2.0.0', scriptURL);
+
+      let updatedSW;
+      reg.addEventListener('updatefound', () => {
+        updatedSW = reg.installing;
+      });
+
+      const externalActivatedSpy = sandbox.spy();
+      wb.addEventListener('activated', externalActivatedSpy);
+
+      // Let more than an hour pass.
+      clock.tick(60001);
+
+      wb.update();
+      await waitUntil(() => externalActivatedSpy.callCount === 1);
+
+      expect(externalActivatedSpy.callCount).to.equal(1);
+      assertMatchesWorkboxEvent(externalActivatedSpy.args[0][0], {
+        type: 'activated',
+        target: wb,
+        sw: updatedSW,
+        originalEvent: {type: 'statechange'},
       });
     });
 
