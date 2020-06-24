@@ -15,7 +15,7 @@ import '../_version.js';
 interface MatchWrapperOptions {
   cacheName: string;
   request: Request;
-  event?: ExtendableEvent;
+  event: ExtendableEvent;
   plugins?: WorkboxPlugin[];
   matchOptions?: CacheQueryOptions;
 }

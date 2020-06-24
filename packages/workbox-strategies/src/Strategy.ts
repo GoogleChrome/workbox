@@ -110,7 +110,7 @@ abstract class Strategy implements RouteHandlerObject {
    * @param {URL} [options.url]
    * @param {*} [options.params]
    */
-  handle(options: HandlerCallbackOptions): Promise<Response> {
+  handle(options: FetchEvent | HandlerCallbackOptions): Promise<Response> {
     const [responseDone] = this.handleAll(options);
     return responseDone;
   }

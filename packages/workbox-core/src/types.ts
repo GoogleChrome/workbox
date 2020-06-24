@@ -58,8 +58,8 @@ export interface RouteHandlerCallbackOptions {
  * Options passed to a `ManualHandlerCallback` function.
  */
 export interface ManualHandlerCallbackOptions {
+  event: ExtendableEvent;
   request: Request | string;
-  event?: ExtendableEvent;
 }
 
 export type HandlerCallbackOptions =
@@ -85,8 +85,8 @@ export interface RouteHandlerCallback {
  * If a non-empty array or object is returned by the `RouteMatchCallback` it
  * will be passed in as this handler's `options.params` argument.
  */
-export interface HandlerCallback {
-  (options: HandlerCallbackOptions): Promise<Response>;
+export interface ManualHandlerCallback {
+  (options: ManualHandlerCallbackOptions): Promise<Response>;
 }
 
 /**
