@@ -59,7 +59,7 @@ describe(`StrategyHandler`, function() {
       if (process.env.NODE_ENV === 'production') {
         return this.skip();
       }
-  
+
       await expectError(
           () => new StrategyHandler(new TestStrategy(), {}),
           'incorrect-class',
