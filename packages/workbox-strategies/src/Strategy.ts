@@ -162,7 +162,7 @@ abstract class Strategy implements RouteHandlerObject {
     return [responseDone, handlerDone];
   }
 
-  async _getResponse(handler: StrategyHandler, request: Request, event?: ExtendableEvent) {
+  async _getResponse(handler: StrategyHandler, request: Request, event: ExtendableEvent) {
     await handler.runCallbacks('handlerWillStart', {event, request});
     let response = await this._handle(request, handler);
 
@@ -172,7 +172,7 @@ abstract class Strategy implements RouteHandlerObject {
     return response;
   }
 
-  async _awaitComplete(responseDone: Promise<Response>, handler: StrategyHandler, request: Request, event?: ExtendableEvent) {
+  async _awaitComplete(responseDone: Promise<Response>, handler: StrategyHandler, request: Request, event: ExtendableEvent) {
     let response;
     let error;
 
