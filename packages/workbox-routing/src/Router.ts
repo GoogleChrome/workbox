@@ -270,7 +270,7 @@ class Router {
    * @param {Object} options
    * @param {URL} options.url
    * @param {Request} options.request The request to match.
-   * @param {Event} [options.event] The corresponding event (unless N/A).
+   * @param {Event} options.event The corresponding event.
    * @return {Object} An object with `route` and `params` properties.
    *     They are populated if a matching route was found or `undefined`
    *     otherwise.
@@ -310,7 +310,7 @@ class Router {
   /**
    * Define a default `handler` that's called when no routes explicitly
    * match the incoming request.
-   * 
+   *
    * Each HTTP method ('GET', 'POST', etc.) gets its own default handler.
    *
    * Without a default handler, unmatched requests will go against the

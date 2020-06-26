@@ -57,11 +57,11 @@ class StrategyHandler {
    *
    * @param {module:workbox-strategies.Strategy} strategy
    * @param {Object} options
-   * @param {ExtendableEvent} options.event An event associated with this
+   * @param {Request|string} options.request A request to run this strategy for.
+   * @param {ExtendableEvent} options.event The event associated with the
    *     request.
-   * @param {Request} [options.request] The request the strategy is performing.
-   * @param {URL} [options.url] A `URL` instance of `request.url`, if passed.
-   * @param {*} [options.params] Parameters returned by the Route's
+   * @param {URL} [options.url]
+   * @param {*} [options.params]
    *     [match callback]{@link module:workbox-routing~matchCallback},
    *     (if applicable).
    */

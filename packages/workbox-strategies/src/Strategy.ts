@@ -104,9 +104,11 @@ abstract class Strategy implements RouteHandlerObject {
    * Alternatively, this method can be used in a standalone `FetchEvent`
    * listener by passing it to `event.respondWith()`.
    *
-   * @param {Object} options
+   * @param {FetchEvent|Object} options A `FetchEvent` or an object with the
+   *     properties listed below.
    * @param {Request|string} options.request A request to run this strategy for.
-   * @param {ExtendableEvent} [options.event]
+   * @param {ExtendableEvent} options.event The event associated with the
+   *     request.
    * @param {URL} [options.url]
    * @param {*} [options.params]
    */
@@ -126,16 +128,18 @@ abstract class Strategy implements RouteHandlerObject {
    * You can await the `done` promise to ensure any extra work performed by
    * the strategy (usually caching responses) completes successfully.
    *
-   * @param {Object} options
+   * @param {FetchEvent|Object} options A `FetchEvent` or an object with the
+   *     properties listed below.
    * @param {Request|string} options.request A request to run this strategy for.
-   * @param {ExtendableEvent} [options.event]
+   * @param {ExtendableEvent} options.event The event associated with the
+   *     request.
    * @param {URL} [options.url]
    * @param {*} [options.params]
    * @return {Array<Promise>} A tuple of [response, done]
    *     promises that can be used to determine when the response resolves as
    *     well as when the handler has completed all its work.
    */
-  handleAll(options: HandlerCallbackOptions | FetchEvent): [
+  handleAll(options: FetchEvent | HandlerCallbackOptions): [
     Promise<Response>,
     Promise<void>,
    ] {
