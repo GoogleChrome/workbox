@@ -275,18 +275,19 @@ class PrecacheController {
       }
     }
 
-    const precacheRequests = toBePrecached.map(({cacheKey, url}) => {
+    // Cache entries one at a time.
+    // See https://github.com/GoogleChrome/workbox/issues/2528
+    for (const {cacheKey, url} of toBePrecached) {
       const integrity = this._cacheKeysToIntegrities.get(cacheKey);
       const cacheMode = this._urlsToCacheModes.get(url);
-      return this._addURLToCache({
+      await this._addURLToCache({
         cacheKey,
         cacheMode,
         event,
         integrity,
         url,
       });
-    });
-    await Promise.all(precacheRequests);
+    }
 
     const updatedURLs = toBePrecached.map((item) => item.url);
 
