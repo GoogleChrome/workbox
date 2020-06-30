@@ -254,10 +254,12 @@ class Workbox extends WorkboxEventTarget {
    *
    * @return {Promise<ServiceWorker>}
    */
-  async getSW(): Promise<ServiceWorker> {
+  getSW(): Promise<ServiceWorker> {
     // If `this._sw` is set, resolve with that as we want `getSW()` to
     // return the correct (new) service worker if an update is found.
-    return this._sw !== undefined ? this._sw : this._swDeferred.promise;
+    return this._sw !== undefined ?
+      Promise.resolve(this._sw) :
+      this._swDeferred.promise;
   }
 
   /**
