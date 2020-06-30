@@ -7,13 +7,9 @@
 */
 
 import {messageGenerator} from '../models/messages/messageGenerator.js';
+import {MapLikeObject} from '../types.js';
 import '../_version.js';
 
-// TODO(philipwalton): remove once the switch to TypeScript is complete and
-// we no longer need the `assert` module.
-export interface WorkboxErrorDetails {
-  [propName: string]: any;
-}
 
 /**
  * Workbox errors should be thrown with this class.
@@ -26,7 +22,7 @@ export interface WorkboxErrorDetails {
  */
 class WorkboxError extends Error {
   name: string;
-  details?: WorkboxErrorDetails;
+  details?: MapLikeObject;
 
   /**
    *
@@ -36,7 +32,7 @@ class WorkboxError extends Error {
    * that will help developers identify issues should
    * be added as a key on the context object.
    */
-  constructor(errorCode: string, details?: WorkboxErrorDetails) {
+  constructor(errorCode: string, details?: MapLikeObject) {
     const message = messageGenerator(errorCode, details);
 
     super(message);

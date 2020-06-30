@@ -20,6 +20,7 @@ export class WorkboxEvent<K extends keyof WorkboxEventMap> {
   target?: WorkboxEventTarget;
   sw?: ServiceWorker;
   originalEvent?: Event;
+  isExternal?: boolean;
 
   constructor(public type: K, props: Omit<WorkboxEventMap[K], 'target' | 'type'>) {
     Object.assign(this, props);
@@ -46,11 +47,6 @@ export interface WorkboxLifecycleEventMap {
   'activating': WorkboxLifecycleEvent;
   'activated': WorkboxLifecycleEvent;
   'controlling': WorkboxLifecycleEvent;
-  'externalinstalling': WorkboxLifecycleEvent;
-  'externalinstalled': WorkboxLifecycleEvent;
-  'externalwaiting': WorkboxLifecycleWaitingEvent;
-  'externalactivating': WorkboxLifecycleEvent;
-  'externalactivated': WorkboxLifecycleEvent;
   'redundant': WorkboxLifecycleEvent;
 }
 

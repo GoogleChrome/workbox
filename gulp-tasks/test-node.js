@@ -6,22 +6,19 @@
   https://opensource.org/licenses/MIT.
 */
 
-const gulp = require('gulp');
-const oneLine = require('common-tags').oneLine;
-const glob = require('glob');
+const {series} = require('gulp');
+const execa = require('execa');
 const fse = require('fs-extra');
-const path = require('path');
+const glob = require('glob');
+const ol = require('common-tags').oneLine;
+const upath = require('upath');
 
-const spawn = require('./utils/spawn-promise-wrapper');
-const getNpmCmd = require('./utils/get-npm-cmd');
 const constants = require('./utils/constants');
 const logHelper = require('../infra/utils/log-helper');
 
-const runNodeTestSuite = async (testPath, nodeEnv) => {
-  logHelper.log(oneLine`
-    Running Node test on ${logHelper.highlight(testPath)}
-    with NODE_ENV '${nodeEnv}'
-  `);
+async function runNodeTestSuite(testPath, nodeEnv) {
+  logHelper.log(ol`Running node test on ${logHelper.highlight(testPath)}
+      with NODE_ENV '${nodeEnv}'`);
 
   const options = [];
   if (global.cliOptions.grep) {
@@ -31,20 +28,22 @@ const runNodeTestSuite = async (testPath, nodeEnv) => {
 
   process.env.NODE_ENV = nodeEnv;
   try {
-    await spawn(getNpmCmd(), ['run', 'test', '--',
+    const {stdout} = await execa('nyc', [
+      '--clean', 'false',
+      '--silent',
+      'mocha',
+      '--timeout', '60000',
       `${testPath}/**/*.{js,mjs}`,
       ...options,
-    ]);
-    process.env.NODE_ENV = originalNodeEnv;
-  } catch (err) {
-    process.env.NODE_ENV = originalNodeEnv;
+    ], {preferLocal: true});
 
-    logHelper.error(err);
-    throw new Error(`[Workbox Error Msg] 'gulp test-node' discovered errors.`);
+    console.log(stdout);
+  } finally {
+    process.env.NODE_ENV = originalNodeEnv;
   }
-};
+}
 
-const runNodeTestsWithEnv = async (testGroup, nodeEnv) => {
+async function runNodeTestsWithEnv(testGroup, nodeEnv) {
   const globConfig = {
     ignore: [
       '**/all/**',
@@ -59,40 +58,48 @@ const runNodeTestsWithEnv = async (testGroup, nodeEnv) => {
   for (const packageToTest of packagesToTest) {
     await runNodeTestSuite(packageToTest, nodeEnv);
   }
-};
+}
 
-gulp.task('test-node:prod', gulp.series(
-    () => runNodeTestsWithEnv(global.packageOrStar, constants.BUILD_TYPES.prod),
-));
+async function test_node_prod() {
+  await runNodeTestsWithEnv(global.packageOrStar, constants.BUILD_TYPES.prod);
+}
 
-gulp.task('test-node:dev', gulp.series(
-    () => runNodeTestsWithEnv(global.packageOrStar, constants.BUILD_TYPES.dev),
-));
+async function test_node_dev() {
+  await runNodeTestsWithEnv(global.packageOrStar, constants.BUILD_TYPES.dev);
+}
 
-gulp.task('test-node:all', gulp.series(
-    () => runNodeTestsWithEnv('all', constants.BUILD_TYPES.prod),
-));
+async function test_node_all() {
+  await runNodeTestsWithEnv('all', constants.BUILD_TYPES.prod);
+}
 
-gulp.task('test-node:clean', () => {
-  return fse.remove(path.join(__dirname, '..', '.nyc_output'));
-});
+async function test_node_clean() {
+  await fse.remove(upath.join(__dirname, '..', '.nyc_output'));
+}
 
-gulp.task('test-node:coverage', () => {
-  const runOptions = ['run', 'coverage-report'];
+async function test_node_coverage() {
+  const runOptions = [];
   if (global.packageOrStar !== '*') {
-    runOptions.push('--');
     runOptions.push('--include');
     runOptions.push(
-        path.posix.join('packages', global.packageOrStar, '**', '*'),
+        upath.join('packages', global.packageOrStar, '**', '*'),
     );
   }
-  return spawn(getNpmCmd(), runOptions);
-});
 
-gulp.task('test-node', gulp.series(
-    'test-node:clean',
-    'test-node:dev',
-    'test-node:prod',
-    'test-node:all',
-    'test-node:coverage',
-));
+  const {stdout} = await execa('nyc', [
+    'report',
+    '--reporter', 'lcov',
+    '--reporter', 'text',
+    ...runOptions,
+  ], {preferLocal: true});
+
+  console.log(stdout);
+}
+
+module.exports = {
+  test_node_all,
+  test_node_coverage,
+  test_node_dev,
+  test_node_prod,
+  test_node: series(test_node_clean, test_node_dev, test_node_prod,
+      test_node_all, test_node_coverage),
+};

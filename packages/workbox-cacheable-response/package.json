@@ -14,14 +14,9 @@
     "sw",
     "workbox-plugin"
   ],
-  "scripts": {
-    "build": "gulp build-packages --package workbox-cacheable-response",
-    "version": "npm run build",
-    "prepare": "npm run build"
-  },
   "workbox": {
     "browserNamespace": "workbox.cacheableResponse",
-    "packageType": "browser"
+    "packageType": "sw"
   },
   "main": "index.js",
   "module": "index.mjs",

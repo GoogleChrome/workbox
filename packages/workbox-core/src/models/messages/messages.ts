@@ -6,15 +6,12 @@
   https://opensource.org/licenses/MIT.
 */
 
+import {MapLikeObject} from '../../types.js';
 import '../../_version.js';
 
 
-interface MessageParam {
-  [key: string]: any;
-}
-
 interface MessageMap {
-  [messageID: string]: (param: MessageParam) => string;
+  [messageID: string]: (param: MapLikeObject) => string;
 }
 
 export const messages: MessageMap = {
@@ -246,8 +243,8 @@ export const messages: MessageMap = {
   },
 
   'bad-precaching-response': ({url, status}) => {
-    return `The precaching request for '${url}' failed with an HTTP ` +
-      `status of ${status}.`;
+    return `The precaching request for '${url}' failed` +
+        (status ? ` with an HTTP status of ${status}.` : `.`);
   },
 
   'non-precached-url': ({url}) => {
@@ -263,5 +260,10 @@ export const messages: MessageMap = {
 
   'missing-precache-entry': ({cacheName, url}) => {
     return `Unable to find a precached response in ${cacheName} for ${url}.`;
+  },
+
+  'cross-origin-copy-response': ({origin}) => {
+    return `workbox-core.copyResponse() can only be used with same-origin ` +
+      `responses. It was passed a response with origin ${origin}.`;
   },
 };

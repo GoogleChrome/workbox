@@ -6,8 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
+import {RouteHandler} from 'workbox-core/types.js';
+
 import {getOrCreateDefaultRouter} from './utils/getOrCreateDefaultRouter.js';
-import {Handler} from './_types.js';
+
 import './_version.js';
 
 
@@ -23,9 +25,9 @@ import './_version.js';
  *
  * @memberof module:workbox-routing
  */
-function setDefaultHandler(handler: Handler) {
+function setDefaultHandler(handler: RouteHandler) {
   const defaultRouter = getOrCreateDefaultRouter();
   defaultRouter.setDefaultHandler(handler);
 }
 
-export {setDefaultHandler}
+export {setDefaultHandler};

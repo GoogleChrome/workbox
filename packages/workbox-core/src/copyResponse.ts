@@ -7,8 +7,9 @@
 */
 
 import {canConstructResponseFromBodyStream} from './_private/canConstructResponseFromBodyStream.js';
-import './_version.js';
+import {WorkboxError} from './_private/WorkboxError.js';
 
+import './_version.js';
 
 /**
  * Allows developers to copy a response and modify its `headers`, `status`,
@@ -21,6 +22,9 @@ import './_version.js';
  * be used as the `ResponseInit` for the new `Response`. To change the values
  * either modify the passed parameter(s) and return it, or return a totally
  * new object.
+ * 
+ * This method is intentionally limited to same-origin responses, regardless of
+ * whether CORS was used or not.
  *
  * @param {Response} response
  * @param {Function} modifier
@@ -30,6 +34,17 @@ async function copyResponse(
   response: Response,
   modifier?: (responseInit: ResponseInit) => ResponseInit
 ) {
+  let origin = null;
+  // If response.url isn't set, assume it's cross-origin and keep origin null.
+  if (response.url) {
+    const responseURL = new URL(response.url);
+    origin = responseURL.origin;
+  }
+
+  if (origin !== self.location.origin) {
+    throw new WorkboxError('cross-origin-copy-response', {origin});
+  }
+
   const clonedResponse = response.clone();
 
   // Create a fresh `ResponseInit` object by cloning the headers.

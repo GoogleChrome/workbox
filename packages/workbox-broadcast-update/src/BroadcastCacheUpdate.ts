@@ -105,7 +105,7 @@ class BroadcastCacheUpdate {
    * @param {Request} options.request The request.
    * @param {string} options.cacheName Name of the cache the responses belong
    *     to. This is included in the broadcast message.
-   * @param {Event} [options.event] event An optional event that triggered
+   * @param {Event} options.event event The event that triggered
    *     this possible cache update.
    * @return {Promise} Resolves once the update is sent.
    */

@@ -24,7 +24,7 @@ module.exports = {
   inlineWorkboxRuntime: false,
   maximumFileSizeToCacheInBytes: 2 * 1024 * 1024,
   mode: 'production',
-  navigateFallback: undefined,
+  navigateFallback: null,
   navigationPreload: false,
   offlineGoogleAnalytics: false,
   purgeOnQuotaError: true,

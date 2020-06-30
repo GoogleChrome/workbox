@@ -15,7 +15,6 @@ const {runUnitTests} = require('../../../infra/testing/webdriver/runUnitTests');
 const {unregisterAllSWs} = require('../../../infra/testing/webdriver/unregisterAllSWs');
 const {windowLoaded} = require('../../../infra/testing/webdriver/windowLoaded');
 
-
 // Store local references of these globals.
 const {webdriver, server, seleniumBrowser} = global.__workbox;
 
@@ -164,7 +163,6 @@ describe(`[workbox-window] Workbox`, function() {
       await executeAsyncAndCatch(async (cb) => {
         try {
           const wb = new Workbox('sw-clients-claim.js.njk');
-          await wb.register();
 
           // Use a global variable so these are accessible to future
           // `executeAsyncAndCatch()` calls.
@@ -173,19 +171,17 @@ describe(`[workbox-window] Workbox`, function() {
             waitingSpy: sinon.spy(),
             activatedSpy: sinon.spy(),
             controllingSpy: sinon.spy(),
-            externalInstalledSpy: sinon.spy(),
-            externalActivatedSpy: sinon.spy(),
           };
 
           wb.addEventListener('installed', self.__spies.installedSpy);
           wb.addEventListener('waiting', self.__spies.waitingSpy);
           wb.addEventListener('controlling', self.__spies.controllingSpy);
           wb.addEventListener('activated', self.__spies.activatedSpy);
-          wb.addEventListener('externalinstalled', self.__spies.externalInstalledSpy);
-          wb.addEventListener('externalactivated', self.__spies.externalActivatedSpy);
 
           // Resolve this execution block once the SW is activated.
           wb.addEventListener('activated', () => cb());
+
+          await wb.register();
         } catch (error) {
           cb({error: error.stack});
         }
@@ -200,10 +196,11 @@ describe(`[workbox-window] Workbox`, function() {
       await executeAsyncAndCatch(async (cb) => {
         try {
           const wb = new Workbox('sw-clients-claim.js.njk');
-          await wb.register();
 
           // Resolve this execution block once the SW has activated.
           wb.addEventListener('activated', () => cb());
+
+          await wb.register();
         } catch (error) {
           cb({error: error.stack});
         }
@@ -217,26 +214,30 @@ describe(`[workbox-window] Workbox`, function() {
       const result = await executeAsyncAndCatch(async (cb) => {
         try {
           cb({
-            installedSpyCallCount: self.__spies.installedSpy.callCount,
-            waitingSpyCallCount: self.__spies.waitingSpy.callCount,
-            activatedSpyCallCount: self.__spies.activatedSpy.callCount,
-            controllingSpyCallCount: self.__spies.controllingSpy.callCount,
-            externalInstalledSpyCallCount: self.__spies.externalInstalledSpy.callCount,
-            externalActivatedSpyCallCount: self.__spies.externalActivatedSpy.callCount,
+            installedSpyArgs: JSON.stringify(self.__spies.installedSpy.args),
+            waitingSpyArgs: JSON.stringify(self.__spies.waitingSpy.args),
+            activatedSpyArgs: JSON.stringify(self.__spies.activatedSpy.args),
+            controllingSpyArgs: JSON.stringify(self.__spies.controllingSpy.args),
           });
         } catch (error) {
           cb({error: error.stack});
         }
       });
 
-      expect(result.installedSpyCallCount).to.equal(1);
-      expect(result.activatedSpyCallCount).to.equal(1);
-      expect(result.controllingSpyCallCount).to.equal(1);
-      expect(result.externalInstalledSpyCallCount).to.equal(1);
-      expect(result.externalActivatedSpyCallCount).to.equal(1);
+      const installedSpyArgs = JSON.parse(result.installedSpyArgs);
+      const waitingSpyArgs = JSON.parse(result.waitingSpyArgs);
+      const activatedSpyArgs = JSON.parse(result.activatedSpyArgs);
+      const controllingSpyArgs = JSON.parse(result.controllingSpyArgs);
 
-      // The waiting phase should have been skipped.
-      expect(result.waitingSpyCallCount).to.equal(0);
+      expect(installedSpyArgs.length).to.eql(2);
+      expect(waitingSpyArgs.length).to.eql(0);
+      expect(activatedSpyArgs.length).to.eql(2);
+      expect(controllingSpyArgs.length).to.eql(1);
+
+      expect(installedSpyArgs[0][0].isExternal).to.eql(false);
+      expect(activatedSpyArgs[0][0].isExternal).to.eql(false);
+      expect(installedSpyArgs[1][0].isExternal).to.eql(true);
+      expect(activatedSpyArgs[1][0].isExternal).to.eql(true);
     });
   });
 });

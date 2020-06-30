@@ -6,49 +6,45 @@
   https://opensource.org/licenses/MIT.
 */
 
-const gulp = require('gulp');
-const lernaWrapper = require('./utils/lerna-wrapper');
-const fs = require('fs-extra');
-const path = require('path');
+const {series} = require('gulp');
+const execa = require('execa');
+const fse = require('fs-extra');
+const upath = require('upath');
 
-gulp.task('lerna-bootstrap', () => {
-  // If it's a star, build all projects (I.e. bootstrap everything.)
-  if (global.packageOrStar === '*') {
-    return lernaWrapper.bootstrap();
-  }
-
-  // If it's not a star, we can scope the build to a specific project.
-  return lernaWrapper.bootstrap(
-      '--include-dependencies',
-      '--scope', global.packageOrStar,
-  );
-});
+const {build_packages} = require('./build-packages');
 
 // This is needed for workbox-build but is also used by the rollup-helper
 // to add CDN details to workbox-sw.
-// Make sure this runs **before** lerna-bootstrap.
-gulp.task('build:update-cdn-details', async function() {
-  const cdnDetails = await fs.readJSON(path.join(
+// Make sure this runs **before** build_lerna_bootstrap.
+async function build_update_cdn_details() {
+  const cdnDetails = await fse.readJSON(upath.join(
       __dirname, '..', 'cdn-details.json',
   ));
 
-  const workboxBuildPath = path.join(
+  const workboxBuildPath = upath.join(
       __dirname, '..', 'packages', 'workbox-build');
 
-  const workboxBuildCdnDetailsPath = path.join(
+  const workboxBuildCdnDetailsPath = upath.join(
       workboxBuildPath, 'src', 'cdn-details.json');
 
-  const workboxBuildPkg = await fs.readJSON(path.join(
+  const workboxBuildPkg = await fse.readJSON(upath.join(
       workboxBuildPath, 'package.json'));
 
   cdnDetails.latestVersion = workboxBuildPkg.version;
 
-  await fs.writeJson(workboxBuildCdnDetailsPath, cdnDetails, {
+  await fse.writeJson(workboxBuildCdnDetailsPath, cdnDetails, {
     spaces: 2,
   });
-});
+}
 
-gulp.task('build', gulp.series(
-    'build:update-cdn-details',
-    'lerna-bootstrap',
-));
+async function build_lerna_bootstrap() {
+  await execa('lerna', ['bootstrap'], {preferLocal: true});
+}
+
+module.exports = {
+  build: series(
+      build_update_cdn_details,
+      build_lerna_bootstrap,
+      build_packages,
+  ),
+};

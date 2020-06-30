@@ -8,6 +8,7 @@
 
 import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
 import {NetworkOnly} from 'workbox-strategies/NetworkOnly.mjs';
+import {spyOnEvent} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
 import {generateUniqueResponse} from '../../../infra/testing/helpers/generateUniqueResponse.mjs';
 
 
@@ -27,17 +28,12 @@ describe(`NetworkOnly`, function() {
   });
 
   describe(`handle()`, function() {
-    it(`should be able to make a request without an event`, async function() {
-      // TODO(philipwalton): Implement once this feature is added, so we can
-      // await the completion of the strategy without needing an event:
-      // https://github.com/GoogleChrome/workbox/issues/2115
-    });
-
     it(`should return a response without adding anything to the cache when the network request is successful`, async function() {
       sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
 
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
 
       const networkOnly = new NetworkOnly();
 
@@ -58,6 +54,7 @@ describe(`NetworkOnly`, function() {
       const stringRequest = 'http://example.io/test/';
       const request = new Request(stringRequest);
       const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
 
       const networkOnly = new NetworkOnly();
 
@@ -72,10 +69,10 @@ describe(`NetworkOnly`, function() {
       expect(keys).to.be.empty;
     });
 
-
     it(`should reject when the network request fails`, async function() {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
 
       sandbox.stub(self, 'fetch').callsFake(() => {
         return Promise.reject(new Error(`Injected Error`));
@@ -94,6 +91,7 @@ describe(`NetworkOnly`, function() {
     it(`should use plugins response`, async function() {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
 
       const pluginRequest = new Request('http://something-else.io/test/');
 
@@ -130,6 +128,7 @@ describe(`NetworkOnly`, function() {
       const fetchStub = sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
 
       await networkOnly.handle({
         request,

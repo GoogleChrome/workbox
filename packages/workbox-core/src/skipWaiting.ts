@@ -6,23 +6,30 @@
   https://opensource.org/licenses/MIT.
 */
 
-import './_version.js';
+import {logger} from './_private/logger.js';
 
+import './_version.js';
 
 // Give TypeScript the correct global.
 declare let self: ServiceWorkerGlobalScope;
 
 /**
- * Force a service worker to activate immediately, instead of
- * [waiting](https://developers.google.com/web/fundamentals/primers/service-workers/lifecycle#waiting)
- * for existing clients to close.
+ * This method is deprecated, and will be removed in Workbox v7.
+ * 
+ * Calling self.skipWaiting() is equivalent, and should be used instead.
  *
  * @memberof module:workbox-core
  */
 function skipWaiting() {
-  // We need to explicitly call `self.skipWaiting()` here because we're
-  // shadowing `skipWaiting` with this local function.
-  self.addEventListener('install', () => self.skipWaiting());
+  // Just call self.skipWaiting() directly.
+  // See https://github.com/GoogleChrome/workbox/issues/2525
+  if (process.env.NODE_ENV !== 'production') {
+    logger.warn(`skipWaiting() from workbox-core is no longer recommended ` +
+        `and will be removed in Workbox v7. Using self.skipWaiting() instead ` +
+        `is equivalent.`);
+  }
+
+  self.skipWaiting();
 }
 
 export {skipWaiting}

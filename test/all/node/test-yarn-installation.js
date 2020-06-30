@@ -6,12 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
-const childProcess = require('child_process');
+const execa = require('execa');
 const tempy = require('tempy');
 const upath = require('upath');
-const util = require('util');
-
-const exec = util.promisify(childProcess.exec);
 
 const packagesToInstall = [
   'workbox-build',
@@ -28,11 +25,13 @@ describe('[all] Yarn Installation', function() {
 
   for (const packageToInstall of packagesToInstall) {
     it(`should install ${packageToInstall} using yarn`, async function() {
+      this.timeout(5 * 60 * 1000);
+
       try {
         const packagePath = upath.resolve('packages', packageToInstall);
-        await exec(`yarn add ${packagePath}`, {cwd: temporaryDirectory});
+        await execa('yarn', ['add', packagePath], {cwd: temporaryDirectory});
       } catch (error) {
-        if (error.code === 127) {
+        if (error.code === 'ENOENT') {
           // Skip the test if yarn isn't installed.
           // (It will always be installed on GitHub Actions.)
           this.skip();

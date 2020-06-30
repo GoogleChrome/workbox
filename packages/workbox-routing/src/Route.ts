@@ -9,7 +9,8 @@
 import {assert} from 'workbox-core/_private/assert.js';
 import {HTTPMethod, defaultMethod, validMethods} from './utils/constants.js';
 import {normalizeHandler} from './utils/normalizeHandler.js';
-import {Handler, HandlerObject, MatchCallback} from './_types.js';
+import {RouteHandler, RouteHandlerObject, RouteMatchCallback}
+    from 'workbox-core/types.js';
 import './_version.js';
 
 
@@ -23,8 +24,8 @@ import './_version.js';
  * @memberof module:workbox-routing
  */
 class Route {
-  handler: HandlerObject;
-  match: MatchCallback;
+  handler: RouteHandlerObject;
+  match: RouteMatchCallback;
   method: HTTPMethod;
 
   /**
@@ -39,8 +40,8 @@ class Route {
    * against.
    */
   constructor(
-      match: MatchCallback,
-      handler: Handler,
+      match: RouteMatchCallback,
+      handler: RouteHandler,
       method: HTTPMethod = defaultMethod) {
     if (process.env.NODE_ENV !== 'production') {
       assert!.isType(match, 'function', {

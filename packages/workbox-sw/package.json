@@ -13,14 +13,9 @@
     "service worker",
     "sw"
   ],
-  "scripts": {
-    "build": "gulp build-packages --package workbox-sw",
-    "version": "npm run build",
-    "prepare": "npm run build"
-  },
   "workbox": {
     "browserNamespace": "workbox",
-    "packageType": "browser",
+    "packageType": "sw",
     "prodOnly": true
   },
   "main": "build/workbox-sw.js",

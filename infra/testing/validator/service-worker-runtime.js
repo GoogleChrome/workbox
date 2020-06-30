@@ -67,7 +67,6 @@ function setupSpiesAndContextForInjectManifest() {
     core: {
       clientsClaim: sinon.spy(),
       setCacheNameDetails: sinon.spy(),
-      skipWaiting: sinon.spy(),
     },
     setConfig: sinon.spy(),
     // To make testing easier, return the name of the strategy.
@@ -82,6 +81,7 @@ function setupSpiesAndContextForInjectManifest() {
     workbox,
   }, makeServiceWorkerEnv());
   context.self.addEventListener = addEventListener;
+  context.self.skipWaiting = sinon.spy();
 
   const methodsToSpies = {
     importScripts,
@@ -99,7 +99,7 @@ function setupSpiesAndContextForInjectManifest() {
     registerRoute: workbox.routing.registerRoute,
     setCacheNameDetails: workbox.core.setCacheNameDetails,
     setConfig: workbox.setConfig,
-    skipWaiting: workbox.core.skipWaiting,
+    skipWaiting: context.self.skipWaiting,
   };
 
   return {addEventListener, context, methodsToSpies};
@@ -135,6 +135,7 @@ function setupSpiesAndContextForGenerateSW() {
     },
   }, makeServiceWorkerEnv());
   context.self.addEventListener = addEventListener;
+  context.self.skipWaiting = workboxContext.skipWaiting;
 
   return {addEventListener, context, methodsToSpies: workboxContext};
 }

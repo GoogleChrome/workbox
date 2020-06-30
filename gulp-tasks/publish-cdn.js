@@ -6,26 +6,28 @@
   https://opensource.org/licenses/MIT.
 */
 
-const gulp = require('gulp');
-const path = require('path');
+const upath = require('upath');
 
 const cdnUploadHelper = require('./utils/cdn-helper');
-const publishHelpers = require('./utils/publish-helpers');
 const githubHelper = require('./utils/github-helper');
 const logHelper = require('../infra/utils/log-helper');
+const publishHelpers = require('./utils/publish-helpers');
 
 // Git adds 'v' to tag name, lerna does not in package.json version.
 // We are going to publish to CDN *without* the 'v'
-const cleanTagName = (name) => {
+function cleanTagName(name) {
   let friendlyTagName = name;
-  if (friendlyTagName.indexOf('v') === 0) {
+
+  if (friendlyTagName.startsWith('v')) {
     friendlyTagName = friendlyTagName.substring(1);
   }
-  return friendlyTagName;
-};
 
-const findMissingCDNTags = async (tagsData) => {
+  return friendlyTagName;
+}
+
+async function findMissingCDNTags(tagsData) {
   const missingTags = [];
+
   for (const tagData of tagsData) {
     const exists = await cdnUploadHelper.tagExists(cleanTagName(tagData.name));
 
@@ -33,46 +35,43 @@ const findMissingCDNTags = async (tagsData) => {
       missingTags.push(tagData);
     }
   }
-  return missingTags;
-};
 
-const handleCDNUpload = async (tagName, gitBranch) => {
-  const buildFilesDir =
-    await publishHelpers.groupBuildFiles(tagName, gitBranch);
+  return missingTags;
+}
+
+async function handleCDNUpload(tagName, gitBranch) {
+  const buildDir = await publishHelpers.groupBuildFiles(tagName, gitBranch);
 
   const friendlyTagName = cleanTagName(tagName);
 
-  logHelper.log(`Uploading '${tagName}' to CDN as ${friendlyTagName}.`);
-  const publishUrls = await cdnUploadHelper.upload(
-      friendlyTagName, buildFilesDir);
+  logHelper.log(`Uploading '${tagName}' to the CDN as ${friendlyTagName}.`);
+  const urls = await cdnUploadHelper.upload(friendlyTagName, buildDir);
 
-  logHelper.log(`The following URLs are now available:`);
-  publishUrls.forEach((url) => {
-    // Only print out the js files just for cleaner logs.
-    if (path.extname(url) === '.map') {
-      return;
+  logHelper.log('The following URLs are now available:');
+  for (const url of urls) {
+    // Skip the .map for cleaner logs.
+    if (upath.extname(url) !== '.map') {
+      logHelper.log(`• ${url}`);
     }
+  }
+}
 
-    logHelper.log(`    ${url}`);
-  });
-};
-
-gulp.task('publish-cdn:generate-from-tags', async () => {
+async function publish_cdn() {
   // Get all of the tags in the repo.
   const tags = await githubHelper.getTags();
   const missingTags = await findMissingCDNTags(tags);
 
   if (missingTags.length === 0) {
-    logHelper.log(`No tags missing from CDN.`);
+    logHelper.log('No tags missing from CDN.');
   }
 
-  for (const tagData of missingTags) {
+  for (const missingTag of missingTags) {
     // Override the git branch here since we aren't actually
     // using a tagged release.
-    await handleCDNUpload(tagData.name, tagData.name);
+    await handleCDNUpload(missingTag.name, missingTag.name);
   }
-});
+}
 
-gulp.task('publish-cdn', gulp.series(
-    'publish-cdn:generate-from-tags',
-));
+module.exports = {
+  publish_cdn,
+};

@@ -9,13 +9,24 @@
 import './_version.js';
 
 
+export interface MapLikeObject {
+  [key: string]: any;
+}
+
+/**
+ * Using a plain `MapLikeObject` for now, but could extend/restrict this
+ * in the future.
+ */
+export type PluginState = MapLikeObject;
+
 /**
  * Options passed to a `RouteMatchCallback` function.
  */
 export interface RouteMatchCallbackOptions {
-  url: URL;
+  event: ExtendableEvent;
   request: Request;
-  event?: ExtendableEvent;
+  sameOrigin: boolean;
+  url: URL;
 }
 
 /**
@@ -37,11 +48,22 @@ export interface RouteMatchCallback {
  * Options passed to a `RouteHandlerCallback` function.
  */
 export interface RouteHandlerCallbackOptions {
-  request: Request | string;
-  url?: URL;
-  event?: ExtendableEvent;
-  params?: string[] | {[paramName: string]: string};
+  event: ExtendableEvent;
+  request: Request;
+  url: URL;
+  params?: string[] | MapLikeObject;
 }
+
+/**
+ * Options passed to a `ManualHandlerCallback` function.
+ */
+export interface ManualHandlerCallbackOptions {
+  event: ExtendableEvent;
+  request: Request | string;
+}
+
+export type HandlerCallbackOptions =
+    RouteHandlerCallbackOptions | ManualHandlerCallbackOptions;
 
 /**
  * The "handler" callback is invoked whenever a `Router` matches a URL/Request
@@ -53,6 +75,18 @@ export interface RouteHandlerCallbackOptions {
  */
 export interface RouteHandlerCallback {
   (options: RouteHandlerCallbackOptions): Promise<Response>;
+}
+
+/**
+ * The "handler" callback is invoked whenever a `Router` matches a URL/Request
+ * to a `Route` via its `RouteMatchCallback`. This handler callback should
+ * return a `Promise` that resolves with a `Response`.
+ *
+ * If a non-empty array or object is returned by the `RouteMatchCallback` it
+ * will be passed in as this handler's `options.params` argument.
+ */
+export interface ManualHandlerCallback {
+  (options: ManualHandlerCallbackOptions): Promise<Response>;
 }
 
 /**
@@ -72,12 +106,23 @@ export interface RouteHandlerObject {
  */
 export type RouteHandler = RouteHandlerCallback | RouteHandlerObject;
 
+export interface HandlerWillStartCallbackParam {
+  request: Request;
+  event: ExtendableEvent;
+  state?: PluginState;
+}
+
+export interface HandlerWillStartCallback {
+  (param: HandlerWillStartCallbackParam): Promise<void | null | undefined>;
+}
+
 export interface CacheDidUpdateCallbackParam {
   cacheName: string;
-  oldResponse?: Response | null;
   newResponse: Response;
   request: Request;
-  event?: Event;
+  event: ExtendableEvent;
+  oldResponse?: Response | null;
+  state?: PluginState;
 }
 
 export interface CacheDidUpdateCallback {
@@ -85,30 +130,35 @@ export interface CacheDidUpdateCallback {
 }
 
 export interface CacheKeyWillBeUsedCallbackParam {
-  request: Request;
   mode: string;
+  request: Request;
+  event: ExtendableEvent;
+  params?: any;
+  state?: PluginState;
 }
 
 export interface CacheKeyWillBeUsedCallback {
   (param: CacheKeyWillBeUsedCallbackParam): Promise<Request | string>;
 }
 
-export interface CacheWillUpdateCallbackParamParam {
-  response: Response;
+export interface CacheWillUpdateCallbackParam {
   request: Request;
-  event?: ExtendableEvent;
+  response: Response;
+  event: ExtendableEvent;
+  state?: PluginState;
 }
 
 export interface CacheWillUpdateCallback {
-  (param: CacheWillUpdateCallbackParamParam): Promise<Response | void | null | undefined>;
+  (param: CacheWillUpdateCallbackParam): Promise<Response | void | null | undefined>;
 }
 
 export interface CachedResponseWillBeUsedCallbackParam {
   cacheName: string;
   request: Request;
-  matchOptions?: CacheQueryOptions;
   cachedResponse?: Response;
-  event?: ExtendableEvent;
+  event: ExtendableEvent;
+  matchOptions?: CacheQueryOptions;
+  state?: PluginState;
 }
 
 export interface CachedResponseWillBeUsedCallback {
@@ -116,10 +166,11 @@ export interface CachedResponseWillBeUsedCallback {
 }
 
 export interface FetchDidFailCallbackParam {
-  originalRequest: Request;
   error: Error;
+  originalRequest: Request;
   request: Request;
-  event?: ExtendableEvent;
+  event: ExtendableEvent;
+  state?: PluginState;
 }
 
 export interface FetchDidFailCallback {
@@ -129,6 +180,8 @@ export interface FetchDidFailCallback {
 export interface FetchDidSucceedCallbackParam {
   request: Request;
   response: Response;
+  event: ExtendableEvent;
+  state?: PluginState;
 }
 
 export interface FetchDidSucceedCallback {
@@ -137,10 +190,46 @@ export interface FetchDidSucceedCallback {
 
 export interface RequestWillFetchCallbackParam {
   request: Request;
+  event: ExtendableEvent;
+  state?: PluginState;
 }
 
 export interface RequestWillFetchCallback {
-  (param: RequestWillFetchCallbackParam): Promise<Request | void | null | undefined>;
+  (param: RequestWillFetchCallbackParam): Promise<Request>;
+}
+
+export interface HandlerWillRespondCallbackParam {
+  request: Request;
+  response: Response;
+  event: ExtendableEvent;
+  state?: PluginState;
+}
+
+export interface HandlerWillRespondCallback {
+  (param: HandlerWillRespondCallbackParam): Promise<Response>;
+}
+
+export interface HandlerDidRespondCallbackParam {
+  request: Request;
+  event: ExtendableEvent;
+  response?: Response;
+  state?: PluginState;
+}
+
+export interface HandlerDidRespondCallback {
+  (param: HandlerDidRespondCallbackParam): Promise<void | null | undefined>;
+}
+
+export interface HandlerDidCompleteCallbackParam {
+  request: Request;
+  error?: Error;
+  event: ExtendableEvent;
+  response?: Response;
+  state?: PluginState;
+}
+
+export interface HandlerDidCompleteCallback {
+  (param: HandlerDidCompleteCallbackParam): Promise<void | null | undefined>;
 }
 
 /**
@@ -149,10 +238,28 @@ export interface RequestWillFetchCallback {
  */
 export interface WorkboxPlugin {
   cacheDidUpdate?: CacheDidUpdateCallback;
+  cachedResponseWillBeUsed?: CachedResponseWillBeUsedCallback;
   cacheKeyWillBeUsed?: CacheKeyWillBeUsedCallback;
   cacheWillUpdate?: CacheWillUpdateCallback;
-  cachedResponseWillBeUsed?: CachedResponseWillBeUsedCallback;
   fetchDidFail?: FetchDidFailCallback;
   fetchDidSucceed?: FetchDidSucceedCallback;
+  handlerDidComplete?: HandlerDidCompleteCallback;
+  handlerDidRespond?: HandlerDidRespondCallback;
+  handlerWillRespond?: HandlerWillRespondCallback;
+  handlerWillStart?: HandlerWillStartCallback;
   requestWillFetch?: RequestWillFetchCallback;
+}
+
+export interface WorkboxPluginCallbackParam {
+  cacheDidUpdate: CacheDidUpdateCallbackParam;
+  cachedResponseWillBeUsed: CachedResponseWillBeUsedCallbackParam;
+  cacheKeyWillBeUsed: CacheKeyWillBeUsedCallbackParam;
+  cacheWillUpdate: CacheWillUpdateCallbackParam;
+  fetchDidFail: FetchDidFailCallbackParam;
+  fetchDidSucceed: FetchDidSucceedCallbackParam;
+  handlerDidComplete: HandlerDidCompleteCallbackParam;
+  handlerDidRespond: HandlerDidRespondCallbackParam;
+  handlerWillRespond: HandlerWillRespondCallbackParam;
+  handlerWillStart: HandlerWillStartCallbackParam;
+  requestWillFetch: RequestWillFetchCallbackParam;
 }

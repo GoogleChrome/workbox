@@ -7,19 +7,20 @@
 */
 
 import {WorkboxPlugin} from 'workbox-core/types.js';
-import {precachePlugins} from './utils/precachePlugins.js';
+import {getOrCreatePrecacheController} from './utils/getOrCreatePrecacheController.js';
 import './_version.js';
 
 
 /**
- * Adds plugins to precaching.
+ * Adds plugins to the precaching strategy.
  *
- * @param {Array<Object>} newPlugins
+ * @param {Array<Object>} plugins
  *
  * @memberof module:workbox-precaching
  */
-function addPlugins(newPlugins: WorkboxPlugin[]) {
-  precachePlugins.add(newPlugins);
+function addPlugins(plugins: WorkboxPlugin[]) {
+  const precacheController = getOrCreatePrecacheController();
+  return precacheController.addPlugins(plugins);
 }
 
 export {addPlugins};

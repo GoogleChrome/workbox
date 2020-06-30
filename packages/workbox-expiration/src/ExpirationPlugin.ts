@@ -20,11 +20,16 @@ import {CacheExpiration} from './CacheExpiration.js';
 import './_version.js';
 
 /**
- * This plugin can be used in the Workbox APIs to regularly enforce a
+ * This plugin can be used in a `workbox-strategy` to regularly enforce a
  * limit on the age and / or the number of cached requests.
+ * 
+ * It can only be used with `workbox-strategy` instances that have a
+ * [custom `cacheName` property set](/web/tools/workbox/guides/configure-workbox#custom_cache_names_in_strategies).
+ * In other words, it can't be used to expire entries in strategy that uses the
+ * default runtime cache name.
  *
  * Whenever a cached request is used or updated, this plugin will look
- * at the used Cache and remove any old or extra requests.
+ * at the associated cache and remove any old or extra requests.
  *
  * When using `maxAgeSeconds`, requests may be used *once* after expiring
  * because the expiration clean up will not have occurred until *after* the
@@ -48,12 +53,15 @@ class ExpirationPlugin implements WorkboxPlugin {
    * Entries used the least will be removed as the maximum is reached.
    * @param {number} [config.maxAgeSeconds] The maximum age of an entry before
    * it's treated as stale and removed.
+   * @param {Object} [config.matchOptions] The [`CacheQueryOptions`](https://developer.mozilla.org/en-US/docs/Web/API/Cache/delete#Parameters)
+   * that will be used when calling `delete()` on the cache.
    * @param {boolean} [config.purgeOnQuotaError] Whether to opt this cache in to
    * automatic deletion if the available storage quota has been exceeded.
    */
   constructor(config: {
     maxEntries?: number;
     maxAgeSeconds?: number;
+    matchOptions?: CacheQueryOptions;
     purgeOnQuotaError?: boolean;
   } = {}) {
     if (process.env.NODE_ENV !== 'production') {

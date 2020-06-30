@@ -6,16 +6,16 @@
   https://opensource.org/licenses/MIT.
 */
 
-const fs = require('fs-extra');
-const path = require('path');
-const glob = require('glob');
 const archiver = require('archiver');
-const oneLine = require('common-tags').oneLine;
+const execa = require('execa');
+const fse = require('fs-extra');
+const glob = require('glob');
+const ol = require('common-tags').oneLine;
+const upath = require('upath');
 
-const constants = require('./constants');
 const {outputFilenameToPkgMap} = require('./output-filename-to-package-map');
+const constants = require('./constants');
 const logHelper = require('../../infra/utils/log-helper');
-const spawn = require('./spawn-promise-wrapper');
 
 const SOURCE_CODE_DIR = 'source-code';
 const GROUPED_BUILD_FILES = 'grouped-build-files';
@@ -23,7 +23,7 @@ const GROUPED_BUILD_FILES = 'grouped-build-files';
 const doesDirectoryExist = async (directoryPath) => {
   let stats = null;
   try {
-    stats = await fs.stat(directoryPath);
+    stats = await fse.stat(directoryPath);
   } catch (err) {
     return false;
   }
@@ -31,9 +31,9 @@ const doesDirectoryExist = async (directoryPath) => {
 };
 
 const getBuildPath = (tagName) => {
-  const tempReleasePath = path.join(
+  const tempReleasePath = upath.join(
       __dirname, '..', '..', constants.GENERATED_RELEASE_FILES_DIRNAME);
-  return path.join(tempReleasePath, tagName);
+  return upath.join(tempReleasePath, tagName);
 };
 
 const downloadGitCommit = async (tagName, gitBranch) => {
@@ -45,17 +45,15 @@ const downloadGitCommit = async (tagName, gitBranch) => {
     throw new Error(`You must provide a gitBranch to 'downloadGitCommit()`);
   }
 
-  const sourceCodePath = path.join(getBuildPath(tagName), SOURCE_CODE_DIR);
+  const sourceCodePath = upath.join(getBuildPath(tagName), SOURCE_CODE_DIR);
 
-  logHelper.log(oneLine`
-    Download Git Commit ${logHelper.highlight(gitBranch)}.
-  `);
+  logHelper.log(`Download Git Commit ${logHelper.highlight(gitBranch)}.`);
 
   const dirExists = await doesDirectoryExist(sourceCodePath);
   if (!dirExists) {
     logHelper.log(`    Clone Git repo for branch: '${gitBranch}'.`);
 
-    await spawn('git', [
+    await execa('git', [
       'clone',
       '--branch', gitBranch,
       '--depth', '1',
@@ -70,24 +68,20 @@ const downloadGitCommit = async (tagName, gitBranch) => {
 };
 
 const buildGitCommit = async (tagName) => {
-  const sourceCodePath = path.join(getBuildPath(tagName), SOURCE_CODE_DIR);
+  const sourceCodePath = upath.join(getBuildPath(tagName), SOURCE_CODE_DIR);
 
-  logHelper.log(oneLine`
+  logHelper.log(ol`
     Building Commit
-    ${logHelper.highlight(path.relative(process.cwd(), sourceCodePath))}.
+    ${logHelper.highlight(upath.relative(process.cwd(), sourceCodePath))}.
   `);
 
-  await spawn('npm', ['install'], {
-    cwd: sourceCodePath,
-  });
+  await execa('npm', ['install'], {cwd: sourceCodePath});
 
-  await spawn('gulp', ['build'], {
-    cwd: sourceCodePath,
-  });
+  await execa('gulp', ['build'], {cwd: sourceCodePath});
 
   // This is to try and fix GitHub and CDN steps from having file read / close
   // issues by removing any risk of spawn tasks being out of sync
-  return new Promise((resolve) => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 1000));
 };
 
 /*
@@ -96,35 +90,34 @@ const buildGitCommit = async (tagName) => {
  * the folder structure will be the same.
  */
 const groupBuildFiles = async (tagName, gitBranch) => {
-  const groupedBuildFiles =
-    path.join(getBuildPath(tagName), GROUPED_BUILD_FILES);
+  const groupedBuildFiles = upath.join(getBuildPath(tagName),
+      GROUPED_BUILD_FILES);
   const dirExists = await doesDirectoryExist(groupedBuildFiles);
 
   if (!dirExists) {
     await downloadGitCommit(tagName, gitBranch);
     await buildGitCommit(tagName);
 
-    const sourceCodePath = path.join(getBuildPath(tagName), SOURCE_CODE_DIR);
+    const sourceCodePath = upath.join(getBuildPath(tagName), SOURCE_CODE_DIR);
 
     const browserPackages = Object.values(outputFilenameToPkgMap)
         .map((item) => item.name);
 
-    const pattern = path.posix.join(
-        sourceCodePath, 'packages', `{${browserPackages.join(',')}}`,
-        constants.PACKAGE_BUILD_DIRNAME, '*.{js,mjs,map}');
+    const pattern = upath.join(sourceCodePath, 'packages',
+        `{${browserPackages.join(',')}}`, constants.PACKAGE_BUILD_DIRNAME,
+        '*.{js,mjs,map}');
 
-    logHelper.log(oneLine`
+    logHelper.log(ol`
       Grouping Build Files into
-      ${logHelper.highlight(path.relative(process.cwd(), groupedBuildFiles))}.
+      ${logHelper.highlight(upath.relative(process.cwd(), groupedBuildFiles))}.
     `);
 
     // Copy files from the source code and move into the grouped build
     // directory. In others, have a flat file structure of just the built files.
-    const filesToIncludeInBundle = glob.sync(pattern);
-    for (const fileToInclude of filesToIncludeInBundle) {
-      await fs.copy(
-          fileToInclude,
-          path.join(groupedBuildFiles, path.basename(fileToInclude)),
+    const filesToInclude = glob.sync(pattern);
+    for (const fileToInclude of filesToInclude) {
+      await fse.copy(fileToInclude, upath.join(groupedBuildFiles,
+          upath.basename(fileToInclude)),
       );
     }
   } else {
@@ -135,21 +128,21 @@ const groupBuildFiles = async (tagName, gitBranch) => {
 };
 
 const createArchive = async (tagName, fileExtension, format, options) => {
-  const archiveFilesPath = path.join(getBuildPath(tagName), 'archives');
+  const archiveFilesPath = upath.join(getBuildPath(tagName), 'archives');
   const archiveFilename = `workbox-${tagName}.${fileExtension}`;
-  const outputFilePath = path.join(archiveFilesPath, archiveFilename);
+  const outputFilePath = upath.join(archiveFilesPath, archiveFilename);
 
-  logHelper.log(oneLine`
+  logHelper.log(ol`
     Creating ${format} and saving to
-    ${logHelper.highlight(path.relative(process.cwd(), outputFilePath))}.
+    ${logHelper.highlight(upath.relative(process.cwd(), outputFilePath))}.
   `);
 
-  fs.ensureDirSync(path.dirname(outputFilePath));
+  await fse.ensureDir(upath.dirname(outputFilePath));
 
-  const groupedBuildFiles =
-    path.join(getBuildPath(tagName), GROUPED_BUILD_FILES);
+  const groupedBuildFiles = upath.join(getBuildPath(tagName),
+      GROUPED_BUILD_FILES);
 
-  const writeStream = fs.createWriteStream(outputFilePath);
+  const writeStream = fse.createWriteStream(outputFilePath);
   const archive = archiver(format, options);
   archive.pipe(writeStream);
   // Adds the directory contents to the zip.
@@ -160,9 +153,7 @@ const createArchive = async (tagName, fileExtension, format, options) => {
 };
 
 const createTarGz = (tagName) => {
-  return createArchive(tagName, 'tar.gz', 'tar', {
-    gzip: true,
-  });
+  return createArchive(tagName, 'tar.gz', 'tar', {gzip: true});
 };
 
 const createZip = (tagName) => {

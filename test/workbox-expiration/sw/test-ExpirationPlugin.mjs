@@ -89,6 +89,18 @@ describe(`ExpirationPlugin`, function() {
 
       expect(plugin.deleteCacheAndMetadata.called).to.be.false;
     });
+
+    it(`should pass matchOptions through to the CacheExpiration instance`, async function() {
+      const plugin = new ExpirationPlugin({
+        maxEntries: 10,
+        matchOptions: {
+          ignoreVary: true,
+        },
+      });
+
+      const cacheExpiration = plugin._getCacheExpiration('test-matchOptions');
+      expect(cacheExpiration._matchOptions).to.eql({ignoreVary: true});
+    });
   });
 
   describe(`cachedResponseWillBeUsed()`, function() {

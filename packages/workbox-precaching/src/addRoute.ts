@@ -6,11 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {addFetchListener, FetchListenerOptions} from './utils/addFetchListener.js';
+import {getOrCreatePrecacheController} from './utils/getOrCreatePrecacheController.js';
+import {FetchListenerOptions} from './_types.js';
 import './_version.js';
 
-
-let listenerAdded = false;
 
 /**
  * Add a `fetch` listener to the service worker that will
@@ -26,7 +25,7 @@ let listenerAdded = false;
  * @param {string} [options.directoryIndex=index.html] The `directoryIndex` will
  * check cache entries for a URLs ending with '/' to see if there is a hit when
  * appending the `directoryIndex` value.
- * @param {Array<RegExp>} [options.ignoreURLParametersMatching=[/^utm_/]] An
+ * @param {Array<RegExp>} [options.ignoreURLParametersMatching=[/^utm_/, /^fbclid$/]] An
  * array of regex's to remove search params when looking for a cache match.
  * @param {boolean} [options.cleanURLs=true] The `cleanURLs` option will
  * check the cache for the URL with a `.html` added to the end of the end.
@@ -37,10 +36,8 @@ let listenerAdded = false;
  * @memberof module:workbox-precaching
  */
 function addRoute(options?: FetchListenerOptions) {
-  if (!listenerAdded) {
-    addFetchListener(options);
-    listenerAdded = true;
-  }
+  const precacheController = getOrCreatePrecacheController();
+  return precacheController.addRoute(options);
 }
 
 export {addRoute}

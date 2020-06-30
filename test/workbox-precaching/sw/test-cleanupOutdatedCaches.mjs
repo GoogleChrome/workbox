@@ -7,6 +7,7 @@
 */
 
 import {cleanupOutdatedCaches} from 'workbox-precaching/cleanupOutdatedCaches.mjs';
+import {resetDefaultPrecacheController} from './resetDefaultPrecacheController.mjs';
 
 
 describe(`cleanupOutdatedCaches()`, function() {
@@ -14,6 +15,7 @@ describe(`cleanupOutdatedCaches()`, function() {
 
   beforeEach(async function() {
     sandbox.restore();
+    resetDefaultPrecacheController();
   });
 
   afterEach(function() {
@@ -28,3 +30,4 @@ describe(`cleanupOutdatedCaches()`, function() {
     expect(addEventListenerSpy.firstCall.args[0]).to.eql('activate');
   });
 });
+

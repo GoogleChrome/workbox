@@ -18,15 +18,14 @@ jobs:
 
     - uses: actions/setup-node@v1
       with:
-        node-version: 8.x
+        node-version: 10.x
 
     - name: Setup
       run: |
-        # Use `npm i` to work around https://github.com/npm/cli/issues/558
-        npm i
-        gulp build
+        npm ci
+        npx gulp build
 
-    - run: npx gulp test-node
+    - run: npx gulp test_node
 
   Full_Suite_Mac:
     runs-on: macos-latest
@@ -54,5 +53,6 @@ jobs:
       run: |
         sudo safaridriver --enable
         npm ci
+        npx gulp build
 
     - run: npx gulp test

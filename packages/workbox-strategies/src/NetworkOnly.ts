@@ -7,18 +7,14 @@
 */
 
 import {assert} from 'workbox-core/_private/assert.js';
-import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.js';
 import {logger} from 'workbox-core/_private/logger.js';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
-import {RouteHandlerObject, RouteHandlerCallbackOptions, WorkboxPlugin} from 'workbox-core/types.js';
+
+import {Strategy} from './Strategy.js';
+import {StrategyHandler} from './StrategyHandler.js';
 import {messages} from './utils/messages.js';
 import './_version.js';
 
-
-interface NetworkFirstOptions {
-  plugins?: WorkboxPlugin[];
-  fetchOptions?: RequestInit;
-}
 
 /**
  * An implementation of a
@@ -30,43 +26,18 @@ interface NetworkFirstOptions {
  *
  * If the network request fails, this will throw a `WorkboxError` exception.
  *
+ * @extends module:workbox-core.Strategy
  * @memberof module:workbox-strategies
  */
-class NetworkOnly implements RouteHandlerObject {
-  private readonly _plugins: WorkboxPlugin[];
-  private readonly _fetchOptions?: RequestInit;
-
+class NetworkOnly extends Strategy {
   /**
-   * @param {Object} options
-   * @param {string} options.cacheName Cache name to store and retrieve
-   * requests. Defaults to cache names provided by
-   * [workbox-core]{@link module:workbox-core.cacheNames}.
-   * @param {Array<Object>} options.plugins [Plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}
-   * to use in conjunction with this caching strategy.
-   * @param {Object} options.fetchOptions Values passed along to the
-   * [`init`](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch#Parameters)
-   * of all fetch() requests made by this strategy.
-   */
-  constructor(options: NetworkFirstOptions = {}) {
-    this._plugins = options.plugins || [];
-    this._fetchOptions = options.fetchOptions;
-  }
-
-  /**
-   * This method will perform a request strategy and follows an API that
-   * will work with the
-   * [Workbox Router]{@link module:workbox-routing.Router}.
-   *
-   * @param {Object} options
-   * @param {Request|string} options.request The request to run this strategy for.
-   * @param {Event} [options.event] The event that triggered the request.
+   * @private
+   * @param {Request|string} request A request to run this strategy for.
+   * @param {module:workbox-strategies.StrategyHandler} handler The event that
+   *     triggered the request.
    * @return {Promise<Response>}
    */
-  async handle({event, request}: RouteHandlerCallbackOptions): Promise<Response> {
-    if (typeof request === 'string') {
-      request = new Request(request);
-    }
-
+  async _handle(request: Request, handler: StrategyHandler): Promise<Response> {
     if (process.env.NODE_ENV !== 'production') {
       assert!.isInstance(request, Request, {
         moduleName: 'workbox-strategies',
@@ -79,12 +50,7 @@ class NetworkOnly implements RouteHandlerObject {
     let error;
     let response;
     try {
-      response = await fetchWrapper.fetch({
-        request,
-        event,
-        fetchOptions: this._fetchOptions,
-        plugins: this._plugins,
-      });
+      response = await handler.fetch(request);
     } catch (err) {
       error = err;
     }

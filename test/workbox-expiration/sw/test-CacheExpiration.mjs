@@ -10,7 +10,6 @@ import {DBWrapper} from 'workbox-core/_private/DBWrapper.mjs';
 import {CacheTimestampsModel} from 'workbox-expiration/models/CacheTimestampsModel.mjs';
 import {CacheExpiration} from 'workbox-expiration/CacheExpiration.mjs';
 
-
 describe(`CacheExpiration`, function() {
   const sandbox = sinon.createSandbox();
   const db = new DBWrapper('workbox-expiration', 1, {
@@ -33,20 +32,32 @@ describe(`CacheExpiration`, function() {
   });
 
   describe(`constructor`, function() {
-    it(`should be able to constructor with cache name and maxEntries`, function() {
+    it(`should be able to construct with cacheName and maxEntries`, function() {
       const expirationManager = new CacheExpiration('test-cache', {maxEntries: 10});
       expect(expirationManager._maxEntries).to.equal(10);
     });
 
-    it(`should be able to constructor with cache name and maxAgeSeconds`, function() {
+    it(`should be able to construct with cacheName and maxAgeSeconds`, function() {
       const expirationManager = new CacheExpiration('test-cache', {maxAgeSeconds: 10});
       expect(expirationManager._maxAgeSeconds).to.equal(10);
     });
 
-    it(`should be able to constructor with cache name and maxAgeSeconds`, function() {
+    it(`should be able to construct with cacheName, maxEntries and maxAgeSeconds`, function() {
       const expirationManager = new CacheExpiration('test-cache', {maxEntries: 1, maxAgeSeconds: 2});
       expect(expirationManager._maxEntries).to.equal(1);
       expect(expirationManager._maxAgeSeconds).to.equal(2);
+    });
+
+    it(`should be able to construct with cacheName, maxEntries and matchOptions`, function() {
+      const expirationManager = new CacheExpiration('test-cache', {
+        maxEntries: 1,
+        matchOptions: {
+          ignoreVary: true,
+        },
+      });
+
+      expect(expirationManager._maxEntries).to.eql(1);
+      expect(expirationManager._matchOptions).to.eql({ignoreVary: true});
     });
 
     it(`should throw with no config`, function() {
@@ -167,6 +178,38 @@ describe(`CacheExpiration`, function() {
       // Check cache has /third
       cachedRequests = await cache.keys();
       expect(cachedRequests.map((req) => req.url)).to.deep.equal([`${location.origin}/third`]);
+    });
+
+    it(`should pass matchOptions to the underlying cache.delete() call`, async function() {
+      const cacheName = 'matchOptions-test';
+      const maxEntries = 1;
+      const currentTimestamp = Date.now();
+      const timestampModel = new CacheTimestampsModel(cacheName);
+
+      const cache = await caches.open(cacheName);
+      const cacheDeleteSpy = sandbox.spy(cache, 'delete');
+      sandbox.stub(self.caches, 'open').resolves(cache);
+
+      await timestampModel.setTimestamp('/first', currentTimestamp);
+      await cache.put(`${location.origin}/first`, new Response('Injected request'));
+
+      const expirationManager = new CacheExpiration(cacheName, {
+        maxEntries,
+        matchOptions: {
+          ignoreVary: true,
+        },
+      });
+      await expirationManager.expireEntries();
+
+      // Add entry and ensure it is removed
+      await timestampModel.setTimestamp('/second', currentTimestamp - 1000);
+      await cache.put(`${location.origin}/second`, new Response('Injected request'));
+
+      await expirationManager.expireEntries();
+      expect(cacheDeleteSpy.args).to.eql([[
+        `${location.origin}/second`,
+        {ignoreVary: true},
+      ]]);
     });
 
     it(`should queue up expireEntries calls`, async function() {

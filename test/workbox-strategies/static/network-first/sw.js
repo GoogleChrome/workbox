@@ -9,6 +9,8 @@
 importScripts('/__WORKBOX/buildFile/workbox-sw');
 importScripts('/infra/testing/comlink/sw-interface.js');
 
+workbox.setConfig({modulePathPrefix: '/__WORKBOX/buildFile/'});
+
 workbox.routing.registerRoute(
     new RegExp('/__WORKBOX/uniqueValue'),
     new workbox.strategies.NetworkFirst({

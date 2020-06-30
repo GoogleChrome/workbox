@@ -8,12 +8,15 @@
 
 import {matchPrecache} from 'workbox-precaching/matchPrecache.mjs';
 import {precache} from 'workbox-precaching/precache.mjs';
+import {resetDefaultPrecacheController} from './resetDefaultPrecacheController.mjs';
+
 
 describe(`matchPrecache()`, function() {
   const sandbox = sinon.createSandbox();
 
   beforeEach(function() {
     sandbox.stub(self, 'addEventListener');
+    resetDefaultPrecacheController();
   });
 
   afterEach(function() {

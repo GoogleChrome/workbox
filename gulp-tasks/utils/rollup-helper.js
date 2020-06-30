@@ -7,14 +7,13 @@
 */
 
 const asyncToPromises = require('babel-plugin-transform-async-to-promises');
-const babel = require('rollup-plugin-babel');
+const {babel} = require('@rollup/plugin-babel');
 const replace = require('@rollup/plugin-replace');
 const resolve = require('@rollup/plugin-node-resolve');
 const terserPlugin = require('rollup-plugin-terser').terser;
 
 const constants = require('./constants');
 const getVersionsCDNUrl = require('./versioned-cdn-url');
-
 
 module.exports = {
   // Every use of rollup should have minification and the replace
@@ -24,7 +23,9 @@ module.exports = {
     const plugins = [resolve()];
 
     const babelConfig = {
+      babelHelpers: 'bundled',
       presets: [['@babel/preset-env', {
+        loose: true,
         targets: {
           browsers: es5 ?
               // If es5 is true, target IE11
@@ -35,7 +36,6 @@ module.exports = {
               // browser we currently support.
               ['chrome >= 56'],
         },
-        loose: true,
       }]],
     };
     if (es5) {

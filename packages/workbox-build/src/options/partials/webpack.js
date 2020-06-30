@@ -17,4 +17,5 @@ module.exports = {
       .default(defaults.exclude),
   excludeChunks: joi.array().items(joi.string()),
   include: joi.array().items(joi.string(), regExpObject, joi.func().arity(1)),
+  mode: joi.string().default(process.env.NODE_ENV || defaults.mode),
 };

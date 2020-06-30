@@ -63,11 +63,6 @@ const validate = require('./lib/validate-options');
  * prevents you from inadvertently precaching very large files that might have
  * accidentally matched one of your patterns.
  *
- * @param {string} [config.mode='production'] If set to 'production', then an
- * optimized service worker bundle that excludes debugging info will be
- * produced. If not explicitly configured here, the `process.env.NODE_ENV` value
- * will be used, and failing that, it will fall back to `'production'`.
- *
  * @param {object<string, string>} [config.modifyURLPrefix] A mapping of prefixes
  * that, if present in an entry in the precache manifest, will be replaced with
  * the corresponding value. This can be used to, for example, remove or add a

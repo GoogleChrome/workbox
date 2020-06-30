@@ -48,7 +48,7 @@ const writeServiceWorkerUsingDefaultTemplate =
  * may be served from the same `http://localhost:port` origin.
  *
  * @param {boolean} [config.cleanupOutdatedCaches=false] Whether or not Workbox
- * should attempt to identify an delete any precaches created by older,
+ * should attempt to identify and delete any precaches created by older,
  * incompatible versions.
  *
  * @param {boolean} [config.clientsClaim=false] Whether or not the service
@@ -88,7 +88,7 @@ const writeServiceWorkerUsingDefaultTemplate =
  * definition of `strict` in the `glob`
  * [documentation](https://github.com/isaacs/node-glob#options).
  *
- * @param {Array<RegExp>} [config.ignoreURLParametersMatching=[/^utm_/]]
+ * @param {Array<RegExp>} [config.ignoreURLParametersMatching=[/^utm_/, /^fbclid$/]]
  * Any search parameter names that match against one of the RegExp in this array
  * will be removed before looking for a precache match. This is useful if your
  * users might request URLs that contain, for example, URL parameters used to

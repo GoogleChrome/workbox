@@ -6,8 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {fetchWrapper} from 'workbox-core/_private/fetchWrapper.mjs';
-
+import {fetchWrapper} from 'workbox-precaching/utils/fetchWrapper.mjs';
+import {spyOnEvent} from '../../../../infra/testing/helpers/extendable-event-utils.mjs';
 
 describe(`fetchWrapper`, function() {
   const sandbox = sinon.createSandbox();
@@ -20,9 +20,12 @@ describe(`fetchWrapper`, function() {
     // TODO Add Error Case Tests (I.e. bad input)
 
     it(`should work with request string`, async function() {
+      const event = new ExtendableEvent('fetch');
+      spyOnEvent(event);
+
       const stub = sandbox.stub(self, 'fetch').callsFake(() => new Response());
 
-      await fetchWrapper.fetch({request: '/test/string'});
+      await fetchWrapper.fetch({event, request: '/test/string'});
 
       expect(stub.callCount).to.equal(1);
       const fetchRequest = stub.args[0][0];
@@ -30,9 +33,12 @@ describe(`fetchWrapper`, function() {
     });
 
     it(`should work with Request instance`, async function() {
+      const event = new ExtendableEvent('fetch');
+      spyOnEvent(event);
+
       const stub = sandbox.stub(self, 'fetch').callsFake(() => new Response());
 
-      await fetchWrapper.fetch({request: new Request('/test/request')});
+      await fetchWrapper.fetch({event, request: new Request('/test/request')});
 
       expect(stub.callCount).to.equal(1);
       const fetchRequest = stub.args[0][0];
@@ -40,6 +46,9 @@ describe(`fetchWrapper`, function() {
     });
 
     it(`should use fetchOptions`, async function() {
+      const event = new ExtendableEvent('fetch');
+      spyOnEvent(event);
+
       const stub = sandbox.stub(self, 'fetch').callsFake(() => new Response());
 
       const exampleOptions = {
@@ -50,6 +59,7 @@ describe(`fetchWrapper`, function() {
         body: 'Example Body',
       };
       await fetchWrapper.fetch({
+        event,
         request: '/test/fetchOptions',
         fetchOptions: exampleOptions,
       });
@@ -62,6 +72,9 @@ describe(`fetchWrapper`, function() {
     });
 
     it(`should ignore fetchOptions when request.mode === 'navigate'`, async function() {
+      const event = new ExtendableEvent('fetch');
+      spyOnEvent(event);
+
       // See https://github.com/GoogleChrome/workbox/issues/1796
       const fetchStub = sandbox.stub(self, 'fetch').resolves(new Response());
 
@@ -77,6 +90,7 @@ describe(`fetchWrapper`, function() {
       Object.defineProperty(request, 'mode', {value: 'navigate'});
 
       await fetchWrapper.fetch({
+        event,
         fetchOptions,
         request,
       });
@@ -99,6 +113,7 @@ describe(`fetchWrapper`, function() {
 
       const request = new Request('/test/requestWillFetch/0');
       const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
 
       await fetchWrapper.fetch({
         request,
@@ -126,6 +141,9 @@ describe(`fetchWrapper`, function() {
     });
 
     it(`should throw a meaningful error on bad requestWillFetch plugin`, async function() {
+      const event = new ExtendableEvent('fetch');
+      spyOnEvent(event);
+
       const fetchStub = sandbox.stub(self, 'fetch').callsFake(() => new Response());
       const errorPlugin = {
         requestWillFetch: (request) => {
@@ -136,6 +154,7 @@ describe(`fetchWrapper`, function() {
 
       await expectError(() => {
         return fetchWrapper.fetch({
+          event,
           request: '/test/requestWillFetch/0',
           plugins: [errorPlugin],
         });
@@ -149,6 +168,9 @@ describe(`fetchWrapper`, function() {
     });
 
     it(`should call fetchDidFail method in plugins`, async function() {
+      const event = new ExtendableEvent('fetch');
+      spyOnEvent(event);
+
       sandbox.stub(self, 'fetch').callsFake(() => {
         return Promise.reject(new Error('Injected Error.'));
       });
@@ -176,6 +198,7 @@ describe(`fetchWrapper`, function() {
 
       try {
         await fetchWrapper.fetch({
+          event,
           request: '/test/failingRequest/0',
           plugins: [
             firstPlugin,
@@ -217,6 +240,7 @@ describe(`fetchWrapper`, function() {
       });
 
       const event = new FetchEvent('fetch', {request: originalRequest});
+      spyOnEvent(event);
 
       const finalResponse = await fetchWrapper.fetch({
         event,

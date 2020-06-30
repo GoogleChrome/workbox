@@ -6,21 +6,24 @@
   https://opensource.org/licenses/MIT.
 */
 
+const {parallel, series} = require('gulp');
 const del = require('del');
-const fs = require('fs-extra');
-const gulp = require('gulp');
-const path = require('path');
+const fse = require('fs-extra');
+const upath = require('upath');
 
+const {build_node_packages} = require('./build-node-packages');
+const {build_sw_packages} = require('./build-sw-packages');
+const {build_window_packages} = require('./build-window-packages');
 const constants = require('./utils/constants');
-const packageRunnner = require('./utils/package-runner');
+const packageRunner = require('./utils/package-runner');
 
-const cleanPackage = async (packagePath) => {
+async function cleanPackage(packagePath) {
   // Delete generated files from the the TypeScript transpile.
-  if (await fs.pathExists(path.join(packagePath, 'src', 'index.ts'))) {
+  if (await fse.pathExists(upath.join(packagePath, 'src', 'index.ts'))) {
     // Store the list of deleted files, so we can delete directories after.
     const deletedPaths = await del([
-      path.posix.join(packagePath, '**/*.+(js|mjs|d.ts|tsbuildinfo)'),
-      // Don't delete files in node_modules
+      upath.join(packagePath, '**/*.+(js|mjs|d.ts|tsbuildinfo)'),
+      // Don't delete files in node_modules.
       '!**/node_modules', '!**/node_modules/**/*',
     ]);
 
@@ -29,31 +32,26 @@ const cleanPackage = async (packagePath) => {
     // contain generated `.mjs` and `.d.ts` files.
     const directoriesToDelete = new Set();
     for (const deletedPath of deletedPaths) {
-      const relativePath = path.relative(packagePath, deletedPath);
-      const directory = relativePath.split(path.sep)[0];
-      directoriesToDelete.add(path.join(packagePath, directory));
+      const relativePath = upath.relative(packagePath, deletedPath);
+      const directory = relativePath.split(upath.sep)[0];
+      directoriesToDelete.add(upath.join(packagePath, directory));
     }
     await del([...directoriesToDelete]);
   }
   // Delete build files.
-  await del(path.join(packagePath, constants.PACKAGE_BUILD_DIRNAME));
+  await del(upath.join(packagePath, constants.PACKAGE_BUILD_DIRNAME));
+}
+
+// Wrap this in a function since it's used multiple times.
+function cleanSequence() {
+  return parallel(packageRunner('build_packages_clean', 'all',
+      cleanPackage));
+}
+
+module.exports = {
+  build_packages_clean: cleanSequence(),
+  build_packages: series(
+      cleanSequence(),
+      parallel(build_node_packages, build_sw_packages, build_window_packages),
+  ),
 };
-
-gulp.task('build-packages:clean', gulp.series(
-    packageRunnner(
-        'build-packages:clean',
-        'all',
-        cleanPackage,
-    ),
-));
-
-gulp.task('build-packages:build', gulp.series(
-    gulp.parallel(
-        'build-node-packages',
-        'build-browser-packages',
-        'build-window-packages')));
-
-gulp.task('build-packages', gulp.series(
-    'build-packages:clean',
-    'build-packages:build',
-));
