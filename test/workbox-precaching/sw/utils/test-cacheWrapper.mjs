@@ -10,7 +10,6 @@ import {registerQuotaErrorCallback} from 'workbox-core/registerQuotaErrorCallbac
 import {cacheWrapper} from 'workbox-precaching/utils/cacheWrapper.mjs';
 import {spyOnEvent} from '../../../../infra/testing/helpers/extendable-event-utils.mjs';
 
-
 describe(`cacheWrapper`, function() {
   const sandbox = sinon.createSandbox();
 
@@ -29,6 +28,9 @@ describe(`cacheWrapper`, function() {
     // TODO Add Error Case Tests (I.e. bad input)
 
     it(`should work with a request and response`, async function() {
+      const event = new ExtendableEvent('fetch');
+      spyOnEvent(event);
+
       const testCache = await caches.open('TEST-CACHE');
       const cacheOpenStub = sandbox.stub(self.caches, 'open');
       const cachePutStub = sandbox.stub(testCache, 'put');
@@ -38,6 +40,7 @@ describe(`cacheWrapper`, function() {
       const putRequest = new Request('/test/string');
       const putResponse = new Response('Response for /test/string');
       await cacheWrapper.put({
+        event,
         cacheName: 'TODO-CHANGE-ME',
         request: putRequest,
         response: putResponse,
@@ -57,6 +60,9 @@ describe(`cacheWrapper`, function() {
     // This covers opaque responses (0) and partial content responses (206).
     for (const status of [0, 206]) {
       it(`should not cache response.status of ${status} by default`, async function() {
+        const event = new ExtendableEvent('fetch');
+        spyOnEvent(event);
+
         const cacheName = 'test-cache';
         const testCache = await caches.open(cacheName);
         const cacheOpenStub = sandbox.stub(self.caches, 'open').resolves(testCache);
@@ -71,6 +77,7 @@ describe(`cacheWrapper`, function() {
 
         await cacheWrapper.put({
           cacheName,
+          event,
           request: putRequest,
           response: putResponse,
         });
@@ -82,6 +89,9 @@ describe(`cacheWrapper`, function() {
 
     it(`should throw when trying to cache POST requests in dev mode`, async function() {
       if (process.env.NODE_ENV === 'production') this.skip();
+
+      const event = new ExtendableEvent('fetch');
+      spyOnEvent(event);
 
       const testCache = await caches.open('TEST-CACHE');
       const cacheOpenStub = sandbox.stub(self.caches, 'open');
@@ -96,6 +106,7 @@ describe(`cacheWrapper`, function() {
 
       await expectError(async () => {
         await cacheWrapper.put({
+          event,
           cacheName: 'CACHE NAME',
           request: putRequest,
           response: putResponse,
@@ -107,6 +118,9 @@ describe(`cacheWrapper`, function() {
     });
 
     it(`should call cacheDidUpdate`, async function() {
+      const event = new ExtendableEvent('fetch');
+      spyOnEvent(event);
+
       const firstPlugin = {
         cacheDidUpdate: () => {},
       };
@@ -124,6 +138,7 @@ describe(`cacheWrapper`, function() {
       });
 
       await cacheWrapper.put({
+        event,
         cacheName: 'TODO-CHANGE-ME',
         request: putRequest,
         response: putResponse,
@@ -152,6 +167,7 @@ describe(`cacheWrapper`, function() {
       });
 
       await cacheWrapper.put({
+        event,
         cacheName: 'TODO-CHANGE-ME',
         request: putRequest,
         response: putResponseUpdate,
@@ -224,6 +240,9 @@ describe(`cacheWrapper`, function() {
     });
 
     it(`should call cacheKeyWillBeUsed`, async function() {
+      const event = new ExtendableEvent('fetch');
+      spyOnEvent(event);
+
       const cacheName = 'cacheKeyWillBeUsed-test-cache';
       const cache = await caches.open(cacheName);
       sandbox.stub(caches, 'open').resolves(cache);
@@ -246,6 +265,7 @@ describe(`cacheWrapper`, function() {
       const response = new Response('Test response.');
 
       await cacheWrapper.put({
+        event,
         response,
         cacheName,
         request: initialRequest,
@@ -275,6 +295,9 @@ describe(`cacheWrapper`, function() {
     });
 
     it(`should call the quota exceeded callbacks when there's a QuotaExceeded error`, async function() {
+      const event = new ExtendableEvent('fetch');
+      spyOnEvent(event);
+
       const callback1 = sandbox.stub();
       registerQuotaErrorCallback(callback1);
       const callback2 = sandbox.stub();
@@ -287,6 +310,7 @@ describe(`cacheWrapper`, function() {
 
       try {
         await cacheWrapper.put({
+          event,
           cacheName,
           request: 'ignored',
           response: new Response(),
@@ -300,6 +324,9 @@ describe(`cacheWrapper`, function() {
     });
 
     it(`should not call the quota exceeded callbacks when there's a non-QuotaExceeded error`, async function() {
+      const event = new ExtendableEvent('fetch');
+      spyOnEvent(event);
+
       const callback = sandbox.stub();
       registerQuotaErrorCallback(callback);
 
@@ -310,6 +337,7 @@ describe(`cacheWrapper`, function() {
 
       try {
         await cacheWrapper.put({
+          event,
           cacheName,
           request: 'ignored',
           response: new Response(),
@@ -324,6 +352,9 @@ describe(`cacheWrapper`, function() {
 
   describe(`.match()`, function() {
     it(`should use the matchOptions that were provided to put()`, async function() {
+      const event = new ExtendableEvent('fetch');
+      spyOnEvent(event);
+
       const matchOptions = {
         ignoreSearch: true,
       };
@@ -332,6 +363,7 @@ describe(`cacheWrapper`, function() {
       const matchSpy = sandbox.spy(self.caches, 'match');
 
       await cacheWrapper.put({
+        event,
         cacheName,
         matchOptions,
         plugins: [{
@@ -348,6 +380,9 @@ describe(`cacheWrapper`, function() {
     });
 
     it(`should call cachedResponseWillBeUsed`, async function() {
+      const event = new ExtendableEvent('fetch');
+      spyOnEvent(event);
+
       const options = {};
       const matchCacheName = 'MATCH-CACHE-NAME';
       const matchRequest = new Request('/test/string');
@@ -402,6 +437,7 @@ describe(`cacheWrapper`, function() {
       await openCache.put(matchRequest, matchResponse);
 
       const result = await cacheWrapper.match({
+        event,
         cacheName: matchCacheName,
         request: matchRequest,
         matchOptions: options,
@@ -421,6 +457,9 @@ describe(`cacheWrapper`, function() {
     });
 
     it(`should call cacheKeyWillBeUsed`, async function() {
+      const event = new ExtendableEvent('fetch');
+      spyOnEvent(event);
+
       const cacheName = 'cacheKeyWillBeUsed-test-cache';
       const cacheMatchStub = sandbox.stub(self.caches, 'match').resolves(
           new Response('Test response.'));
@@ -441,6 +480,7 @@ describe(`cacheWrapper`, function() {
       const initialRequest = new Request('/noPlugin');
 
       await cacheWrapper.match({
+        event,
         cacheName,
         request: initialRequest,
         plugins: [

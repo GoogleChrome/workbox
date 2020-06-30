@@ -6,21 +6,22 @@
   https://opensource.org/licenses/MIT.
 */
 
+import {assert} from 'workbox-core/_private/assert.js';
 import {Deferred} from 'workbox-core/_private/Deferred.js';
 import {executeQuotaErrorCallbacks} from 'workbox-core/_private/executeQuotaErrorCallbacks.js';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
 import {logger} from 'workbox-core/_private/logger.js';
 import {timeout} from 'workbox-core/_private/timeout.js';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
-import {MapLikeObject, RouteHandlerCallbackOptions, WorkboxPlugin, WorkboxPluginCallbackParam} from 'workbox-core/types.js';
+import {
+  HandlerCallbackOptions,
+  MapLikeObject,
+  WorkboxPlugin,
+  WorkboxPluginCallbackParam,
+} from 'workbox-core/types.js';
 
 import {Strategy} from './Strategy.js';
 import './_version.js';
-
-
-export interface StrategyHandlerOptions extends RouteHandlerCallbackOptions {
-  request: Request;
-}
 
 function toRequest(input: RequestInfo) {
   return (typeof input === 'string') ? new Request(input) : input;
@@ -38,7 +39,7 @@ function toRequest(input: RequestInfo) {
 class StrategyHandler {
   public request!: Request;
   public url?: URL;
-  public event?: ExtendableEvent;
+  public event: ExtendableEvent;
   public params?: any;
 
   private readonly _strategy: Strategy;
@@ -56,15 +57,15 @@ class StrategyHandler {
    *
    * @param {module:workbox-strategies.Strategy} strategy
    * @param {Object} options
-   * @param {Request} [options.request] The request the strategy is performing.
-   * @param {FetchEvent} [options.event] The event that triggered the request
-   *     (if applicable).
-   * @param {URL} [options.url] A `URL` instance of `request.url`, if passed.
-   * @param {*} [options.params] Parameters returned by the Route's
+   * @param {Request|string} options.request A request to run this strategy for.
+   * @param {ExtendableEvent} options.event The event associated with the
+   *     request.
+   * @param {URL} [options.url]
+   * @param {*} [options.params]
    *     [match callback]{@link module:workbox-routing~matchCallback},
    *     (if applicable).
    */
-  constructor(strategy: Strategy, options: StrategyHandlerOptions) {
+  constructor(strategy: Strategy, options: HandlerCallbackOptions) {
     /**
      * The request the strategy is performing (passed to the strategy's
      * `handle()` or `handleAll()` method).
@@ -74,11 +75,10 @@ class StrategyHandler {
      * @memberof module:workbox-strategies.StrategyHandler
      */
     /**
-     * The event that triggered the request (if passed to the strategy's
-     * `handle()` or `handleAll()` method).
+     * The event associated with this request.
      * @name event
      * @instance
-     * @type {ExtendableEvent|undefined}
+     * @type {ExtendableEvent}
      * @memberof module:workbox-strategies.StrategyHandler
      */
     /**
@@ -103,8 +103,18 @@ class StrategyHandler {
      * @type {*|undefined}
      * @memberof module:workbox-strategies.StrategyHandler
      */
+    if (process.env.NODE_ENV !== 'production') {
+      assert!.isInstance(options.event, ExtendableEvent, {
+        moduleName: 'workbox-strategies',
+        className: 'StrategyHandler',
+        funcName: 'constructor',
+        paramName: 'options.event',
+      });
+    }
+
     Object.assign(this, options);
 
+    this.event = options.event;
     this._strategy = strategy;
     this._handlerDeferred = new Deferred();
     this._extendLifetimePromises = [];
@@ -117,9 +127,7 @@ class StrategyHandler {
       this._pluginStateMap.set(plugin, {});
     }
 
-    if (this.event) {
-      this.event.waitUntil(this._handlerDeferred.promise);
-    }
+    this.event.waitUntil(this._handlerDeferred.promise);
   }
 
   /**

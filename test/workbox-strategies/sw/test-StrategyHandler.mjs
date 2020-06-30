@@ -55,6 +55,23 @@ describe(`StrategyHandler`, function() {
   });
 
   describe('constructor()', function() {
+    it(`should throw when called without an 'event' parameter in dev`, async function() {
+      if (process.env.NODE_ENV === 'production') {
+        return this.skip();
+      }
+
+      await expectError(
+          () => new StrategyHandler(new TestStrategy(), {}),
+          'incorrect-class',
+          (error) => {
+            expect(error.details).to.have.property('moduleName').that.equals('workbox-strategies');
+            expect(error.details).to.have.property('className').that.equals('StrategyHandler');
+            expect(error.details).to.have.property('funcName').that.equals('constructor');
+            expect(error.details).to.have.property('paramName').that.equals('options.event');
+          },
+      );
+    });
+
     it('creates an object with the correct public properties', function() {
       const handler = createStrategyHandler();
 

@@ -237,8 +237,11 @@ describe(`PrecacheController`, function() {
 
   describe('install()', function() {
     it('should be fine when calling with empty precache list', async function() {
+      const event = new ExtendableEvent('install');
+      spyOnEvent(event);
+
       const precacheController = new PrecacheController();
-      return precacheController.install();
+      return precacheController.install({event});
     });
 
     it('should precache assets (with cache busting via search params)', async function() {

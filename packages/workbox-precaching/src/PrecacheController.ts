@@ -235,15 +235,15 @@ class PrecacheController {
    * install event.
    *
    * @param {Object} options
-   * @param {Event} [options.event] The install event (if needed).
+   * @param {Event} options.event The install event.
    * @param {Array<Object>} [options.plugins] Plugins to be used for fetching
    * and caching during install.
    * @return {Promise<module:workbox-precaching.InstallResult>}
    */
   async install({event, plugins}: {
-    event?: ExtendableEvent;
+    event: ExtendableEvent;
     plugins?: WorkboxPlugin[];
-  } = {}) {
+  }) {
     if (process.env.NODE_ENV !== 'production') {
       if (plugins) {
         assert!.isArray(plugins, {
@@ -339,8 +339,8 @@ class PrecacheController {
    * @param {Object} options
    * @param {string} options.cacheKey The string to use a cache key.
    * @param {string} options.url The URL to fetch and cache.
+   * @param {Event} options.event The install event.
    * @param {string} [options.cacheMode] The cache mode for the network request.
-   * @param {Event} [options.event] The install event (if passed).
    * @param {string} [options.integrity] The value to use for the `integrity`
    * field when making the request.
    */
@@ -348,7 +348,7 @@ class PrecacheController {
     cacheKey: string;
     url: string;
     cacheMode: "reload" | "default" | "no-store" | "no-cache" | "force-cache" | "only-if-cached" | undefined;
-    event?: ExtendableEvent;
+    event: ExtendableEvent;
     integrity?: string;
   }) {
     const request = new Request(url, {

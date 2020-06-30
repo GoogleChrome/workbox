@@ -147,7 +147,7 @@ class NetworkFirst extends Strategy {
    * @param {Object} options
    * @param {Request} options.request
    * @param {Array} options.logs A reference to the logs array
-   * @param {Event} [options.event]
+   * @param {Event} options.event
    * @return {Promise<Response>}
    *
    * @private
@@ -183,7 +183,7 @@ class NetworkFirst extends Strategy {
    * @param {number|undefined} options.timeoutId
    * @param {Request} options.request
    * @param {Array} options.logs A reference to the logs Array.
-   * @param {Event} [options.event]
+   * @param {Event} options.event
    * @return {Promise<Response>}
    *
    * @private

@@ -8,11 +8,13 @@
 
 import {logger} from 'workbox-core/_private/logger.js';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
+import {RouteHandler, RouteMatchCallback} from 'workbox-core/types.js';
+
 import {Route} from './Route.js';
 import {RegExpRoute} from './RegExpRoute.js';
 import {HTTPMethod} from './utils/constants.js';
 import {getOrCreateDefaultRouter} from './utils/getOrCreateDefaultRouter.js';
-import {Handler, MatchCallback} from './_types.js';
+
 import './_version.js';
 
 
@@ -36,8 +38,8 @@ import './_version.js';
  * @memberof module:workbox-routing
  */
 function registerRoute(
-    capture: RegExp | string | MatchCallback | Route,
-    handler?: Handler,
+    capture: RegExp | string | RouteMatchCallback | Route,
+    handler?: RouteHandler,
     method?: HTTPMethod): Route {
   let route;
 
@@ -69,7 +71,7 @@ function registerRoute(
       }
     }
 
-    const matchCallback: MatchCallback = ({url}) => {
+    const matchCallback: RouteMatchCallback = ({url}) => {
       if (process.env.NODE_ENV !== 'production') {
         if ((url.pathname === captureUrl.pathname) &&
             (url.origin !== captureUrl.origin)) {
@@ -107,4 +109,4 @@ function registerRoute(
   return route;
 }
 
-export {registerRoute}
+export {registerRoute};

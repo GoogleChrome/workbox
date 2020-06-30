@@ -14,7 +14,7 @@ import '../_version.js';
 
 interface WrappedFetchOptions {
   request: Request | string;
-  event?: ExtendableEvent;
+  event: ExtendableEvent;
   plugins?: WorkboxPlugin[];
   fetchOptions?: RequestInit;
 }

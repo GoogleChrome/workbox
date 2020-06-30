@@ -7,23 +7,18 @@
 */
 
 import {cacheNames} from 'workbox-core/_private/cacheNames.js';
-import {MapLikeObject, RouteHandlerObject, RouteHandlerCallbackOptions, WorkboxPlugin} from 'workbox-core/types.js';
-import {StrategyHandler} from './StrategyHandler.js';
-import './_version.js';
+import {HandlerCallbackOptions, RouteHandlerObject, WorkboxPlugin}
+    from 'workbox-core/types.js';
 
+import {StrategyHandler} from './StrategyHandler.js';
+
+import './_version.js';
 
 export interface StrategyOptions {
   cacheName?: string;
   plugins?: WorkboxPlugin[];
   fetchOptions?: RequestInit;
   matchOptions?: CacheQueryOptions;
-}
-
-type StrategyHandlerOptions = {
-  request: Request;
-  event?: ExtendableEvent;
-  response?: Response;
-  params?: string[] | MapLikeObject;
 }
 
 /**
@@ -109,13 +104,15 @@ abstract class Strategy implements RouteHandlerObject {
    * Alternatively, this method can be used in a standalone `FetchEvent`
    * listener by passing it to `event.respondWith()`.
    *
-   * @param {Object} options
+   * @param {FetchEvent|Object} options A `FetchEvent` or an object with the
+   *     properties listed below.
    * @param {Request|string} options.request A request to run this strategy for.
-   * @param {ExtendableEvent} [options.event]
+   * @param {ExtendableEvent} options.event The event associated with the
+   *     request.
    * @param {URL} [options.url]
    * @param {*} [options.params]
    */
-  handle(options: FetchEvent | RouteHandlerCallbackOptions): Promise<Response> {
+  handle(options: FetchEvent | HandlerCallbackOptions): Promise<Response> {
     const [responseDone] = this.handleAll(options);
     return responseDone;
   }
@@ -131,16 +128,18 @@ abstract class Strategy implements RouteHandlerObject {
    * You can await the `done` promise to ensure any extra work performed by
    * the strategy (usually caching responses) completes successfully.
    *
-   * @param {Object} options
+   * @param {FetchEvent|Object} options A `FetchEvent` or an object with the
+   *     properties listed below.
    * @param {Request|string} options.request A request to run this strategy for.
-   * @param {ExtendableEvent} [options.event]
+   * @param {ExtendableEvent} options.event The event associated with the
+   *     request.
    * @param {URL} [options.url]
    * @param {*} [options.params]
    * @return {Array<Promise>} A tuple of [response, done]
    *     promises that can be used to determine when the response resolves as
    *     well as when the handler has completed all its work.
    */
-  handleAll(options: FetchEvent | RouteHandlerCallbackOptions): [
+  handleAll(options: FetchEvent | HandlerCallbackOptions): [
     Promise<Response>,
     Promise<void>,
    ] {
@@ -150,12 +149,14 @@ abstract class Strategy implements RouteHandlerObject {
         event: options,
         request: options.request,
       };
-    } else if (typeof options.request === 'string') {
-      // `options.request` can be a string, similar to what `fetch()` accepts.
-      options.request = new Request(options.request);
     }
 
-    const {event, request, params} = options as StrategyHandlerOptions;
+    const event = options.event;
+    const request = typeof options.request === 'string' ?
+        new Request(options.request) :
+        options.request;
+    const params = 'params' in options ? options.params : undefined;
+
     const handler = new StrategyHandler(this, {event, request, params});
 
     const responseDone = this._getResponse(handler, request, event);
@@ -165,7 +166,7 @@ abstract class Strategy implements RouteHandlerObject {
     return [responseDone, handlerDone];
   }
 
-  async _getResponse(handler: StrategyHandler, request: Request, event?: ExtendableEvent) {
+  async _getResponse(handler: StrategyHandler, request: Request, event: ExtendableEvent) {
     await handler.runCallbacks('handlerWillStart', {event, request});
     let response = await this._handle(request, handler);
 
@@ -175,7 +176,7 @@ abstract class Strategy implements RouteHandlerObject {
     return response;
   }
 
-  async _awaitComplete(responseDone: Promise<Response>, handler: StrategyHandler, request: Request, event?: ExtendableEvent) {
+  async _awaitComplete(responseDone: Promise<Response>, handler: StrategyHandler, request: Request, event: ExtendableEvent) {
     let response;
     let error;
 
