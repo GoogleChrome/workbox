@@ -190,9 +190,6 @@ describe(`cacheWrapper`, function() {
     });
 
     it(`should call cacheWillUpdate`, async function() {
-      const event = new ExtendableEvent('fetch');
-      spyOnEvent(event);
-
       const firstPluginResponse = new Response('Response for /test/string/1');
       const firstPlugin = {
         cacheWillUpdate: () => {
@@ -215,7 +212,6 @@ describe(`cacheWrapper`, function() {
       spyOnEvent(fetchEvent);
 
       await cacheWrapper.put({
-        event,
         cacheName: 'TODO-CHANGE-ME',
         request: putRequest,
         response: putResponse,
