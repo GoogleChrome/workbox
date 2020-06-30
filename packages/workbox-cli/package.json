@@ -40,7 +40,7 @@
     "workbox-build": "^5.1.2"
   },
   "workbox": {
-    "packageType": "node"
+    "packageType": "node_ts"
   },
   "devDependencies": {
     "@types/common-tags": "^1.8.0",
