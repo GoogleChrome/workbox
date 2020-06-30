@@ -6,10 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
+import {resetDefaultPrecacheController} from './resetDefaultPrecacheController.mjs';
+import {spyOnEvent} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
+
 import {createHandlerBoundToURL} from 'workbox-precaching/createHandlerBoundToURL.mjs';
 import {precache} from 'workbox-precaching/precache.mjs';
-import {resetDefaultPrecacheController} from './resetDefaultPrecacheController.mjs';
-
 
 describe(`createHandlerBoundToURL()`, function() {
   const sandbox = sinon.createSandbox();
@@ -51,9 +52,11 @@ describe(`createHandlerBoundToURL()`, function() {
       {url: '/url4', revision: 'def456'},
     ]);
 
+    const event = new ExtendableEvent('fetch');
+    spyOnEvent(event);
 
     const handler1 = createHandlerBoundToURL('/url1');
-    const response1 = await handler1({});
+    const response1 = await handler1({event});
 
     expect(matchStub.calledOnce).to.be.true;
     expect(matchStub.firstCall.args[0].url).to.eql(`${location.origin}/url1`);
@@ -61,7 +64,7 @@ describe(`createHandlerBoundToURL()`, function() {
     expect(await response1.text()).to.eql('response 1');
 
     const handler2 = createHandlerBoundToURL('/url2');
-    const response2 = await handler2({});
+    const response2 = await handler2({event});
 
     expect(matchStub.calledTwice).to.be.true;
     expect(matchStub.secondCall.args[0].url).to.eql(`${location.origin}/url2?__WB_REVISION__=abc123`);
@@ -69,7 +72,7 @@ describe(`createHandlerBoundToURL()`, function() {
     expect(await response2.text()).to.eql('response 2');
 
     const handler3 = createHandlerBoundToURL('/url3');
-    const response3 = await handler3({});
+    const response3 = await handler3({event});
 
     expect(matchStub.calledThrice).to.be.true;
     expect(matchStub.thirdCall.args[0].url).to.eql(`${location.origin}/url3`);
@@ -78,7 +81,7 @@ describe(`createHandlerBoundToURL()`, function() {
     expect(await response3.text()).to.eql('response 3');
 
     const handler4 = createHandlerBoundToURL('/url4');
-    const response4 = await handler4({});
+    const response4 = await handler4({event});
 
     expect(matchStub.callCount).to.eql(4);
     // Call #3 is the fourth call due to zero-indexing.

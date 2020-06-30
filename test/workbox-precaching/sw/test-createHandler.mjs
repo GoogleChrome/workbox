@@ -6,10 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
+import {resetDefaultPrecacheController} from './resetDefaultPrecacheController.mjs';
+import {spyOnEvent} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
+
 import {createHandler} from 'workbox-precaching/createHandler.mjs';
 import {precache} from 'workbox-precaching/precache.mjs';
-import {resetDefaultPrecacheController} from './resetDefaultPrecacheController.mjs';
-
 
 describe(`createHandler()`, function() {
   const sandbox = sinon.createSandbox();
@@ -27,8 +28,11 @@ describe(`createHandler()`, function() {
     precache([]);
     const handler = createHandler(false);
 
+    const event = new ExtendableEvent('fetch');
+    spyOnEvent(event);
+
     return expectError(async () => {
-      await handler({request: new Request('/cache-miss')});
+      await handler({event, request: new Request('/cache-miss')});
     }, 'missing-precache-entry', (error) => {
       expect(error.details.url).to.eql(`${location.origin}/cache-miss`);
       expect(error.details.cacheName).to.eql(`workbox-precache-v2-${location.origin}/test/workbox-precaching/sw/`);
@@ -55,22 +59,25 @@ describe(`createHandler()`, function() {
       {url: '/url4', revision: 'def456'},
     ]);
 
+    const event = new ExtendableEvent('fetch');
+    spyOnEvent(event);
+
     const handler = createHandler();
-    const response1 = await handler({request: new Request('/url1')});
+    const response1 = await handler({event, request: new Request('/url1')});
 
     expect(matchStub.calledOnce).to.be.true;
     expect(matchStub.firstCall.args[0].url).to.eql(`${location.origin}/url1`);
     expect(fetchStub.notCalled).to.be.true;
     expect(await response1.text()).to.eql('response 1');
 
-    const response2 = await handler({request: new Request('/url2')});
+    const response2 = await handler({event, request: new Request('/url2')});
 
     expect(matchStub.calledTwice).to.be.true;
     expect(matchStub.secondCall.args[0].url).to.eql(`${location.origin}/url2?__WB_REVISION__=abc123`);
     expect(fetchStub.notCalled).to.be.true;
     expect(await response2.text()).to.eql('response 2');
 
-    const response3 = await handler({request: new Request('/url3')});
+    const response3 = await handler({event, request: new Request('/url3')});
 
     expect(matchStub.calledThrice).to.be.true;
     expect(matchStub.thirdCall.args[0].url).to.eql(`${location.origin}/url3`);
@@ -78,7 +85,7 @@ describe(`createHandler()`, function() {
     expect(fetchStub.firstCall.args[0].url).to.eql(`${location.origin}/url3`);
     expect(await response3.text()).to.eql('response 3');
 
-    const response4 = await handler({request: new Request('/url4')});
+    const response4 = await handler({event, request: new Request('/url4')});
 
     expect(matchStub.callCount).to.eql(4);
     // Call #3 is the fourth call due to zero-indexing.
