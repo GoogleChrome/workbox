@@ -57,4 +57,36 @@ self.addEventListener('message', (event) => {
 
 <% if (offlineAnalyticsConfigString) { %><%= use('workbox-google-analytics', 'initialize') %>(<%= offlineAnalyticsConfigString %>);<% } %>
 
-<% if (disableDevLogs) { %>self.__WB_DISABLE_DEV_LOGS = true;<% } %>`;
+<% if (disableDevLogs) { %>self.__WB_DISABLE_DEV_LOGS = true;<% } %>
+
+<% if (fetchFallback) { %><%= use('workbox-routing', 'setCatchHandler') %>(async ({ event }) => {
+  switch (event.request.destination) {
+    <% if (fetchFallback.document) { %>
+    case 'document':
+      <% if (fetchFallback.document.precached) { %>
+        return await <%= use('workbox-precaching', 'matchPrecache') %>(<%= JSON.stringify(fetchFallback.document.url) %>)
+      <% } else{ %>
+        return await caches.match(<%= JSON.stringify(fetchFallback.document.url) %>)
+      <% } %>
+    <% } %>
+    <% if (fetchFallback.image) { %>
+    case 'image':
+      <% if (fetchFallback.image.precached) { %>
+        return await <%= use('workbox-precaching', 'matchPrecache') %>(<%= JSON.stringify(fetchFallback.image.url) %>)
+      <% } else{ %>
+        return await caches.match(<%= JSON.stringify(fetchFallback.image.url) %>)
+      <% } %>
+    <% } %>
+    <% if (fetchFallback.font) { %>
+    case 'font':
+      <% if (fetchFallback.font.precached) { %>
+        return await <%= use('workbox-precaching', 'matchPrecache') %>(<%= JSON.stringify(fetchFallback.font.url) %>)
+      <% } else{ %>
+        return await caches.match(<%= JSON.stringify(fetchFallback.font.url) %>)
+      <% } %>
+    <% } %>
+    default:
+      return Response.error()
+  }
+});<% } %>
+`;

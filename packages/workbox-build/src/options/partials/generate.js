@@ -82,4 +82,18 @@ module.exports = {
   }),
   skipWaiting: joi.boolean().default(defaults.skipWaiting),
   sourcemap: joi.boolean().default(defaults.sourcemap),
+  fetchFallback: joi.object().keys({
+    document: joi.object().keys({
+      url: joi.string().required(),
+      precached: joi.boolean(),
+    }),
+    image: joi.object().keys({
+      url: joi.string().required(),
+      precached: joi.boolean(),
+    }),
+    font: joi.object().keys({
+      url: joi.string().required(),
+      precached: joi.boolean(),
+    }),
+  }).min(1).max(3),
 };

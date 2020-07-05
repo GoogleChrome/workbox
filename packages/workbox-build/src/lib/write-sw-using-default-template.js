@@ -34,6 +34,7 @@ module.exports = async ({
   skipWaiting,
   sourcemap,
   swDest,
+  fetchFallback,
 }) => {
   const outputDir = upath.dirname(swDest);
   try {
@@ -59,6 +60,7 @@ module.exports = async ({
     offlineGoogleAnalytics,
     runtimeCaching,
     skipWaiting,
+    fetchFallback,
   });
 
   try {

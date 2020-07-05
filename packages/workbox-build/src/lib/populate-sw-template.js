@@ -30,6 +30,7 @@ module.exports = ({
   offlineGoogleAnalytics,
   runtimeCaching = [],
   skipWaiting,
+  fetchFallback,
 }) => {
   // There needs to be at least something to precache, or else runtime caching.
   if (!(manifestEntries.length > 0 || runtimeCaching.length > 0)) {
@@ -85,6 +86,7 @@ module.exports = ({
       precacheOptionsString,
       runtimeCaching: runtimeCachingConverter(moduleRegistry, runtimeCaching),
       skipWaiting,
+      fetchFallback,
       use: moduleRegistry.use.bind(moduleRegistry),
     });
 
