@@ -2,8 +2,8 @@
   "extends": "../../tsconfig",
   "compilerOptions": {
     "module": "CommonJS",
-    "outDir": "./build",
-    "rootDir": "./src",
+    "outDir": "build",
+    "rootDir": "src",
     "target": "ES2018",
     "tsBuildInfoFile": "./tsconfig.tsbuildinfo"
   },

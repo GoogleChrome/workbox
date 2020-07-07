@@ -74,7 +74,7 @@ async function runBuildCommand({command, config, watch}: BuildCommand) {
 
 export const app = async (params: meow.Result<SupportedFlags>) => {
   // This should not be a user-visible error, unless meow() messes something up.
-  assert(Array.isArray(params.input), errors['missing-input']);
+  assert(params && Array.isArray(params.input), errors['missing-input']);
 
   // Default to showing the help message if there's no command provided.
   const [command = 'help', option] = params.input;
