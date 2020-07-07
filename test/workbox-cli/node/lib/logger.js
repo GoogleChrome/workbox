@@ -9,7 +9,7 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
 
-const logger = require('../../../../packages/workbox-cli/src/lib/logger');
+const {logger} = require('../../../../packages/workbox-cli/build/lib/logger');
 
 describe(`[workbox-cli] lib/logger.js`, function() {
   const sandbox = sinon.createSandbox();
