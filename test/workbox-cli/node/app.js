@@ -198,7 +198,7 @@ describe(`[workbox-cli] app.js`, function() {
           './lib/read-config': {
             readConfig: (options) => {
               expect(options).to.eql(PROXIED_CONFIG_FILE);
-              return PROXIED_CONFIG
+              return PROXIED_CONFIG;
             },
           },
           './lib/logger': {

@@ -11,7 +11,7 @@ const del = require('del');
 const fse = require('fs-extra');
 const upath = require('upath');
 
-const {build_node_packages, build_node_ts_packages} = 
+const {build_node_packages, build_node_ts_packages} =
     require('./build-node-packages');
 const {build_sw_packages} = require('./build-sw-packages');
 const {build_window_packages} = require('./build-window-packages');
