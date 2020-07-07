@@ -35,4 +35,4 @@ export async function askSWDest(defaultDir = '.') {
   assert(swDest, errors['invalid-sw-dest']);
 
   return swDest;
-};
+}

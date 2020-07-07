@@ -92,4 +92,4 @@ export async function askExtensionsToCache(globDirectory: string){
     extensions[0] :
     `{${extensions.join(',')}}`;
   return [`**/*.${extensionsPattern}`];
-};
+}

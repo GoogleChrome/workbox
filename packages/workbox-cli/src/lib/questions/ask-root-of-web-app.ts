@@ -57,7 +57,7 @@ async function askQuestion() {
       ]),
     }, {
       name,
-      when: (answers: { [x: string]: string; }) => answers[name] === manualEntryChoice,
+      when: (answers: { [x: string]: string }) => answers[name] === manualEntryChoice,
       message: ROOT_PROMPT,
     }]);
   } else {
@@ -81,4 +81,4 @@ export async function askRootOfWebApp() {
   }
 
   return globDirectory;
-};
+}

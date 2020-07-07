@@ -35,4 +35,4 @@ export async function askConfigLocation() {
   assert(configLocation, errors['invalid-config-location']);
 
   return configLocation;
-};
+}

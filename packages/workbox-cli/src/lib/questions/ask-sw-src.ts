@@ -28,4 +28,4 @@ function askQuestion() {
 export async function askSWSrc() {
   const answers = await askQuestion();
   return answers[name].trim();
-};
+}

@@ -10,4 +10,4 @@
 // out reading the configuration during tests.
 export function readConfig(configFile: string) {
   return require(configFile)
-};
+}

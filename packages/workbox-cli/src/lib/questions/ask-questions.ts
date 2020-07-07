@@ -29,4 +29,4 @@ export async function askQuestions(options = {}) {
     config,
     configLocation,
   };
-};
+}

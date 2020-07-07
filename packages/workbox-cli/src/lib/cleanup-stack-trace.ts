@@ -27,4 +27,4 @@ export function cleanupStackTrace(error: Error, moduleName: string) {
     }
   });
   return frames.slice(startFrame, lastFrame + 1).join(`\n`);
-};
+}
