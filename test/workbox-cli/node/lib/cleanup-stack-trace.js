@@ -9,7 +9,7 @@
 const expect = require('chai').expect;
 const upath = require('upath');
 
-const cleanupStackTrace = require('../../../../packages/workbox-cli/src/lib/cleanup-stack-trace');
+const {cleanupStackTrace} = require('../../../../packages/workbox-cli/build/lib/cleanup-stack-trace');
 
 describe(`[workbox-cli] lib/cleanup-stack-trace.js`, function() {
   const CURRENT_MODULE_NAME = upath.basename(__filename);

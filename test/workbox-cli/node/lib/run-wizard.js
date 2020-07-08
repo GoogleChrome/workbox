@@ -11,7 +11,7 @@ const upath = require('upath');
 const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 
-const MODULE_PATH = '../../../../packages/workbox-cli/src/lib/run-wizard';
+const MODULE_PATH = '../../../../packages/workbox-cli/build/lib/run-wizard';
 
 describe(`[workbox-cli] lib/run-wizard.js`, function() {
   it(`should write the configuration to the expected location based on the answers provided`, async function() {
@@ -20,12 +20,16 @@ describe(`[workbox-cli] lib/run-wizard.js`, function() {
     const fseWriteFileStub = sinon.stub().resolves();
     const loggerStub = sinon.stub();
 
-    const runWizard = proxyquire(MODULE_PATH, {
+    const {runWizard} = proxyquire(MODULE_PATH, {
       './logger': {
-        log: loggerStub,
+        logger: {
+          log: loggerStub,
+        },
       },
-      './questions/ask-questions': () => {
-        return {config, configLocation};
+      './questions/ask-questions': {
+        askQuestions: () => {
+          return {config, configLocation};
+        },
       },
       'fs-extra': {
         writeFile: fseWriteFileStub,

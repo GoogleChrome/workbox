@@ -6,14 +6,14 @@
   https://opensource.org/licenses/MIT.
 */
 
-const assert = require('assert');
-const glob = require('glob');
-const inquirer = require('inquirer');
-const ora = require('ora');
-const upath = require('upath');
+import * as assert from 'assert';
+import {prompt} from 'inquirer';
+import * as glob from 'glob';
+import * as ora from 'ora';
+import * as upath from 'upath';
 
-const errors = require('../errors');
-const {ignoredDirectories, ignoredFileExtensions} = require('../constants');
+import {errors} from '../errors';
+import {constants} from '../constants';
 
 // The key used for the question/answer.
 const name = 'globPatterns';
@@ -23,16 +23,16 @@ const name = 'globPatterns';
  * @return {Promise<Array<string>>} The unique file extensions corresponding
  * to all of the files under globDirectory.
  */
-async function getAllFileExtensions(globDirectory) {
-  const files = await new Promise((resolve, reject) => {
+async function getAllFileExtensions(globDirectory: string) {
+  const files: string[] = await new Promise((resolve, reject) => {
     // Use a pattern to match any file that contains a '.', since that signifies
     // the presence of a file extension.
     glob('**/*.*', {
       cwd: globDirectory,
       nodir: true,
       ignore: [
-        ...ignoredDirectories.map((directory) => `**/${directory}/**`),
-        ...ignoredFileExtensions.map((extension) => `**/*.${extension}`),
+        ...constants.ignoredDirectories.map((directory) => `**/${directory}/**`),
+        ...constants.ignoredFileExtensions.map((extension) => `**/*.${extension}`),
       ],
     }, (error, files) => {
       if (error) {
@@ -43,7 +43,7 @@ async function getAllFileExtensions(globDirectory) {
     });
   });
 
-  const extensions = new Set();
+  const extensions: Set<string> = new Set();
   for (const file of files) {
     const extension = upath.extname(file);
     if (extension) {
@@ -59,7 +59,7 @@ async function getAllFileExtensions(globDirectory) {
  * @param {string} globDirectory The directory used for the root of globbing.
  * @return {Promise<Object>} The answers from inquirer.
  */
-async function askQuestion(globDirectory) {
+async function askQuestion(globDirectory: string) {
   // We need to get a list of extensions corresponding to files in the directory
   // to use when asking the next question. That could potentially take some
   // time, so we show a spinner and explanatory text.
@@ -72,7 +72,7 @@ async function askQuestion(globDirectory) {
 
   assert(fileExtensions.length > 0, errors['no-file-extensions-found']);
 
-  return inquirer.prompt([{
+  return prompt([{
     name,
     message: 'Which file types would you like to precache?',
     type: 'checkbox',
@@ -81,7 +81,7 @@ async function askQuestion(globDirectory) {
   }]);
 }
 
-module.exports = async (globDirectory) => {
+export async function askExtensionsToCache(globDirectory: string){
   const answers = await askQuestion(globDirectory);
   const extensions = answers[name];
   assert(extensions.length > 0, errors['no-file-extensions-selected']);
@@ -92,4 +92,4 @@ module.exports = async (globDirectory) => {
     extensions[0] :
     `{${extensions.join(',')}}`;
   return [`**/*.${extensionsPattern}`];
-};
+}

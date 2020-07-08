@@ -6,16 +6,16 @@
   https://opensource.org/licenses/MIT.
 */
 
-const askConfigLocation = require('./ask-config-location');
-const askExtensionsToCache = require('./ask-extensions-to-cache');
-const askRootOfWebApp = require('./ask-root-of-web-app');
-const askSWDest = require('./ask-sw-dest');
-const askSWSrc = require('./ask-sw-src');
+import {askConfigLocation} from './ask-config-location';
+import {askExtensionsToCache} from './ask-extensions-to-cache';
+import {askRootOfWebApp} from './ask-root-of-web-app';
+import {askSWDest} from './ask-sw-dest';
+import {askSWSrc} from './ask-sw-src';
 
-module.exports = async (options = {}) => {
+export async function askQuestions(options = {}) {
   const globDirectory = await askRootOfWebApp();
   const globPatterns = await askExtensionsToCache(globDirectory);
-  const swSrc = options.injectManifest ? await askSWSrc() : undefined;
+  const swSrc = ("injectManifest" in options) ? await askSWSrc() : undefined;
   const swDest = await askSWDest(globDirectory);
   const configLocation = await askConfigLocation();
   const config = {
@@ -29,4 +29,4 @@ module.exports = async (options = {}) => {
     config,
     configLocation,
   };
-};
+}

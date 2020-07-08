@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-module.exports = `Usage:
+export const helpText = `Usage:
 $ workbox <command> [options]
 
 Commands:

@@ -51,6 +51,9 @@ describe(`[all] Test package.json`, function() {
         case 'node': {
           break;
         }
+        case 'node_ts': {
+          break;
+        }
         default:
           throw new Error(`Unknown package.json workbox.packageType: '${pkg.workbox.packageType}' in ${upath.relative(process.cwd(), packagePath)}`);
       }

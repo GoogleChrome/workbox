@@ -10,12 +10,15 @@
 // Removes the initial portion, since that's obtained from error.message.
 // Removes every stack frame earlier than the last instance of moduleName,
 // since that's just frames related to the Node runtime/loader.
-module.exports = (error, moduleName) => {
+export function cleanupStackTrace(error: Error, moduleName: string) {
+  if (!error.stack) {
+    return '';
+  }
   const frames = error.stack.split(`\n`);
-  let startFrame = null;
+  let startFrame: number | undefined;
   let lastFrame = 0;
   frames.forEach((frame, index) => {
-    if (startFrame === null && frame.includes(`    at `)) {
+    if (startFrame === undefined && frame.includes(`    at `)) {
       startFrame = index;
     }
 
@@ -24,4 +27,4 @@ module.exports = (error, moduleName) => {
     }
   });
   return frames.slice(startFrame, lastFrame + 1).join(`\n`);
-};
+}

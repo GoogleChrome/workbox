@@ -49,7 +49,7 @@
 
       installSWBtn.addEventListener('click', () => {
         console.log("Installing service worker");
-        navigator.serviceWorker.register('./sw.js')
+        navigator.serviceWorker.register('/sw.js')
         .then((reg) => {
           showLogsBtn.addEventListener('click', () => {
             const message = {

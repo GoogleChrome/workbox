@@ -28,7 +28,13 @@ async function buildNodePackage(packagePath) {
   ], {preferLocal: true});
 }
 
+async function buildNodeTSPackage(packagePath) {
+  await execa('tsc', ['-b', packagePath], {preferLocal: true});
+}
+
 module.exports = {
   build_node_packages: parallel(packageRunner('build_node_packages', 'node',
       buildNodePackage)),
+  build_node_ts_packages: parallel(packageRunner('build_node_ts_packages',
+      'node_ts', buildNodeTSPackage)),
 };

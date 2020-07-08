@@ -8,17 +8,24 @@
   https://opensource.org/licenses/MIT.
 */
 
-const meow = require('meow');
-const updateNotifier = require('update-notifier');
 
-const app = require('./app.js');
-const cleanupStackTrace = require('./lib/cleanup-stack-trace.js');
-const helpText = require('./lib/help-text');
-const logger = require('./lib/logger');
+import * as meow from 'meow'
+import * as updateNotifier from 'update-notifier';
+
+import {app} from "./app";
+import {cleanupStackTrace} from './lib/cleanup-stack-trace.js';
+import {helpText} from'./lib/help-text';
+import {logger} from './lib/logger';
+
+export interface SupportedFlags extends meow.AnyFlags {
+  debug: meow.BooleanFlag;
+  injectManifest: meow.BooleanFlag;
+  watch: meow.BooleanFlag;
+}
 
 (async () => {
-  const params = meow(helpText);
-  updateNotifier({pkg: params.pkg}).notify();
+  const params: meow.Result<any> = meow(helpText);
+  updateNotifier({pkg: params.pkg as updateNotifier.Package}).notify(); //FIX This is dubious
 
   try {
     await app(params);

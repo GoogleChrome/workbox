@@ -6,14 +6,14 @@
   https://opensource.org/licenses/MIT.
 */
 
-const assert = require('assert');
-const fse = require('fs-extra');
-const glob = require('glob');
-const inquirer = require('inquirer');
-const ol = require('common-tags').oneLine;
+import * as assert from 'assert';
+import * as fse from 'fs-extra';
+import * as glob from 'glob';
+import {prompt, Separator} from 'inquirer';
+import {oneLine as ol} from 'common-tags';
 
-const {ignoredDirectories} = require('../constants');
-const errors = require('../errors');
+import {errors} from '../errors';
+import {constants} from '../constants';
 
 const ROOT_PROMPT = 'Please enter the path to the root of your web app:';
 
@@ -24,10 +24,10 @@ const name = 'globDirectory';
  * @return {Promise<Array<string>>} The subdirectories of the current
  * working directory, with hidden and ignored ones filtered out.
  */
-async function getSubdirectories() {
+async function getSubdirectories(): Promise<Array<string>> {
   return await new Promise((resolve, reject) => {
     glob('*/', {
-      ignore: ignoredDirectories.map((directory) => `${directory}/`),
+      ignore: constants.ignoredDirectories.map((directory) => `${directory}/`),
     }, (error, directories) => {
       if (error) {
         reject(error);
@@ -46,22 +46,22 @@ async function askQuestion() {
 
   if (subdirectories.length > 0) {
     const manualEntryChoice = 'Manually enter path';
-    return inquirer.prompt([{
+    return prompt([{
       name,
       type: 'list',
       message: ol`What is the root of your web app (i.e. which directory do
         you deploy)?`,
       choices: subdirectories.concat([
-        new inquirer.Separator(),
+        new Separator().toString(),
         manualEntryChoice,
       ]),
     }, {
       name,
-      when: (answers) => answers[name] === manualEntryChoice,
+      when: (answers: { [x: string]: string }) => answers[name] === manualEntryChoice,
       message: ROOT_PROMPT,
     }]);
   } else {
-    return inquirer.prompt([{
+    return prompt([{
       name,
       message: ROOT_PROMPT,
       default: '.',
@@ -69,7 +69,7 @@ async function askQuestion() {
   }
 }
 
-module.exports = async () => {
+export async function askRootOfWebApp() {
   const answers = await askQuestion();
   const globDirectory = answers[name];
 
@@ -81,4 +81,4 @@ module.exports = async () => {
   }
 
   return globDirectory;
-};
+}

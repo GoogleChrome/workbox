@@ -10,7 +10,7 @@ const expect = require('chai').expect;
 const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 
-const MODULE_PATH = '../../../../../packages/workbox-cli/src/lib/questions/ask-questions';
+const MODULE_PATH = '../../../../../packages/workbox-cli/build/lib/questions/ask-questions';
 
 describe(`[workbox-cli] lib/questions/ask-questions.js`, function() {
   it(`should ask all the expected questions in the correct order, and return the expected result in generateSW mode`, async function() {
@@ -21,11 +21,19 @@ describe(`[workbox-cli] lib/questions/ask-questions.js`, function() {
     let count = 0;
     const stub = sinon.stub().callsFake(() => Promise.resolve(count++));
 
-    const askQuestions = proxyquire(MODULE_PATH, {
-      './ask-root-of-web-app': stub,
-      './ask-extensions-to-cache': stub,
-      './ask-sw-dest': stub,
-      './ask-config-location': stub,
+    const {askQuestions} = proxyquire(MODULE_PATH, {
+      './ask-root-of-web-app': {
+        askRootOfWebApp: stub,
+      },
+      './ask-extensions-to-cache': {
+        askExtensionsToCache: stub,
+      },
+      './ask-sw-dest': {
+        askSWDest: stub,
+      },
+      './ask-config-location': {
+        askConfigLocation: stub,
+      },
     });
 
     const answer = await askQuestions();
@@ -44,12 +52,22 @@ describe(`[workbox-cli] lib/questions/ask-questions.js`, function() {
     let count = 0;
     const stub = sinon.stub().callsFake(() => Promise.resolve(count++));
 
-    const askQuestions = proxyquire(MODULE_PATH, {
-      './ask-root-of-web-app': stub,
-      './ask-extensions-to-cache': stub,
-      './ask-sw-src': stub,
-      './ask-sw-dest': stub,
-      './ask-config-location': stub,
+    const {askQuestions} = proxyquire(MODULE_PATH, {
+      './ask-root-of-web-app': {
+        askRootOfWebApp: stub,
+      },
+      './ask-extensions-to-cache': {
+        askExtensionsToCache: stub,
+      },
+      './ask-sw-src': {
+        askSWSrc: stub,
+      },
+      './ask-sw-dest': {
+        askSWDest: stub,
+      },
+      './ask-config-location': {
+        askConfigLocation: stub,
+      },
     });
 
     const answer = await askQuestions({injectManifest: true});

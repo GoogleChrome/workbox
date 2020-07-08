@@ -11,7 +11,8 @@ const del = require('del');
 const fse = require('fs-extra');
 const upath = require('upath');
 
-const {build_node_packages} = require('./build-node-packages');
+const {build_node_packages, build_node_ts_packages} =
+    require('./build-node-packages');
 const {build_sw_packages} = require('./build-sw-packages');
 const {build_window_packages} = require('./build-window-packages');
 const constants = require('./utils/constants');
@@ -52,6 +53,11 @@ module.exports = {
   build_packages_clean: cleanSequence(),
   build_packages: series(
       cleanSequence(),
-      parallel(build_node_packages, build_sw_packages, build_window_packages),
+      parallel(
+          build_node_packages,
+          build_node_ts_packages,
+          build_sw_packages,
+          build_window_packages,
+      ),
   ),
 };

@@ -6,9 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
-const ol = require('common-tags').oneLine;
+import {oneLine as ol} from 'common-tags';
 
-module.exports = {
+export const errors = {
   'missing-input': `params.input value was not set properly.`,
   'missing-dest-dir-param': ol`Please provide the path to a directory in which
     the libraries will be copied.`,

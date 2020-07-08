@@ -6,11 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
-const assert = require('assert');
-const inquirer = require('inquirer');
-const upath = require('upath');
+import * as assert from 'assert';
+import {prompt} from 'inquirer';
+import * as upath from 'upath';
 
-const errors = require('../errors');
+import {errors} from '../errors';
 
 // The key used for the question/answer.
 const name = 'swDest';
@@ -19,8 +19,8 @@ const name = 'swDest';
  * @param {string} defaultDir
  * @return {Promise<Object>} The answers from inquirer.
  */
-function askQuestion(defaultDir) {
-  return inquirer.prompt([{
+function askQuestion(defaultDir: string) {
+  return prompt([{
     name,
     message: `Where would you like your service worker file to be saved?`,
     type: 'input',
@@ -28,11 +28,11 @@ function askQuestion(defaultDir) {
   }]);
 }
 
-module.exports = async (defaultDir = '.') => {
+export async function askSWDest(defaultDir = '.') {
   const answers = await askQuestion(defaultDir);
   const swDest = answers[name].trim();
 
   assert(swDest, errors['invalid-sw-dest']);
 
   return swDest;
-};
+}

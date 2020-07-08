@@ -6,6 +6,12 @@
   https://opensource.org/licenses/MIT.
 */
 
-// A really light wrapper on top of Node's require() to make it easier to stub
-// out reading the configuration during tests.
-module.exports = (configFile) => require(configFile);
+export const constants = {
+  defaultConfigFile: 'workbox-config.js',
+  ignoredDirectories: [
+    'node_modules',
+  ],
+  ignoredFileExtensions: [
+    'map',
+  ],
+};

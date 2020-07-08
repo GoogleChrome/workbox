@@ -6,8 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-const inquirer = require('inquirer');
-const ol = require('common-tags').oneLine;
+import {prompt} from 'inquirer';
+import {oneLine as ol} from 'common-tags';
 
 // The key used for the question/answer.
 const name = 'swSrc';
@@ -16,7 +16,7 @@ const name = 'swSrc';
  * @return {Promise<Object>} The answers from inquirer.
  */
 function askQuestion() {
-  return inquirer.prompt([{
+  return prompt([{
     name,
     message: ol`Where's your existing service worker file? To be used with
       injectManifest, it should include a call to
@@ -25,7 +25,7 @@ function askQuestion() {
   }]);
 }
 
-module.exports = async () => {
+export async function askSWSrc() {
   const answers = await askQuestion();
   return answers[name].trim();
-};
+}

@@ -1,6 +1,6 @@
 {
   "name": "workbox-window",
-  "version": "5.1.2",
+  "version": "5.1.3",
   "license": "MIT",
   "author": "Google's Web DevRel Team",
   "description": "Simplifies communications with Workbox packages running in the service worker",
@@ -24,6 +24,6 @@
   "module": "build/workbox-window.prod.es5.mjs",
   "types": "index.d.ts",
   "dependencies": {
-    "workbox-core": "^5.1.2"
+    "workbox-core": "^5.1.3"
   }
 }

@@ -1,4 +1,4 @@
-importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.0.0/workbox-sw.js');
+importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js');
 
 workbox.setConfig({
   debug: true,
@@ -9,11 +9,11 @@ workbox.setConfig({
 
 // Set up a route to alter the demo-img
 const matchCb = ({url, event}) => {
-  return url.pathname === '/public/demo-img.png';
+  return url.pathname === '/demo-img.png';
 };
 
 const handlerCb = ({url, event, params}) => {
-  return fetch('/public/demo-popper.png');
+  return fetch('/demo-popper.png');
 };
 
 // First parameter can be a string, RegExp, workbox Route, or a match callback (used here)

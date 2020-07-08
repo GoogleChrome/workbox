@@ -11,11 +11,11 @@ const upath = require('upath');
 const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 
-const constants = require('../../../packages/workbox-cli/src/lib/constants');
-const errors = require('../../../packages/workbox-cli/src/lib/errors');
+const {constants} = require('../../../packages/workbox-cli/build/lib/constants');
+const {errors} = require('../../../packages/workbox-cli/build/lib/errors');
 
 describe(`[workbox-cli] app.js`, function() {
-  const MODULE_PATH = '../../../packages/workbox-cli/src/app';
+  const MODULE_PATH = '../../../packages/workbox-cli/build/app';
   const PROXIED_CONFIG_FILE = upath.resolve(process.cwd(), '/will/be/proxied');
   const PROXIED_DEST_DIR = upath.resolve(process.cwd(), 'build');
   const PROXIED_ERROR = new Error('proxied error message');
@@ -40,7 +40,7 @@ describe(`[workbox-cli] app.js`, function() {
   };
 
   describe(`failures due to bad parameters`, function() {
-    const app = require(MODULE_PATH);
+    const {app} = require(MODULE_PATH);
 
     it(`should reject when both parameters are missing`, async function() {
       try {
@@ -73,14 +73,14 @@ describe(`[workbox-cli] app.js`, function() {
     for (const command of WORKBOX_BUILD_COMMANDS) {
       it(`should reject when the command parameter is ${command} and options does not exist`, async function() {
         const loggerErrorStub = sinon.stub();
-        const appWithStub = proxyquire(MODULE_PATH, {
-          './lib/logger': {
-            error: loggerErrorStub,
+        const {app} = proxyquire(MODULE_PATH, {
+          './lib/logger.js': {
+            logger: {error: loggerErrorStub},
           },
         });
 
         try {
-          await appWithStub({input: [command, INVALID_CONFIG_FILE]});
+          await app({input: [command, INVALID_CONFIG_FILE]});
           throw new Error('Unexpected success.');
         } catch (error) {
           expect(loggerErrorStub.calledOnce).to.be.true;
@@ -106,13 +106,15 @@ describe(`[workbox-cli] app.js`, function() {
 
       for (const config of badConfigs) {
         it(`should reject with a validation error when workbox-build.${command}(${JSON.stringify(config)}) is called`, async function() {
-          const app = proxyquire(MODULE_PATH, {
+          const {app} = proxyquire(MODULE_PATH, {
             './lib/logger': {
-              log: sinon.stub(),
+              logger: {log: sinon.stub()},
             },
-            './lib/read-config': (options) => {
-              expect(options).to.eql(PROXIED_CONFIG_FILE);
-              return config;
+            './lib/read-config': {
+              readConfig: (options) => {
+                expect(options).to.eql(PROXIED_CONFIG_FILE);
+                return config;
+              },
             },
           });
 
@@ -127,14 +129,18 @@ describe(`[workbox-cli] app.js`, function() {
 
       it(`should reject with a generic runtime error when the workbox-build.${command}() rejects for any other reason`, async function() {
         const loggerErrorStub = sinon.stub();
-        const app = proxyquire(MODULE_PATH, {
+        const {app} = proxyquire(MODULE_PATH, {
           './lib/logger': {
-            log: sinon.stub(),
-            error: loggerErrorStub,
+            logger: {
+              log: sinon.stub(),
+              error: loggerErrorStub,
+            },
           },
-          './lib/read-config': (options) => {
-            expect(options).to.eql(PROXIED_CONFIG_FILE);
-            return PROXIED_CONFIG;
+          './lib/read-config': {
+            readConfig: (options) => {
+              expect(options).to.eql(PROXIED_CONFIG_FILE);
+              return PROXIED_CONFIG;
+            },
           },
           'workbox-build': {
             [command]: (config) => {
@@ -162,13 +168,17 @@ describe(`[workbox-cli] app.js`, function() {
     for (const command of WORKBOX_BUILD_COMMANDS) {
       it(`should call logger.log() upon successfully running workbox-build.${command}()`, async function() {
         const loggerLogStub = sinon.stub();
-        const app = proxyquire(MODULE_PATH, {
-          './lib/read-config': (options) => {
-            expect(options).to.eql(PROXIED_CONFIG_FILE);
-            return PROXIED_CONFIG;
+        const {app} = proxyquire(MODULE_PATH, {
+          './lib/read-config': {
+            readConfig: (options) => {
+              expect(options).to.eql(PROXIED_CONFIG_FILE);
+              return PROXIED_CONFIG;
+            },
           },
           './lib/logger': {
-            log: loggerLogStub,
+            logger: {
+              log: loggerLogStub,
+            },
           },
           'workbox-build': {
             [command]: () => {
@@ -184,14 +194,18 @@ describe(`[workbox-cli] app.js`, function() {
       it(`should call logger.warn() to report warnings, and then logger.log() upon successfully running workbox-build.${command}()`, async function() {
         const loggerLogStub = sinon.stub();
         const loggerWarningStub = sinon.stub();
-        const app = proxyquire(MODULE_PATH, {
-          './lib/read-config': (options) => {
-            expect(options).to.eql(PROXIED_CONFIG_FILE);
-            return PROXIED_CONFIG;
+        const {app} = proxyquire(MODULE_PATH, {
+          './lib/read-config': {
+            readConfig: (options) => {
+              expect(options).to.eql(PROXIED_CONFIG_FILE);
+              return PROXIED_CONFIG;
+            },
           },
           './lib/logger': {
-            log: loggerLogStub,
-            warn: loggerWarningStub,
+            logger: {
+              log: loggerLogStub,
+              warn: loggerWarningStub,
+            },
           },
           'workbox-build': {
             [command]: () => {
@@ -207,14 +221,18 @@ describe(`[workbox-cli] app.js`, function() {
 
       it(`should call logger.log() upon successfully running workbox-build.${command}() using the default config file location`, async function() {
         const loggerLogStub = sinon.stub();
-        const app = proxyquire(MODULE_PATH, {
-          './lib/read-config': (options) => {
-            const defaultConfigPath = upath.join(process.cwd(), constants.defaultConfigFile);
-            expect(options).to.eql(defaultConfigPath);
-            return PROXIED_CONFIG;
+        const {app} = proxyquire(MODULE_PATH, {
+          './lib/read-config': {
+            readConfig: (options) => {
+              const defaultConfigPath = upath.join(process.cwd(), constants.defaultConfigFile);
+              expect(options).to.eql(defaultConfigPath);
+              return PROXIED_CONFIG;
+            },
           },
           './lib/logger': {
-            log: loggerLogStub,
+            logger: {
+              log: loggerLogStub,
+            },
           },
           'workbox-build': {
             [command]: () => {
@@ -230,9 +248,11 @@ describe(`[workbox-cli] app.js`, function() {
 
     it(`should call logger.log() upon successfully running workbox-build.copyWorkboxLibraries()`, async function() {
       const loggerLogStub = sinon.stub();
-      const app = proxyquire(MODULE_PATH, {
+      const {app} = proxyquire(MODULE_PATH, {
         './lib/logger': {
-          log: loggerLogStub,
+          logger: {
+            log: loggerLogStub,
+          },
         },
         'workbox-build': {
           copyWorkboxLibraries: (destDir) => {
@@ -247,7 +267,7 @@ describe(`[workbox-cli] app.js`, function() {
     });
 
     it(`should call params.showHelp() when passed 'help'`, async function() {
-      const app = require(MODULE_PATH);
+      const {app} = require(MODULE_PATH);
 
       const params = {
         input: ['help'],
@@ -259,7 +279,7 @@ describe(`[workbox-cli] app.js`, function() {
     });
 
     it(`should call params.showHelp() when not passed any command`, async function() {
-      const app = require(MODULE_PATH);
+      const {app} = require(MODULE_PATH);
 
       const params = {
         input: [],
