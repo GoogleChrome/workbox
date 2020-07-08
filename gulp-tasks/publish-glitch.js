@@ -19,7 +19,7 @@ const DEMOS_DIR = 'demos/src';
 
 async function publish_glitch() {
   const glitchProjects = await globby('*', {cwd: DEMOS_DIR, onlyFiles: false});
-  
+
   if (!process.env.GLITCH_PERSONAL_TOKEN) {
     throw new Error(ol`You must set a GLITCH_TOKEN in your environment to
         publish to Glitch (you must have owner or editor access for the
@@ -46,7 +46,7 @@ async function publish_glitch() {
       cwd: projectPath,
     });
     await execa('git', ['push', 'origin', 'glitch', '-f', '--set-upstream',
-        '--no-verify'], {cwd: projectPath});
+      '--no-verify'], {cwd: projectPath});
 
     const deployURL = new URL(`https://${project}.glitch.me/deploy`);
     deployURL.searchParams.set('secret', process.env.GLITCH_WORKBOX_SECRET);
