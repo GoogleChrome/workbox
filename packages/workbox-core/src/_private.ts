@@ -10,7 +10,6 @@
 import {assert} from './_private/assert.js';
 import {cacheNames} from './_private/cacheNames.js';
 import {canConstructReadableStream} from './_private/canConstructReadableStream.js';
-import {canConstructResponseFromBodyStream} from './_private/canConstructResponseFromBodyStream.js';
 import {dontWaitFor} from './_private/dontWaitFor.js';
 import {DBWrapper} from './_private/DBWrapper.js';
 import {Deferred} from './_private/Deferred.js';
@@ -28,7 +27,6 @@ export {
   assert,
   cacheNames,
   canConstructReadableStream,
-  canConstructResponseFromBodyStream,
   dontWaitFor,
   DBWrapper,
   Deferred,
