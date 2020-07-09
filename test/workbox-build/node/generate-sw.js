@@ -327,6 +327,8 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
           '/one',
           {url: '/two', revision: null},
           {url: '/three', revision: '333'},
+          // See https://github.com/GoogleChrome/workbox/issues/2558
+          {url: '/four', revision: '123', integrity: '456'},
         ],
         swDest,
       });
@@ -334,7 +336,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       const {count, filePaths, size, warnings} = await generateSW(options);
       // The string additionalManifestEntries entry should lead to one warning.
       expect(warnings).to.have.length(1);
-      expect(count).to.eql(9);
+      expect(count).to.eql(10);
       // Line ending differences lead to different sizes on Windows.
       expect(size).to.be.oneOf([2604, 2686]);
 
@@ -366,6 +368,10 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
         }, {
           revision: '333',
           url: '/three',
+        }, {
+          url: '/four',
+          revision: '123',
+          integrity: '456',
         }], {}]],
       }});
     });

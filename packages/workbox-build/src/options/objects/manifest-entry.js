@@ -9,6 +9,7 @@
 const joi = require('@hapi/joi');
 
 module.exports = joi.object().keys({
+  integrity: joi.string(),
   revision: joi.string().required().allow(null),
   url: joi.string().required(),
 });
