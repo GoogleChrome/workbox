@@ -12,9 +12,9 @@
 import * as meow from 'meow'
 import * as updateNotifier from 'update-notifier';
 
-import {app} from "./app";
+import {app} from './app';
 import {cleanupStackTrace} from './lib/cleanup-stack-trace.js';
-import {helpText} from'./lib/help-text';
+import {helpText} from './lib/help-text';
 import {logger} from './lib/logger';
 
 export interface SupportedFlags extends meow.AnyFlags {
@@ -25,7 +25,7 @@ export interface SupportedFlags extends meow.AnyFlags {
 
 (async () => {
   const params: meow.Result<any> = meow(helpText);
-  updateNotifier({pkg: params.pkg as updateNotifier.Package}).notify(); //FIX This is dubious
+  updateNotifier({pkg: params.pkg as updateNotifier.Package}).notify();
 
   try {
     await app(params);
