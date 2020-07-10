@@ -47,7 +47,6 @@
     "@types/fs-extra": "^9.0.1",
     "@types/glob-watcher": "^5.0.0",
     "@types/inquirer": "^6.5.0",
-    "@types/update-notifier": "^4.1.0",
-    "@types/workbox-build": "^5.0.0"
+    "@types/update-notifier": "^4.1.0"
   }
 }
