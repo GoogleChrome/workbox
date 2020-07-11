@@ -209,6 +209,17 @@ export interface HandlerWillRespondCallback {
   (param: HandlerWillRespondCallbackParam): Promise<Response>;
 }
 
+interface HandlerDidErrorCallbackParam {
+  request: Request;
+  event: ExtendableEvent;
+  error: Error;
+  state?: PluginState;
+}
+
+export interface HandlerDidErrorCallback {
+  (param: HandlerDidErrorCallbackParam): Promise<Response | undefined>;
+}
+
 export interface HandlerDidRespondCallbackParam {
   request: Request;
   event: ExtendableEvent;
@@ -244,6 +255,7 @@ export interface WorkboxPlugin {
   fetchDidFail?: FetchDidFailCallback;
   fetchDidSucceed?: FetchDidSucceedCallback;
   handlerDidComplete?: HandlerDidCompleteCallback;
+  handlerDidError?: HandlerDidErrorCallback;
   handlerDidRespond?: HandlerDidRespondCallback;
   handlerWillRespond?: HandlerWillRespondCallback;
   handlerWillStart?: HandlerWillStartCallback;
@@ -258,6 +270,7 @@ export interface WorkboxPluginCallbackParam {
   fetchDidFail: FetchDidFailCallbackParam;
   fetchDidSucceed: FetchDidSucceedCallbackParam;
   handlerDidComplete: HandlerDidCompleteCallbackParam;
+  handlerDidError: HandlerDidErrorCallbackParam;
   handlerDidRespond: HandlerDidRespondCallbackParam;
   handlerWillRespond: HandlerWillRespondCallbackParam;
   handlerWillStart: HandlerWillStartCallbackParam;
