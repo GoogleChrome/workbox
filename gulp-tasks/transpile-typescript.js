@@ -102,7 +102,7 @@ async function transpilePackage(packageName, {failOnError = true} = {}) {
 
     const packagePath = upath.join('packages', packageName);
 
-    // Don't create `.mjs` files for the node_ts packages.  
+    // Don't create `.mjs` files for the node_ts packages.
     const pkgJson = require(`../${packagePath}/package.json`);
     if (pkgJson.workbox.packageType === 'node_ts') {
       return;
