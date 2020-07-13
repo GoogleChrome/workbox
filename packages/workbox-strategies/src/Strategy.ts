@@ -177,8 +177,8 @@ abstract class Strategy implements RouteHandlerObject {
       response = await this._handle(request, handler);
       // The "official" Strategy subclasses all throw this error automatically,
       // but in case a third-party Strategy doesn't, ensure that we have a
-      // consistent failure when there's no response.
-      if (!response) {
+      // consistent failure when there's no response or an error response.
+      if (!response || response.type === 'error') {
         throw new WorkboxError('no-response', {url: request.url});
       }
     } catch (error) {

@@ -53,6 +53,12 @@ class HandlerReturnsUndefinedStrategy extends Strategy {
   }
 }
 
+class HandlerReturnsResponseErrorStrategy extends Strategy {
+  async _handle(request, handler) {
+    return Response.error();
+  }
+}
+
 class ExtendingStrategy extends FetchStrategy {
   constructor(options) {
     super(options);
@@ -428,6 +434,25 @@ describe(`Strategy`, function() {
           state: {},
         }]]);
       }
+    });
+
+    it('should use the callback Response when _handler() returns Response.error()', async function() {
+      const plugins = [{
+        handlerDidError: sandbox.stub().resolves(new Response('from plugin')),
+      }];
+      const strategy = new HandlerReturnsResponseErrorStrategy({plugins});
+
+      const {request, event} = generateOptions();
+
+      const [responsePromise] = strategy.handleAll({request, event});
+      const response = await responsePromise;
+      const responseBody = await response.text();
+
+      expect(responseBody).to.eql('from plugin');
+
+      // We can't do a deep equality check without a reference to the
+      // WorkboxError, so just do a sanity check.
+      expect(plugins[0].handlerDidError.args[0][0].error.name).to.eql('no-response');
     });
   });
 
