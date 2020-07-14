@@ -16,6 +16,7 @@ import {matchPrecache} from './matchPrecache.js';
 import {precache} from './precache.js';
 import {precacheAndRoute} from './precacheAndRoute.js';
 import {PrecacheController} from './PrecacheController.js';
+import {PrecacheFallbackPlugin} from './PrecacheFallbackPlugin.js';
 
 import './_version.js';
 
@@ -43,4 +44,5 @@ export {
   precache,
   precacheAndRoute,
   PrecacheController,
+  PrecacheFallbackPlugin,
 };
