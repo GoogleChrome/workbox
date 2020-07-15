@@ -15,6 +15,8 @@ const olt = require('common-tags').oneLineTrim;
 const tempy = require('tempy');
 const upath = require('upath');
 
+const logHelper = require('../infra/utils/log-helper');
+
 const DEMOS_DIR = 'demos/src';
 
 async function publish_glitch() {
@@ -36,22 +38,26 @@ async function publish_glitch() {
         @api.glitch.com/git/${project}`;
     const projectPath = tempy.directory();
 
-    await execa('git', ['clone', projectURL, projectPath]);
-    await fse.copy(upath.join(DEMOS_DIR, project), projectPath, {
-      overwrite: true,
-    });
-    await execa('git', ['checkout', '-b', 'glitch'], {cwd: projectPath});
-    await execa('git', ['add', '-A'], {cwd: projectPath});
-    await execa('git', ['commit', `-m'Autocommit on ${new Date()}'`], {
-      cwd: projectPath,
-    });
-    await execa('git', ['push', 'origin', 'glitch', '-f', '--set-upstream',
-      '--no-verify'], {cwd: projectPath});
+    try {
+      await execa('git', ['clone', projectURL, projectPath]);
+      await fse.copy(upath.join(DEMOS_DIR, project), projectPath, {
+        overwrite: true,
+      });
+      await execa('git', ['checkout', '-b', 'glitch'], {cwd: projectPath});
+      await execa('git', ['add', '-A'], {cwd: projectPath});
+      await execa('git', ['commit', `-m'Autocommit on ${new Date()}'`], {
+        cwd: projectPath,
+      });
+      await execa('git', ['push', 'origin', 'glitch', '-f', '--set-upstream',
+        '--no-verify'], {cwd: projectPath});
 
-    const deployURL = new URL(`https://${project}.glitch.me/deploy`);
-    deployURL.searchParams.set('secret', process.env.GLITCH_WORKBOX_SECRET);
-    deployURL.searchParams.set('repo', `https://api.glitch.com/git/${project}`);
-    await execa('curl', ['-X', 'POST', `"${deployURL}"`]);
+      const deployURL = new URL(`https://${project}.glitch.me/deploy`);
+      deployURL.searchParams.set('secret', process.env.GLITCH_WORKBOX_SECRET);
+      deployURL.searchParams.set('repo', `https://api.glitch.com/git/${project}`);
+      await execa('curl', ['-X', 'POST', deployURL.href]);
+    } catch (error) {
+      logHelper.error(`'${error}' occurred while processing ${project}.`);
+    }
 
     await del(projectPath, {force: true});
   }
