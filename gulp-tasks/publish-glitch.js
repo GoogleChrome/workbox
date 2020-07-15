@@ -6,68 +6,63 @@
   https://opensource.org/licenses/MIT.
 */
 
-const gulp = require('gulp');
-const childProcess = require('child_process');
-const fse = require('fs-extra');
-const tempy = require('tempy');
-const util = require('util');
 const del = require('del');
+const execa = require('execa');
+const fse = require('fs-extra');
+const globby = require('globby');
+const ol = require('common-tags').oneLine;
+const olt = require('common-tags').oneLineTrim;
+const tempy = require('tempy');
+const upath = require('upath');
 
-const exec = util.promisify(childProcess.exec);
+const logHelper = require('../infra/utils/log-helper');
 
-const glitchProjects = [
-  'workbox-core',
-  'workbox-sw',
-  'workbox-precaching',
-  'workbox-strategies',
-  'workbox-background-sync-demo',
-  'workbox-routing',
-  'workbox-expiration',
-  'workbox-cacheable-response',
-  'workbox-google-analytics',
-  'workbox-streams',
-  'workbox-range-requests',
-  'workbox-broadcast-update-demo',
-  'workbox-window',
-  'workbox-navigation-preload',
-];
+const DEMOS_DIR = 'demos/src';
 
+async function publish_glitch() {
+  const glitchProjects = await globby('*', {cwd: DEMOS_DIR, onlyFiles: false});
 
-gulp.task('publish-glitch', async () => {
   if (!process.env.GLITCH_PERSONAL_TOKEN) {
-    throw new Error('You must set a GLITCH_TOKEN in your environment to ' +
-      'publish to Glitch (you must have owner or editor access for the ' +
-      'demo associated w/ the token).');
+    throw new Error(ol`You must set a GLITCH_TOKEN in your environment to
+        publish to Glitch (you must have owner or editor access for the
+        demo associated with the token).`);
   }
 
   if (!process.env.GLITCH_WORKBOX_SECRET) {
-    throw new Error('You must set the correct GLITCH_SECRET in your ' +
-      'environment to publish to Workbox Demos on Glitch.');
+    throw new Error(ol`You must set the correct GLITCH_SECRET in your
+        environment to publish to Workbox Demos on Glitch.`);
   }
 
   for (const project of glitchProjects) {
-    // repo URLs can be associated w/ the demo folder through a predefined object OR th
-    // for each repo...
-    const projectURL = 'https://' + process.env.GLITCH_PERSONAL_TOKEN + '@api.glitch.com/git/' + project;
+    const projectURL = olt`https://${process.env.GLITCH_PERSONAL_TOKEN}
+        @api.glitch.com/git/${project}`;
     const projectPath = tempy.directory();
-    const date = new Date();
 
     try {
-      await exec(`git clone ${projectURL} ${projectPath}`);
-      await fse.copy('demos/src/' + project + '/', projectPath,
-          {overwrite: true});
-      await exec(`git checkout -b glitch`, {cwd: projectPath});
-      await exec(`git add -A`, {cwd: projectPath});
-      await exec(`git commit -m'Commiting from gulp on ${date.toString()}'`,
-          {cwd: projectPath});
-      await exec(`git push origin glitch -f --set-upstream --no-verify`,
-          {cwd: projectPath});
-      await exec(`curl -X POST "${'https://' + project + '.glitch.me/deploy?secret=' + process.env.GLITCH_WORKBOX_SECRET + '&repo=https://api.glitch.com/git/' + project}"`);
-      await del(projectPath, {force: true});
-      console.log('Push attempted to ' + project);
-    } catch (e) {
-      console.log(project);
-      console.log(e.stdout);
+      await execa('git', ['clone', projectURL, projectPath]);
+      await fse.copy(upath.join(DEMOS_DIR, project), projectPath, {
+        overwrite: true,
+      });
+      await execa('git', ['checkout', '-b', 'glitch'], {cwd: projectPath});
+      await execa('git', ['add', '-A'], {cwd: projectPath});
+      await execa('git', ['commit', `-m'Autocommit on ${new Date()}'`], {
+        cwd: projectPath,
+      });
+      await execa('git', ['push', 'origin', 'glitch', '-f', '--set-upstream',
+        '--no-verify'], {cwd: projectPath});
+
+      const deployURL = new URL(`https://${project}.glitch.me/deploy`);
+      deployURL.searchParams.set('secret', process.env.GLITCH_WORKBOX_SECRET);
+      deployURL.searchParams.set('repo', `https://api.glitch.com/git/${project}`);
+      await execa('curl', ['-X', 'POST', deployURL.href]);
+    } catch (error) {
+      logHelper.error(`'${error}' occurred while processing ${project}.`);
     }
+
+    await del(projectPath, {force: true});
   }
-});
+}
+
+module.exports = {
+  publish_glitch,
+};
