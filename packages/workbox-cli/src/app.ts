@@ -6,10 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
-import * as assert from 'assert';
 import {oneLine as ol} from 'common-tags';
-import * as upath from 'upath';
+import * as assert from 'assert';
+import * as meow from 'meow';
 import * as prettyBytes from 'pretty-bytes';
+import * as upath from 'upath';
 import * as watch from 'glob-watcher';
 import * as workboxBuild from 'workbox-build';
 
@@ -19,13 +20,10 @@ import {logger} from './lib/logger.js';
 import {readConfig} from './lib/read-config.js';
 import {runWizard} from './lib/run-wizard.js';
 import {SupportedFlags} from './bin.js'
-import * as meow from 'meow';
-import { InjectManifestConfig, GenerateSWConfig } from 'workbox-build';
-
 
 interface BuildCommand {
   command: 'generateSW'|'injectManifest';
-  config: GenerateSWConfig & InjectManifestConfig;
+  config: any;
   watch: boolean;
 }
 
@@ -104,7 +102,7 @@ export const app = async (params: meow.Result<SupportedFlags>) => {
       const configPath = upath.resolve(process.cwd(),
           option || constants.defaultConfigFile);
 
-      let config: GenerateSWConfig & InjectManifestConfig;
+      let config: any;
       try {
         config = readConfig(configPath);
       } catch (error) {

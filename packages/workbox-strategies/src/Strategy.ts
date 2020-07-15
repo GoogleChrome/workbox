@@ -7,6 +7,9 @@
 */
 
 import {cacheNames} from 'workbox-core/_private/cacheNames.js';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
+import {logger} from 'workbox-core/_private/logger.js';
+import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
 import {HandlerCallbackOptions, RouteHandlerObject, WorkboxPlugin}
     from 'workbox-core/types.js';
 
@@ -35,7 +38,7 @@ abstract class Strategy implements RouteHandlerObject {
   protected abstract _handle(
     request: Request,
     handler: StrategyHandler
-  ): Promise<Response>;
+  ): Promise<Response | undefined>;
 
   /**
    * Creates a new instance of the strategy and sets all documented option
@@ -168,11 +171,37 @@ abstract class Strategy implements RouteHandlerObject {
 
   async _getResponse(handler: StrategyHandler, request: Request, event: ExtendableEvent) {
     await handler.runCallbacks('handlerWillStart', {event, request});
-    let response = await this._handle(request, handler);
+
+    let response: Response | undefined = undefined;
+    try {
+      response = await this._handle(request, handler);
+      // The "official" Strategy subclasses all throw this error automatically,
+      // but in case a third-party Strategy doesn't, ensure that we have a
+      // consistent failure when there's no response or an error response.
+      if (!response || response.type === 'error') {
+        throw new WorkboxError('no-response', {url: request.url});
+      }
+    } catch (error) {
+      for (const callback of handler.iterateCallbacks('handlerDidError')) {
+        response = await callback({error, event, request});
+        if (response) {
+          break;
+        }
+      }
+    
+      if (!response) {
+        throw error;
+      } else if (process.env.NODE_ENV !== 'production') {
+        logger.log(`While responding to '${getFriendlyURL(request.url)}', ` +
+          `an ${error} error occurred. Using a fallback response provided by `+
+          `a handlerDidError plugin.`);
+      }
+    }
 
     for (const callback of handler.iterateCallbacks('handlerWillRespond')) {
       response = await callback({event, request, response});
     }
+
     return response;
   }
 
