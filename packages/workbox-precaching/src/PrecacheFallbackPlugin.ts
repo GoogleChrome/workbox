@@ -8,7 +8,9 @@
 
 import {WorkboxPlugin} from 'workbox-core/types.js';
 
-import {matchPrecache} from './matchPrecache.js';
+import {getOrCreatePrecacheController} from
+    './utils/getOrCreatePrecacheController.js';
+import {PrecacheController} from './PrecacheController.js';
 
 import './_version.js';
 
@@ -21,13 +23,15 @@ import './_version.js';
  * and returning a precached response, taking the expected revision parameter
  * into account automatically.
  * 
- * This plugin works with the "default" `PrecacheController` instance, and
- * should not be used if you explicitly create your own `PrecacheController`.
+ * Unless you explicitly pass in a `PrecacheController` instance to the
+ * constructor, the default instance will be used. Generally speaking, most
+ * developers will end up using the default.
  *
  * @memberof module:workbox-precaching
  */
 class PrecacheFallbackPlugin implements WorkboxPlugin {
   private readonly _fallbackURL: string;
+  private readonly _precacheController: PrecacheController;
 
   /**
    * Constructs a new PrecacheFallbackPlugin with the associated fallbackURL.
@@ -35,9 +39,17 @@ class PrecacheFallbackPlugin implements WorkboxPlugin {
    * @param {Object} config
    * @param {string} config.fallbackURL A precached URL to use as the fallback
    *     if the associated strategy can't generate a response.
+   * @param {PrecacheController} [config.precacheController] An optional
+   *     PrecacheController instance. If not provided, the default
+   *     PrecacheController will be used.
    */
-  constructor({fallbackURL}: {fallbackURL: string}) {
+  constructor({fallbackURL, precacheController}: {
+    fallbackURL: string;
+    precacheController?: PrecacheController;
+  }) {
     this._fallbackURL = fallbackURL;
+    this._precacheController = precacheController ||
+        getOrCreatePrecacheController();
   }
 
   /**
@@ -46,7 +58,7 @@ class PrecacheFallbackPlugin implements WorkboxPlugin {
    * @private
    */
   handlerDidError: WorkboxPlugin['handlerDidError'] =
-    () => matchPrecache(this._fallbackURL);
+    () => this._precacheController.matchPrecache(this._fallbackURL);
 }
 
 export {PrecacheFallbackPlugin};

@@ -7,6 +7,7 @@
 */
 
 import {precache} from 'workbox-precaching/precache.mjs';
+import {PrecacheController} from 'workbox-precaching/PrecacheController.mjs';
 import {PrecacheFallbackPlugin} from 'workbox-precaching/PrecacheFallbackPlugin.mjs';
 import {resetDefaultPrecacheController} from './resetDefaultPrecacheController.mjs';
 
@@ -23,11 +24,24 @@ describe(`PrecacheFallbackPlugin`, function() {
   });
 
   describe(`constructor`, function() {
-    it(`should construct a properly-configured PrecacheFallbackPlugin instance`, function() {
+    it(`should construct a PrecacheFallbackPlugin instance with the default PrecacheController`, function() {
       const fallbackURL = '/test/url';
       const precacheFallbackPlugin = new PrecacheFallbackPlugin({fallbackURL});
 
       expect(precacheFallbackPlugin._fallbackURL).to.eql(fallbackURL);
+      expect(precacheFallbackPlugin._precacheController).to.be.instanceOf(PrecacheController);
+    });
+
+    it(`should construct a PrecacheFallbackPlugin instance with a non-default PrecacheController`, function() {
+      const fallbackURL = '/test/url';
+      const precacheController = new PrecacheController();
+      const precacheFallbackPlugin = new PrecacheFallbackPlugin({
+        fallbackURL,
+        precacheController,
+      });
+
+      expect(precacheFallbackPlugin._fallbackURL).to.eql(fallbackURL);
+      expect(precacheFallbackPlugin._precacheController).to.eql(precacheController);
     });
 
     it(`should expose a handlerDidError method`, function() {
