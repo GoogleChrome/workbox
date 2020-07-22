@@ -121,6 +121,7 @@ function setupSpiesAndContextForGenerateSW() {
     BroadcastUpdatePlugin: sinon.spy(),
     CacheableResponsePlugin: sinon.spy(),
     ExpirationPlugin: sinon.spy(),
+    PrecacheFallbackPlugin: sinon.spy(),
     precacheAndRoute: sinon.spy(),
     registerRoute: sinon.spy(),
     setCacheNameDetails: sinon.spy(),
@@ -146,7 +147,8 @@ function validateMethodCalls({methodsToSpies, expectedMethodCalls, context}) {
       const args = spy.args.map(
           (arg) => Array.isArray(arg) ? stringifyFunctionsInArray(arg) : arg);
 
-      expect(args).to.matchPattern(expectedMethodCalls[method]);
+      expect(args, `while testing method calls for ${method}`)
+          .to.matchPattern(expectedMethodCalls[method]);
     } else {
       expect(expectedMethodCalls[method],
           `while testing method calls for ${method}`).to.be.undefined;

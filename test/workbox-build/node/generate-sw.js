@@ -862,6 +862,9 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
           },
           statuses: [0, 200],
         },
+        precacheFallback: {
+          fallbackURL: '/test',
+        },
       };
       const runtimeCaching = [{
         urlPattern: REGEXP_URL_PATTERN,
@@ -890,10 +893,11 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
           plugins: [{}],
         }], [{
           cacheName: secondRuntimeCachingOptions.cacheName,
-          plugins: [{}],
+          plugins: [{}, {}],
         }]],
         ExpirationPlugin: [[firstRuntimeCachingOptions.expiration]],
         CacheableResponsePlugin: [[secondRuntimeCachingOptions.cacheableResponse]],
+        PrecacheFallbackPlugin: [[secondRuntimeCachingOptions.precacheFallback]],
         importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
         precacheAndRoute: [[[{
           url: 'index.html',

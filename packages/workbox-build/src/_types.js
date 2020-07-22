@@ -92,6 +92,12 @@ import './_version.mjs';
  * property to use when creating the
  * [`ExpirationPlugin`]{@link module:workbox-expiration.ExpirationPlugin}.
  *
+ * @property {Object} [options.precacheFallback]
+ *
+ * @property {number} [options.precacheFallback.fallbackURL] The `fallbackURL`
+ * property to use when creating the
+ * [`PrecacheFallbackPlugin`]{@link module:workbox-precaching.PrecacheFallbackPlugin}.
+ *
  * @property {Object} [options.matchOptions] The `matchOptions` property value
  * to use when constructing one of the
  * [Workbox strategy classes]{@link module:workbox-strategies}.
