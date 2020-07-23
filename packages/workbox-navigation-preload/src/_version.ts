@@ -1,2 +1,2 @@
 // @ts-ignore
-try{self['workbox:navigation-preload:5.1.3']&&_()}catch(e){}
+try{self['workbox:navigation-preload:6.0.0-alpha.0']&&_()}catch(e){}
