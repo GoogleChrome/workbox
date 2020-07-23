@@ -73,6 +73,9 @@ module.exports = {
       }).or('maxEntries', 'maxAgeSeconds'),
       networkTimeoutSeconds: joi.number().min(1),
       plugins: joi.array().items(joi.object()),
+      precacheFallback: joi.object().keys({
+        fallbackURL: joi.string().required(),
+      }),
       fetchOptions: joi.object(),
       matchOptions: joi.object(),
     }).with('expiration', 'cacheName'),

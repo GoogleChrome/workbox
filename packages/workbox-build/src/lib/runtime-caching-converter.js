@@ -98,6 +98,15 @@ function getOptionsString(moduleRegistry, options = {}) {
         break;
       }
 
+      case 'precacheFallback': {
+        const plugin = moduleRegistry.use(
+            'workbox-precaching', 'PrecacheFallbackPlugin');
+
+        pluginCode = `new ${plugin}(${stringifyWithoutComments(pluginConfig)})`;
+
+        break;
+      }
+
       default: {
         throw new Error(errors['bad-runtime-caching-config'] + pluginName);
       }
