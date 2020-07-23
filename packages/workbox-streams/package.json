@@ -1,6 +1,6 @@
 {
   "name": "workbox-streams",
-  "version": "6.0.0-alpha.0",
+  "version": "6.0.0-alpha.1",
   "license": "MIT",
   "author": "Google's Web DevRel Team",
   "description": "A library that makes it easier to work with Streams in the browser.",
@@ -23,7 +23,7 @@
   "module": "index.mjs",
   "types": "index.d.ts",
   "dependencies": {
-    "workbox-core": "^6.0.0-alpha.0",
-    "workbox-routing": "^6.0.0-alpha.0"
+    "workbox-core": "^6.0.0-alpha.1",
+    "workbox-routing": "^6.0.0-alpha.1"
   }
 }
