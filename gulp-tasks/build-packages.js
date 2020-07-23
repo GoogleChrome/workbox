@@ -23,7 +23,7 @@ async function cleanPackage(packagePath) {
   if (await fse.pathExists(upath.join(packagePath, 'src', 'index.ts'))) {
     // Store the list of deleted files, so we can delete directories after.
     const deletedPaths = await del([
-      upath.join(packagePath, '**/*.+(js|mjs|d.ts|tsbuildinfo)'),
+      upath.join(packagePath, '**/*.+(js|mjs|d.ts)'),
       // Don't delete files in node_modules.
       '!**/node_modules', '!**/node_modules/**/*',
     ]);
@@ -39,8 +39,12 @@ async function cleanPackage(packagePath) {
     }
     await del([...directoriesToDelete]);
   }
+
   // Delete build files.
   await del(upath.join(packagePath, constants.PACKAGE_BUILD_DIRNAME));
+
+  // Delete tsc artifacts (if present).
+  await del(upath.join(packagePath, 'tsconfig.tsbuildinfo'));
 }
 
 // Wrap this in a function since it's used multiple times.
