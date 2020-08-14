@@ -7,13 +7,13 @@
 */
 
 const {babel} = require('@rollup/plugin-babel');
+const {nodeResolve} = require('@rollup/plugin-node-resolve');
 const {rollup} = require('rollup');
 const {terser} = require('rollup-plugin-terser');
 const {writeFile} = require('fs-extra');
 const omt = require('@surma/rollup-plugin-off-main-thread');
 const presetEnv = require('@babel/preset-env');
 const replace = require('@rollup/plugin-replace');
-const resolve = require('@rollup/plugin-node-resolve');
 const tempy = require('tempy');
 const upath = require('upath');
 
@@ -33,7 +33,7 @@ module.exports = async ({
   await writeFile(temporaryFile, unbundledCode);
 
   const plugins = [
-    resolve(),
+    nodeResolve(),
     replace({'process.env.NODE_ENV': JSON.stringify(mode)}),
     babel({
       babelHelpers: 'bundled',
