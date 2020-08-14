@@ -6,14 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
-const path = require('path');
-
 const match = '/__WORKBOX/comlink.js';
 
 async function handler(req, res) {
-  const comlinkMain = require.resolve('comlinkjs');
-  const comlinkPath = path.join(path.dirname(comlinkMain), 'umd', 'comlink.js');
-  res.sendFile(comlinkPath);
+  const comlinkMain = require.resolve('comlink');
+  res.sendFile(comlinkMain);
 }
 
 module.exports = {
