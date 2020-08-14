@@ -6,15 +6,12 @@
   https://opensource.org/licenses/MIT.
 */
 
-const fse = require('fs-extra');
 const semver = require('semver');
-const upath = require('upath');
 
 const githubHelper = require('./utils/github-helper');
 const logHelper = require('../infra/utils/log-helper');
-const publishHelpers = require('./utils/publish-helpers');
 
-async function publishReleaseOnGithub(tagName, releaseInfo, tarPath, zipPath) {
+async function publishReleaseOnGithub(tagName, releaseInfo) {
   if (!releaseInfo) {
     const releaseData = await githubHelper.createRelease({
       tag_name: tagName,
@@ -24,35 +21,12 @@ async function publishReleaseOnGithub(tagName, releaseInfo, tarPath, zipPath) {
     });
     releaseInfo = releaseData.data;
   }
-
-  const tarBuffer = await fse.readFile(tarPath);
-  await githubHelper.uploadAsset({
-    url: releaseInfo.upload_url,
-    file: tarBuffer,
-    contentType: 'application/gzip',
-    contentLength: tarBuffer.length,
-    name: upath.basename(tarPath),
-    label: upath.basename(tarPath),
-  });
-
-  const zipBuffer = await fse.readFile(zipPath);
-  await githubHelper.uploadAsset({
-    url: releaseInfo.upload_url,
-    file: zipBuffer,
-    contentType: 'application/zip',
-    contentLength: zipBuffer.length,
-    name: upath.basename(zipPath),
-    label: upath.basename(zipPath),
-  });
 }
 
 async function handleGithubRelease(tagName, gitBranch, releaseInfo) {
   logHelper.log(`Creating GitHub release ${logHelper.highlight(tagName)}.`);
 
-  const {tarPath, zipPath} = await publishHelpers.createBundles(tagName,
-      gitBranch);
-
-  await publishReleaseOnGithub(tagName, releaseInfo, tarPath, zipPath);
+  await publishReleaseOnGithub(tagName, releaseInfo);
 }
 
 function filterTagsWithReleaseBundles(allTags, taggedReleases) {
