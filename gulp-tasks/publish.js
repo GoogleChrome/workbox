@@ -9,6 +9,7 @@
 const {series} = require('gulp');
 const execa = require('execa');
 const fse = require('fs-extra');
+const ol = require('common-tags').oneLine;
 
 const {publish_cdn} = require('./publish-cdn');
 const {publish_github} = require('./publish-github');
@@ -24,7 +25,14 @@ async function publish_sign_in_check() {
   await execa('npm', ['whoami']);
 }
 
+function dist_tag_check() {
+  if (!global.cliOptions.distTag) {
+    throw new Error(ol`Please set the --distTag command line option, normally
+        to 'latest' (for a stable release) or 'next' (for a pre-release).`);
+  }
+}
+
 module.exports = {
-  publish: series(publish_sign_in_check, publish_clean, test, publish_lerna,
-      publish_github, publish_cdn),
+  publish: series(dist_tag_check, publish_sign_in_check, publish_clean, test,
+      publish_lerna, publish_github, publish_cdn),
 };
