@@ -9,7 +9,7 @@
 function initComlink() {
   const channel = new MessageChannel();
   navigator.serviceWorker.controller.postMessage(channel.port2, [channel.port2]);
-  window._runInSW = Comlink.proxy(channel.port1);
+  window._runInSW = Comlink.wrap(channel.port1);
   channel.port1.start();
 }
 

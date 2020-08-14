@@ -409,10 +409,10 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           path: outputDir,
         },
         plugins: [
-          new CopyWebpackPlugin([{
+          new CopyWebpackPlugin({patterns: [{
             from: SRC_DIR,
             to: outputDir,
-          }]),
+          }]}),
           new InjectManifest({
             swSrc: SW_SRC,
             swDest: 'service-worker.js',
@@ -762,10 +762,10 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           path: outputDir,
         },
         plugins: [
-          new CopyWebpackPlugin([{
+          new CopyWebpackPlugin({patterns: [{
             from: SRC_DIR,
             to: outputDir,
-          }]),
+          }]}),
           new InjectManifest({
             swSrc: SW_SRC,
             swDest: 'service-worker.js',
@@ -817,10 +817,10 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           path: outputDir,
         },
         plugins: [
-          new CopyWebpackPlugin([{
+          new CopyWebpackPlugin({patterns: [{
             from: SRC_DIR,
             to: outputDir,
-          }]),
+          }]}),
           new InjectManifest({
             swSrc: SW_SRC,
             swDest: 'service-worker.js',
@@ -974,10 +974,10 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           path: outputDir,
         },
         plugins: [
-          new CopyWebpackPlugin([{
+          new CopyWebpackPlugin({patterns: [{
             from: SRC_DIR,
             to: outputDir,
-          }]),
+          }]}),
           new InjectManifest({
             swSrc: SW_SRC,
             swDest: 'service-worker.js',
