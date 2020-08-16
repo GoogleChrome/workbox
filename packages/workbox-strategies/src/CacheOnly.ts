@@ -41,7 +41,7 @@ class CacheOnly extends Strategy {
     if (process.env.NODE_ENV !== 'production') {
       assert!.isInstance(request, Request, {
         moduleName: 'workbox-strategies',
-        className: 'CacheOnly',
+        className: this.constructor.name,
         funcName: 'makeRequest',
         paramName: 'request',
       });
@@ -51,7 +51,7 @@ class CacheOnly extends Strategy {
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
-          messages.strategyStart('CacheOnly', request));
+          messages.strategyStart(this.constructor.name, request));
       if (response) {
         logger.log(`Found a cached response in the '${this.cacheName}'` +
           ` cache.`);

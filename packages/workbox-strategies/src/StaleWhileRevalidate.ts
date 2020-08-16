@@ -74,7 +74,7 @@ class StaleWhileRevalidate extends Strategy {
     if (process.env.NODE_ENV !== 'production') {
       assert!.isInstance(request, Request, {
         moduleName: 'workbox-strategies',
-        className: 'StaleWhileRevalidate',
+        className: this.constructor.name,
         funcName: 'handle',
         paramName: 'request',
       });
@@ -111,7 +111,7 @@ class StaleWhileRevalidate extends Strategy {
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
-          messages.strategyStart('StaleWhileRevalidate', request));
+          messages.strategyStart(this.constructor.name, request));
       for (const log of logs) {
         logger.log(log);
       }

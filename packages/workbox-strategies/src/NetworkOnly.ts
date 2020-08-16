@@ -41,7 +41,7 @@ class NetworkOnly extends Strategy {
     if (process.env.NODE_ENV !== 'production') {
       assert!.isInstance(request, Request, {
         moduleName: 'workbox-strategies',
-        className: 'NetworkOnly',
+        className: this.constructor.name,
         funcName: 'handle',
         paramName: 'request',
       });
@@ -57,7 +57,7 @@ class NetworkOnly extends Strategy {
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
-          messages.strategyStart('NetworkOnly', request));
+          messages.strategyStart(this.constructor.name, request));
       if (response) {
         logger.log(`Got response from network.`);
       } else {
