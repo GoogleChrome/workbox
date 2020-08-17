@@ -129,7 +129,7 @@ class NetworkFirst extends Strategy {
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
-          messages.strategyStart('NetworkFirst', request));
+          messages.strategyStart(this.constructor.name, request));
       for (const log of logs) {
         logger.log(log);
       }
