@@ -17,7 +17,7 @@ import {messages} from './utils/messages.js';
 import './_version.js';
 
 
-interface NetworkFirstOptions extends StrategyOptions {
+export interface NetworkFirstOptions extends StrategyOptions {
   networkTimeoutSeconds?: number;
 }
 
@@ -72,7 +72,7 @@ class NetworkFirst extends Strategy {
       if (this._networkTimeoutSeconds) {
         assert!.isType(this._networkTimeoutSeconds, 'number', {
           moduleName: 'workbox-strategies',
-          className: 'NetworkFirst',
+          className: this.constructor.name,
           funcName: 'constructor',
           paramName: 'networkTimeoutSeconds',
         });
@@ -93,7 +93,7 @@ class NetworkFirst extends Strategy {
     if (process.env.NODE_ENV !== 'production') {
       assert!.isInstance(request, Request, {
         moduleName: 'workbox-strategies',
-        className: 'NetworkFirst',
+        className: this.constructor.name,
         funcName: 'handle',
         paramName: 'makeRequest',
       });
@@ -129,7 +129,7 @@ class NetworkFirst extends Strategy {
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
-          messages.strategyStart('NetworkFirst', request));
+          messages.strategyStart(this.constructor.name, request));
       for (const log of logs) {
         logger.log(log);
       }

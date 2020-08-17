@@ -12,7 +12,7 @@ import '../_version.js';
  *
  * @private
  **/
-export function dontWaitFor(promise: Promise<any>) {
+export function dontWaitFor(promise: Promise<any>): void {
   // Effective no-op.
   promise.then(() => {});
 }
