@@ -205,10 +205,10 @@ class StrategyHandler {
     const effectiveRequest = await this._getEffectiveRequest(request, 'write');
     
     if (process.env.NODE_ENV !== 'production') {
-      if (request.method && request.method !== 'GET') {
+      if (effectiveRequest.method && effectiveRequest.method !== 'GET') {
         throw new WorkboxError('attempt-to-cache-non-get-request', {
-          url: getFriendlyURL(request.url),
-          method: request.method,
+          url: getFriendlyURL(effectiveRequest.url),
+          method: effectiveRequest.method,
         });
       }
     }
