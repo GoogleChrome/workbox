@@ -197,7 +197,13 @@ class StrategyHandler {
    */
   async cachePut(key: RequestInfo, response: Response): Promise<void> {
     const request: Request = toRequest(key);
-
+    
+    // Run in the next task to avoid blocking other cache reads.
+    // https://github.com/w3c/ServiceWorker/issues/1397
+    await timeout(0);
+    
+    const effectiveRequest = await this._getEffectiveRequest(request, 'write');
+    
     if (process.env.NODE_ENV !== 'production') {
       if (request.method && request.method !== 'GET') {
         throw new WorkboxError('attempt-to-cache-non-get-request', {
@@ -206,12 +212,6 @@ class StrategyHandler {
         });
       }
     }
-
-    // Run in the next task to avoid blocking other cache reads.
-    // https://github.com/w3c/ServiceWorker/issues/1397
-    await timeout(0);
-
-    const effectiveRequest = await this._getEffectiveRequest(request, 'write');
 
     if (!response) {
       if (process.env.NODE_ENV !== 'production') {
