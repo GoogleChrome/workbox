@@ -23,12 +23,12 @@ import './_version.js';
 /**
  * Most consumers of this module will want to use the
  * [precacheAndRoute()]{@link module:workbox-precaching.precacheAndRoute}
- * method to add assets to the Cache and respond to network requests with these
+ * method to add assets to the cache and respond to network requests with these
  * cached assets.
  *
- * If you require finer grained control, you can use the
+ * If you require more control over caching and routing, you can use the
  * [PrecacheController]{@link module:workbox-precaching.PrecacheController}
- * to determine when performed.
+ * interface.
  *
  * @module workbox-precaching
  */
