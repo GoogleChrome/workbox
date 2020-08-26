@@ -160,11 +160,11 @@ describe(`NetworkOnly`, function() {
       const networkOnly = new NetworkOnly({networkTimeoutSeconds});
 
       await expectError(
-        () => networkOnly.handle({event, request}),
-        'no-response',
-        (err) => {
-          expect(err.details.error.message).to.include(networkTimeoutSeconds);
-        },
+          () => networkOnly.handle({event, request}),
+          'no-response',
+          (err) => {
+            expect(err.details.error.message).to.include(networkTimeoutSeconds);
+          },
       );
     });
   });
