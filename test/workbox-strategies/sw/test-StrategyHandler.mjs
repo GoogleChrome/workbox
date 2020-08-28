@@ -587,6 +587,63 @@ describe(`StrategyHandler`, function() {
       expect(cachePutStub.args[0][1]).to.eql(response);
     });
 
+    it(`should allow caching of posts if cacheKeyWillBeUsed returns a get request`, async function() {
+      const cacheName = 'cacheKeyWillBeUsed-test-cache';
+      const cache = await caches.open(cacheName);
+      sandbox.stub(caches, 'open').resolves(cache);
+      const cachePutStub = sandbox.stub(cache, 'put').resolves();
+
+      const firstPluginReturnValue = new Request('/firstPlugin', {
+        method: 'get',
+      });
+
+      const firstPlugin = {
+        cacheKeyWillBeUsed: () => firstPluginReturnValue,
+      };
+
+      const secondPlugin = {
+        // This string will be converted to a Request.
+        cacheKeyWillBeUsed: () => '/secondPlugin',
+      };
+
+      const spyOne = sandbox.spy(firstPlugin, 'cacheKeyWillBeUsed');
+      const spyTwo = sandbox.spy(secondPlugin, 'cacheKeyWillBeUsed');
+
+      const initialRequest = new Request('/noPlugin', {
+        method: 'post',
+      });
+
+      const response = new Response('Test response.');
+
+      const handler = createStrategyHandler({
+        cacheName,
+        plugins: [
+          firstPlugin,
+          {}, // Intentionally empty to ensure it's filtered out.
+          secondPlugin,
+        ],
+      });
+
+      await handler.cachePut(initialRequest, response);
+
+      expect(spyOne.calledOnceWith(sinon.match({
+        mode: 'write',
+        request: initialRequest,
+      }))).to.be.true;
+      expect(spyOne.thisValues[0]).to.eql(firstPlugin);
+
+      expect(spyTwo.calledOnceWith(sinon.match({
+        mode: 'write',
+        request: firstPluginReturnValue,
+      }))).to.be.true;
+      expect(spyTwo.thisValues[0]).to.eql(secondPlugin);
+
+      expect(cachePutStub.calledOnce).to.be.true;
+      // Check the url of the Request passed to cache.put().
+      expect(cachePutStub.args[0][0].url).to.eql(`${self.location.origin}/secondPlugin`);
+      expect(cachePutStub.args[0][1]).to.eql(response);
+    });
+
     it(`should call the quota exceeded callbacks when there's a QuotaExceeded error`, async function() {
       const callback1 = sandbox.stub();
       registerQuotaErrorCallback(callback1);
