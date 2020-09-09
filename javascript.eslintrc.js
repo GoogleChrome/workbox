@@ -129,7 +129,7 @@ module.exports = {
     files: [
       'gulp-tasks/**/*.{mjs,js}',
       'infra/**/*.{mjs,js}',
-      'packages/**/*.{mjs,js}',
+      'packages/**/!bin.{mjs,js}',
       'test/**/*.{mjs,js}',
     ],
     plugins: [
