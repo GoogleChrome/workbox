@@ -93,14 +93,14 @@ const createOnSyncCallback = (config: GoogleAnalyticsInitializeOptions) => {
 
 
         if (process.env.NODE_ENV !== 'production') {
-          logger.log(`Request for '${getFriendlyURL(url.href)}'` +
+          logger.log(`Request for '${getFriendlyURL(url.href)}' ` +
              `has been replayed`);
         }
       } catch (err) {
         await queue.unshiftRequest(entry);
 
         if (process.env.NODE_ENV !== 'production') {
-          logger.log(`Request for '${getFriendlyURL(url.href)}'` +
+          logger.log(`Request for '${getFriendlyURL(url.href)}' ` +
              `failed to replay, putting it back in the queue.`);
         }
         throw err;
