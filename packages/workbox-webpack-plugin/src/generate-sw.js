@@ -6,11 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
-const {RawSource} = require('webpack-sources');
 const bundle = require('workbox-build/build/lib/bundle');
 const populateSWTemplate =
   require('workbox-build/build/lib/populate-sw-template');
 const validate = require('workbox-build/build/lib/validate-options');
+const webpack = require('webpack');
 const webpackGenerateSWSchema = require(
     'workbox-build/build/options/schema/webpack-generate-sw');
 
@@ -18,6 +18,10 @@ const getScriptFilesForChunks = require('./lib/get-script-files-for-chunks');
 const getManifestEntriesFromCompilation =
   require('./lib/get-manifest-entries-from-compilation');
 const relativeToOutputPath = require('./lib/relative-to-output-path');
+
+// webpack v4/v5 compatibility:
+// https://github.com/webpack/webpack/issues/11425#issuecomment-686607633
+const {RawSource} = webpack.sources || require('webpack-sources');
 
 // Used to keep track of swDest files written by *any* instance of this plugin.
 // See https://github.com/GoogleChrome/workbox/issues/2181
@@ -213,11 +217,28 @@ class GenerateSW {
   apply(compiler) {
     this.propagateWebpackConfig(compiler);
 
-    compiler.hooks.emit.tapPromise(
+    // webpack v4/v5 compatibility:
+    // https://github.com/webpack/webpack/issues/11425#issuecomment-690387207
+    if (webpack.version[0] === '4') {
+      compiler.hooks.emit.tapPromise(
         this.constructor.name,
-        (compilation) => this.handleEmit(compilation).catch(
+        (compilation) => this.addAssets(compilation).catch(
             (error) => compilation.errors.push(error)),
-    );
+      );
+    } else {
+      // Specifically hook into thisCompilation, as per
+      // https://github.com/webpack/webpack/issues/11425#issuecomment-690547848
+      compiler.hooks.thisCompilation.tap(
+        this.constructor.name, (compilation) => {
+        compilation.hooks.processAssets.tapPromise({
+          name: this.constructor.name,
+          // See https://github.com/webpack/webpack/blob/9230acbf1a39a8afb2e34f41e2fd7326eef84968/lib/Compilation.js#L3376-L3381
+          stage: webpack.Compilation.PROCESS_ASSETS_STAGE_SUMMARIZE,
+        }, () => this.addAssets(compilation).catch(
+          (error) => compilation.errors.push(error)),
+        );
+      });
+    }
   }
 
   /**
@@ -225,7 +246,7 @@ class GenerateSW {
    *
    * @private
    */
-  async handleEmit(compilation) {
+  async addAssets(compilation) {
     // See https://github.com/GoogleChrome/workbox/issues/1790
     if (this.alreadyCalled) {
       compilation.warnings.push(`${this.constructor.name} has been called ` +
@@ -280,7 +301,13 @@ class GenerateSW {
     });
 
     for (const file of files) {
-      compilation.assets[file.name] = new RawSource(file.contents);
+      // webpack v4/v5 compatibility:
+      // https://github.com/webpack/webpack/issues/11425#issuecomment-686606318
+      if (compilation.emitAsset) {
+        compilation.emitAsset(file.name, new RawSource(file.contents));
+      } else {
+        compilation.assets[file.name] = new RawSource(file.contents);
+      }
       _generatedAssetNames.add(file.name);
     }
   }

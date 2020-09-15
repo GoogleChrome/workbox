@@ -7,12 +7,12 @@
 */
 
 const {RawSource} = require('webpack-sources');
-const {SingleEntryPlugin} = require('webpack');
 const replaceAndUpdateSourceMap = require(
     'workbox-build/build/lib/replace-and-update-source-map');
 const stringify = require('fast-json-stable-stringify');
 const upath = require('upath');
 const validate = require('workbox-build/build/lib/validate-options');
+const webpack = require('webpack');
 const webpackInjectManifestSchema = require(
     'workbox-build/build/options/schema/webpack-inject-manifest');
 
@@ -24,6 +24,9 @@ const relativeToOutputPath = require('./lib/relative-to-output-path');
 // Used to keep track of swDest files written by *any* instance of this plugin.
 // See https://github.com/GoogleChrome/workbox/issues/2181
 const _generatedAssetNames = new Set();
+
+// SingleEntryPlugin in v4 was renamed to EntryPlugin in v5.
+const SingleEntryPlugin = webpack.EntryPlugin || webpack.SingleEntryPlugin;
 
 /**
  * This class supports compiling a service worker file provided via `swSrc`,
