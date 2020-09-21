@@ -462,12 +462,14 @@ describe(`StrategyHandler`, function() {
 
       await handler.cachePut(putRequest, putResponse);
 
+
       [spyOne, spyTwo].forEach((pluginSpy) => {
         expect(pluginSpy.callCount).to.equal(1);
         expect(pluginSpy.args[0][0].cacheName).to.equal('TODO-CHANGE-ME');
         expect(pluginSpy.args[0][0].request).to.equal(putRequest);
         expect(pluginSpy.args[0][0].oldResponse).to.equal(undefined);
-        expect(pluginSpy.args[0][0].newResponse).to.equal(putResponse);
+        // `newResponse` is cloned, so don't compare for object equality.
+        expect(pluginSpy.args[0][0].newResponse.headers.get('x-id')).to.equal('1');
 
         // Reset so the spies are clean for next step in the test.
         pluginSpy.resetHistory();
@@ -483,6 +485,8 @@ describe(`StrategyHandler`, function() {
         expect(pluginSpy.callCount).to.equal(1);
         expect(pluginSpy.args[0][0].cacheName).to.equal('TODO-CHANGE-ME');
         expect(pluginSpy.args[0][0].request).to.equal(putRequest);
+        // `oldResponse` and `newResponse` are cloned,
+        // so don't compare for object equality.
         expect(pluginSpy.args[0][0].oldResponse.headers.get('x-id')).to.equal('1');
         expect(pluginSpy.args[0][0].newResponse.headers.get('x-id')).to.equal('2');
       });
@@ -1116,6 +1120,69 @@ describe(`StrategyHandler`, function() {
       }
 
       expect(request.url).to.equal(location.origin + '/test-request+1+2');
+    });
+  });
+
+  describe(`getCacheKey`, function() {
+    it(`returns the cackeKey after applying plugins`, async function() {
+      const request = new Request('/test');
+      const handler = createStrategyHandler({
+        plugins: [
+          {
+            cacheKeyWillBeUsed({mode, request}) {
+              return new Request(request.url + '+1');
+            },
+          },
+          {
+            cacheKeyWillBeUsed({mode, request}) {
+              return mode === 'read' ?
+                  new Request(request.url + '+read') : request;
+            },
+          },
+          {
+            cacheKeyWillBeUsed({mode, request}) {
+              return mode === 'write' ?
+                  new Request(request.url + '+write') : request;
+            },
+          },
+        ],
+      });
+
+      const readCacheKey = await handler.getCacheKey(request, 'read');
+      expect(readCacheKey.url).to.equal(location.origin + '/test+1+read');
+
+      const writeCacheKey = await handler.getCacheKey(request, 'write');
+      expect(writeCacheKey.url).to.equal(location.origin + '/test+1+write');
+    });
+
+    it(`caches the key per mode to avoid repeat invocations`, async function() {
+      const request = new Request('/test');
+      const plugin = {
+        cacheKeyWillBeUsed({mode, request}) {
+          return new Request(request.url + '+' + mode);
+        },
+      };
+      sandbox.spy(plugin, 'cacheKeyWillBeUsed');
+
+      const handler = createStrategyHandler({
+        plugins: [plugin],
+      });
+
+      const readCacheKey = await handler.getCacheKey(request, 'read');
+      expect(readCacheKey.url).to.equal(location.origin + '/test+read');
+      expect(plugin.cacheKeyWillBeUsed.callCount).to.equal(1);
+
+      await handler.getCacheKey(request, 'read');
+      await handler.getCacheKey(request, 'read');
+      expect(plugin.cacheKeyWillBeUsed.callCount).to.equal(1);
+
+      const writeCacheKey = await handler.getCacheKey(request, 'write');
+      expect(writeCacheKey.url).to.equal(location.origin + '/test+write');
+      expect(plugin.cacheKeyWillBeUsed.callCount).to.equal(2);
+
+      await handler.getCacheKey(request, 'write');
+      await handler.getCacheKey(request, 'write');
+      expect(plugin.cacheKeyWillBeUsed.callCount).to.equal(2);
     });
   });
 });

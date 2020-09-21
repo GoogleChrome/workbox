@@ -20,7 +20,7 @@ import './_version.js';
  */
 function addPlugins(plugins: WorkboxPlugin[]) {
   const precacheController = getOrCreatePrecacheController();
-  return precacheController.addPlugins(plugins);
+  precacheController.strategy.plugins.push(...plugins);
 }
 
 export {addPlugins};
