@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-const {RawSource} = require('webpack-sources');
+const prettyBytes = require('pretty-bytes');
 const replaceAndUpdateSourceMap = require(
     'workbox-build/build/lib/replace-and-update-source-map');
 const stringify = require('fast-json-stable-stringify');
@@ -27,6 +27,10 @@ const _generatedAssetNames = new Set();
 
 // SingleEntryPlugin in v4 was renamed to EntryPlugin in v5.
 const SingleEntryPlugin = webpack.EntryPlugin || webpack.SingleEntryPlugin;
+
+// webpack v4/v5 compatibility:
+// https://github.com/webpack/webpack/issues/11425#issuecomment-686607633
+const {RawSource} = webpack.sources || require('webpack-sources');
 
 /**
  * This class supports compiling a service worker file provided via `swSrc`,
@@ -153,11 +157,30 @@ class InjectManifest {
             (error) => compilation.errors.push(error)),
     );
 
-    compiler.hooks.emit.tapPromise(
-        this.constructor.name,
-        (compilation) => this.handleEmit(compilation).catch(
-            (error) => compilation.errors.push(error)),
+    // webpack v4/v5 compatibility:
+    // https://github.com/webpack/webpack/issues/11425#issuecomment-690387207
+    if (webpack.version[0] === '4') {
+      compiler.hooks.emit.tapPromise(
+          this.constructor.name,
+          (compilation) => this.handleEmit(compilation).catch(
+              (error) => compilation.errors.push(error)),
     );
+    } else {
+      // Specifically hook into thisCompilation, as per
+      // https://github.com/webpack/webpack/issues/11425#issuecomment-690547848
+      compiler.hooks.thisCompilation.tap(
+          this.constructor.name, (compilation) => {
+            compilation.hooks.processAssets.tapPromise({
+              name: this.constructor.name,
+              // See https://github.com/webpack/webpack/blob/9230acbf1a39a8afb2e34f41e2fd7326eef84968/lib/Compilation.js#L3376-L3381
+              stage: webpack.Compilation.PROCESS_ASSETS_STAGE_SUMMARIZE,
+            }, () => this.addAssets(compilation).catch(
+                (error) => compilation.errors.push(error)),
+            );
+          },
+      );
+    }
+
   }
 
   /**
@@ -218,7 +241,11 @@ class InjectManifest {
   addSrcToAssets(compilation, parentCompiler) {
     const source = parentCompiler.inputFileSystem.readFileSync(
         this.config.swSrc).toString();
-    compilation.assets[this.config.swDest] = new RawSource(source);
+    if (compilation.emitAsset) {
+      compilation.emitAsset(this.config.swDest, new RawSource(source));
+    } else {
+      compilation.assets[this.config.swDest] = new RawSource(source);
+    }
   }
 
   /**
@@ -250,7 +277,7 @@ class InjectManifest {
    *
    * @private
    */
-  async handleEmit(compilation) {
+  async addAssets(compilation) {
     // See https://github.com/GoogleChrome/workbox/issues/1790
     if (this.alreadyCalled) {
       const warningMessage = `${this.constructor.name} has been called ` +
@@ -283,10 +310,10 @@ class InjectManifest {
       throw new Error(`Can't find ${config.injectionPoint} in your SW source.`);
     }
 
-    const manifestEntries = await getManifestEntriesFromCompilation(
+    const {size, sortedEntries} = await getManifestEntriesFromCompilation(
         compilation, config);
 
-    let manifestString = stringify(manifestEntries);
+    let manifestString = stringify(sortedEntries);
     if (this.config.compileSrc) {
       // See https://github.com/GoogleChrome/workbox/issues/2263
       manifestString = manifestString.replace(/"/g, `'`);
@@ -305,13 +332,29 @@ class InjectManifest {
         searchString: config.injectionPoint,
       });
 
-      compilation.assets[sourcemapAssetName] = new RawSource(map);
-      compilation.assets[config.swDest] = new RawSource(source);
+      if (compilation.updateAsset) {
+        compilation.updateAsset(sourcemapAssetName, new RawSource(map));
+        compilation.updateAsset(config.swDest, new RawSource(source));
+      } else {
+        compilation.assets[sourcemapAssetName] = new RawSource(map);
+        compilation.assets[config.swDest] = new RawSource(source);
+      }
     } else {
       // If there's no sourcemap associated with swDest, a simple string
       // replacement will suffice.
-      compilation.assets[config.swDest] = new RawSource(
+      if (compilation.updateAsset) {
+        compilation.updateAsset(config.swDest, new RawSource(
+          initialSWAssetString.replace(config.injectionPoint, manifestString)));
+      } else {
+        compilation.assets[config.swDest] = new RawSource(
           initialSWAssetString.replace(config.injectionPoint, manifestString));
+      }
+    }
+
+    if (compilation.getLogger) {
+      const logger = compilation.getLogger(this.constructor.name);
+      logger.info(`The service worker at ${config.swDest} will precache
+        ${sortedEntries.length} URLs, totaling ${prettyBytes(size)}.`);
     }
   }
 }

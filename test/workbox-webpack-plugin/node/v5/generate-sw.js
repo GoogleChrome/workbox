@@ -64,7 +64,6 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
   describe(`[workbox-webpack-plugin] Multiple chunks`, function() {
     it(`should work when called without any parameters`, function(done) {
       const outputDir = tempy.directory();
-      console.log(outputDir);
       const config = {
         mode: 'production',
         entry: {
@@ -286,7 +285,6 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
 
     it(`should honor the 'chunks' allowlist config, including children created via SplitChunksPlugin`, function(done) {
       const outputDir = tempy.directory();
-      console.log(outputDir);
       const config = {
         mode: 'production',
         entry: {
@@ -1389,7 +1387,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
       });
     });
 
-    it(`•should use manifestTransforms`, function(done) {
+    it(`should use manifestTransforms`, function(done) {
       const outputDir = tempy.directory();
       const warningMessage = 'test warning';
       const config = {

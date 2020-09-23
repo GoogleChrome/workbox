@@ -18,4 +18,12 @@
  *
  * @private
  */
-module.exports = (...paths) => paths.join('');
+module.exports = (publicPath, ...paths) => {
+  // This is a change in webpack v5.
+  // See https://github.com/jantimon/html-webpack-plugin/pull/1516
+  if (publicPath === 'auto') {
+    return paths.join('');
+  } else {
+    return [publicPath, ...paths].join('');
+  }
+};

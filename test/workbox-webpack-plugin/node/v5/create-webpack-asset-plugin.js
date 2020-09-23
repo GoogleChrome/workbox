@@ -17,7 +17,7 @@ class CreateWebpackAssetPlugin {
   }
 
   apply(compiler) {
-    compiler.hooks.compilation.tap(
+    compiler.hooks.thisCompilation.tap(
         this.constructor.name,
         (compilation) => compilation.emitAsset(
             this.name,
