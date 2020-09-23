@@ -76,7 +76,7 @@
     "globby": "^11.0.1",
     "gulp": "^4.0.2",
     "gzip-size": "^5.1.1",
-    "html-webpack-plugin": "^4.4.1",
+    "html-webpack-plugin": "^4.5.0",
     "husky": "^4.2.5",
     "jsdoc": "^3.6.5",
     "jsdoc-baseline": "^0.1.5",
@@ -99,7 +99,7 @@
     "tempy": "^0.6.0",
     "typescript": "^3.9.7",
     "upath": "^1.2.0",
-    "webpack": "^5.0.0-beta.29",
+    "webpack": "^v5.0.0-rc.0",
     "worker-plugin": "^5.0.0"
   }
 }
