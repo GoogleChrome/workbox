@@ -9,6 +9,7 @@
 const bundle = require('workbox-build/build/lib/bundle');
 const populateSWTemplate =
   require('workbox-build/build/lib/populate-sw-template');
+const prettyBytes = require('pretty-bytes');
 const validate = require('workbox-build/build/lib/validate-options');
 const webpack = require('webpack');
 const webpackGenerateSWSchema = require(
@@ -287,8 +288,9 @@ class GenerateSW {
           .concat(scripts);
     }
 
-    config.manifestEntries = await getManifestEntriesFromCompilation(
+    const {size, sortedEntries} = await getManifestEntriesFromCompilation(
         compilation, config);
+    config.manifestEntries = sortedEntries;
 
     const unbundledCode = populateSWTemplate(config);
 
@@ -310,6 +312,12 @@ class GenerateSW {
         compilation.assets[file.name] = new RawSource(file.contents);
       }
       _generatedAssetNames.add(file.name);
+    }
+
+    if (compilation.getLogger) {
+      const logger = compilation.getLogger(this.constructor.name);
+      logger.info(`The service worker at ${config.swDest} will precache
+        ${config.manifestEntries.length} URLs, totaling ${prettyBytes(size)}.`);
     }
   }
 }

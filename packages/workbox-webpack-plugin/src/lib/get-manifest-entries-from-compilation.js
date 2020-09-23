@@ -91,6 +91,7 @@ function filterAssets(compilation, config) {
   // See https://webpack.js.org/configuration/stats/#stats
   // We only need assets and chunkGroups here.
   const stats = compilation.getStats().toJson({
+    all: false,
     assets: true,
     chunkGroups: true,
   });
@@ -176,10 +177,7 @@ module.exports = async (compilation, config) => {
     }
   }
 
-  // We also get back `size` and `count`, and it would be nice to log that
-  // somewhere, but... webpack doesn't offer info-level logs?
-  // https://github.com/webpack/webpack/issues/3996
-  const {manifestEntries, warnings} = await transformManifest({
+  const {manifestEntries, size, warnings} = await transformManifest({
     fileDetails,
     additionalManifestEntries: config.additionalManifestEntries,
     dontCacheBustURLsMatching: config.dontCacheBustURLsMatching,
@@ -195,5 +193,5 @@ module.exports = async (compilation, config) => {
   const sortedEntries = manifestEntries.sort(
       (a, b) => a.url === b.url ? 0 : (a.url > b.url ? 1 : -1));
 
-  return sortedEntries;
+  return {size, sortedEntries};
 };

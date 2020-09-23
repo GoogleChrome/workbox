@@ -16,10 +16,10 @@ const upath = require('upath');
 const tempy = require('tempy');
 const webpack = require('webpack');
 
-const CreateWebpackAssetPlugin = require('../../../infra/testing/create-webpack-asset-plugin');
-const validateServiceWorkerRuntime = require('../../../infra/testing/validator/service-worker-runtime');
-const webpackBuildCheck = require('../../../infra/testing/webpack-build-check');
-const {GenerateSW} = require('../../../packages/workbox-webpack-plugin/src/index');
+const CreateWebpackAssetPlugin = require('./create-webpack-asset-plugin');
+const validateServiceWorkerRuntime = require('../../../../infra/testing/validator/service-worker-runtime');
+const webpackBuildCheck = require('../../../../infra/testing/webpack-build-check');
+const {GenerateSW} = require('../../../../packages/workbox-webpack-plugin/src/index');
 
 describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
   const WEBPACK_ENTRY_FILENAME = 'webpackEntry.js';
