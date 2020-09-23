@@ -57,7 +57,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           const statsJson = stats.toJson();
           expect(statsJson.warnings).to.be.empty;
           expect(statsJson.errors[0].message).to.eql(
-            `Please check your InjectManifest plugin configuration:\n"invalid" is not allowed`,
+              `Please check your InjectManifest plugin configuration:\n"invalid" is not allowed`,
           );
 
           done();

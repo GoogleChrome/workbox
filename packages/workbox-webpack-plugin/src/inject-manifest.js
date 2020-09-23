@@ -164,7 +164,7 @@ class InjectManifest {
           this.constructor.name,
           (compilation) => this.handleEmit(compilation).catch(
               (error) => compilation.errors.push(error)),
-    );
+      );
     } else {
       // Specifically hook into thisCompilation, as per
       // https://github.com/webpack/webpack/issues/11425#issuecomment-690547848
@@ -180,7 +180,6 @@ class InjectManifest {
           },
       );
     }
-
   }
 
   /**
@@ -304,9 +303,9 @@ class InjectManifest {
     compilation.fileDependencies.add(absoluteSwSrc);
 
     const swAsset = compilation.assets[config.swDest];
-    const initialSWAssetString = swAsset.source();
+    const swAssetString = swAsset.source();
 
-    if (!initialSWAssetString.includes(config.injectionPoint)) {
+    if (!swAssetString.includes(config.injectionPoint)) {
       throw new Error(`Can't find ${config.injectionPoint} in your SW source.`);
     }
 
@@ -320,14 +319,14 @@ class InjectManifest {
     }
 
     const sourcemapAssetName = getSourcemapAssetName(
-        compilation, initialSWAssetString, config.swDest);
+        compilation, swAssetString, config.swDest);
 
     if (sourcemapAssetName) {
       const sourcemapAsset = compilation.assets[sourcemapAssetName];
       const {source, map} = await replaceAndUpdateSourceMap({
         jsFilename: config.swDest,
         originalMap: JSON.parse(sourcemapAsset.source()),
-        originalSource: initialSWAssetString,
+        originalSource: swAssetString,
         replaceString: manifestString,
         searchString: config.injectionPoint,
       });
@@ -344,10 +343,10 @@ class InjectManifest {
       // replacement will suffice.
       if (compilation.updateAsset) {
         compilation.updateAsset(config.swDest, new RawSource(
-          initialSWAssetString.replace(config.injectionPoint, manifestString)));
+            swAssetString.replace(config.injectionPoint, manifestString)));
       } else {
         compilation.assets[config.swDest] = new RawSource(
-          initialSWAssetString.replace(config.injectionPoint, manifestString));
+            swAssetString.replace(config.injectionPoint, manifestString));
       }
     }
 

@@ -13,6 +13,7 @@
  * https://webpack.js.org/configuration/output/#output-publicpath
  *
  * @function resolveWebpackURL
+ * @param {string} publicPath The publicPath value from webpack's compilation.
  * @param {Array<string>} paths File paths to join
  * @return {string} Joined file path
  *
