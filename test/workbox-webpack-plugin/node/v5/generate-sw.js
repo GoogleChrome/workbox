@@ -833,7 +833,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           const statsJson = stats.toJson();
           expect(statsJson.errors).to.be.empty;
           expect(statsJson.warnings[0].message).to.eql(
-            `The chunk 'doesNotExist' was provided in your Workbox chunks config, but was not found in the compilation.`,
+              `The chunk 'doesNotExist' was provided in your Workbox chunks config, but was not found in the compilation.`,
           );
 
           const files = await globby('**', {cwd: outputDir});
@@ -890,7 +890,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         try {
           const statsJson = stats.toJson('verbose');
           expect(statsJson.warnings[0].message).to.eql(
-            `images/example-jpeg.jpg is 15.3 kB, and won't be precached. Configure maximumFileSizeToCacheInBytes to change this limit.`,
+              `images/example-jpeg.jpg is 15.3 kB, and won't be precached. Configure maximumFileSizeToCacheInBytes to change this limit.`,
           );
 
           const swFile = upath.join(outputDir, 'service-worker.js');

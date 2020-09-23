@@ -21,7 +21,7 @@ class CreateWebpackAssetPlugin {
         this.constructor.name,
         (compilation) => compilation.emitAsset(
             this.name,
-            new sources.RawSource(this.name)
+            new sources.RawSource(this.name),
         ),
     );
   }
