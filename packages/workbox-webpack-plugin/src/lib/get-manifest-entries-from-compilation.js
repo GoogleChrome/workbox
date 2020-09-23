@@ -91,7 +91,6 @@ function filterAssets(compilation, config) {
   // See https://webpack.js.org/configuration/stats/#stats
   // We only need assets and chunkGroups here.
   const stats = compilation.getStats().toJson({
-    all: false,
     assets: true,
     chunkGroups: true,
   });
