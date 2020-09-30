@@ -156,25 +156,14 @@ module.exports = async (compilation, config) => {
   const filteredAssets = filterAssets(compilation, config);
 
   const {publicPath} = compilation.options.output;
-  const fileDetails = [];
 
-  for (const asset of filteredAssets) {
-    // Not sure why this would be false, but checking just in case, since
-    // our original list of assets comes from compilation.getStats().toJson(),
-    // not from compilation.assets.
-    if (asset.name in compilation.assets) {
-      // This matches the format expected by transformManifest().
-      fileDetails.push({
-        file: resolveWebpackURL(publicPath, asset.name),
-        hash: getAssetHash(compilation.assets[asset.name]),
-        size: asset.size || 0,
-      });
-    } else {
-      compilation.warnings.push(`Could not precache ${asset.name}, as it's ` +
-        `missing from compilation.assets. Please open a bug against Workbox ` +
-        `with details about your webpack config.`);
-    }
-  }
+  const fileDetails = Array.from(filteredAssets).map((asset) => {
+    return {
+      file: resolveWebpackURL(publicPath, asset.name),
+      hash: getAssetHash(compilation.getAsset(asset.name)),
+      size: asset.size || 0,
+    };
+  });
 
   const {manifestEntries, size, warnings} = await transformManifest({
     fileDetails,
