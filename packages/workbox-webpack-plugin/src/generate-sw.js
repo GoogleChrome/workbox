@@ -220,7 +220,7 @@ class GenerateSW {
 
     // webpack v4/v5 compatibility:
     // https://github.com/webpack/webpack/issues/11425#issuecomment-690387207
-    if (webpack.version[0] === '4') {
+    if (webpack.version.startsWith('4.')) {
       compiler.hooks.emit.tapPromise(
           this.constructor.name,
           (compilation) => this.addAssets(compilation).catch(
@@ -304,13 +304,7 @@ class GenerateSW {
     });
 
     for (const file of files) {
-      // webpack v4/v5 compatibility:
-      // https://github.com/webpack/webpack/issues/11425#issuecomment-686606318
-      if (compilation.emitAsset) {
-        compilation.emitAsset(file.name, new RawSource(file.contents));
-      } else {
-        compilation.assets[file.name] = new RawSource(file.contents);
-      }
+      compilation.emitAsset(file.name, new RawSource(file.contents));
       _generatedAssetNames.add(file.name);
     }
 

@@ -159,7 +159,7 @@ class InjectManifest {
 
     // webpack v4/v5 compatibility:
     // https://github.com/webpack/webpack/issues/11425#issuecomment-690387207
-    if (webpack.version[0] === '4') {
+    if (webpack.version.startsWith('4.')) {
       compiler.hooks.emit.tapPromise(
           this.constructor.name,
           (compilation) => this.handleEmit(compilation).catch(
@@ -240,11 +240,7 @@ class InjectManifest {
   addSrcToAssets(compilation, parentCompiler) {
     const source = parentCompiler.inputFileSystem.readFileSync(
         this.config.swSrc).toString();
-    if (compilation.emitAsset) {
-      compilation.emitAsset(this.config.swDest, new RawSource(source));
-    } else {
-      compilation.assets[this.config.swDest] = new RawSource(source);
-    }
+    compilation.emitAsset(this.config.swDest, new RawSource(source));
   }
 
   /**
@@ -302,7 +298,7 @@ class InjectManifest {
     const absoluteSwSrc = upath.resolve(this.config.swSrc);
     compilation.fileDependencies.add(absoluteSwSrc);
 
-    const swAsset = compilation.assets[config.swDest];
+    const swAsset = compilation.getAsset(config.swDest);
     const swAssetString = swAsset.source();
 
     if (!swAssetString.includes(config.injectionPoint)) {
@@ -322,7 +318,7 @@ class InjectManifest {
         compilation, swAssetString, config.swDest);
 
     if (sourcemapAssetName) {
-      const sourcemapAsset = compilation.assets[sourcemapAssetName];
+      const sourcemapAsset = compilation.getAsset(sourcemapAssetName);
       const {source, map} = await replaceAndUpdateSourceMap({
         jsFilename: config.swDest,
         originalMap: JSON.parse(sourcemapAsset.source()),
@@ -331,23 +327,13 @@ class InjectManifest {
         searchString: config.injectionPoint,
       });
 
-      if (compilation.updateAsset) {
-        compilation.updateAsset(sourcemapAssetName, new RawSource(map));
-        compilation.updateAsset(config.swDest, new RawSource(source));
-      } else {
-        compilation.assets[sourcemapAssetName] = new RawSource(map);
-        compilation.assets[config.swDest] = new RawSource(source);
-      }
+      compilation.updateAsset(sourcemapAssetName, new RawSource(map));
+      compilation.updateAsset(config.swDest, new RawSource(source));
     } else {
       // If there's no sourcemap associated with swDest, a simple string
       // replacement will suffice.
-      if (compilation.updateAsset) {
-        compilation.updateAsset(config.swDest, new RawSource(
-            swAssetString.replace(config.injectionPoint, manifestString)));
-      } else {
-        compilation.assets[config.swDest] = new RawSource(
-            swAssetString.replace(config.injectionPoint, manifestString));
-      }
+      compilation.updateAsset(config.swDest, new RawSource(
+          swAssetString.replace(config.injectionPoint, manifestString)));
     }
 
     if (compilation.getLogger) {
