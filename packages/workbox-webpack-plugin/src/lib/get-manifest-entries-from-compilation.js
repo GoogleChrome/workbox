@@ -56,10 +56,10 @@ function checkConditions(asset, compilation, conditions = []) {
  * @return {object<string, Set<string>>}
  * @private
  */
-function assetToChunkNameMapping(stats) {
+function assetToChunkNameMapping(assets, chunkGroups) {
   const mapping = {};
 
-  for (const asset of stats.assets) {
+  for (const asset of assets) {
     mapping[asset.name] = new Set(asset.chunkNames);
   }
 
@@ -88,27 +88,27 @@ function assetToChunkNameMapping(stats) {
  */
 function filterAssets(compilation, config) {
   const filteredAssets = new Set();
-  // See https://webpack.js.org/configuration/stats/#stats
-  // We only need assets and chunkGroups here.
-  const stats = compilation.getStats().toJson({
-    assets: true,
-    chunkGroups: true,
-  });
+  const assets = compilation.getAssets();
+  // const assetNameToChunkNames = assetToChunkNameMapping(assets,
+  //     compilation.chunkGroups);
 
-  const assetNameToChunkNames = assetToChunkNameMapping(stats);
-
+  const allowedAssets = new Set();
+  const deniedAssets = new Set();
   // See https://github.com/GoogleChrome/workbox/issues/1287
   if (Array.isArray(config.chunks)) {
-    for (const chunk of config.chunks) {
-      if (!(chunk in stats.namedChunkGroups)) {
-        compilation.warnings.push(`The chunk '${chunk}' was provided in ` +
-          `your Workbox chunks config, but was not found in the compilation.`);
+    for (const chunkName of config.chunks) {
+      const namedChunkGroup = compilation.namedChunkGroups.get(chunkName);
+      if (namedChunkGroup) {
+        const allowed
+      } else {
+        compilation.warnings.push(`The chunk '${namedChunkGroup}' was ` +
+          `provided in your Workbox chunks config, but was not found in the ` +
+          `compilation.`);
       }
     }
   }
 
-  // See https://webpack.js.org/api/stats/#asset-objects
-  for (const asset of stats.assets) {
+  for (const asset of assets) {
     // chunkName based filtering is funky because:
     // - Each asset might belong to one or more chunkNames.
     // - If *any* of those chunk names match our config.excludeChunks,
@@ -116,13 +116,13 @@ function filterAssets(compilation, config) {
     // - If the config.chunks is defined *and* there's no match
     //   between at least one of the chunkNames and one entry, then
     //   we skip that assets as well.
-    const isExcludedChunk = Array.isArray(config.excludeChunks) &&
-      config.excludeChunks.some((chunkName) => {
-        return assetNameToChunkNames[asset.name].has(chunkName);
-      });
-    if (isExcludedChunk) {
-      continue;
-    }
+    // const isExcludedChunk = Array.isArray(config.excludeChunks) &&
+    //   config.excludeChunks.some((chunkName) => {
+    //     return assetNameToChunkNames[asset.name].has(chunkName);
+    //   });
+    // if (isExcludedChunk) {
+    //   continue;
+    // }
 
     const isIncludedChunk = !Array.isArray(config.chunks) ||
       config.chunks.some((chunkName) => {
@@ -160,8 +160,8 @@ module.exports = async (compilation, config) => {
   const fileDetails = Array.from(filteredAssets).map((asset) => {
     return {
       file: resolveWebpackURL(publicPath, asset.name),
-      hash: getAssetHash(compilation.getAsset(asset.name)),
-      size: asset.size || 0,
+      hash: getAssetHash(asset),
+      size: asset.source.size() || 0,
     };
   });
 
