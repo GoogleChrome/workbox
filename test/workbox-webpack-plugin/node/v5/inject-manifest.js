@@ -175,7 +175,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       });
     });
 
-    it.skip(`should honor the 'chunks' allowlist config, including children created via SplitChunksPlugin`, function(done) {
+    it(`should honor the 'chunks' allowlist config, including children created via SplitChunksPlugin`, function(done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -220,10 +220,10 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
               precacheAndRoute: [[[
                 {
                   revision: /^[0-9a-f]{32}$/,
-                  url: 'main.js',
+                  url: /^[0-9a-f]{20}\.js$/,
                 }, {
                   revision: /^[0-9a-f]{32}$/,
-                  url: 'vendors~main.js',
+                  url: /^[0-9a-f]{20}\.js$/,
                 },
               ], {}]],
             },
@@ -344,7 +344,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
   });
 
   describe(`[workbox-webpack-plugin] html-webpack-plugin and a single chunk`, function() {
-    it.skip(`should work when called without any parameters`, function(done) {
+    it(`should work when called without any parameters`, function(done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -378,18 +378,17 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
             swFile,
             entryPoint: 'injectManifest',
             expectedMethodCalls: {
-              precacheAndRoute: [[[
-                {
-                  revision: /^[0-9a-f]{32}$/,
-                  url: /^entry1-[0-9a-f]{20}\.js$/,
-                }, {
-                  revision: /^[0-9a-f]{32}$/,
-                  url: /^entry2-[0-9a-f]{20}\.js$/,
-                }, {
-                  revision: /^[0-9a-f]{32}$/,
-                  url: 'index.html',
-                },
-              ], {}]],
+              precacheAndRoute: [[[{
+                revision: /^[0-9a-f]{32}$/,
+                // See https://github.com/webpack/webpack/issues/11425#issuecomment-692809539
+                url: '__child-HtmlWebpackPlugin_0',
+              }, {
+                revision: /^[0-9a-f]{32}$/,
+                url: /^entry1-[0-9a-f]{20}\.js$/,
+              }, {
+                revision: /^[0-9a-f]{32}$/,
+                url: /^entry2-[0-9a-f]{20}\.js$/,
+              }], {}]],
             },
           });
 
@@ -486,7 +485,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
   });
 
   describe(`[workbox-webpack-plugin] Sourcemap manipulation`, function() {
-    it.skip(`should update the sourcemap to account for manifest injection`, function(done) {
+    it(`should update the sourcemap to account for manifest injection`, function(done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -513,8 +512,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(4);
 
-          const expectedSourcemap = await fse.readJSON(
-              upath.join(__dirname, '..', '..', 'static', 'expected-service-worker.js.map'));
+          const expectedSourcemap = await fse.readJSON(upath.join(__dirname, 'expected-service-worker.js.map'));
           const actualSourcemap = await fse.readJSON(upath.join(outputDir, 'service-worker.js.map'));
 
           // The mappings will vary depending on the webpack version.
@@ -541,7 +539,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       });
     });
 
-    it.skip(`should handle a custom output.sourceMapFilename`, function(done) {
+    it(`should handle a custom output.sourceMapFilename`, function(done) {
       const outputDir = tempy.directory();
 
       const sourceMapFilename = upath.join('subdir', '[file].map');
@@ -572,7 +570,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           expect(files).to.have.length(4);
 
           const expectedSourcemap = await fse.readJSON(
-              upath.join(__dirname, '..', '..', 'static', 'expected-service-worker.js.map'));
+              upath.join(__dirname, 'expected-service-worker.js.map'));
           const actualSourcemap = await fse.readJSON(
               upath.join(outputDir, 'subdir', 'service-worker.js.map'));
 
@@ -703,16 +701,15 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       });
     });
 
-    it.skip(`should allow developers to override the default exclude filter`, function(done) {
+    it(`should allow developers to override the default exclude filter`, function(done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
         entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
         output: {
-          filename: WEBPACK_ENTRY_FILENAME,
+          filename: 'manifest-normally-ignored.js',
           path: outputDir,
         },
-        devtool: 'source-map',
         plugins: [
           new InjectManifest({
             swSrc: SW_SRC,
@@ -729,7 +726,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           webpackBuildCheck(webpackError, stats);
 
           const files = await globby('**', {cwd: outputDir});
-          expect(files).to.have.length(4);
+          expect(files).to.have.length(2);
 
           await validateServiceWorkerRuntime({
             swFile,
@@ -737,13 +734,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
             expectedMethodCalls: {
               precacheAndRoute: [[[{
                 revision: /^[0-9a-f]{32}$/,
-                url: 'service-worker.js.map',
-              }, {
-                revision: /^[0-9a-f]{32}$/,
-                url: 'webpackEntry.js',
-              }, {
-                revision: /^[0-9a-f]{32}$/,
-                url: 'webpackEntry.js.map',
+                url: 'manifest-normally-ignored.js',
               }], {}]],
             },
           });
@@ -1112,50 +1103,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     });
   });
 
-  describe(`[workbox-webpack-plugin] WASM Code`, function() {
-    // See https://github.com/GoogleChrome/workbox/issues/1916
-    it.skip(`should support projects that bundle WASM code`, function(done) {
-      const outputDir = tempy.directory();
-      const srcDir = upath.join(__dirname, '..', '..', 'static', 'wasm-project');
-      const config = {
-        mode: 'production',
-        entry: {
-          index: upath.join(srcDir, 'index.js'),
-        },
-        output: {
-          filename: '[name].js',
-          globalObject: 'self',
-          path: outputDir,
-        },
-        plugins: [
-          new WorkerPlugin(),
-          new InjectManifest({
-            swSrc: SW_SRC,
-            swDest: 'service-worker.js',
-          }),
-        ],
-      };
-
-      const compiler = webpack(config);
-      compiler.run(async (webpackError, stats) => {
-        try {
-          webpackBuildCheck(webpackError, stats);
-
-          // Bundling WASM into a Worker seems to lead to different hashes in
-          // different environments. Instead of hardcoding hash checks, just
-          // confirm that we output the expected number of files, which will
-          // only be true if the build was successful.
-          const files = await globby('**', {cwd: outputDir});
-          expect(files).to.have.length(5);
-
-          done();
-        } catch (error) {
-          done(error);
-        }
-      });
-    });
-  });
-
   describe(`[workbox-webpack-plugin] Manifest transformations`, function() {
     it(`should use dontCacheBustURLsMatching`, function(done) {
       const outputDir = tempy.directory();
@@ -1301,14 +1248,14 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
       });
     });
 
-    it.skip(`should use manifestTransforms`, function(done) {
+    it(`should use manifestTransforms`, function(done) {
       const outputDir = tempy.directory();
       const warningMessage = 'test warning';
       const config = {
         mode: 'production',
         entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
         output: {
-          filename: '[name].[hash:20].js',
+          filename: '[name].[contenthash:20].js',
           path: outputDir,
         },
         plugins: [
@@ -1317,7 +1264,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
             swDest: 'service-worker.js',
             manifestTransforms: [(manifest, compilation) => {
               expect(manifest).to.have.lengthOf(1);
-              expect(manifest[0].size).to.eql(930);
+              expect(manifest[0].size).to.eql(30);
               expect(manifest[0].url.startsWith('main.')).to.be.true;
               expect(manifest[0].revision).to.have.lengthOf(32);
               expect(compilation).to.exist;
@@ -1344,7 +1291,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           expect(webpackError).not.to.exist;
           const statsJson = stats.toJson();
           expect(statsJson.errors).to.be.empty;
-          expect(statsJson.warnings).to.have.members([warningMessage]);
+          expect(statsJson.warnings[0].message).to.eql(warningMessage);
 
           const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(2);

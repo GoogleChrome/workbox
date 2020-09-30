@@ -299,7 +299,7 @@ class InjectManifest {
     compilation.fileDependencies.add(absoluteSwSrc);
 
     const swAsset = compilation.getAsset(config.swDest);
-    const swAssetString = swAsset.source();
+    const swAssetString = swAsset.source.source();
 
     if (!swAssetString.includes(config.injectionPoint)) {
       throw new Error(`Can't find ${config.injectionPoint} in your SW source.`);
@@ -318,10 +318,11 @@ class InjectManifest {
         compilation, swAssetString, config.swDest);
 
     if (sourcemapAssetName) {
+      _generatedAssetNames.add(sourcemapAssetName);
       const sourcemapAsset = compilation.getAsset(sourcemapAssetName);
       const {source, map} = await replaceAndUpdateSourceMap({
         jsFilename: config.swDest,
-        originalMap: JSON.parse(sourcemapAsset.source()),
+        originalMap: JSON.parse(sourcemapAsset.source.source()),
         originalSource: swAssetString,
         replaceString: manifestString,
         searchString: config.injectionPoint,
