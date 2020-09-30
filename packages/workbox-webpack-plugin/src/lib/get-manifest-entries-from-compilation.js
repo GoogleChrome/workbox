@@ -136,10 +136,16 @@ function filterAssets(compilation, config) {
   return filteredAssets;
 }
 
-module.exports = async (compilation, config) => {
-  const filteredAssets = filterAssets(compilation, config);
+module.exports = async (mainCompilation, config) => {
+  const filteredAssets = new Set();
+  // children will be set for, e.g., html-webpack-plugin.
+  for (const compilation of [mainCompilation, ...mainCompilation.children]) {
+    for (const asset of filterAssets(compilation, config)) {
+      filteredAssets.add(asset);
+    }
+  }
 
-  const {publicPath} = compilation.options.output;
+  const {publicPath} = mainCompilation.options.output;
 
   const fileDetails = Array.from(filteredAssets).map((asset) => {
     return {
@@ -156,10 +162,10 @@ module.exports = async (compilation, config) => {
     manifestTransforms: config.manifestTransforms,
     maximumFileSizeToCacheInBytes: config.maximumFileSizeToCacheInBytes,
     modifyURLPrefix: config.modifyURLPrefix,
-    transformParam: compilation,
+    transformParam: mainCompilation,
   });
 
-  compilation.warnings = compilation.warnings.concat(warnings || []);
+  mainCompilation.warnings = mainCompilation.warnings.concat(warnings || []);
 
   // Ensure that the entries are properly sorted by URL.
   const sortedEntries = manifestEntries.sort(

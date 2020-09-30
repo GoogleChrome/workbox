@@ -312,7 +312,6 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
       const compiler = webpack(config);
       compiler.run(async (webpackError, stats) => {
         const swFile = upath.join(outputDir, 'service-worker.js');
-        console.log(outputDir);
         try {
           webpackBuildCheck(webpackError, stats);
 
@@ -437,7 +436,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
   });
 
   describe(`[workbox-webpack-plugin] html-webpack-plugin and a single chunk`, function() {
-    it.skip(`should work when called without any parameters`, function(done) {
+    it(`should work when called without any parameters`, function(done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -469,13 +468,14 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
             precacheAndRoute: [[[
               {
                 revision: /^[0-9a-f]{32}$/,
+                // See https://github.com/webpack/webpack/issues/11425#issuecomment-692809539
+                url: '__child-HtmlWebpackPlugin_0',
+              }, {
+                revision: /^[0-9a-f]{32}$/,
                 url: /^entry1-[0-9a-f]{20}\.js$/,
               }, {
                 revision: /^[0-9a-f]{32}$/,
                 url: /^entry2-[0-9a-f]{20}\.js$/,
-              }, {
-                revision: /^[0-9a-f]{32}$/,
-                url: 'index.html',
               },
             ], {}]],
           }});
