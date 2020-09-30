@@ -9,7 +9,6 @@
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MemoryFS = require('memory-fs');
-const WorkerPlugin = require('worker-plugin');
 const expect = require('chai').expect;
 const globby = require('globby');
 const upath = require('upath');
@@ -283,7 +282,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
       });
     });
 
-    it.skip(`should honor the 'chunks' allowlist config, including children created via SplitChunksPlugin`, function(done) {
+    it(`should honor the 'chunks' allowlist config, including children created via SplitChunksPlugin`, function(done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -313,6 +312,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
       const compiler = webpack(config);
       compiler.run(async (webpackError, stats) => {
         const swFile = upath.join(outputDir, 'service-worker.js');
+        console.log(outputDir);
         try {
           webpackBuildCheck(webpackError, stats);
 
@@ -978,48 +978,6 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
               },
             ], {}]],
           }});
-
-          done();
-        } catch (error) {
-          done(error);
-        }
-      });
-    });
-  });
-
-  describe(`[workbox-webpack-plugin] WASM Code`, function() {
-    // See https://github.com/GoogleChrome/workbox/issues/1916
-    // Not clear how to do this in webpack v5.
-    it.skip(`should support projects that bundle WASM code`, function(done) {
-      const outputDir = tempy.directory();
-      const srcDir = upath.join(__dirname, '..', '..', 'static', 'wasm-project');
-      const config = {
-        mode: 'production',
-        entry: {
-          index: upath.join(srcDir, 'index.js'),
-        },
-        output: {
-          filename: '[name].js',
-          globalObject: 'self',
-          path: outputDir,
-        },
-        plugins: [
-          new WorkerPlugin(),
-          new GenerateSW(),
-        ],
-      };
-
-      const compiler = webpack(config);
-      compiler.run(async (webpackError, stats) => {
-        try {
-          webpackBuildCheck(webpackError, stats);
-
-          // Bundling WASM into a Worker seems to lead to different hashes in
-          // different environments. Instead of hardcoding hash checks, just
-          // confirm that we output the expected number of files, which will
-          // only be true if the build was successful.
-          const files = await globby('**', {cwd: outputDir});
-          expect(files).to.have.length(6);
 
           done();
         } catch (error) {
