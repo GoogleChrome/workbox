@@ -1,0 +1,10 @@
+{
+    "name": "workbox-webpack-plugin-test-v4",
+    "version": "1.0.0",
+    "description": "webpack dependencies for v4",
+    "private": "true",
+    "devDependencies": {
+      "webpack": "^4.40.0"
+    },
+    "license": "MIT"
+  }

@@ -17,7 +17,7 @@ const upath = require('upath');
 const webpack = require('webpack');
 const WorkerPlugin = require('worker-plugin');
 
-const CreateWebpackAssetPlugin = require('../../../infra/testing/create-webpack-asset-plugin');
+const CreateWebpackAssetPlugin = require('./lib/create-webpack-asset-plugin');
 const validateServiceWorkerRuntime = require('../../../infra/testing/validator/service-worker-runtime');
 const webpackBuildCheck = require('../../../infra/testing/webpack-build-check');
 const {InjectManifest} = require('../../../packages/workbox-webpack-plugin/src/index');

@@ -98,8 +98,6 @@
     "sinon": "^9.0.3",
     "tempy": "^0.6.0",
     "typescript": "^3.9.7",
-    "upath": "^1.2.0",
-    "webpack": "^v5.0.0-rc.0",
-    "worker-plugin": "^5.0.0"
+    "upath": "^1.2.0"
   }
 }

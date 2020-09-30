@@ -16,7 +16,7 @@ const upath = require('upath');
 const tempy = require('tempy');
 const webpack = require('webpack');
 
-const CreateWebpackAssetPlugin = require('./create-webpack-asset-plugin');
+const CreateWebpackAssetPlugin = require('./lib/create-webpack-asset-plugin');
 const validateServiceWorkerRuntime = require('../../../../infra/testing/validator/service-worker-runtime');
 const webpackBuildCheck = require('../../../../infra/testing/webpack-build-check');
 const {GenerateSW} = require('../../../../packages/workbox-webpack-plugin/src/index');

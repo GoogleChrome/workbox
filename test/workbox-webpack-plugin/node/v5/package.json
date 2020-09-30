@@ -1,0 +1,10 @@
+{
+    "name": "workbox-webpack-plugin-test-v5",
+    "version": "1.0.0",
+    "description": "webpack dependencies for v5",
+    "private": "true",
+    "devDependencies": {
+      "webpack": "^5.0.0-rc.3"
+    },
+    "license": "MIT"
+  }
