@@ -41,38 +41,18 @@ function checkConditions(asset, compilation, conditions = []) {
 }
 
 /**
- * Creates a mapping of an asset name to an Set of zero or more chunk names
- * that the asset is associated with.
+ * Returns the names of all the assets in a chunk group.
  *
- * Those chunk names come from a combination of the `chunkName` property on the
- * asset, as well as the `stats.namedChunkGroups` property. That is the only
- * way to find out if an asset has an implicit descendent relationship with a
- * chunk, if it was, e.g., created by `SplitChunksPlugin`.
- *
- * See https://github.com/GoogleChrome/workbox/issues/1859
- * See https://github.com/webpack/webpack/issues/7073
- *
- * @param {Object} stats The webpack compilation stats.
- * @return {object<string, Set<string>>}
- * @private
+ * @param {ChunkGroup} chunkGroup
+ * @return {Array<Asset>}
  */
-function assetToChunkNameMapping(assets, chunkGroups) {
-  const mapping = {};
-
-  for (const asset of assets) {
-    mapping[asset.name] = new Set(asset.chunkNames);
+function getNamesOfAssetsInChunkGroup(chunkGroup) {
+  const assetNames = [];
+  for (const chunk of chunkGroup.chunks) {
+    assetNames.splice(0, 0, ...chunk.files);
+    assetNames.splice(0, 0, ...chunk.auxiliaryFiles);
   }
-
-  for (const [chunkName, {assets}] of Object.entries(stats.namedChunkGroups)) {
-    for (const assetName of assets) {
-      // See https://github.com/GoogleChrome/workbox/issues/2194
-      if (mapping[assetName]) {
-        mapping[assetName].add(chunkName);
-      }
-    }
-  }
-
-  return mapping;
+  return assetNames;
 }
 
 /**
@@ -89,46 +69,50 @@ function assetToChunkNameMapping(assets, chunkGroups) {
 function filterAssets(compilation, config) {
   const filteredAssets = new Set();
   const assets = compilation.getAssets();
-  // const assetNameToChunkNames = assetToChunkNameMapping(assets,
-  //     compilation.chunkGroups);
 
-  const allowedAssets = new Set();
-  const deniedAssets = new Set();
+  const allowedAssetNames = new Set();
   // See https://github.com/GoogleChrome/workbox/issues/1287
   if (Array.isArray(config.chunks)) {
     for (const chunkName of config.chunks) {
       const namedChunkGroup = compilation.namedChunkGroups.get(chunkName);
       if (namedChunkGroup) {
-        const allowed
+        for (const assetName of getNamesOfAssetsInChunkGroup(namedChunkGroup)) {
+          allowedAssetNames.add(assetName);
+        }
       } else {
-        compilation.warnings.push(`The chunk '${namedChunkGroup}' was ` +
+        compilation.warnings.push(`The chunk '${chunkName}' was ` +
           `provided in your Workbox chunks config, but was not found in the ` +
           `compilation.`);
       }
     }
   }
 
+  const deniedAssetNames = new Set();
+  if (Array.isArray(config.excludeChunks)) {
+    for (const chunkName of config.excludeChunks) {
+      const namedChunkGroup = compilation.namedChunkGroups.get(chunkName);
+      if (namedChunkGroup) {
+        for (const assetName of getNamesOfAssetsInChunkGroup(namedChunkGroup)) {
+          deniedAssetNames.add(assetName);
+        }
+      } // Don't warn if the chunk group isn't found.
+    }
+  }
+
   for (const asset of assets) {
-    // chunkName based filtering is funky because:
-    // - Each asset might belong to one or more chunkNames.
+    // chunk based filtering is funky because:
+    // - Each asset might belong to one or more chunks.
     // - If *any* of those chunk names match our config.excludeChunks,
     //   then we skip that asset.
     // - If the config.chunks is defined *and* there's no match
     //   between at least one of the chunkNames and one entry, then
     //   we skip that assets as well.
-    // const isExcludedChunk = Array.isArray(config.excludeChunks) &&
-    //   config.excludeChunks.some((chunkName) => {
-    //     return assetNameToChunkNames[asset.name].has(chunkName);
-    //   });
-    // if (isExcludedChunk) {
-    //   continue;
-    // }
 
-    const isIncludedChunk = !Array.isArray(config.chunks) ||
-      config.chunks.some((chunkName) => {
-        return assetNameToChunkNames[asset.name].has(chunkName);
-      });
-    if (!isIncludedChunk) {
+    if (deniedAssetNames.has(asset.name)) {
+      continue;
+    }
+
+    if (Array.isArray(config.chunks) && !allowedAssetNames.has(asset.name)) {
       continue;
     }
 
