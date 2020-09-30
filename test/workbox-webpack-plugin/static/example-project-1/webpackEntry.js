@@ -6,4 +6,4 @@
   https://opensource.org/licenses/MIT.
 */
 
-// Just a test.
+console.log('I am an entry.');

@@ -617,17 +617,15 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
       });
     });
 
-    // webpack v5 doesn't seem to include .map files in the asset list.
-    it.skip(`should allow developers to override the default exclude filter`, function(done) {
+    it(`should allow developers to override the default exclude filter`, function(done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
         entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
         output: {
-          filename: WEBPACK_ENTRY_FILENAME,
+          filename: 'manifest-normally-ignored.js',
           path: outputDir,
         },
-        devtool: 'source-map',
         plugins: [
           new GenerateSW({
             exclude: [],
@@ -642,16 +640,13 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           webpackBuildCheck(webpackError, stats);
 
           const files = await globby('**', {cwd: outputDir});
-          expect(files).to.have.length(6);
+          expect(files).to.have.length(3);
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
             importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[{
               revision: /^[0-9a-f]{32}$/,
-              url: 'webpackEntry.js',
-            }, {
-              revision: /^[0-9a-f]{32}$/,
-              url: 'webpackEntry.js.map',
+              url: 'manifest-normally-ignored.js',
             }], {}]],
           }});
 
@@ -1387,21 +1382,21 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
       });
     });
 
-    it.skip(`should use manifestTransforms`, function(done) {
+    it(`should use manifestTransforms`, function(done) {
       const outputDir = tempy.directory();
       const warningMessage = 'test warning';
       const config = {
         mode: 'production',
         entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
         output: {
-          filename: '[name].[hash:20].js',
+          filename: '[name].[contenthash:20].js',
           path: outputDir,
         },
         plugins: [
           new GenerateSW({
             manifestTransforms: [(manifest, compilation) => {
               expect(manifest).to.have.lengthOf(1);
-              expect(manifest[0].size).to.eql(930);
+              expect(manifest[0].size).to.eql(30);
               expect(manifest[0].url.startsWith('main.')).to.be.true;
               expect(manifest[0].revision).to.have.lengthOf(32);
               expect(compilation).to.exist;
@@ -1428,7 +1423,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           expect(webpackError).not.to.exist;
           const statsJson = stats.toJson();
           expect(statsJson.errors, JSON.stringify(statsJson.errors)).to.be.empty;
-          expect(statsJson.warnings).to.have.members([warningMessage]);
+          expect(statsJson.warnings[0].message).to.eql(warningMessage);
 
           const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(3);
