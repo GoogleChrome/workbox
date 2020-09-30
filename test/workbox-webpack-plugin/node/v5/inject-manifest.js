@@ -15,9 +15,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const tempy = require('tempy');
 const upath = require('upath');
 const webpack = require('webpack');
-const WorkerPlugin = require('worker-plugin');
 
-const CreateWebpackAssetPlugin = require('./create-webpack-asset-plugin');
+const CreateWebpackAssetPlugin = require('./lib/create-webpack-asset-plugin');
 const validateServiceWorkerRuntime = require('../../../../infra/testing/validator/service-worker-runtime');
 const webpackBuildCheck = require('../../../../infra/testing/webpack-build-check');
 const {InjectManifest} = require('../../../../packages/workbox-webpack-plugin/src/index');
@@ -512,8 +511,10 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(4);
 
-          const expectedSourcemap = await fse.readJSON(upath.join(__dirname, 'expected-service-worker.js.map'));
-          const actualSourcemap = await fse.readJSON(upath.join(outputDir, 'service-worker.js.map'));
+          const expectedSourcemap = await fse.readJSON(
+              upath.join(__dirname, 'static', 'expected-service-worker.js.map'));
+          const actualSourcemap = await fse.readJSON(
+              upath.join(outputDir, 'service-worker.js.map'));
 
           // The mappings will vary depending on the webpack version.
           delete expectedSourcemap.mappings;
@@ -570,7 +571,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           expect(files).to.have.length(4);
 
           const expectedSourcemap = await fse.readJSON(
-              upath.join(__dirname, 'expected-service-worker.js.map'));
+              upath.join(__dirname, 'static', 'expected-service-worker.js.map'));
           const actualSourcemap = await fse.readJSON(
               upath.join(outputDir, 'subdir', 'service-worker.js.map'));
 
