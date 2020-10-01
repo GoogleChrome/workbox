@@ -6,6 +6,18 @@
   https://opensource.org/licenses/MIT.
 */
 
+// workbox-webpack-plugin needs to do require('webpack'), and in order to test
+// against multiple webpack versions, we need that to resolve to whatever the
+// correct webpack is for this test.
+try {
+  delete require.cache[require.resolve('webpack')];
+} catch (error) {
+  // Ignore if require.resolve('webpack') fails.
+}
+const upath = require('upath');
+require('module-alias').addAlias(
+    'webpack', upath.resolve('node_modules', 'webpack-v5'));
+
 const chai = require('chai');
 const chaiMatchPattern = require('chai-match-pattern');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -13,7 +25,6 @@ const fse = require('fs-extra');
 const globby = require('globby');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const tempy = require('tempy');
-const upath = require('upath');
 const webpack = require('webpack');
 
 const CreateWebpackAssetPlugin = require('./lib/create-webpack-asset-plugin');
@@ -24,7 +35,7 @@ const {InjectManifest} = require('../../../../packages/workbox-webpack-plugin/sr
 chai.use(chaiMatchPattern);
 const {expect} = chai;
 
-describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
+describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function() {
   const WEBPACK_ENTRY_FILENAME = 'webpackEntry.js';
   const SRC_DIR = upath.join(__dirname, '..', '..', 'static', 'example-project-1');
   const SW_SRC = upath.join(__dirname, '..', '..', 'static', 'sw-src.js');

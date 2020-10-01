@@ -162,7 +162,7 @@ class InjectManifest {
     if (webpack.version.startsWith('4.')) {
       compiler.hooks.emit.tapPromise(
           this.constructor.name,
-          (compilation) => this.handleEmit(compilation).catch(
+          (compilation) => this.addAssets(compilation).catch(
               (error) => compilation.errors.push(error)),
       );
     } else {

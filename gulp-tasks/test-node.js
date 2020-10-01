@@ -56,7 +56,14 @@ async function runNodeTestsWithEnv(testGroup, nodeEnv) {
 
   const packagesToTest = glob.sync(`test/${testGroup}/node`, globConfig);
   for (const packageToTest of packagesToTest) {
-    await runNodeTestSuite(packageToTest, nodeEnv);
+    // Hardcode special logic for webpack v4 and v5 tests, which need to
+    // be run in separate processes.
+    if (packageToTest.includes('workbox-webpack-plugin')) {
+      await runNodeTestSuite(`${packageToTest}/v4`, nodeEnv);
+      await runNodeTestSuite(`${packageToTest}/v5`, nodeEnv);
+    } else {
+      await runNodeTestSuite(packageToTest, nodeEnv);
+    }
   }
 }
 

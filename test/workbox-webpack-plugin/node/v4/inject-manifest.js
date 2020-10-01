@@ -6,6 +6,18 @@
   https://opensource.org/licenses/MIT.
 */
 
+// workbox-webpack-plugin needs to do require('webpack'), and in order to test
+// against multiple webpack versions, we need that to resolve to whatever the
+// correct webpack is for this test.
+try {
+  delete require.cache[require.resolve('webpack')];
+} catch (error) {
+  // Ignore if require.resolve('webpack') fails.
+}
+const upath = require('upath');
+require('module-alias').addAlias(
+    'webpack', upath.resolve('node_modules', 'webpack-v4'));
+
 const chai = require('chai');
 const chaiMatchPattern = require('chai-match-pattern');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -13,22 +25,21 @@ const fse = require('fs-extra');
 const globby = require('globby');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const tempy = require('tempy');
-const upath = require('upath');
 const webpack = require('webpack');
 const WorkerPlugin = require('worker-plugin');
 
 const CreateWebpackAssetPlugin = require('./lib/create-webpack-asset-plugin');
-const validateServiceWorkerRuntime = require('../../../infra/testing/validator/service-worker-runtime');
-const webpackBuildCheck = require('../../../infra/testing/webpack-build-check');
-const {InjectManifest} = require('../../../packages/workbox-webpack-plugin/src/index');
+const validateServiceWorkerRuntime = require('../../../../infra/testing/validator/service-worker-runtime');
+const webpackBuildCheck = require('../../../../infra/testing/webpack-build-check');
+const {InjectManifest} = require('../../../../packages/workbox-webpack-plugin/src/index');
 
 chai.use(chaiMatchPattern);
 const {expect} = chai;
 
-describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
+describe(`[workbox-webpack-plugin] InjectManifest with webpack v4`, function() {
   const WEBPACK_ENTRY_FILENAME = 'webpackEntry.js';
-  const SRC_DIR = upath.join(__dirname, '..', 'static', 'example-project-1');
-  const SW_SRC = upath.join(__dirname, '..', 'static', 'sw-src.js');
+  const SRC_DIR = upath.join(__dirname, '..', '..', 'static', 'example-project-1');
+  const SW_SRC = upath.join(__dirname, '..', '..', 'static', 'sw-src.js');
 
   describe(`[workbox-webpack-plugin] Runtime errors`, function() {
     it(`should lead to a webpack compilation error when passed invalid config`, function(done) {
@@ -375,18 +386,20 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
             swFile,
             entryPoint: 'injectManifest',
             expectedMethodCalls: {
-              precacheAndRoute: [[[
-                {
-                  revision: /^[0-9a-f]{32}$/,
-                  url: /^entry1-[0-9a-f]{20}\.js$/,
-                }, {
-                  revision: /^[0-9a-f]{32}$/,
-                  url: /^entry2-[0-9a-f]{20}\.js$/,
-                }, {
-                  revision: /^[0-9a-f]{32}$/,
-                  url: 'index.html',
-                },
-              ], {}]],
+              precacheAndRoute: [[[{
+                revision: /^[0-9a-f]{32}$/,
+                // See https://github.com/webpack/webpack/issues/11425#issuecomment-692809539
+                url: '__child-HtmlWebpackPlugin_0',
+              }, {
+                revision: /^[0-9a-f]{32}$/,
+                url: /^entry1-[0-9a-f]{20}\.js$/,
+              }, {
+                revision: /^[0-9a-f]{32}$/,
+                url: /^entry2-[0-9a-f]{20}\.js$/,
+              }, {
+                revision: /^[0-9a-f]{32}$/,
+                url: 'index.html',
+              }], {}]],
             },
           });
 
@@ -511,7 +524,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           expect(files).to.have.length(4);
 
           const expectedSourcemap = await fse.readJSON(
-              upath.join(__dirname, '..', 'static', 'expected-service-worker.js.map'));
+              upath.join(__dirname, '..', '..', 'static', 'expected-service-worker.js.map'));
           const actualSourcemap = await fse.readJSON(upath.join(outputDir, 'service-worker.js.map'));
 
           // The mappings will vary depending on the webpack version.
@@ -569,7 +582,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           expect(files).to.have.length(4);
 
           const expectedSourcemap = await fse.readJSON(
-              upath.join(__dirname, '..', 'static', 'expected-service-worker.js.map'));
+              upath.join(__dirname, '..', '..', 'static', 'expected-service-worker.js.map'));
           const actualSourcemap = await fse.readJSON(
               upath.join(outputDir, 'subdir', 'service-worker.js.map'));
 
@@ -599,7 +612,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
     it(`should not fail if the sourcemap is missing from the assets`, function(done) {
       const outputDir = tempy.directory();
-      const swSrc = upath.join(__dirname, '..', 'static', 'sw-src-missing-sourcemap.js');
+      const swSrc = upath.join(__dirname, '..', '..', 'static', 'sw-src-missing-sourcemap.js');
 
       const config = {
         mode: 'development',
@@ -733,9 +746,6 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
             entryPoint: 'injectManifest',
             expectedMethodCalls: {
               precacheAndRoute: [[[{
-                revision: /^[0-9a-f]{32}$/,
-                url: 'service-worker.js.map',
-              }, {
                 revision: /^[0-9a-f]{32}$/,
                 url: 'webpackEntry.js',
               }, {
@@ -1113,7 +1123,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
     // See https://github.com/GoogleChrome/workbox/issues/1916
     it(`should support projects that bundle WASM code`, function(done) {
       const outputDir = tempy.directory();
-      const srcDir = upath.join(__dirname, '..', 'static', 'wasm-project');
+      const srcDir = upath.join(__dirname, '..', '..', 'static', 'wasm-project');
       const config = {
         mode: 'production',
         entry: {
@@ -1249,7 +1259,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
 
     it(`should use webpackCompilationPlugins with DefinePlugin`, function(done) {
       const prefix = 'replaced-by-define-plugin';
-      const swSrc = upath.join(__dirname, '..', 'static', 'sw-src-define-plugin.js');
+      const swSrc = upath.join(__dirname, '..', '..', 'static', 'sw-src-define-plugin.js');
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -1314,7 +1324,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
             swDest: 'service-worker.js',
             manifestTransforms: [(manifest, compilation) => {
               expect(manifest).to.have.lengthOf(1);
-              expect(manifest[0].size).to.eql(930);
+              expect(manifest[0].size).to.eql(959);
               expect(manifest[0].url.startsWith('main.')).to.be.true;
               expect(manifest[0].revision).to.have.lengthOf(32);
               expect(compilation).to.exist;
@@ -1377,7 +1387,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         },
         plugins: [
           new InjectManifest({
-            swSrc: upath.join(__dirname, '..', 'static', 'sw.ts'),
+            swSrc: upath.join(__dirname, '..', '..', 'static', 'sw.ts'),
           }),
         ],
       };
@@ -1517,12 +1527,12 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         plugins: [
           new InjectManifest({
             exclude: [/sw\d.js/],
-            swSrc: upath.join(__dirname, '..', 'static', 'sw.ts'),
+            swSrc: upath.join(__dirname, '..', '..', 'static', 'sw.ts'),
             swDest: 'sw1.js',
           }),
           new InjectManifest({
             exclude: [/sw\d.js/],
-            swSrc: upath.join(__dirname, '..', 'static', 'sw.ts'),
+            swSrc: upath.join(__dirname, '..', '..', 'static', 'sw.ts'),
             swDest: 'sw2.js',
           }),
         ],
@@ -1583,7 +1593,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           new InjectManifest({
             exclude: [/sw\d.js/],
             swDest: 'sw.js',
-            swSrc: upath.join(__dirname, '..', 'static', 'sw-src.js'),
+            swSrc: upath.join(__dirname, '..', '..', 'static', 'sw-src.js'),
           }),
         ],
       };
@@ -1632,7 +1642,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           new InjectManifest({
             compileSrc: false,
             swDest: 'injected-manifest.json',
-            swSrc: upath.join(__dirname, '..', 'static', 'injected-manifest.json'),
+            swSrc: upath.join(__dirname, '..', '..', 'static', 'injected-manifest.json'),
             webpackCompilationPlugins: [{}],
           }),
         ],
@@ -1669,7 +1679,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
           new InjectManifest({
             compileSrc: false,
             swDest: 'injected-manifest.json',
-            swSrc: upath.join(__dirname, '..', 'static', 'injected-manifest.json'),
+            swSrc: upath.join(__dirname, '..', '..', 'static', 'injected-manifest.json'),
           }),
         ],
       };
@@ -1710,7 +1720,7 @@ describe(`[workbox-webpack-plugin] InjectManifest (End to End)`, function() {
         new InjectManifest({
           compileSrc: false,
           swDest: 'injected-manifest.js',
-          swSrc: upath.join(__dirname, '..', 'static', 'injected-manifest.js'),
+          swSrc: upath.join(__dirname, '..', '..', 'static', 'injected-manifest.js'),
         }),
       ],
     };

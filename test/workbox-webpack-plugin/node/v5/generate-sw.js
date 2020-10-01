@@ -6,12 +6,23 @@
   https://opensource.org/licenses/MIT.
 */
 
+// workbox-webpack-plugin needs to do require('webpack'), and in order to test
+// against multiple webpack versions, we need that to resolve to whatever the
+// correct webpack is for this test.
+try {
+  delete require.cache[require.resolve('webpack')];
+} catch (error) {
+  // Ignore if require.resolve('webpack') fails.
+}
+const upath = require('upath');
+require('module-alias').addAlias(
+    'webpack', upath.resolve('node_modules', 'webpack-v5'));
+
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MemoryFS = require('memory-fs');
 const expect = require('chai').expect;
 const globby = require('globby');
-const upath = require('upath');
 const tempy = require('tempy');
 const webpack = require('webpack');
 
@@ -20,7 +31,7 @@ const validateServiceWorkerRuntime = require('../../../../infra/testing/validato
 const webpackBuildCheck = require('../../../../infra/testing/webpack-build-check');
 const {GenerateSW} = require('../../../../packages/workbox-webpack-plugin/src/index');
 
-describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
+describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
   const WEBPACK_ENTRY_FILENAME = 'webpackEntry.js';
   const SRC_DIR = upath.join(__dirname, '..', '..', 'static', 'example-project-1');
 

@@ -45,12 +45,16 @@ function checkConditions(asset, compilation, conditions = []) {
  *
  * @param {ChunkGroup} chunkGroup
  * @return {Array<Asset>}
+ * @private
  */
 function getNamesOfAssetsInChunkGroup(chunkGroup) {
   const assetNames = [];
   for (const chunk of chunkGroup.chunks) {
     assetNames.splice(0, 0, ...chunk.files);
-    assetNames.splice(0, 0, ...chunk.auxiliaryFiles);
+    // This only appears to be set in webpack v5.
+    if (chunk.auxiliaryFiles) {
+      assetNames.splice(0, 0, ...chunk.auxiliaryFiles);
+    }
   }
   return assetNames;
 }
