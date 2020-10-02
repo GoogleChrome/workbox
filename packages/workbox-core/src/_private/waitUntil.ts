@@ -23,4 +23,4 @@ function waitUntil(event: ExtendableEvent, asyncFn: () => Promise<any>) {
   return returnPromise;
 }
 
-export {waitUntil}
+export {waitUntil};

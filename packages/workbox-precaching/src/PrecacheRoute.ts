@@ -11,7 +11,7 @@ import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
 import {RouteMatchCallback, RouteMatchCallbackOptions} from 'workbox-core/types.js';
 import {Route} from 'workbox-routing/Route.js';
 
-import {PrecacheRouteOptions, } from './_types.js';
+import {PrecacheRouteOptions} from './_types.js';
 import {PrecacheController} from './PrecacheController.js';
 import {generateURLVariations} from './utils/generateURLVariations.js';
 

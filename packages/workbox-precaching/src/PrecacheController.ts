@@ -45,7 +45,7 @@ interface PrecacheControllerOptions {
  * @memberof module:workbox-precaching
  */
 class PrecacheController {
-  private _installAndActiveListenersAdded?: boolean = false;
+  private _installAndActiveListenersAdded?: boolean;
   private readonly _strategy: Strategy;
   private readonly _urlsToCacheKeys: Map<string, string> = new Map();
   private readonly _urlsToCacheModes: Map<string, "reload" | "default" | "no-store" | "no-cache" | "force-cache" | "only-if-cached"> = new Map();

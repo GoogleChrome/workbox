@@ -18,7 +18,7 @@ function stripParams(fullURL: string, ignoreParams: string[]) {
 
 
 /**
- * Matches an item in the cache, ignoring specific URL params. This is
+ * Matches an item in the cache, ignoring specific URL params. This is similar
  * to the `ignoreSearch` option, but it allows you to ignore just specific
  * params (while continuing to match on the others).
  *
@@ -29,7 +29,7 @@ function stripParams(fullURL: string, ignoreParams: string[]) {
  * @param {Array<string>} ignoreParams
  * @return {Promise<Response|undefined>}
  */
-export async function cacheMatchIgnoreParams(
+async function cacheMatchIgnoreParams(
   cache: Cache,
   request: Request,
   ignoreParams: string[],
@@ -54,3 +54,5 @@ export async function cacheMatchIgnoreParams(
   }
   return;
 }
+
+export {cacheMatchIgnoreParams};
