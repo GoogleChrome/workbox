@@ -7,6 +7,7 @@
 */
 
 import {assert} from 'workbox-core/_private/assert.js';
+import {cacheMatchIgnoreParams} from 'workbox-core/_private/cacheMatchIgnoreParams.js';
 import {Deferred} from 'workbox-core/_private/Deferred.js';
 import {executeQuotaErrorCallbacks} from 'workbox-core/_private/executeQuotaErrorCallbacks.js';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
@@ -22,6 +23,7 @@ import {
 
 import {Strategy} from './Strategy.js';
 import './_version.js';
+
 
 function toRequest(input: RequestInfo) {
   return (typeof input === 'string') ? new Request(input) : input;
@@ -41,6 +43,8 @@ class StrategyHandler {
   public url?: URL;
   public event: ExtendableEvent;
   public params?: any;
+
+  private _cacheKeys: {read?: Request; write?: Request} = {};
 
   private readonly _strategy: Strategy;
   private readonly _extendLifetimePromises: Promise<any>[];
@@ -144,7 +148,84 @@ class StrategyHandler {
    * @return {Promise<Response>}
    */
   fetch(input: RequestInfo): Promise<Response> {
-    return this.waitUntil(this._fetch(input));
+    return this.waitUntil((async () => {
+      const {event} = this;
+      let request: Request = toRequest(input);
+
+      if (request.mode === 'navigate' &&
+          event instanceof FetchEvent &&
+          event.preloadResponse) {
+        const possiblePreloadResponse = await event.preloadResponse;
+        if (possiblePreloadResponse) {
+          if (process.env.NODE_ENV !== 'production') {
+            logger.log(`Using a preloaded navigation response for ` +
+              `'${getFriendlyURL(request.url)}'`);
+          }
+          return possiblePreloadResponse;
+        }
+      }
+
+      // If there is a fetchDidFail plugin, we need to save a clone of the
+      // original request before it's either modified by a requestWillFetch
+      // plugin or before the original request's body is consumed via fetch().
+      const originalRequest = this.hasCallback('fetchDidFail') ?
+          request.clone() : null;
+
+      try {
+        for (const cb of this.iterateCallbacks('requestWillFetch')) {
+          request = await cb({request: request.clone(), event});
+        }
+      } catch (err) {
+        throw new WorkboxError('plugin-error-request-will-fetch', {
+          thrownError: err,
+        });
+      }
+
+      // The request can be altered by plugins with `requestWillFetch` making
+      // the original request (most likely from a `fetch` event) different
+      // from the Request we make. Pass both to `fetchDidFail` to aid debugging.
+      const pluginFilteredRequest: Request = request.clone();
+
+      try {
+        let fetchResponse: Response;
+
+        // See https://github.com/GoogleChrome/workbox/issues/1796
+        fetchResponse = await fetch(request, request.mode === 'navigate' ?
+            undefined : this._strategy.fetchOptions);
+
+        if (process.env.NODE_ENV !== 'production') {
+          logger.debug(`Network request for ` +
+             `'${getFriendlyURL(request.url)}' returned a response with ` +
+              `status '${fetchResponse.status}'.`);
+        }
+
+        for (const callback of this.iterateCallbacks('fetchDidSucceed')) {
+          fetchResponse = await callback({
+            event,
+            request: pluginFilteredRequest,
+            response: fetchResponse,
+          });
+        }
+        return fetchResponse;
+      } catch (error) {
+        if (process.env.NODE_ENV !== 'production') {
+          logger.error(`Network request for `+
+          `'${getFriendlyURL(request.url)}' threw an error.`, error);
+        }
+
+        // `originalRequest` will only exist if a `fetchDidFail` callback
+        // is being used (see above).
+        if (originalRequest) {
+          await this.runCallbacks('fetchDidFail', {
+            error,
+            event,
+            originalRequest: originalRequest.clone(),
+            request: pluginFilteredRequest.clone(),
+          });
+        }
+        throw error;
+      }
+    })());
   }
 
   /**
@@ -179,7 +260,35 @@ class StrategyHandler {
    * @return {Promise<Response|undefined>} A matching response, if found.
    */
   cacheMatch(key: RequestInfo): Promise<Response | undefined> {
-    return this.waitUntil(this._cacheMatch(key));
+    return this.waitUntil((async () => {
+      const request: Request = toRequest(key);
+      let cachedResponse: Response | undefined;
+      const {cacheName, matchOptions} = this._strategy;
+
+      const effectiveRequest = await this.getCacheKey(request, 'read');
+      const multiMatchOptions = {...matchOptions, ...{cacheName}};
+
+      cachedResponse = await caches.match(effectiveRequest, multiMatchOptions);
+
+      if (process.env.NODE_ENV !== 'production') {
+        if (cachedResponse) {
+          logger.debug(`Found a cached response in '${cacheName}'.`);
+        } else {
+          logger.debug(`No cached response found in '${cacheName}'.`);
+        }
+      }
+
+      for (const callback of this.iterateCallbacks('cachedResponseWillBeUsed')) {
+        cachedResponse = (await callback({
+          cacheName,
+          matchOptions,
+          cachedResponse,
+          request: effectiveRequest,
+          event: this.event,
+        })) || undefined;
+      }
+      return cachedResponse;
+    })());
   }
 
   /**
@@ -197,13 +306,13 @@ class StrategyHandler {
    */
   async cachePut(key: RequestInfo, response: Response): Promise<void> {
     const request: Request = toRequest(key);
-    
+
     // Run in the next task to avoid blocking other cache reads.
     // https://github.com/w3c/ServiceWorker/issues/1397
     await timeout(0);
-    
-    const effectiveRequest = await this._getEffectiveRequest(request, 'write');
-    
+
+    const effectiveRequest = await this.getCacheKey(request, 'write');
+
     if (process.env.NODE_ENV !== 'production') {
       if (effectiveRequest.method && effectiveRequest.method !== 'GET') {
         throw new WorkboxError('attempt-to-cache-non-get-request', {
@@ -234,11 +343,16 @@ class StrategyHandler {
       return;
     }
 
-    const {cacheName} = this._strategy;
+    const {cacheName, matchOptions} = this._strategy;
     const cache = await self.caches.open(cacheName);
 
-    const oldResponse = this.hasCallback('cacheDidUpdate') ?
-        await this.cacheMatch(request) : null;
+    const hasCacheUpdateCallback = this.hasCallback('cacheDidUpdate');
+    const oldResponse = hasCacheUpdateCallback ? await cacheMatchIgnoreParams(
+        // TODO(philipwalton): the `__WB_REVISION__` param is a precaching
+        // feature. Consider into ways to only add this behavior if using
+        // precaching.
+        cache, effectiveRequest.clone(), ['__WB_REVISION__'], matchOptions) :
+        null;
 
     if (process.env.NODE_ENV !== 'production') {
       logger.debug(`Updating the '${cacheName}' cache with a new Response ` +
@@ -246,7 +360,8 @@ class StrategyHandler {
     }
 
     try {
-      await cache.put(effectiveRequest, responseToCache);
+      await cache.put(effectiveRequest, hasCacheUpdateCallback ?
+          responseToCache.clone() : responseToCache);
     } catch (error) {
       // See https://developer.mozilla.org/en-US/docs/Web/API/DOMException#exception-QuotaExceededError
       if (error.name === 'QuotaExceededError') {
@@ -255,13 +370,44 @@ class StrategyHandler {
       throw error;
     }
 
-    await this.runCallbacks('cacheDidUpdate', {
-      cacheName,
-      oldResponse,
-      newResponse: responseToCache,
-      request: effectiveRequest,
-      event: this.event,
-    });
+    for (const callback of this.iterateCallbacks('cacheDidUpdate')) {
+      await callback({
+        cacheName,
+        oldResponse,
+        newResponse: responseToCache.clone(),
+        request: effectiveRequest,
+        event: this.event,
+      });
+    }
+  }
+
+  /**
+   * Checks the list of plugins for the `cacheKeyWillBeUsed` callback, and
+   * executes any of those callbacks found in sequence. The final `Request`
+   * object returned by the last plugin is treated as the cache key for cache
+   * reads and/or writes. If no `cacheKeyWillBeUsed` plugin callbacks have
+   * been registered, the passed request is returned unmodified
+   *
+   * @param {Request} request
+   * @param {string} mode
+   * @return {Promise<Request>}
+   */
+  async getCacheKey(request: Request, mode: 'read' | 'write'): Promise<Request> {
+    if (!this._cacheKeys[mode]) {
+      let effectiveRequest = request;
+
+      for (const callback of this.iterateCallbacks('cacheKeyWillBeUsed')) {
+        effectiveRequest = toRequest(await callback({
+          mode,
+          request: effectiveRequest,
+          event: this.event,
+          params: this.params,
+        }));
+      }
+
+      this._cacheKeys[mode] = effectiveRequest;
+    }
+    return this._cacheKeys[mode]!;
   }
 
   /**
@@ -334,87 +480,6 @@ class StrategyHandler {
     }
   }
 
-  // An async function version of `fetch()`, making it easier for that
-  // function to add a promise to `waitUntil()`.
-  async _fetch(input: RequestInfo): Promise<Response> {
-    const {event} = this;
-    let request: Request = toRequest(input);
-
-    if (request.mode === 'navigate' &&
-        event instanceof FetchEvent &&
-        event.preloadResponse) {
-      const possiblePreloadResponse = await event.preloadResponse;
-      if (possiblePreloadResponse) {
-        if (process.env.NODE_ENV !== 'production') {
-          logger.log(`Using a preloaded navigation response for ` +
-            `'${getFriendlyURL(request.url)}'`);
-        }
-        return possiblePreloadResponse;
-      }
-    }
-
-    // If there is a fetchDidFail plugin, we need to save a clone of the
-    // original request before it's either modified by a requestWillFetch
-    // plugin or before the original request's body is consumed via fetch().
-    const originalRequest = this.hasCallback('fetchDidFail') ?
-        request.clone() : null;
-
-    try {
-      for (const cb of this.iterateCallbacks('requestWillFetch')) {
-        request = await cb({request: request.clone(), event});
-      }
-    } catch (err) {
-      throw new WorkboxError('plugin-error-request-will-fetch', {
-        thrownError: err,
-      });
-    }
-
-    // The request can be altered by plugins with `requestWillFetch` making
-    // the original request (most likely from a `fetch` event) different
-    // from the Request we make. Pass both to `fetchDidFail` to aid debugging.
-    const pluginFilteredRequest: Request = request.clone();
-
-    try {
-      let fetchResponse: Response;
-
-      // See https://github.com/GoogleChrome/workbox/issues/1796
-      fetchResponse = await fetch(request, request.mode === 'navigate' ?
-          undefined : this._strategy.fetchOptions);
-
-      if (process.env.NODE_ENV !== 'production') {
-        logger.debug(`Network request for ` +
-           `'${getFriendlyURL(request.url)}' returned a response with ` +
-            `status '${fetchResponse.status}'.`);
-      }
-
-      for (const callback of this.iterateCallbacks('fetchDidSucceed')) {
-        fetchResponse = await callback({
-          event,
-          request: pluginFilteredRequest,
-          response: fetchResponse,
-        });
-      }
-      return fetchResponse;
-    } catch (error) {
-      if (process.env.NODE_ENV !== 'production') {
-        logger.error(`Network request for `+
-        `'${getFriendlyURL(request.url)}' threw an error.`, error);
-      }
-
-      // `originalRequest` will only exist if there's a `fetchDidFail` callback.
-      if (originalRequest) {
-        await this.runCallbacks('fetchDidFail', {
-          error,
-          event,
-          originalRequest: originalRequest.clone(),
-          request: pluginFilteredRequest.clone(),
-        });
-      }
-      throw error;
-    }
-  }
-
-
   /**
    * Adds a promise to the
    * [extend lifetime promises]{@link https://w3c.github.io/ServiceWorker/#extendableevent-extend-lifetime-promises}
@@ -456,64 +521,6 @@ class StrategyHandler {
    */
   destroy() {
     this._handlerDeferred.resolve();
-  }
-
-  // An async function version of `cacheMatch()`, making it easier for that
-  // function to add a promise to `waitUntil()`.
-  async _cacheMatch(key: RequestInfo): Promise<Response | undefined> {
-    const request: Request = toRequest(key);
-    let cachedResponse: Response | undefined;
-    const {cacheName, matchOptions} = this._strategy;
-
-    const effectiveRequest = await this._getEffectiveRequest(request, 'read');
-
-    cachedResponse = await caches.match(
-        effectiveRequest, {...matchOptions, ...{cacheName}});
-
-    if (process.env.NODE_ENV !== 'production') {
-      if (cachedResponse) {
-        logger.debug(`Found a cached response in '${cacheName}'.`);
-      } else {
-        logger.debug(`No cached response found in '${cacheName}'.`);
-      }
-    }
-
-    for (const callback of this.iterateCallbacks('cachedResponseWillBeUsed')) {
-      cachedResponse = (await callback({
-        cacheName,
-        matchOptions,
-        cachedResponse,
-        request: effectiveRequest,
-        event: this.event,
-      })) || undefined;
-    }
-    return cachedResponse;
-  }
-
-  /**
-   * Checks the list of plugins for the cacheKeyWillBeUsed callback, and
-   * executes any of those callbacks found in sequence. The final `Request`
-   * object returned by the last plugin is treated as the cache key for cache
-   * reads and/or writes.
-   *
-   * @param {Request} request
-   * @param {string} mode
-   * @return {Promise<Request>}
-   *
-   * @private
-   */
-  async _getEffectiveRequest(request: Request, mode: string): Promise<Request> {
-    let effectiveRequest = request;
-
-    for (const callback of this.iterateCallbacks('cacheKeyWillBeUsed')) {
-      effectiveRequest = toRequest(await callback({
-        mode,
-        request: effectiveRequest,
-        event: this.event,
-        params: this.params,
-      }));
-    }
-    return effectiveRequest;
   }
 
   /**

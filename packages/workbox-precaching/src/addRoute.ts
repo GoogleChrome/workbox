@@ -6,8 +6,12 @@
   https://opensource.org/licenses/MIT.
 */
 
+import {registerRoute} from 'workbox-routing/registerRoute.js';
+
 import {getOrCreatePrecacheController} from './utils/getOrCreatePrecacheController.js';
-import {FetchListenerOptions} from './_types.js';
+import {PrecacheRoute} from './PrecacheRoute.js';
+import {PrecacheRouteOptions} from './_types.js';
+
 import './_version.js';
 
 
@@ -21,23 +25,16 @@ import './_version.js';
  * responded to, allowing the event to fall through to other `fetch` event
  * listeners.
  *
- * @param {Object} [options]
- * @param {string} [options.directoryIndex=index.html] The `directoryIndex` will
- * check cache entries for a URLs ending with '/' to see if there is a hit when
- * appending the `directoryIndex` value.
- * @param {Array<RegExp>} [options.ignoreURLParametersMatching=[/^utm_/, /^fbclid$/]] An
- * array of regex's to remove search params when looking for a cache match.
- * @param {boolean} [options.cleanURLs=true] The `cleanURLs` option will
- * check the cache for the URL with a `.html` added to the end of the end.
- * @param {module:workbox-precaching~urlManipulation} [options.urlManipulation]
- * This is a function that should take a URL and return an array of
- * alternative URLs that should be checked for precache matches.
+ * @param {Object} [options] See
+ * [PrecacheRoute options]{@link module:workbox-precaching.PrecacheRoute}.
  *
  * @memberof module:workbox-precaching
  */
-function addRoute(options?: FetchListenerOptions) {
+function addRoute(options?: PrecacheRouteOptions) {
   const precacheController = getOrCreatePrecacheController();
-  return precacheController.addRoute(options);
+
+  const precacheRoute = new PrecacheRoute(precacheController, options);
+  registerRoute(precacheRoute);
 }
 
 export {addRoute}

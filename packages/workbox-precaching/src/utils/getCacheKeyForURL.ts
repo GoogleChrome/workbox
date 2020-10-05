@@ -8,7 +8,7 @@
 
 import {getOrCreatePrecacheController} from './getOrCreatePrecacheController.js';
 import {generateURLVariations} from './generateURLVariations.js';
-import {FetchListenerOptions} from '../_types.js';
+import {PrecacheRouteOptions} from '../_types.js';
 import '../_version.js';
 
 
@@ -24,7 +24,7 @@ import '../_version.js';
  * @private
  */
 export const getCacheKeyForURL =
-    (url: string, options: FetchListenerOptions): string | void => {
+    (url: string, options: PrecacheRouteOptions): string | void => {
   const precacheController = getOrCreatePrecacheController();
 
   const urlsToCacheKeys = precacheController.getURLsToCacheKeys();
