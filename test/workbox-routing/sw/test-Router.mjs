@@ -8,6 +8,8 @@
 
 import {Route} from 'workbox-routing/Route.mjs';
 import {Router} from 'workbox-routing/Router.mjs';
+import {logger} from 'workbox-core/_private/logger.mjs';
+
 import {dispatchAndWaitUntilDone} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
 import generateTestVariants from '../../../infra/testing/generate-variant-tests';
 
@@ -650,6 +652,27 @@ describe(`Router`, function() {
   });
 
   describe(`findMatchingRoute()`, function() {
+    it(`should log a warning in development when an async matchCallback is used`, function() {
+      if (process.env.NODE_ENV === 'production') return this.skip();
+
+      const loggerStub = sandbox.stub(logger, 'warn');
+
+      const router = new Router();
+      const route = new Route(async () => true, () => new Response());
+      router.registerRoute(route);
+
+      const url = new URL(location.href);
+      const request = new Request(url);
+      const event = new FetchEvent('fetch', {request});
+      const sameOrigin = true;
+
+      router.findMatchingRoute({url, sameOrigin, request, event});
+
+      expect(loggerStub.calledOnce).to.be.true;
+      // Just check for a snippet of the warning message.
+      expect(loggerStub.firstCall.args[0]).to.include('async');
+    });
+
     it(`should return the first matching route`, function() {
       const router = new Router();
 

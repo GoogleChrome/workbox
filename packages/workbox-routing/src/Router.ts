@@ -283,6 +283,17 @@ class Router {
       let params;
       const matchResult = route.match({url, sameOrigin, request, event});
       if (matchResult) {
+        if (process.env.NODE_ENV !== 'production') {
+          // Warn developers that using an async matchCallback is almost always
+          // not the right thing to do. 
+          if (matchResult instanceof Promise) {
+            logger.warn(`While routing ${getFriendlyURL(url)}, an async ` +
+                `matchCallback function was used. Please convert the ` +
+                `following route to use a synchronous matchCallback function:`,
+                route);
+          }
+        }
+
         // See https://github.com/GoogleChrome/workbox/issues/2079
         params = matchResult;
         if (Array.isArray(matchResult) && matchResult.length === 0) {
