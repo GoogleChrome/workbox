@@ -8,6 +8,7 @@
 
 import {assert} from 'workbox-core/_private/assert.js';
 import {logger} from 'workbox-core/_private/logger.js';
+import {timeout} from 'workbox-core/_private/timeout.js';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
 
 import {Strategy, StrategyOptions} from './Strategy.js';
@@ -37,18 +38,14 @@ class NetworkOnly extends Strategy {
   private readonly _networkTimeoutSeconds: number;
 
   /**
-   * @param {Object} options
-   * @param {Array<Object>} options.plugins [Plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}
+   * @param {Object} [options]
+   * @param {Array<Object>} [options.plugins] [Plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}
    * to use in conjunction with this caching strategy.
-   * @param {Object} options.fetchOptions Values passed along to the
+   * @param {Object} [options.fetchOptions] Values passed along to the
    * [`init`](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch#Parameters)
    * of all fetch() requests made by this strategy.
-   * @param {number} options.networkTimeoutSeconds If set, any network requests
-   * that fail to respond within the timeout will fallback to the cache.
-   *
-   * This option can be used to combat
-   * "[lie-fi]{@link https://developers.google.com/web/fundamentals/performance/poor-connectivity/#lie-fi}"
-   * scenarios.
+   * @param {number} [options.networkTimeoutSeconds] If set, any network requests
+   * that fail to respond within the timeout will result in a network error.
    */
   constructor(options: NetworkOnlyOptions = {}) {
     super(options);
@@ -80,9 +77,7 @@ class NetworkOnly extends Strategy {
       const promises: Promise<Response|undefined>[] = [handler.fetch(request)];
 
       if (this._networkTimeoutSeconds) {
-        const timeoutPromise = new Promise((resolve: (_: undefined) => void) => {
-          setTimeout(resolve, this._networkTimeoutSeconds * 1000);
-        });
+        const timeoutPromise = timeout(this._networkTimeoutSeconds * 1000) as Promise<undefined>;
         promises.push(timeoutPromise);
       }
 
