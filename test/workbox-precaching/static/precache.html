@@ -20,7 +20,7 @@
   let lastInstallValues = [];
   let flipFile = 'example-a.html';
   const installBtn = document.querySelector('.js-index-install');
-  installBtn.addEventListener('click', () => {
+  installBtn.addEventListener('click', (event) => {
     const precacheController = new workbox.precaching.PrecacheController();
 
     lastInstallValues = [
@@ -32,7 +32,7 @@
     ];
     precacheController.addToCacheList(lastInstallValues);
 
-    precacheController.install();
+    precacheController.install(event);
 
     if (flipFile === 'example-a.html') {
       flipFile = 'example-b.html';
@@ -42,10 +42,10 @@
   });
 
   const activateBtn = document.querySelector('.js-index-activate');
-  activateBtn.addEventListener('click', () => {
+  activateBtn.addEventListener('click', (event) => {
     const precacheController = new workbox.precaching.PrecacheController();
     precacheController.addToCacheList(lastInstallValues);
-    precacheController.activate();
+    precacheController.activate(event);
   });
 </script>
 </body>

@@ -30,7 +30,7 @@ interface NetworkOnlyOptions extends Omit<StrategyOptions, 'cacheName' | 'matchO
  *
  * If the network request fails, this will throw a `WorkboxError` exception.
  *
- * @extends module:workbox-core.Strategy
+ * @extends module:workbox-strategies.Strategy
  * @memberof module:workbox-strategies
  */
 class NetworkOnly extends Strategy {

@@ -9,13 +9,14 @@
 import {addPlugins} from './addPlugins.js';
 import {addRoute} from './addRoute.js';
 import {cleanupOutdatedCaches} from './cleanupOutdatedCaches.js';
-import {createHandler} from './createHandler.js';
 import {createHandlerBoundToURL} from './createHandlerBoundToURL.js';
 import {getCacheKeyForURL} from './getCacheKeyForURL.js';
 import {matchPrecache} from './matchPrecache.js';
 import {precache} from './precache.js';
 import {precacheAndRoute} from './precacheAndRoute.js';
 import {PrecacheController} from './PrecacheController.js';
+import {PrecacheRoute} from './PrecacheRoute.js';
+import {PrecacheStrategy} from './PrecacheStrategy.js';
 import {PrecacheFallbackPlugin} from './PrecacheFallbackPlugin.js';
 
 import './_version.js';
@@ -37,12 +38,13 @@ export {
   addPlugins,
   addRoute,
   cleanupOutdatedCaches,
-  createHandler,
   createHandlerBoundToURL,
   getCacheKeyForURL,
   matchPrecache,
   precache,
   precacheAndRoute,
   PrecacheController,
+  PrecacheRoute,
+  PrecacheStrategy,
   PrecacheFallbackPlugin,
 };

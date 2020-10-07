@@ -323,14 +323,14 @@ class Queue {
         await fetch(entry.request.clone());
 
         if (process.env.NODE_ENV !== 'production') {
-          logger.log(`Request for '${getFriendlyURL(entry.request.url)}'` +
+          logger.log(`Request for '${getFriendlyURL(entry.request.url)}' ` +
              `has been replayed in queue '${this._name}'`);
         }
       } catch (error) {
         await this.unshiftRequest(entry);
 
         if (process.env.NODE_ENV !== 'production') {
-          logger.log(`Request for '${getFriendlyURL(entry.request.url)}'` +
+          logger.log(`Request for '${getFriendlyURL(entry.request.url)}' ` +
              `failed to replay, putting it back in queue '${this._name}'`);
         }
         throw new WorkboxError('queue-replay-failed', {name: this._name});
@@ -372,7 +372,7 @@ class Queue {
       self.addEventListener('sync', (event: SyncEvent) => {
         if (event.tag === `${TAG_PREFIX}:${this._name}`) {
           if (process.env.NODE_ENV !== 'production') {
-            logger.log(`Background sync for tag '${event.tag}'` +
+            logger.log(`Background sync for tag '${event.tag}' ` +
                 `has been received`);
           }
 

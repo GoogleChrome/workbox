@@ -22,8 +22,7 @@ export interface PrecacheEntry {
   url: string;
   revision?: string;
 }
-
-export interface FetchListenerOptions {
+export interface PrecacheRouteOptions {
   directoryIndex?: string;
   ignoreURLParametersMatching?: RegExp[];
   cleanURLs?: boolean;

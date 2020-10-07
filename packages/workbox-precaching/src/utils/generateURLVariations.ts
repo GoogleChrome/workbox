@@ -7,7 +7,7 @@
 */
 
 import {removeIgnoredSearchParams} from './removeIgnoredSearchParams.js';
-import {FetchListenerOptions} from '../_types.js';
+import {PrecacheRouteOptions} from '../_types.js';
 import '../_version.js';
 
 
@@ -26,7 +26,7 @@ export function* generateURLVariations(url: string, {
   directoryIndex = 'index.html',
   cleanURLs = true,
   urlManipulation,
-}: FetchListenerOptions = {}) {
+}: PrecacheRouteOptions = {}) {
   const urlObject = new URL(url, location.href);
   urlObject.hash = '';
   yield urlObject.href;
