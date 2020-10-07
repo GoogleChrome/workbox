@@ -20,7 +20,7 @@ export interface CleanupResult {
 export interface PrecacheEntry {
   integrity?: string;
   url: string;
-  revision?: string;
+  revision?: string | null;
 }
 export interface PrecacheRouteOptions {
   directoryIndex?: string;
