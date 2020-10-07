@@ -48,16 +48,16 @@ abstract class Strategy implements RouteHandlerObject {
    * not need more than these properties, it does not need to define its own
    * constructor.
    *
-   * @param {Object} options
-   * @param {string} options.cacheName Cache name to store and retrieve
+   * @param {Object} [options]
+   * @param {string} [options.cacheName] Cache name to store and retrieve
    * requests. Defaults to the cache names provided by
    * [workbox-core]{@link module:workbox-core.cacheNames}.
-   * @param {Array<Object>} options.plugins [Plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}
+   * @param {Array<Object>} [options.plugins] [Plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}
    * to use in conjunction with this caching strategy.
-   * @param {Object} options.fetchOptions Values passed along to the
+   * @param {Object} [options.fetchOptions] Values passed along to the
    * [`init`]{@link https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch#Parameters}
    * of all fetch() requests made by this strategy.
-   * @param {Object} options.matchOptions The
+   * @param {Object} [options.matchOptions] The
    * [`CacheQueryOptions`]{@link https://w3c.github.io/ServiceWorker/#dictdef-cachequeryoptions}
    * for any `cache.match()` or `cache.put()` calls made by this strategy.
    */
@@ -67,7 +67,7 @@ abstract class Strategy implements RouteHandlerObject {
      * requests. Defaults to the cache names provided by
      * [workbox-core]{@link module:workbox-core.cacheNames}.
      *
-     * @instance
+     * @type {string}
      */
     this.cacheName = cacheNames.getRuntimeName(options.cacheName);
     /**
@@ -75,7 +75,7 @@ abstract class Strategy implements RouteHandlerObject {
      * [Plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}
      * used by this strategy.
      *
-     * @instance
+     * @type {Array<Object>}
      */
     this.plugins = options.plugins || [];
     /**
@@ -83,7 +83,7 @@ abstract class Strategy implements RouteHandlerObject {
      * [`init`]{@link https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch#Parameters}
      * of all fetch() requests made by this strategy.
      *
-     * @instance
+     * @type {Object}
      */
     this.fetchOptions = options.fetchOptions;
     /**
@@ -91,7 +91,7 @@ abstract class Strategy implements RouteHandlerObject {
      * [`CacheQueryOptions`]{@link https://w3c.github.io/ServiceWorker/#dictdef-cachequeryoptions}
      * for any `cache.match()` or `cache.put()` calls made by this strategy.
      *
-     * @instance
+     * @type {Object}
      */
     this.matchOptions = options.matchOptions;
   }
@@ -188,7 +188,7 @@ abstract class Strategy implements RouteHandlerObject {
           break;
         }
       }
-    
+
       if (!response) {
         throw error;
       } else if (process.env.NODE_ENV !== 'production') {

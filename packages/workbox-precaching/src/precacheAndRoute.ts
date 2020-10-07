@@ -6,8 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {getOrCreatePrecacheController} from './utils/getOrCreatePrecacheController.js';
-import {FetchListenerOptions, PrecacheEntry} from './_types.js';
+import {addRoute} from './addRoute.js';
+import {precache} from './precache.js';
+import {PrecacheRouteOptions, PrecacheEntry} from './_types.js';
 import './_version.js';
 
 
@@ -21,14 +22,13 @@ import './_version.js';
  *
  * @param {Array<Object|string>} entries Array of entries to precache.
  * @param {Object} [options] See
- * [addRoute() options]{@link module:workbox-precaching.addRoute}.
+ * [PrecacheRoute options]{@link module:workbox-precaching.PrecacheRoute}.
  *
  * @memberof module:workbox-precaching
  */
-function precacheAndRoute(entries: Array<PrecacheEntry|string>, options?: FetchListenerOptions) {
-  const precacheController = getOrCreatePrecacheController();
-  precacheController.precacheAndRoute(entries, options);
-
+function precacheAndRoute(entries: Array<PrecacheEntry|string>, options?: PrecacheRouteOptions) {
+  precache(entries);
+  addRoute(options);
 }
 
 export {precacheAndRoute}

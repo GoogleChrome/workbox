@@ -497,10 +497,10 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           path: outputDir,
         },
         plugins: [
-          new CopyWebpackPlugin([{
+          new CopyWebpackPlugin({patterns: [{
             from: SRC_DIR,
             to: outputDir,
-          }]),
+          }]}),
           new GenerateSW(),
         ],
       };
@@ -669,10 +669,10 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           path: outputDir,
         },
         plugins: [
-          new CopyWebpackPlugin([{
+          new CopyWebpackPlugin({patterns: [{
             from: SRC_DIR,
             to: outputDir,
-          }]),
+          }]}),
           new GenerateSW({
             include: [/.html$/],
           }),
@@ -719,10 +719,10 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           path: outputDir,
         },
         plugins: [
-          new CopyWebpackPlugin([{
+          new CopyWebpackPlugin({patterns: [{
             from: SRC_DIR,
             to: outputDir,
-          }]),
+          }]}),
           new GenerateSW({
             include: [/.html$/],
             exclude: [/index/],
@@ -865,10 +865,10 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           path: outputDir,
         },
         plugins: [
-          new CopyWebpackPlugin([{
+          new CopyWebpackPlugin({patterns: [{
             from: SRC_DIR,
             to: outputDir,
-          }]),
+          }]}),
           new GenerateSW({
             // Make this large enough to cache some, but not all, files.
             maximumFileSizeToCacheInBytes: 14 * 1024,

@@ -6,14 +6,13 @@
   https://opensource.org/licenses/MIT.
 */
 
-const {rollup} = require('rollup');
-const replace = require('@rollup/plugin-replace');
-const resolve = require('@rollup/plugin-node-resolve');
-const multiEntry = require('@rollup/plugin-multi-entry');
-const commonjs = require('@rollup/plugin-commonjs');
-const {needsTranspile, queueTranspile} = require('../../../../gulp-tasks/transpile-typescript').functions;
 const {getPackages} = require('../../../../gulp-tasks/utils/get-packages');
-
+const {needsTranspile, queueTranspile} = require('../../../../gulp-tasks/transpile-typescript').functions;
+const {nodeResolve} = require('@rollup/plugin-node-resolve');
+const {rollup} = require('rollup');
+const commonjs = require('@rollup/plugin-commonjs');
+const multiEntry = require('@rollup/plugin-multi-entry');
+const replace = require('@rollup/plugin-replace');
 
 const SW_NAMESPACES = getPackages({type: 'sw'}).map((pkg) => {
   return pkg.workbox.browserNamespace;
@@ -40,7 +39,7 @@ async function handler(req, res) {
       input: `./test/${packageName}/sw/` + testFilter,
       plugins: [
         multiEntry(),
-        resolve({
+        nodeResolve({
           customResolveOptions: {
             moduleDirectory: 'packages',
           },

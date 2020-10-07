@@ -17,7 +17,7 @@ import {messages} from './utils/messages.js';
 import './_version.js';
 
 
-interface NetworkFirstOptions extends StrategyOptions {
+export interface NetworkFirstOptions extends StrategyOptions {
   networkTimeoutSeconds?: number;
 }
 
@@ -34,24 +34,24 @@ interface NetworkFirstOptions extends StrategyOptions {
  * If the network request fails, and there is no cache match, this will throw
  * a `WorkboxError` exception.
  *
- * @extends module:workbox-core.Strategy
+ * @extends module:workbox-strategies.Strategy
  * @memberof module:workbox-strategies
  */
 class NetworkFirst extends Strategy {
   private readonly _networkTimeoutSeconds: number;
 
   /**
-   * @param {Object} options
-   * @param {string} options.cacheName Cache name to store and retrieve
+   * @param {Object} [options]
+   * @param {string} [options.cacheName Cache name to store and retrieve
    * requests. Defaults to cache names provided by
    * [workbox-core]{@link module:workbox-core.cacheNames}.
-   * @param {Array<Object>} options.plugins [Plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}
+   * @param {Array<Object>} [options.plugins [Plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}
    * to use in conjunction with this caching strategy.
-   * @param {Object} options.fetchOptions Values passed along to the
+   * @param {Object} [options.fetchOptions Values passed along to the
    * [`init`](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch#Parameters)
    * of all fetch() requests made by this strategy.
-   * @param {Object} options.matchOptions [`CacheQueryOptions`](https://w3c.github.io/ServiceWorker/#dictdef-cachequeryoptions)
-   * @param {number} options.networkTimeoutSeconds If set, any network requests
+   * @param {Object} [options.matchOptions [`CacheQueryOptions`](https://w3c.github.io/ServiceWorker/#dictdef-cachequeryoptions)
+   * @param {number} [options.networkTimeoutSeconds] If set, any network requests
    * that fail to respond within the timeout will fallback to the cache.
    *
    * This option can be used to combat
@@ -72,7 +72,7 @@ class NetworkFirst extends Strategy {
       if (this._networkTimeoutSeconds) {
         assert!.isType(this._networkTimeoutSeconds, 'number', {
           moduleName: 'workbox-strategies',
-          className: 'NetworkFirst',
+          className: this.constructor.name,
           funcName: 'constructor',
           paramName: 'networkTimeoutSeconds',
         });
@@ -93,7 +93,7 @@ class NetworkFirst extends Strategy {
     if (process.env.NODE_ENV !== 'production') {
       assert!.isInstance(request, Request, {
         moduleName: 'workbox-strategies',
-        className: 'NetworkFirst',
+        className: this.constructor.name,
         funcName: 'handle',
         paramName: 'makeRequest',
       });
@@ -129,7 +129,7 @@ class NetworkFirst extends Strategy {
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
-          messages.strategyStart('NetworkFirst', request));
+          messages.strategyStart(this.constructor.name, request));
       for (const log of logs) {
         logger.log(log);
       }

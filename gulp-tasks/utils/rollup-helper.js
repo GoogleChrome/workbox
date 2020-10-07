@@ -6,10 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-const asyncToPromises = require('babel-plugin-transform-async-to-promises');
 const {babel} = require('@rollup/plugin-babel');
+const {nodeResolve} = require('@rollup/plugin-node-resolve');
+const asyncToPromises = require('babel-plugin-transform-async-to-promises');
 const replace = require('@rollup/plugin-replace');
-const resolve = require('@rollup/plugin-node-resolve');
 const terserPlugin = require('rollup-plugin-terser').terser;
 
 const constants = require('./constants');
@@ -20,7 +20,7 @@ module.exports = {
   // plugin set up and used to ensure as consist set of tests
   // as possible.
   getDefaultPlugins: (buildType, buildFormat = 'iife', es5 = false) => {
-    const plugins = [resolve()];
+    const plugins = [nodeResolve()];
 
     const babelConfig = {
       babelHelpers: 'bundled',

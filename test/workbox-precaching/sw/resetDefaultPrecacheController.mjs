@@ -16,8 +16,5 @@ export function resetDefaultPrecacheController() {
   pc._urlsToCacheModes.clear();
   pc._cacheKeysToIntegrities.clear();
 
-  pc._router = undefined;
-  pc._strategy = undefined;
-  pc._plugins = [];
-  pc._installed = false;
+  pc._installAndActiveListenersAdded = false;
 }

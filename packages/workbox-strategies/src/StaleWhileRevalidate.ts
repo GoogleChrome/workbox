@@ -35,7 +35,7 @@ import './_version.js';
  * If the network request fails, and there is no cache match, this will throw
  * a `WorkboxError` exception.
  *
- * @extends module:workbox-core.Strategy
+ * @extends module:workbox-strategies.Strategy
  * @memberof module:workbox-strategies
  */
 class StaleWhileRevalidate extends Strategy {
@@ -74,7 +74,7 @@ class StaleWhileRevalidate extends Strategy {
     if (process.env.NODE_ENV !== 'production') {
       assert!.isInstance(request, Request, {
         moduleName: 'workbox-strategies',
-        className: 'StaleWhileRevalidate',
+        className: this.constructor.name,
         funcName: 'handle',
         paramName: 'request',
       });
@@ -111,7 +111,7 @@ class StaleWhileRevalidate extends Strategy {
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
-          messages.strategyStart('StaleWhileRevalidate', request));
+          messages.strategyStart(this.constructor.name, request));
       for (const log of logs) {
         logger.log(log);
       }
