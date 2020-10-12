@@ -25,7 +25,7 @@ async function publish_sign_in_check() {
   await execa('npm', ['whoami']);
 }
 
-function dist_tag_check() {
+async function dist_tag_check() {
   if (!global.cliOptions.distTag) {
     throw new Error(ol`Please set the --distTag command line option, normally
         to 'latest' (for a stable release) or 'next' (for a pre-release).`);
