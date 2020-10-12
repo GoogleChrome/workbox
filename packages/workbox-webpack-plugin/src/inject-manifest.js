@@ -6,13 +6,13 @@
   https://opensource.org/licenses/MIT.
 */
 
-const {RawSource} = require('webpack-sources');
-const {SingleEntryPlugin} = require('webpack');
+const prettyBytes = require('pretty-bytes');
 const replaceAndUpdateSourceMap = require(
     'workbox-build/build/lib/replace-and-update-source-map');
 const stringify = require('fast-json-stable-stringify');
 const upath = require('upath');
 const validate = require('workbox-build/build/lib/validate-options');
+const webpack = require('webpack');
 const webpackInjectManifestSchema = require(
     'workbox-build/build/options/schema/webpack-inject-manifest');
 
@@ -24,6 +24,13 @@ const relativeToOutputPath = require('./lib/relative-to-output-path');
 // Used to keep track of swDest files written by *any* instance of this plugin.
 // See https://github.com/GoogleChrome/workbox/issues/2181
 const _generatedAssetNames = new Set();
+
+// SingleEntryPlugin in v4 was renamed to EntryPlugin in v5.
+const SingleEntryPlugin = webpack.EntryPlugin || webpack.SingleEntryPlugin;
+
+// webpack v4/v5 compatibility:
+// https://github.com/webpack/webpack/issues/11425#issuecomment-686607633
+const {RawSource} = webpack.sources || require('webpack-sources');
 
 /**
  * This class supports compiling a service worker file provided via `swSrc`,
@@ -150,11 +157,29 @@ class InjectManifest {
             (error) => compilation.errors.push(error)),
     );
 
-    compiler.hooks.emit.tapPromise(
-        this.constructor.name,
-        (compilation) => this.handleEmit(compilation).catch(
-            (error) => compilation.errors.push(error)),
-    );
+    // webpack v4/v5 compatibility:
+    // https://github.com/webpack/webpack/issues/11425#issuecomment-690387207
+    if (webpack.version.startsWith('4.')) {
+      compiler.hooks.emit.tapPromise(
+          this.constructor.name,
+          (compilation) => this.addAssets(compilation).catch(
+              (error) => compilation.errors.push(error)),
+      );
+    } else {
+      // Specifically hook into thisCompilation, as per
+      // https://github.com/webpack/webpack/issues/11425#issuecomment-690547848
+      compiler.hooks.thisCompilation.tap(
+          this.constructor.name, (compilation) => {
+            compilation.hooks.processAssets.tapPromise({
+              name: this.constructor.name,
+              // See https://github.com/webpack/webpack/blob/9230acbf1a39a8afb2e34f41e2fd7326eef84968/lib/Compilation.js#L3376-L3381
+              stage: webpack.Compilation.PROCESS_ASSETS_STAGE_SUMMARIZE,
+            }, () => this.addAssets(compilation).catch(
+                (error) => compilation.errors.push(error)),
+            );
+          },
+      );
+    }
   }
 
   /**
@@ -215,7 +240,7 @@ class InjectManifest {
   addSrcToAssets(compilation, parentCompiler) {
     const source = parentCompiler.inputFileSystem.readFileSync(
         this.config.swSrc).toString();
-    compilation.assets[this.config.swDest] = new RawSource(source);
+    compilation.emitAsset(this.config.swDest, new RawSource(source));
   }
 
   /**
@@ -247,7 +272,7 @@ class InjectManifest {
    *
    * @private
    */
-  async handleEmit(compilation) {
+  async addAssets(compilation) {
     // See https://github.com/GoogleChrome/workbox/issues/1790
     if (this.alreadyCalled) {
       const warningMessage = `${this.constructor.name} has been called ` +
@@ -273,42 +298,49 @@ class InjectManifest {
     const absoluteSwSrc = upath.resolve(this.config.swSrc);
     compilation.fileDependencies.add(absoluteSwSrc);
 
-    const swAsset = compilation.assets[config.swDest];
-    const initialSWAssetString = swAsset.source();
+    const swAsset = compilation.getAsset(config.swDest);
+    const swAssetString = swAsset.source.source();
 
-    if (!initialSWAssetString.includes(config.injectionPoint)) {
+    if (!swAssetString.includes(config.injectionPoint)) {
       throw new Error(`Can't find ${config.injectionPoint} in your SW source.`);
     }
 
-    const manifestEntries = await getManifestEntriesFromCompilation(
+    const {size, sortedEntries} = await getManifestEntriesFromCompilation(
         compilation, config);
 
-    let manifestString = stringify(manifestEntries);
+    let manifestString = stringify(sortedEntries);
     if (this.config.compileSrc) {
       // See https://github.com/GoogleChrome/workbox/issues/2263
       manifestString = manifestString.replace(/"/g, `'`);
     }
 
     const sourcemapAssetName = getSourcemapAssetName(
-        compilation, initialSWAssetString, config.swDest);
+        compilation, swAssetString, config.swDest);
 
     if (sourcemapAssetName) {
-      const sourcemapAsset = compilation.assets[sourcemapAssetName];
+      _generatedAssetNames.add(sourcemapAssetName);
+      const sourcemapAsset = compilation.getAsset(sourcemapAssetName);
       const {source, map} = await replaceAndUpdateSourceMap({
         jsFilename: config.swDest,
-        originalMap: JSON.parse(sourcemapAsset.source()),
-        originalSource: initialSWAssetString,
+        originalMap: JSON.parse(sourcemapAsset.source.source()),
+        originalSource: swAssetString,
         replaceString: manifestString,
         searchString: config.injectionPoint,
       });
 
-      compilation.assets[sourcemapAssetName] = new RawSource(map);
-      compilation.assets[config.swDest] = new RawSource(source);
+      compilation.updateAsset(sourcemapAssetName, new RawSource(map));
+      compilation.updateAsset(config.swDest, new RawSource(source));
     } else {
       // If there's no sourcemap associated with swDest, a simple string
       // replacement will suffice.
-      compilation.assets[config.swDest] = new RawSource(
-          initialSWAssetString.replace(config.injectionPoint, manifestString));
+      compilation.updateAsset(config.swDest, new RawSource(
+          swAssetString.replace(config.injectionPoint, manifestString)));
+    }
+
+    if (compilation.getLogger) {
+      const logger = compilation.getLogger(this.constructor.name);
+      logger.info(`The service worker at ${config.swDest} will precache
+        ${sortedEntries.length} URLs, totaling ${prettyBytes(size)}.`);
     }
   }
 }

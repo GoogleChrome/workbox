@@ -6,6 +6,13 @@
   https://opensource.org/licenses/MIT.
 */
 
+function joinMessages(errorsOrWarnings) {
+  if ('message' in errorsOrWarnings[0]) {
+    return errorsOrWarnings.map((item) => item.message).join('\n');
+  } else {
+    return errorsOrWarnings.join('\n');
+  }
+}
 
 module.exports = (webpackError, stats) => {
   if (webpackError) {
@@ -15,10 +22,10 @@ module.exports = (webpackError, stats) => {
   const statsJson = stats.toJson('verbose');
 
   if (statsJson.errors.length > 0) {
-    throw new Error(statsJson.errors.join('\n'));
+    throw new Error(joinMessages(statsJson.errors));
   }
 
   if (statsJson.warnings.length > 0) {
-    throw new Error(statsJson.warnings.join('\n'));
+    throw new Error(joinMessages(statsJson.warnings));
   }
 };

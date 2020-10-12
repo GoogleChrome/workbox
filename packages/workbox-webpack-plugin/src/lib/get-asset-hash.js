@@ -15,7 +15,12 @@ const crypto = require('crypto');
  * @private
  */
 module.exports = (asset) => {
+  // TODO: Check asset.info.immutable and use null when set.
+  // if (asset.info.immutable) {
+  //   return null;
+  // }
+
   return crypto.createHash('md5')
-      .update(Buffer.from(asset.source()))
+      .update(Buffer.from(asset.source.source()))
       .digest('hex');
 };

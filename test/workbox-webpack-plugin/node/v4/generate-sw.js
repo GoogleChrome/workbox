@@ -6,24 +6,36 @@
   https://opensource.org/licenses/MIT.
 */
 
+// workbox-webpack-plugin needs to do require('webpack'), and in order to test
+// against multiple webpack versions, we need that to resolve to whatever the
+// correct webpack is for this test.
+// See https://jeffy.info/2020/10/01/testing-multiple-webpack-versions.html
+try {
+  delete require.cache[require.resolve('webpack')];
+} catch (error) {
+  // Ignore if require.resolve('webpack') fails.
+}
+const upath = require('upath');
+require('module-alias').addAlias(
+    'webpack', upath.resolve('node_modules', 'webpack-v4'));
+
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MemoryFS = require('memory-fs');
 const WorkerPlugin = require('worker-plugin');
 const expect = require('chai').expect;
 const globby = require('globby');
-const upath = require('upath');
 const tempy = require('tempy');
 const webpack = require('webpack');
 
-const CreateWebpackAssetPlugin = require('../../../infra/testing/create-webpack-asset-plugin');
-const validateServiceWorkerRuntime = require('../../../infra/testing/validator/service-worker-runtime');
-const webpackBuildCheck = require('../../../infra/testing/webpack-build-check');
-const {GenerateSW} = require('../../../packages/workbox-webpack-plugin/src/index');
+const CreateWebpackAssetPlugin = require('./lib/create-webpack-asset-plugin');
+const validateServiceWorkerRuntime = require('../../../../infra/testing/validator/service-worker-runtime');
+const webpackBuildCheck = require('../../../../infra/testing/webpack-build-check');
+const {GenerateSW} = require('../../../../packages/workbox-webpack-plugin/src/index');
 
-describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
+describe(`[workbox-webpack-plugin] GenerateSW with webpack v4`, function() {
   const WEBPACK_ENTRY_FILENAME = 'webpackEntry.js';
-  const SRC_DIR = upath.join(__dirname, '..', 'static', 'example-project-1');
+  const SRC_DIR = upath.join(__dirname, '..', '..', 'static', 'example-project-1');
 
   describe(`[workbox-webpack-plugin] Runtime errors`, function() {
     it(`should lead to a webpack compilation error when passed invalid config`, function(done) {
@@ -140,7 +152,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
         try {
           const statsJson = stats.toJson('verbose');
           expect(webpackError).not.to.exist;
-          expect(statsJson.errors).to.be.empty;
+          expect(statsJson.errors, JSON.stringify(statsJson.errors)).to.be.empty;
           // There should be a warning logged, due to INVALID_CHUNK_NAME.
           expect(statsJson.warnings).to.have.length(1);
 
@@ -464,18 +476,20 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
 
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
             importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-            precacheAndRoute: [[[
-              {
-                revision: /^[0-9a-f]{32}$/,
-                url: /^entry1-[0-9a-f]{20}\.js$/,
-              }, {
-                revision: /^[0-9a-f]{32}$/,
-                url: /^entry2-[0-9a-f]{20}\.js$/,
-              }, {
-                revision: /^[0-9a-f]{32}$/,
-                url: 'index.html',
-              },
-            ], {}]],
+            precacheAndRoute: [[[{
+              revision: /^[0-9a-f]{32}$/,
+              // See https://github.com/webpack/webpack/issues/11425#issuecomment-692809539
+              url: '__child-HtmlWebpackPlugin_0',
+            }, {
+              revision: /^[0-9a-f]{32}$/,
+              url: /^entry1-[0-9a-f]{20}\.js$/,
+            }, {
+              revision: /^[0-9a-f]{32}$/,
+              url: /^entry2-[0-9a-f]{20}\.js$/,
+            }, {
+              revision: /^[0-9a-f]{32}$/,
+              url: 'index.html',
+            }], {}]],
           }});
 
           done();
@@ -993,7 +1007,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
     // See https://github.com/GoogleChrome/workbox/issues/1916
     it(`should support projects that bundle WASM code`, function(done) {
       const outputDir = tempy.directory();
-      const srcDir = upath.join(__dirname, '..', 'static', 'wasm-project');
+      const srcDir = upath.join(__dirname, '..', '..', 'static', 'wasm-project');
       const config = {
         mode: 'production',
         entry: {
@@ -1082,7 +1096,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
     // See https://github.com/GoogleChrome/workbox/issues/2158
     it(`should support multiple compilations using the same plugin instance`, async function() {
       const outputDir = tempy.directory();
-      const srcDir = upath.join(__dirname, '..', 'static', 'example-project-1');
+      const srcDir = upath.join(__dirname, '..', '..', 'static', 'example-project-1');
       const config = {
         mode: 'production',
         entry: {
@@ -1131,7 +1145,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
 
     it(`should not list the swDest from one plugin in the other's manifest`, function(done) {
       const outputDir = tempy.directory();
-      const srcDir = upath.join(__dirname, '..', 'static', 'example-project-1');
+      const srcDir = upath.join(__dirname, '..', '..', 'static', 'example-project-1');
       const config = {
         mode: 'production',
         entry: {
@@ -1397,7 +1411,7 @@ describe(`[workbox-webpack-plugin] GenerateSW (End to End)`, function() {
           new GenerateSW({
             manifestTransforms: [(manifest, compilation) => {
               expect(manifest).to.have.lengthOf(1);
-              expect(manifest[0].size).to.eql(930);
+              expect(manifest[0].size).to.eql(959);
               expect(manifest[0].url.startsWith('main.')).to.be.true;
               expect(manifest[0].revision).to.have.lengthOf(32);
               expect(compilation).to.exist;
