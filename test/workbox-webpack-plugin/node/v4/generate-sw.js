@@ -9,6 +9,7 @@
 // workbox-webpack-plugin needs to do require('webpack'), and in order to test
 // against multiple webpack versions, we need that to resolve to whatever the
 // correct webpack is for this test.
+// See https://jeffy.info/2020/10/01/testing-multiple-webpack-versions.html
 try {
   delete require.cache[require.resolve('webpack')];
 } catch (error) {

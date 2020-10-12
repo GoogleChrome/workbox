@@ -102,7 +102,7 @@
     "typescript": "^3.9.7",
     "upath": "^1.2.0",
     "webpack-v4": "npm:webpack@^4.44.2",
-    "webpack-v5": "npm:webpack@^5.0.0-rc.3",
+    "webpack-v5": "npm:webpack@^5.0.0",
     "worker-plugin": "^5.0.0"
   }
 }
