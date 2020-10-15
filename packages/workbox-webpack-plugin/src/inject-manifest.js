@@ -78,10 +78,6 @@ class InjectManifest {
    * [the same rules](https://webpack.js.org/configuration/module/#condition)
    * as `webpack`'s standard `exclude` option.
    *
-   * @param {Array<string>} [config.importScriptsViaChunks] One or more names of
-   * webpack chunks. The content of those chunks will be included in the
-   * generated service worker, via a call to `importScripts()`.
-   *
    * @param {Array<string>} [config.excludeChunks] One or more chunk names whose
    * corresponding output files should be excluded from the precache manifest.
    *
