@@ -11,13 +11,16 @@
 // correct webpack is for this test.
 // See https://jeffy.info/2020/10/01/testing-multiple-webpack-versions.html
 try {
+  delete require.cache[require.resolve('html-webpack-plugin')];
   delete require.cache[require.resolve('webpack')];
 } catch (error) {
-  // Ignore if require.resolve('webpack') fails.
+  // Ignore if require.resolve() fails.
 }
 const upath = require('upath');
-require('module-alias').addAlias(
-    'webpack', upath.resolve('node_modules', 'webpack-v5'));
+const moduleAlias = require('module-alias');
+moduleAlias.addAlias('html-webpack-plugin', upath.resolve('node_modules',
+    'html-webpack-plugin-v5'));
+moduleAlias.addAlias('webpack', upath.resolve('node_modules', 'webpack-v5'));
 
 const chai = require('chai');
 const chaiMatchPattern = require('chai-match-pattern');
