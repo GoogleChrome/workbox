@@ -391,14 +391,13 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function() {
             expectedMethodCalls: {
               precacheAndRoute: [[[{
                 revision: /^[0-9a-f]{32}$/,
-                // See https://github.com/webpack/webpack/issues/11425#issuecomment-692809539
-                url: '__child-HtmlWebpackPlugin_0',
-              }, {
-                revision: /^[0-9a-f]{32}$/,
                 url: /^entry1-[0-9a-f]{20}\.js$/,
               }, {
                 revision: /^[0-9a-f]{32}$/,
                 url: /^entry2-[0-9a-f]{20}\.js$/,
+              }, {
+                revision: /^[0-9a-f]{32}$/,
+                url: 'index.html',
               }], {}]],
             },
           });
