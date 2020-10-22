@@ -159,9 +159,10 @@ async function injectManifest(config) {
   // If our swSrc file contains a sourcemap, we would invalidate that
   // mapping if we just replaced injectionPoint with the stringified manifest.
   // Instead, we need to update the swDest contents as well as the sourcemap
-  // at the same time.
+  // (assuming it's a real file, not a data: URL) at the same time.
   // See https://github.com/GoogleChrome/workbox/issues/2235
-  if (url) {
+  // and https://github.com/GoogleChrome/workbox/issues/2648
+  if (url && !url.startsWith('data:')) {
     const sourcemapSrcPath = upath.resolve(upath.dirname(options.swSrc), url);
     const sourcemapDestPath = upath.resolve(upath.dirname(options.swDest), url);
 
