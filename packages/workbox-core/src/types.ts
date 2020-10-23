@@ -247,7 +247,7 @@ export interface HandlerDidCompleteCallback {
  * An object with optional lifecycle callback properties for the fetch and
  * cache operations.
  */
-export interface WorkboxPlugin {
+export declare interface WorkboxPlugin {
   cacheDidUpdate?: CacheDidUpdateCallback;
   cachedResponseWillBeUsed?: CachedResponseWillBeUsedCallback;
   cacheKeyWillBeUsed?: CacheKeyWillBeUsedCallback;
