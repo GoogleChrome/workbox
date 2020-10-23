@@ -26,7 +26,7 @@ class BackgroundSyncPlugin implements WorkboxPlugin {
    *     [Queue]{@link module:workbox-background-sync.Queue} documentation for
    *     parameter details.
    */
-  constructor(name: string, options: QueueOptions) {
+  constructor(name: string, options?: QueueOptions) {
     this._queue = new Queue(name, options);
   }
 
