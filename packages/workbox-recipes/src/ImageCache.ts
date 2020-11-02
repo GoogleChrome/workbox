@@ -1,0 +1,89 @@
+/*
+  Copyright 2020 Google LLC
+
+  Use of this source code is governed by an MIT-style
+  license that can be found in the LICENSE file or at
+  https://opensource.org/licenses/MIT.
+*/
+import {registerRoute} from 'workbox-routing';
+import {CacheFirst} from 'workbox-strategies';
+import {CacheableResponsePlugin} from 'workbox-cacheable-response';
+import {RouteMatchCallback, RouteMatchCallbackOptions} from 'workbox-core/types.js';
+import {ExpirationPlugin} from 'workbox-expiration';
+
+import './_version.js';
+
+export interface ImageCacheOptions {
+  cacheName?: string,
+  matchCallback?: RouteMatchCallback,
+  maxAgeSeconds?: number,
+  maxEntries?: number,
+}
+
+/**
+ * An implementation of the [image caching recipe]{@link https://developers.google.com/web/tools/workbox/guides/common-recipes#caching_images}
+ * 
+ * @memberof module:workbox-recipes
+ */
+class ImageCache {
+  cacheName: string;
+  matchCallback: RouteMatchCallback;
+  maxAgeSeconds: number;
+  maxEntries: number;
+  _counter: number;
+
+  /**
+   * 
+   * @param {Object} [options]
+   * @param {string} [options.cacheName] Name for cache. Defaults to images
+   * @param {number} [options.maxAgeSeconds] Maximum age, in seconds, that font entries will be cached for. Defaults to 30 days
+   * @param {number} [options.maxEntries] Maximum number of images that will be cached. Defaults to 60
+   */
+  constructor(options: ImageCacheOptions = {}) {
+    const defaultMatchCallback = ({request}: RouteMatchCallbackOptions) => request.destination === 'image';
+
+    this.cacheName = options.cacheName || 'images';
+    this.matchCallback = options.matchCallback || defaultMatchCallback;
+    this.maxAgeSeconds = options.maxAgeSeconds || 30 * 24 * 60 * 60;
+    this.maxEntries = options.maxEntries || 60;
+
+    this._counter = 0;
+  }
+
+  /**
+   * 
+   * @param {Object} [options]
+   * @param {string} [options.cacheName] Name for cache. Defaults to images
+   * @param {number} [options.maxAgeSeconds] Maximum age, in seconds, that font entries will be cached for. Defaults to 30 days
+   * @param {number} [options.maxEntries] Maximum number of images that will be cached. Defaults to 60
+   */
+  register(options: ImageCacheOptions) {
+    let cacheName = options.cacheName || this.cacheName;
+    if (this._counter > 0) {
+      cacheName += `-${this._counter}`;
+    }
+    const matchCallback = options.matchCallback || this.matchCallback;
+    const maxAgeSeconds = options.maxAgeSeconds || this.maxAgeSeconds;
+    const maxEntries = options.maxEntries || this.maxEntries;
+
+    this._counter++;
+
+    registerRoute(
+      matchCallback,
+      new CacheFirst({
+        cacheName,
+        plugins: [
+          new CacheableResponsePlugin({
+            statuses: [0, 200],
+          }),
+          new ExpirationPlugin({
+            maxEntries,
+            maxAgeSeconds
+          }),
+        ],
+      })
+    );
+  }
+}
+
+export { ImageCache }
