@@ -7,51 +7,52 @@
 */
 import {setCatchHandler} from 'workbox-routing';
 import {matchPrecache} from 'workbox-precaching';
+import {RouteHandler, RouteHandlerCallbackOptions} from 'workbox-core/types';
 
 import './_version.js';
 
 export interface OfflineFallbackOptions {
-  pageFallback?: string,
-  imageFallback?: string,
-  fontFallback?: string
+  pageFallback?: string;
+  imageFallback?: string;
+  fontFallback?: string;
 }
 
 /**
  * An implementation of the [comprehensive fallbacks recipe]{@link https://developers.google.com/web/tools/workbox/guides/advanced-recipes#comprehensive_fallbacks}. Be sure to include the fallbacks in your precache injection
  * 
  * @memberof module:workbox-recipes
+ * 
+ * @param {Object} [options]
+ * @param {string} [options.pageFallback] Precache name to match for pag fallbacks. Defaults to offline.html
+ * @param {string} [options.imageFallback] Precache name to match for image fallbacks.
+ * @param {string} [options.fontFallback] Precache name to match for font fallbacks.
  */
-class OfflineFallback {
-  /**
-   * 
-   * @param {Object} [options]
-   * @param {string} [options.pageFallback] Precache name to match for pag fallbacks. Defaults to offline.html
-   * @param {string} [options.imageFallback] Precache name to match for image fallbacks.
-   * * @param {string} [options.fontFallback] Precache name to match for font fallbacks.
-   */
-  constructor(options: OfflineFallbackOptions = {}) {
-    const pageFallback = options.pageFallback || 'offline.html';
-    const imageFallback = options.imageFallback || false;
-    const fontFallback = options.fontFallback || false;
+function offlineFallback(options: OfflineFallbackOptions = {}) {
+  const pageFallback = options.pageFallback || 'offline.html';
+  const imageFallback = options.imageFallback || false;
+  const fontFallback = options.fontFallback || false;
 
-    setCatchHandler(({event}) => {
-      const dest = event.request.destination;
+  const handler: RouteHandler = async (
+    options: RouteHandlerCallbackOptions
+  ) => {
+    const dest = options.request.destination;
 
-      if (dest === 'document') {
-        return matchPrecache(pageFallback);
-      }
+    if (dest === "document") {
+      return (await matchPrecache(pageFallback)) || Response.error();
+    }
 
-      if (dest === 'images' && imageFallback !== false) {
-        return matchPrecache(imageFallback);
-      }
+    if (dest === "image" && imageFallback !== false) {
+      return (await matchPrecache(imageFallback)) || Response.error();
+    }
 
-      if (dest === 'font' && fontFallback !== false) {
-        return matchPrecache(fontFallback);
-      }
+    if (dest === "font" && fontFallback !== false) {
+      return (await matchPrecache(fontFallback)) || Response.error();
+    }
 
-      return Response.error();
-    });
-  }
+    return Response.error();
+  };
+
+  setCatchHandler(handler);
 }
 
-export { OfflineFallback }
+export { offlineFallback }

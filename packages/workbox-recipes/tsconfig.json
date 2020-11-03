@@ -9,6 +9,11 @@
     "src/**/*.ts"
   ],
   "references": [
-    { "path": "../workbox-core/" }
+    { "path": "../workbox-core/" },
+    { "path": "../workbox-routing/" },
+    { "path": "../workbox-strategies/" },
+    { "path": "../workbox-cacheable-response/" },
+    { "path": "../workbox-expiration/" },
+    { "path": "../workbox-precaching/" }
   ]
 }
