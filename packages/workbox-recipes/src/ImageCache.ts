@@ -26,12 +26,6 @@ export interface ImageCacheOptions {
  * @memberof module:workbox-recipes
  */
 class ImageCache {
-  cacheName: string;
-  matchCallback: RouteMatchCallback;
-  maxAgeSeconds: number;
-  maxEntries: number;
-  _counter: number;
-
   /**
    * 
    * @param {Object} [options]
@@ -42,31 +36,10 @@ class ImageCache {
   constructor(options: ImageCacheOptions = {}) {
     const defaultMatchCallback = ({request}: RouteMatchCallbackOptions) => request.destination === 'image';
 
-    this.cacheName = options.cacheName || 'images';
-    this.matchCallback = options.matchCallback || defaultMatchCallback;
-    this.maxAgeSeconds = options.maxAgeSeconds || 30 * 24 * 60 * 60;
-    this.maxEntries = options.maxEntries || 60;
-
-    this._counter = 0;
-  }
-
-  /**
-   * 
-   * @param {Object} [options]
-   * @param {string} [options.cacheName] Name for cache. Defaults to images
-   * @param {number} [options.maxAgeSeconds] Maximum age, in seconds, that font entries will be cached for. Defaults to 30 days
-   * @param {number} [options.maxEntries] Maximum number of images that will be cached. Defaults to 60
-   */
-  register(options: ImageCacheOptions) {
-    let cacheName = options.cacheName || this.cacheName;
-    if (this._counter > 0) {
-      cacheName += `-${this._counter}`;
-    }
-    const matchCallback = options.matchCallback || this.matchCallback;
-    const maxAgeSeconds = options.maxAgeSeconds || this.maxAgeSeconds;
-    const maxEntries = options.maxEntries || this.maxEntries;
-
-    this._counter++;
+    const cacheName = options.cacheName || 'images';
+    const matchCallback = options.matchCallback || defaultMatchCallback;
+    const maxAgeSeconds = options.maxAgeSeconds || 30 * 24 * 60 * 60;
+    const maxEntries = options.maxEntries || 60;
 
     registerRoute(
       matchCallback,
