@@ -36,6 +36,7 @@ packages/workbox-google-analytics/**/*.mjs
 packages/workbox-navigation-preload/**/*.mjs
 packages/workbox-precaching/**/*.mjs
 packages/workbox-range-requests/**/*.mjs
+packages/workbox-recipes/**/*.mjs
 packages/workbox-routing/**/*.mjs
 packages/workbox-strategies/**/*.mjs
 packages/workbox-streams/**/*.mjs
