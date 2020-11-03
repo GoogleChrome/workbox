@@ -8,6 +8,9 @@
 
 import {GoogleFontsCache} from './GoogleFontsCache';
 import {ImageCache} from './ImageCache';
+import {StaticResourceCache} from './StaticResourceCache';
+import {PageCache} from './PageCache';
+import {OfflineFallback} from './OfflineFallback';
 
 import './_version.js';
 
@@ -18,5 +21,8 @@ import './_version.js';
 
 export {
   GoogleFontsCache,
-  ImageCache
+  ImageCache,
+  StaticResourceCache,
+  PageCache,
+  OfflineFallback
 };

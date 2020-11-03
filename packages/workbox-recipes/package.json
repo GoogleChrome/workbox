@@ -27,6 +27,7 @@
     "workbox-routing": "^6.0.0-alpha.3",
     "workbox-cacheable-response": "^6.0.0-alpha.3",
     "workbox-expiration": "^6.0.0-alpha.3",
-    "workbox-core": "^6.0.0-alpha.3"
+    "workbox-core": "^6.0.0-alpha.3",
+    "workbox-precaching": "^6.0.0-alpha.3"
   }
 }
