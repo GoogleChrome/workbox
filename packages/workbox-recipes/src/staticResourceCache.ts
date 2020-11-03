@@ -5,9 +5,9 @@
   license that can be found in the LICENSE file or at
   https://opensource.org/licenses/MIT.
 */
-import {registerRoute} from 'workbox-routing';
-import {StaleWhileRevalidate} from 'workbox-strategies';
-import {CacheableResponsePlugin} from 'workbox-cacheable-response';
+import {registerRoute} from 'workbox-routing/registerRoute.js';
+import {StaleWhileRevalidate} from 'workbox-strategies/StaleWhileRevalidate.js';
+import {CacheableResponsePlugin} from 'workbox-cacheable-response/CacheableResponsePlugin.js';
 import {RouteMatchCallback, RouteMatchCallbackOptions} from 'workbox-core/types.js';
 
 import './_version.js';

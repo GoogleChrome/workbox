@@ -5,9 +5,9 @@
   license that can be found in the LICENSE file or at
   https://opensource.org/licenses/MIT.
 */
-import {setCatchHandler} from 'workbox-routing';
-import {matchPrecache} from 'workbox-precaching';
-import {RouteHandler, RouteHandlerCallbackOptions} from 'workbox-core/types';
+import {setCatchHandler} from 'workbox-routing/setCatchHandler.js';
+import {matchPrecache} from 'workbox-precaching/matchPrecache.js';
+import {RouteHandler, RouteHandlerCallbackOptions} from 'workbox-core/types.js';
 
 import './_version.js';
 
