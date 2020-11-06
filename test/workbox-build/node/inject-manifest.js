@@ -413,6 +413,24 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
 
       // We can't validate the SW file contents.
     });
+
+    it(`should not update the sourcemap if it uses a data: URL`, async function() {
+      const outputDir = tempy.directory();
+      const swSrc = upath.join(SW_SRC_DIR, 'basic-with-sourcemap-data-url.js.nolint');
+      const swDest = upath.join(outputDir, 'basic-with-sourcemap.js');
+      const options = Object.assign({}, BASE_OPTIONS, {
+        swDest,
+        swSrc,
+      });
+
+      const {count, size, warnings} = await injectManifest(options);
+      expect(warnings).to.be.empty;
+      expect(count).to.eql(6);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([2604, 2686]);
+
+      // We can't validate the SW file contents.
+    });
   });
 
   describe(`[workbox-build] removed options`, function() {
