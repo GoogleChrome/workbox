@@ -8,13 +8,18 @@
 
 import {assert} from 'workbox-core/_private/assert.js';
 import {logger} from 'workbox-core/_private/logger.js';
+import {timeout} from 'workbox-core/_private/timeout.js';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
 
-import {Strategy} from './Strategy.js';
+import {Strategy, StrategyOptions} from './Strategy.js';
 import {StrategyHandler} from './StrategyHandler.js';
 import {messages} from './utils/messages.js';
 import './_version.js';
 
+
+interface NetworkOnlyOptions extends Omit<StrategyOptions, 'cacheName' | 'matchOptions'> {
+  networkTimeoutSeconds?: number;
+}
 
 /**
  * An implementation of a
@@ -30,6 +35,24 @@ import './_version.js';
  * @memberof module:workbox-strategies
  */
 class NetworkOnly extends Strategy {
+  private readonly _networkTimeoutSeconds: number;
+
+  /**
+   * @param {Object} [options]
+   * @param {Array<Object>} [options.plugins] [Plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}
+   * to use in conjunction with this caching strategy.
+   * @param {Object} [options.fetchOptions] Values passed along to the
+   * [`init`](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch#Parameters)
+   * of all fetch() requests made by this strategy.
+   * @param {number} [options.networkTimeoutSeconds] If set, any network requests
+   * that fail to respond within the timeout will result in a network error.
+   */
+  constructor(options: NetworkOnlyOptions = {}) {
+    super(options);
+
+    this._networkTimeoutSeconds = options.networkTimeoutSeconds || 0;
+  }
+
   /**
    * @private
    * @param {Request|string} request A request to run this strategy for.
@@ -42,15 +65,27 @@ class NetworkOnly extends Strategy {
       assert!.isInstance(request, Request, {
         moduleName: 'workbox-strategies',
         className: this.constructor.name,
-        funcName: 'handle',
+        funcName: '_handle',
         paramName: 'request',
       });
     }
 
-    let error;
-    let response;
+    let error: Error | undefined = undefined;
+    let response: Response | undefined;
+
     try {
-      response = await handler.fetch(request);
+      const promises: Promise<Response|undefined>[] = [handler.fetch(request)];
+
+      if (this._networkTimeoutSeconds) {
+        const timeoutPromise = timeout(this._networkTimeoutSeconds * 1000) as Promise<undefined>;
+        promises.push(timeoutPromise);
+      }
+
+      response = await Promise.race(promises);
+      if (!response) {
+        throw new Error(`Timed out the network response after ` +
+            `${this._networkTimeoutSeconds} seconds.`);
+      }
     } catch (err) {
       error = err;
     }
@@ -74,4 +109,4 @@ class NetworkOnly extends Strategy {
   }
 }
 
-export {NetworkOnly};
+export {NetworkOnly, NetworkOnlyOptions};
