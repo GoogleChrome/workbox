@@ -77,7 +77,8 @@
     "globby": "^11.0.1",
     "gulp": "^4.0.2",
     "gzip-size": "^5.1.1",
-    "html-webpack-plugin": "^4.5.0",
+    "html-webpack-plugin-v4": "npm:html-webpack-plugin@^4.5.0",
+    "html-webpack-plugin-v5": "npm:html-webpack-plugin@^5.0.0-alpha.5",
     "husky": "^4.2.5",
     "jsdoc": "^3.6.5",
     "jsdoc-baseline": "^0.1.5",
@@ -102,7 +103,7 @@
     "typescript": "^3.9.7",
     "upath": "^1.2.0",
     "webpack-v4": "npm:webpack@^4.44.2",
-    "webpack-v5": "npm:webpack@^5.0.0",
+    "webpack-v5": "npm:webpack@^5.1.0",
     "worker-plugin": "^5.0.0"
   }
 }

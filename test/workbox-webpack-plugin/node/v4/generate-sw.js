@@ -11,13 +11,16 @@
 // correct webpack is for this test.
 // See https://jeffy.info/2020/10/01/testing-multiple-webpack-versions.html
 try {
+  delete require.cache[require.resolve('html-webpack-plugin')];
   delete require.cache[require.resolve('webpack')];
 } catch (error) {
-  // Ignore if require.resolve('webpack') fails.
+  // Ignore if require.resolve() fails.
 }
 const upath = require('upath');
-require('module-alias').addAlias(
-    'webpack', upath.resolve('node_modules', 'webpack-v4'));
+const moduleAlias = require('module-alias');
+moduleAlias.addAlias('html-webpack-plugin', upath.resolve('node_modules',
+    'html-webpack-plugin-v4'));
+moduleAlias.addAlias('webpack', upath.resolve('node_modules', 'webpack-v4'));
 
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -477,10 +480,6 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v4`, function() {
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
             importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[{
-              revision: /^[0-9a-f]{32}$/,
-              // See https://github.com/webpack/webpack/issues/11425#issuecomment-692809539
-              url: '__child-HtmlWebpackPlugin_0',
-            }, {
               revision: /^[0-9a-f]{32}$/,
               url: /^entry1-[0-9a-f]{20}\.js$/,
             }, {
