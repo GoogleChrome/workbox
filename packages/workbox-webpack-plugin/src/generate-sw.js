@@ -304,7 +304,10 @@ class GenerateSW {
     });
 
     for (const file of files) {
-      compilation.emitAsset(file.name, new RawSource(file.contents));
+      compilation.emitAsset(file.name, new RawSource(file.contents), {
+        // See https://github.com/webpack-contrib/compression-webpack-plugin/issues/218#issuecomment-726196160
+        minimized: config.mode === 'production',
+      });
       _generatedAssetNames.add(file.name);
     }
 

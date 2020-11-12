@@ -118,10 +118,10 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function() {
             expectedMethodCalls: {
               precacheAndRoute: [[[
                 {
-                  revision: /^[0-9a-f]{32}$/,
+                  revision: null,
                   url: /^entry1-[0-9a-f]{20}\.js$/,
                 }, {
-                  revision: /^[0-9a-f]{32}$/,
+                  revision: null,
                   url: /^entry2-[0-9a-f]{20}\.js$/,
                 },
               ], {}]],
@@ -172,10 +172,10 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function() {
             expectedMethodCalls: {
               precacheAndRoute: [[[
                 {
-                  revision: /^[0-9a-f]{32}$/,
+                  revision: null,
                   url: /^entry1-[0-9a-f]{20}\.js$/,
                 }, {
-                  revision: /^[0-9a-f]{32}$/,
+                  revision: null,
                   url: /^entry2-[0-9a-f]{20}\.js$/,
                 },
               ], {}]],
@@ -233,10 +233,10 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function() {
             expectedMethodCalls: {
               precacheAndRoute: [[[
                 {
-                  revision: /^[0-9a-f]{32}$/,
+                  revision: null,
                   url: /^[0-9a-f]{20}\.js$/,
                 }, {
-                  revision: /^[0-9a-f]{32}$/,
+                  revision: null,
                   url: /^[0-9a-f]{20}\.js$/,
                 },
               ], {}]],
@@ -287,10 +287,10 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function() {
             expectedMethodCalls: {
               precacheAndRoute: [[[
                 {
-                  revision: /^[0-9a-f]{32}$/,
+                  revision: null,
                   url: /^entry1-[0-9a-f]{20}\.js$/,
                 }, {
-                  revision: /^[0-9a-f]{32}$/,
+                  revision: null,
                   url: /^entry2-[0-9a-f]{20}\.js$/,
                 },
               ], {}]],
@@ -342,7 +342,7 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function() {
             expectedMethodCalls: {
               precacheAndRoute: [[[
                 {
-                  revision: /^[0-9a-f]{32}$/,
+                  revision: null,
                   url: /^entry1-[0-9a-f]{20}\.js$/,
                 },
               ], {}]],
@@ -393,10 +393,10 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function() {
             entryPoint: 'injectManifest',
             expectedMethodCalls: {
               precacheAndRoute: [[[{
-                revision: /^[0-9a-f]{32}$/,
+                revision: null,
                 url: /^entry1-[0-9a-f]{20}\.js$/,
               }, {
-                revision: /^[0-9a-f]{32}$/,
+                revision: null,
                 url: /^entry2-[0-9a-f]{20}\.js$/,
               }, {
                 revision: /^[0-9a-f]{32}$/,
@@ -957,7 +957,7 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function() {
             expectedMethodCalls: {
               precacheAndRoute: [[[
                 {
-                  revision: /^[0-9a-f]{32}$/,
+                  revision: null,
                   url: /^entry1-[0-9a-f]{20}\.js$/,
                 },
               ], {}]],
@@ -1019,7 +1019,7 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function() {
             expectedMethodCalls: {
               precacheAndRoute: [[[
                 {
-                  revision: /^[0-9a-f]{32}$/,
+                  revision: null,
                   url: /^entry1-[0-9a-f]{20}\.js$/,
                 },
                 {
@@ -1103,7 +1103,7 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function() {
             expectedMethodCalls: {
               precacheAndRoute: [[[
                 {
-                  revision: /^[0-9a-f]{32}$/,
+                  revision: null,
                   url: /^\/testing\/entry1-[0-9a-f]{20}\.js$/,
                 },
               ], {}]],
@@ -1199,7 +1199,7 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function() {
             entryPoint: 'injectManifest',
             expectedMethodCalls: {
               precacheAndRoute: [[[{
-                revision: /^[0-9a-f]{32}$/,
+                revision: null,
                 url: /^https:\/\/example\.org\/main\.[0-9a-f]{20}\.js/,
               }], {}]],
             },
@@ -1250,7 +1250,7 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function() {
             expectedMethodCalls: {
               setCacheNameDetails: [[{prefix}]],
               precacheAndRoute: [[[{
-                revision: /^[0-9a-f]{32}$/,
+                revision: null,
                 url: /^main\.[0-9a-f]{20}\.js$/,
               }], {}]],
             },
@@ -1281,7 +1281,7 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function() {
               expect(manifest).to.have.lengthOf(1);
               expect(manifest[0].size).to.eql(30);
               expect(manifest[0].url.startsWith('main.')).to.be.true;
-              expect(manifest[0].revision).to.have.lengthOf(32);
+              expect(manifest[0].revision).to.be.null;
               expect(compilation).to.exist;
 
               manifest = manifest.map((entry) => {
@@ -1509,7 +1509,7 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function() {
             entryPoint: 'injectManifest',
             expectedMethodCalls: {
               precacheAndRoute: [[[{
-                revision: /^[0-9a-f]{32}$/,
+                revision: null,
                 url: /^main\.[0-9a-f]{20}\.js$/,
               }], {}]],
             },
@@ -1520,7 +1520,7 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function() {
             entryPoint: 'injectManifest',
             expectedMethodCalls: {
               precacheAndRoute: [[[{
-                revision: /^[0-9a-f]{32}$/,
+                revision: null,
                 url: /^main\.[0-9a-f]{20}\.js$/,
               }], {}]],
             },
@@ -1568,7 +1568,7 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function() {
             entryPoint: 'injectManifest',
             expectedMethodCalls: {
               precacheAndRoute: [[[{
-                revision: /^[0-9a-f]{32}$/,
+                revision: null,
                 url: /^main\.[0-9a-f]{20}\.js$/,
               }], {}]],
             },
@@ -1649,7 +1649,7 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function() {
 
           const manifest = await fse.readJSON(upath.join(outputDir, 'injected-manifest.json'));
           expect(manifest).to.matchPattern([{
-            revision: /^[0-9a-f]{32}$/,
+            revision: null,
             url: /^main\.[0-9a-f]{20}\.js$/,
           }]);
 
@@ -1690,7 +1690,7 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function() {
 
         const manifest = require(upath.join(outputDir, 'injected-manifest.js'));
         expect(manifest).to.matchPattern([{
-          revision: /^[0-9a-f]{32}$/,
+          revision: null,
           url: /^main\.[0-9a-f]{20}\.js$/,
         }]);
 
