@@ -168,8 +168,9 @@ class InjectManifest {
           this.constructor.name, (compilation) => {
             compilation.hooks.processAssets.tapPromise({
               name: this.constructor.name,
-              // See https://github.com/webpack/webpack/blob/9230acbf1a39a8afb2e34f41e2fd7326eef84968/lib/Compilation.js#L3376-L3381
-              stage: webpack.Compilation.PROCESS_ASSETS_STAGE_SUMMARIZE,
+              // Any earlier than this stage and we can miss the output of some webpack plugins (i.e. html-webpack-plugin)
+              // See https://github.com/webpack/webpack/blob/9230acbf1a39a8afb2e34f41e2fd7326eef84968/lib/Compilation.js#L3398-L3401
+              stage: webpack.Compilation.PROCESS_ASSETS_STAGE_ANALYSE,
             }, () => this.addAssets(compilation).catch(
                 (error) => compilation.errors.push(error)),
             );
