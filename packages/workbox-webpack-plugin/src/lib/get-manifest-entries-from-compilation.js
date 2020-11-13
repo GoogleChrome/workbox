@@ -163,7 +163,10 @@ module.exports = async (compilation, config) => {
     transformParam: compilation,
   });
 
-  compilation.warnings = compilation.warnings.concat(warnings || []);
+  for (const warning of warnings) {
+    // See https://github.com/GoogleChrome/workbox/issues/2674
+    compilation.warnings.push(new Error(warning));
+  }
 
   // Ensure that the entries are properly sorted by URL.
   const sortedEntries = manifestEntries.sort(
