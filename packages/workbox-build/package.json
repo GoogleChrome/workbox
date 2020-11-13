@@ -51,6 +51,7 @@
     "workbox-navigation-preload": "^6.0.0-alpha.3",
     "workbox-precaching": "^6.0.0-alpha.3",
     "workbox-range-requests": "^6.0.0-alpha.3",
+    "workbox-recipes": "^6.0.0-alpha.3",
     "workbox-routing": "^6.0.0-alpha.3",
     "workbox-strategies": "^6.0.0-alpha.3",
     "workbox-streams": "^6.0.0-alpha.3",

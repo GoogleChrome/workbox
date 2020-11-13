@@ -53,7 +53,7 @@ describe(`[workbox-build] lib/copy-workbox-libraries.js`, function() {
       expect(expectedPath).to.eql(ensureDirStub.args[0][0]);
 
       // The total number of package build directories that were copied:
-      expect(copyStub.callCount).to.eql(14);
+      expect(copyStub.callCount).to.eql(15);
     });
   }
 });
