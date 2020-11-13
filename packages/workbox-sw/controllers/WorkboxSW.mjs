@@ -83,6 +83,12 @@ const MODULE_KEY_TO_NAME_MAPPING = {
    * @see module:workbox-streams
    */
   streams: 'streams',
+  /**
+   * @name recipes
+   * @memberof workbox
+   * @see module:workbox-recipes
+   */
+  recipes: 'recipes',
 };
 
 /**

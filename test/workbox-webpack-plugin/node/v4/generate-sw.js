@@ -109,10 +109,10 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v4`, function() {
               importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
               precacheAndRoute: [[[
                 {
-                  revision: /^[0-9a-f]{32}$/,
+                  revision: null,
                   url: /^entry1-[0-9a-f]{20}\.js$/,
                 }, {
-                  revision: /^[0-9a-f]{32}$/,
+                  revision: null,
                   url: /^entry2-[0-9a-f]{20}\.js$/,
                 },
               ], {}]],
@@ -171,7 +171,7 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v4`, function() {
               ],
               // imported-[chunkhash].js should *not* be included.
               precacheAndRoute: [[[{
-                revision: /^[0-9a-f]{32}$/,
+                revision: null,
                 url: /^main-[0-9a-f]{20}\.js$/,
               }], {}]],
             },
@@ -224,10 +224,10 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v4`, function() {
               importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
               precacheAndRoute: [[[
                 {
-                  revision: /^[0-9a-f]{32}$/,
+                  revision: null,
                   url: /^entry1-[0-9a-f]{20}\.js$/,
                 }, {
-                  revision: /^[0-9a-f]{32}$/,
+                  revision: null,
                   url: /^entry2-[0-9a-f]{20}\.js$/,
                 }, {
                   revision: null,
@@ -283,10 +283,10 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v4`, function() {
             importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[
               {
-                revision: /^[0-9a-f]{32}$/,
+                revision: null,
                 url: /^entry1-[0-9a-f]{20}\.js$/,
               }, {
-                revision: /^[0-9a-f]{32}$/,
+                revision: null,
                 url: /^entry2-[0-9a-f]{20}\.js$/,
               },
             ], {}]],
@@ -385,10 +385,10 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v4`, function() {
             importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[
               {
-                revision: /^[0-9a-f]{32}$/,
+                revision: null,
                 url: /^entry1-[0-9a-f]{20}\.js$/,
               }, {
-                revision: /^[0-9a-f]{32}$/,
+                revision: null,
                 url: /^entry2-[0-9a-f]{20}\.js$/,
               },
             ], {}]],
@@ -435,7 +435,7 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v4`, function() {
             importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[
               {
-                revision: /^[0-9a-f]{32}$/,
+                revision: null,
                 url: /^entry1-[0-9a-f]{20}\.js$/,
               },
             ], {}]],
@@ -480,10 +480,10 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v4`, function() {
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
             importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[{
-              revision: /^[0-9a-f]{32}$/,
+              revision: null,
               url: /^entry1-[0-9a-f]{20}\.js$/,
             }, {
-              revision: /^[0-9a-f]{32}$/,
+              revision: null,
               url: /^entry2-[0-9a-f]{20}\.js$/,
             }, {
               revision: /^[0-9a-f]{32}$/,
@@ -852,7 +852,7 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v4`, function() {
               importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
               precacheAndRoute: [[[
                 {
-                  revision: /^[0-9a-f]{32}$/,
+                  revision: null,
                   url: /^entry1-[0-9a-f]{20}\.js$/,
                 },
               ], {}]],
@@ -910,7 +910,7 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v4`, function() {
             importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[
               {
-                revision: /^[0-9a-f]{32}$/,
+                revision: null,
                 url: /^entry1-[0-9a-f]{20}\.js$/,
               },
               {
@@ -988,7 +988,7 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v4`, function() {
             importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[
               {
-                revision: /^[0-9a-f]{32}$/,
+                revision: null,
                 url: /^\/testing\/entry1-[0-9a-f]{20}\.js$/,
               },
             ], {}]],
@@ -1078,7 +1078,7 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v4`, function() {
           await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
             importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[{
-              revision: /^[0-9a-f]{32}$/,
+              revision: null,
               url: /^entry1-[0-9a-f]{20}\.js$/,
             }], {}]],
           }});
@@ -1384,7 +1384,7 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v4`, function() {
           await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
             importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
             precacheAndRoute: [[[{
-              revision: /^[0-9a-f]{32}$/,
+              revision: null,
               url: /^https:\/\/example\.org\/main\.[0-9a-f]{20}\.js/,
             }], {}]],
           }});
@@ -1412,7 +1412,7 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v4`, function() {
               expect(manifest).to.have.lengthOf(1);
               expect(manifest[0].size).to.eql(959);
               expect(manifest[0].url.startsWith('main.')).to.be.true;
-              expect(manifest[0].revision).to.have.lengthOf(32);
+              expect(manifest[0].revision).to.be.null;
               expect(compilation).to.exist;
 
               manifest = manifest.map((entry) => {
