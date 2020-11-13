@@ -75,10 +75,10 @@ class GenerateSW {
    *
    * @param {RegExp} [config.dontCacheBustURLsMatching] Assets that match this will be
    * assumed to be uniquely versioned via their URL, and exempted from the normal
-   * HTTP cache-busting that's done when populating the precache. While not
-   * required, it's recommended that if your existing build process already
-   * inserts a `[hash]` value into each filename, you provide a RegExp that will
-   * detect that, as it will reduce the bandwidth consumed when precaching.
+   * HTTP cache-busting that's done when populating the precache. (As of Workbox
+   * v6, this option is usually not needed, as each
+   * [asset's metadata](https://github.com/webpack/webpack/issues/9038) is used
+   * to determine whether it's immutable or not.)
    *
    * @param {Array<string|RegExp|Function>} [config.exclude=[/\.map$/, /^manifest.*\.js$]]
    * One or more specifiers used to exclude assets from the precache manifest.
@@ -304,7 +304,10 @@ class GenerateSW {
     });
 
     for (const file of files) {
-      compilation.emitAsset(file.name, new RawSource(file.contents));
+      compilation.emitAsset(file.name, new RawSource(file.contents), {
+        // See https://github.com/webpack-contrib/compression-webpack-plugin/issues/218#issuecomment-726196160
+        minimized: config.mode === 'production',
+      });
       _generatedAssetNames.add(file.name);
     }
 
