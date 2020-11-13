@@ -233,8 +233,9 @@ class GenerateSW {
           this.constructor.name, (compilation) => {
             compilation.hooks.processAssets.tapPromise({
               name: this.constructor.name,
-              // See https://github.com/webpack/webpack/blob/9230acbf1a39a8afb2e34f41e2fd7326eef84968/lib/Compilation.js#L3376-L3381
-              stage: webpack.Compilation.PROCESS_ASSETS_STAGE_SUMMARIZE,
+              // This may need to change eventually.
+              // See https://github.com/webpack/webpack/issues/11822#issuecomment-726184972
+              stage: webpack.Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE_TRANSFER,
             }, () => this.addAssets(compilation).catch(
                 (error) => compilation.errors.push(error)),
             );
