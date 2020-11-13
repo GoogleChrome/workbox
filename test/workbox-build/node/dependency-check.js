@@ -30,6 +30,7 @@ describe(`[workbox-build] Test Dependencies`, function() {
           'workbox-navigation-preload',
           'workbox-precaching',
           'workbox-range-requests',
+          'workbox-recipes',
           'workbox-routing',
           'workbox-strategies',
           'workbox-streams',
