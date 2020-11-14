@@ -1704,45 +1704,45 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v4`, function() {
         }
       });
     });
-  });
 
-  it(`should support injecting a manifest into a CJS module`, function(done) {
-    const outputDir = tempy.directory();
+    it(`should support injecting a manifest into a CJS module`, function(done) {
+      const outputDir = tempy.directory();
 
-    const config = {
-      mode: 'production',
-      entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
-      output: {
-        filename: '[name].[hash:20].js',
-        path: outputDir,
-      },
-      plugins: [
-        new InjectManifest({
-          compileSrc: false,
-          swDest: 'injected-manifest.js',
-          swSrc: upath.join(__dirname, '..', '..', 'static', 'injected-manifest.js'),
-        }),
-      ],
-    };
+      const config = {
+        mode: 'production',
+        entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        output: {
+          filename: '[name].[hash:20].js',
+          path: outputDir,
+        },
+        plugins: [
+          new InjectManifest({
+            compileSrc: false,
+            swDest: 'injected-manifest.js',
+            swSrc: upath.join(__dirname, '..', '..', 'static', 'injected-manifest.js'),
+          }),
+        ],
+      };
 
-    const compiler = webpack(config);
-    compiler.run(async (webpackError, stats) => {
-      try {
-        webpackBuildCheck(webpackError, stats);
+      const compiler = webpack(config);
+      compiler.run(async (webpackError, stats) => {
+        try {
+          webpackBuildCheck(webpackError, stats);
 
-        const files = await globby('**', {cwd: outputDir});
-        expect(files).to.have.length(2);
+          const files = await globby('**', {cwd: outputDir});
+          expect(files).to.have.length(2);
 
-        const manifest = require(upath.join(outputDir, 'injected-manifest.js'));
-        expect(manifest).to.matchPattern([{
-          revision: null,
-          url: /^main\.[0-9a-f]{20}\.js$/,
-        }]);
+          const manifest = require(upath.join(outputDir, 'injected-manifest.js'));
+          expect(manifest).to.matchPattern([{
+            revision: null,
+            url: /^main\.[0-9a-f]{20}\.js$/,
+          }]);
 
-        done();
-      } catch (error) {
-        done(error);
-      }
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
     });
   });
 });
