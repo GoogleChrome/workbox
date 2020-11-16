@@ -24,8 +24,7 @@ describe('[all] Yarn Installation', function() {
   });
 
   for (const packageToInstall of packagesToInstall) {
-    // TODO(jeffposnick): Re-enable test after workbox-recipes is published.
-    it.skip(`should install ${packageToInstall} using yarn`, async function() {
+    it(`should install ${packageToInstall} using yarn`, async function() {
       this.timeout(5 * 60 * 1000);
 
       try {
