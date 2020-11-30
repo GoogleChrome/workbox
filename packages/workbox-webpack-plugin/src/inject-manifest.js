@@ -6,6 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
+const escapeRegexp = require('workbox-build/build/lib/escape-regexp');
 const prettyBytes = require('pretty-bytes');
 const replaceAndUpdateSourceMap = require(
     'workbox-build/build/lib/replace-and-update-source-map');
@@ -279,8 +280,9 @@ class InjectManifest {
         `Please see https://github.com/GoogleChrome/workbox/issues/1790 for ` +
         `more information.`;
 
-      if (!compilation.warnings.includes(warningMessage)) {
-        compilation.warnings.push(warningMessage);
+      if (!compilation.warnings.some((warning) => warning instanceof Error &&
+            warning.message === warningMessage)) {
+        compilation.warnings.push(new Error(warningMessage));
       }
     } else {
       this.alreadyCalled = true;
@@ -299,8 +301,16 @@ class InjectManifest {
     const swAsset = compilation.getAsset(config.swDest);
     const swAssetString = swAsset.source.source();
 
-    if (!swAssetString.includes(config.injectionPoint)) {
+    const globalRegexp = new RegExp(escapeRegexp(config.injectionPoint), 'g');
+    const injectionResults = swAssetString.match(globalRegexp);
+
+    if (!injectionResults) {
       throw new Error(`Can't find ${config.injectionPoint} in your SW source.`);
+    }
+    if (injectionResults.length !== 1) {
+      throw new Error(`Multiple instances of ${config.injectionPoint} were ` +
+          `found in your SW source. Include it only once. For more info, see ` +
+          `https://github.com/GoogleChrome/workbox/issues/2681`);
     }
 
     const {size, sortedEntries} = await getManifestEntriesFromCompilation(

@@ -84,9 +84,9 @@ function filterAssets(compilation, config) {
           allowedAssetNames.add(assetName);
         }
       } else {
-        compilation.warnings.push(`The chunk '${chunkName}' was ` +
+        compilation.warnings.push(new Error(`The chunk '${chunkName}' was ` +
           `provided in your Workbox chunks config, but was not found in the ` +
-          `compilation.`);
+          `compilation.`));
       }
     }
   }

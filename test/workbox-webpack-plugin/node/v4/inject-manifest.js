@@ -81,6 +81,41 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v4`, function() {
         }
       });
     });
+
+    it(`should lead to a webpack compilation error when the swSrc contains multiple injection points`, function(done) {
+      const outputDir = tempy.directory();
+      const config = {
+        mode: 'production',
+        entry: {
+          entry1: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        },
+        output: {
+          filename: '[name]-[chunkhash].js',
+          path: outputDir,
+        },
+        plugins: [
+          new InjectManifest({
+            swSrc: upath.join(__dirname, '..', '..', 'static', 'bad-multiple-injection.js'),
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run((webpackError, stats) => {
+        try {
+          expect(webpackError).not.to.exist;
+          const statsJson = stats.toJson();
+          expect(statsJson.warnings).to.be.empty;
+          expect(statsJson.errors).to.have.members([
+            `Multiple instances of self.__WB_MANIFEST were found in your SW source. Include it only once. For more info, see https://github.com/GoogleChrome/workbox/issues/2681`,
+          ]);
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
   });
 
   describe(`[workbox-webpack-plugin] Multiple chunks`, function() {
