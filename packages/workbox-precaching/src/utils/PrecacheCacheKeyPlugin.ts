@@ -12,7 +12,12 @@ import {PrecacheController} from '../PrecacheController.js';
 
 import '../_version.js';
 
-
+/**
+ * A plugin, designed to be used with PrecacheController, to translate URLs into
+ * the corresponding cache key, based on the current revision info.
+ * 
+ * @private
+ */
 class PrecacheCacheKeyPlugin implements WorkboxPlugin {
   private readonly _precacheController: PrecacheController;
 
