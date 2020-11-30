@@ -31,7 +31,7 @@
     "workbox-build": "^6.0.0-rc.0"
   },
   "peerDependencies": {
-    "webpack": "^4.4.0 || ^5.4.0"
+    "webpack": "^4.4.0 || ^5.9.0"
   },
   "author": "Google's Web DevRel Team",
   "license": "MIT",

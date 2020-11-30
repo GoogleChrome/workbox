@@ -253,11 +253,16 @@ class GenerateSW {
   async addAssets(compilation) {
     // See https://github.com/GoogleChrome/workbox/issues/1790
     if (this.alreadyCalled) {
-      compilation.warnings.push(`${this.constructor.name} has been called ` +
+      const warningMessage = `${this.constructor.name} has been called ` +
         `multiple times, perhaps due to running webpack in --watch mode. The ` +
         `precache manifest generated after the first call may be inaccurate! ` +
         `Please see https://github.com/GoogleChrome/workbox/issues/1790 for ` +
-        `more information.`);
+        `more information.`;
+
+      if (!compilation.warnings.some((warning) => warning instanceof Error &&
+            warning.message === warningMessage)) {
+        compilation.warnings.push(new Error(warningMessage));
+      }
     } else {
       this.alreadyCalled = true;
     }
