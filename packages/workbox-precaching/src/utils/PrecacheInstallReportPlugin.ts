@@ -14,6 +14,8 @@ import '../_version.js';
 /**
  * A plugin, designed to be used with PrecacheController, to determine the
  * of assets that were updated (or not updated) during the install event.
+ * 
+ * @private
  */
 class PrecacheInstallReportPlugin implements WorkboxPlugin {
   updatedURLs: string[] = [];
