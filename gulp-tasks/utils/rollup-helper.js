@@ -16,7 +16,7 @@ const constants = require('./constants');
 const getVersionsCDNUrl = require('./versioned-cdn-url');
 
 // See https://github.com/GoogleChrome/workbox/issues/1674
-let nameCache = {};
+const nameCache = {};
 
 module.exports = {
   // Every use of rollup should have minification and the replace
