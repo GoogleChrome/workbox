@@ -102,7 +102,9 @@ function windowBundleSequence() {
 
   return series(
       parallel(transpilations),
-      parallel(builds),
+      // This needs to be a series, not in parallel, so that there isn't a
+      // race condition with the terser nameCache.
+      series(builds),
   );
 }
 
