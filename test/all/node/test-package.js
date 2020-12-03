@@ -146,7 +146,7 @@ describe(`[all] Test package.json`, function() {
     });
   });
 
-  it.skip(`should have correct details in _version.mjs`, function() {
+  it(`should have correct details in _version.mjs`, function() {
     const versionRegex = /['|"]workbox:((?:[^:'"]*|:)*)['|"]/;
 
     // Find directories with package.json file
