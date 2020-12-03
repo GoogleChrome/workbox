@@ -60,8 +60,9 @@ module.exports = {
       parallel(
           build_node_packages,
           build_node_ts_packages,
-          build_sw_packages,
-          build_window_packages,
+          // This needs to be a series, not in parallel, so that there isn't a
+          // race condition with the terser nameCache.
+          series(build_sw_packages, build_window_packages),
       ),
   ),
 };
