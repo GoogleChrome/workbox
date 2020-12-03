@@ -4,7 +4,7 @@
     "node": ">=10.0.0"
   },
   "scripts": {
-    "version": "git add -A packages",
+    "version": "gulp build && git add -A packages",
     "gulp": "gulp"
   },
   "nyc": {
