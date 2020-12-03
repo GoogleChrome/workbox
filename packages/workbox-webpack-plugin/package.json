@@ -1,6 +1,6 @@
 {
   "name": "workbox-webpack-plugin",
-  "version": "6.0.1",
+  "version": "6.0.2",
   "description": "A plugin for your Webpack build process, helping you generate a manifest of local files that workbox-sw should precache.",
   "keywords": [
     "workbox",
@@ -28,7 +28,7 @@
     "source-map-url": "^0.4.0",
     "upath": "^1.2.0",
     "webpack-sources": "^1.4.3",
-    "workbox-build": "^6.0.1"
+    "workbox-build": "^6.0.2"
   },
   "peerDependencies": {
     "webpack": "^4.4.0 || ^5.9.0"
