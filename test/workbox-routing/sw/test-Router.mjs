@@ -157,6 +157,7 @@ describe(`Router`, function() {
       expect(router.handleRequest.args[0][0].request).to.equal(request);
       expect(router.handleRequest.args[0][0].event).to.equal(fetchEvent);
       expect(fetchEvent.respondWith.callCount).to.equal(1);
+      expect(fetchEvent.waitUntil.callCount).to.equal(1);
 
       const response = fetchEvent.respondWith.args[0][0];
       expect(await response.text()).to.equal(EXPECTED_RESPONSE_BODY);
