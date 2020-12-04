@@ -75,6 +75,7 @@ class Router {
       const {request} = event;
       const responsePromise = this.handleRequest({request, event});
       if (responsePromise) {
+        event.waitUntil(responsePromise);
         event.respondWith(responsePromise);
       }
     }) as EventListener);
