@@ -244,17 +244,40 @@ class Router {
       responsePromise = Promise.reject(err);
     }
 
-    if (responsePromise instanceof Promise && this._catchHandler) {
-      responsePromise = responsePromise.catch((err) => {
+    // Get route's catch handler, if it exists
+    const catchHandler = route && route.catchHandler;
+
+    if (responsePromise instanceof Promise && (this._catchHandler || catchHandler)) {
+      responsePromise = responsePromise.catch(async (err) => {
+        // If there's a route catch handler, process that first
+        if (catchHandler) {
+          if (process.env.NODE_ENV !== 'production') {
+            // Still include URL here as it will be async from the console group
+            // and may not make sense without the URL
+            logger.groupCollapsed(`Error thrown when responding to: ` +
+              ` ${getFriendlyURL(url)}. Falling back to route's Catch Handler.`);
+            logger.error(`Error thrown by:`, route);
+            logger.error(err);
+            logger.groupEnd();
+          }
+
+          try {
+            return await catchHandler.handle({url, request, event, params});
+          } catch (catchErr) {
+            err = catchErr;
+          }
+        }
+
         if (process.env.NODE_ENV !== 'production') {
           // Still include URL here as it will be async from the console group
           // and may not make sense without the URL
           logger.groupCollapsed(`Error thrown when responding to: ` +
-            ` ${getFriendlyURL(url)}. Falling back to Catch Handler.`);
+            ` ${getFriendlyURL(url)}. Falling back to global Catch Handler.`);
           logger.error(`Error thrown by:`, route);
           logger.error(err);
           logger.groupEnd();
         }
+        
         return this._catchHandler!.handle({url, request, event});
       });
     }

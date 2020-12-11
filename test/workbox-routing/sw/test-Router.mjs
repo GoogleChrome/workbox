@@ -471,6 +471,43 @@ describe(`Router`, function() {
       expect(responseBody).to.eql(EXPECTED_RESPONSE_BODY);
     });
 
+    it(`should fall back to the Route's catch handler if there's an error in the Route's handler, if set`, async function() {
+      const router = new Router();
+      const route = new Route(
+          () => true,
+          () => Promise.reject(new Error()),
+      );
+      route.setCatchHandler(() => new Response(EXPECTED_RESPONSE_BODY));
+      router.registerRoute(route);
+
+      // route.match() always returns true, so the Request details don't matter.
+      const request = new Request(location);
+      const event = new FetchEvent('fetch', {request});
+      const response = await router.handleRequest({request, event});
+      const responseBody = await response.text();
+
+      expect(responseBody).to.eql(EXPECTED_RESPONSE_BODY);
+    });
+
+    it(`should fall back to the global catch handler if there's an error in the Route's catch handler`, async function() {
+      const router = new Router();
+      const route = new Route(
+          () => true,
+          () => Promise.reject(new Error()),
+      );
+      route.setCatchHandler(() => Promise.reject(new Error()));
+      router.setCatchHandler(() => new Response(EXPECTED_RESPONSE_BODY));
+      router.registerRoute(route);
+
+      // route.match() always returns true, so the Request details don't matter.
+      const request = new Request(location);
+      const event = new FetchEvent('fetch', {request});
+      const response = await router.handleRequest({request, event});
+      const responseBody = await response.text();
+
+      expect(responseBody).to.eql(EXPECTED_RESPONSE_BODY);
+    });
+
     it(`should return a response from the first matching route when there are multiple potential matches`, async function() {
       const router = new Router();
       const response1 = 'response1';
