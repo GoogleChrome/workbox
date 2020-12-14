@@ -268,17 +268,21 @@ class Router {
           }
         }
 
-        if (process.env.NODE_ENV !== 'production') {
-          // Still include URL here as it will be async from the console group
-          // and may not make sense without the URL
-          logger.groupCollapsed(`Error thrown when responding to: ` +
-            ` ${getFriendlyURL(url)}. Falling back to global Catch Handler.`);
-          logger.error(`Error thrown by:`, route);
-          logger.error(err);
-          logger.groupEnd();
+        if (this._catchHandler) {
+          if (process.env.NODE_ENV !== 'production') {
+            // Still include URL here as it will be async from the console group
+            // and may not make sense without the URL
+            logger.groupCollapsed(`Error thrown when responding to: ` +
+              ` ${getFriendlyURL(url)}. Falling back to global Catch Handler.`);
+            logger.error(`Error thrown by:`, route);
+            logger.error(err);
+            logger.groupEnd();
+          }
+          
+          return this._catchHandler.handle({url, request, event});
         }
-        
-        return this._catchHandler!.handle({url, request, event});
+
+        return Promise.reject(err);
       });
     }
 
