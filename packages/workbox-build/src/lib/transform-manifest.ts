@@ -6,13 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
-const errors = require('./errors');
-const additionalManifestEntriesTransform =
-  require('./additional-manifest-entries-transform');
-const maximumSizeTransform = require('./maximum-size-transform');
-const modifyURLPrefixTransform = require('./modify-url-prefix-transform');
-const noRevisionForURLsMatchingTransform =
-  require('./no-revision-for-urls-matching-transform');
+import errors from './errors';
+import additionalManifestEntriesTransform from './additional-manifest-entries-transform';
+import maximumSizeTransform from './maximum-size-transform';
+import modifyURLPrefixTransform from './modify-url-prefix-transform';
+import noRevisionForURLsMatchingTransform from './no-revision-for-urls-matching-transform';
 
 /**
  * A `ManifestTransform` function can be used to modify the modify the `url` or
@@ -66,7 +64,7 @@ const noRevisionForURLsMatchingTransform =
  * @memberof module:workbox-build
  */
 
-module.exports = async ({
+export default async function ({
   additionalManifestEntries,
   dontCacheBustURLsMatching,
   fileDetails,
@@ -74,7 +72,7 @@ module.exports = async ({
   maximumFileSizeToCacheInBytes,
   modifyURLPrefix,
   transformParam,
-}) => {
+}) {
   let allWarnings = [];
 
   // Take the array of fileDetail objects and convert it into an array of

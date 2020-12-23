@@ -6,9 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-const getFileManifestEntries = require('./lib/get-file-manifest-entries');
-const getManifestSchema = require('./options/schema/get-manifest');
-const validate = require('./lib/validate-options');
+import {BuildResult, GetManifestOptions} from './types';
+import getFileManifestEntries from './lib/get-file-manifest-entries';
+import getManifestSchema from './options/schema/get-manifest';
+import validate from './lib/validate-options';
 
 // eslint-disable-next-line jsdoc/newline-after-description
 /**
@@ -88,13 +89,8 @@ const validate = require('./lib/validate-options');
  *
  * @memberof module:workbox-build
  */
-async function getManifest(config) {
-  const options = validate(config, getManifestSchema);
+export async function getManifest(config: GetManifestOptions): Promise<BuildResult> {
+  const options: GetManifestOptions = validate(config, getManifestSchema);
 
-  const {manifestEntries, count, size, warnings} =
-    await getFileManifestEntries(options);
-
-  return {manifestEntries, count, size, warnings};
+  return await getFileManifestEntries(options);
 }
-
-module.exports = getManifest;

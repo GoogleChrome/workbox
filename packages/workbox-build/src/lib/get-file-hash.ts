@@ -6,15 +6,15 @@
   https://opensource.org/licenses/MIT.
 */
 
-const fs = require('fs');
+import fse from 'fs-extra';
 
-const getStringHash = require('./get-string-hash');
-const errors = require('./errors');
+import getStringHash from './get-string-hash';
+import errors from './errors';
 
-module.exports = (file) => {
+export default function(file: string): string {
   try {
-    const buffer = fs.readFileSync(file);
-    return getStringHash(buffer);
+    const str = fse.readFileSync(file, 'utf8');
+    return getStringHash(str);
   } catch (err) {
     throw new Error(errors['unable-to-get-file-hash'] + ` '${err.message}'`);
   }

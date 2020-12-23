@@ -49,6 +49,7 @@
     "@rollup/plugin-node-resolve": "^9.0.0",
     "@rollup/plugin-replace": "^2.3.3",
     "@types/estree": "0.0.45",
+    "@types/fs-extra": "^9.0.5",
     "@typescript-eslint/eslint-plugin": "^2.30.0",
     "@typescript-eslint/parser": "^2.30.0",
     "acorn": "^8.0.1",

@@ -6,22 +6,24 @@
   https://opensource.org/licenses/MIT.
 */
 
-const glob = require('glob');
-const upath = require('upath');
+import glob from 'glob';
+import upath from 'upath';
 
-const errors = require('./errors');
-const getFileSize = require('./get-file-size');
-const getFileHash = require('./get-file-hash');
+import errors from './errors';
+import getFileSize from './get-file-size';
+import getFileHash from './get-file-hash';
 
-module.exports = ({
+import {GlobPartial} from '../types';
+
+export default function({
   globDirectory,
   globFollow,
   globIgnores,
   globPattern,
   globStrict,
-}) => {
-  let globbedFiles;
-  let warning;
+}: Omit<GlobPartial, 'globPatterns' | 'templatedURLs'> & {globPattern: string}) {
+  let globbedFiles: Array<string>;
+  let warning: string;
 
   try {
     globbedFiles = glob.sync(globPattern, {

@@ -6,10 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-const crypto = require('crypto');
+import crypto from 'crypto';
 
-module.exports = (string) => {
+export default function(str: string): string {
   const md5 = crypto.createHash('md5');
-  md5.update(string);
+  md5.update(str);
   return md5.digest('hex');
 };

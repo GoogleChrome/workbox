@@ -6,13 +6,13 @@
   https://opensource.org/licenses/MIT.
 */
 
-const fs = require('fs');
+import fse from 'fs-extra';
 
-const errors = require('./errors');
+import errors from './errors';
 
-module.exports = (file) => {
+export default function(file: string): number {
   try {
-    const stat = fs.statSync(file);
+    const stat = fse.statSync(file);
     if (!stat.isFile()) {
       return null;
     }

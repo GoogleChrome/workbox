@@ -6,15 +6,16 @@
   https://opensource.org/licenses/MIT.
 */
 
-const assert = require('assert');
+import assert from 'assert';
 
-const errors = require('./errors');
-const transformManifest = require('./transform-manifest');
-const getCompositeDetails = require('./get-composite-details');
-const getFileDetails = require('./get-file-details');
-const getStringDetails = require('./get-string-details');
+import {BuildResult, FileDetails, GetManifestOptions} from '../types';
+import errors from './errors';
+import getCompositeDetails from './get-composite-details';
+import getFileDetails from './get-file-details';
+import getStringDetails from './get-string-details';
+import transformManifest from './transform-manifest';
 
-module.exports = async ({
+export default async function ({
   additionalManifestEntries,
   dontCacheBustURLsMatching,
   globDirectory,
@@ -25,18 +26,14 @@ module.exports = async ({
   manifestTransforms,
   maximumFileSizeToCacheInBytes,
   modifyURLPrefix,
-  swDest,
   templatedURLs,
-}) => {
-  const warnings = [];
-  // Initialize to an empty array so that we can still pass something to
-  // transformManifest() and get a normalized output.
-  let fileDetails = [];
-  const fileSet = new Set();
+}: GetManifestOptions): Promise<BuildResult> {
+  const warnings: Array<string> = [];
+  const allFileDetails = new Map<string, FileDetails>();
 
   if (globDirectory) {
     try {
-      fileDetails = globPatterns.reduce((accumulated, globPattern) => {
+      for (const globPattern of globPatterns) {
         const {globbedFileDetails, warning} = getFileDetails({
           globDirectory,
           globFollow,
@@ -49,16 +46,12 @@ module.exports = async ({
           warnings.push(warning);
         }
 
-        globbedFileDetails.forEach((fileDetails) => {
-          if (fileSet.has(fileDetails.file)) {
-            return;
+        for (const details of globbedFileDetails) {
+          if (!allFileDetails.has(details.file)) {
+            allFileDetails.set(details.file, details);
           }
-
-          fileSet.add(fileDetails.file);
-          accumulated.push(fileDetails);
-        });
-        return accumulated;
-      }, []);
+        }
+      }
     } catch (error) {
       // If there's an exception thrown while globbing, then report
       // it back as a warning, and don't consider it fatal.
@@ -68,7 +61,7 @@ module.exports = async ({
 
   if (templatedURLs) {
     for (const url of Object.keys(templatedURLs)) {
-      assert(!fileSet.has(url), errors['templated-url-matches-glob']);
+      assert(!allFileDetails.has(url), errors['templated-url-matches-glob']);
 
       const dependencies = templatedURLs[url];
       if (Array.isArray(dependencies)) {
@@ -95,9 +88,9 @@ module.exports = async ({
               error);
           }
         }, []);
-        fileDetails.push(getCompositeDetails(url, details));
+        allFileDetails.set(url, getCompositeDetails(url, details));
       } else if (typeof dependencies === 'string') {
-        fileDetails.push(getStringDetails(url, dependencies));
+        allFileDetails.set(url, getStringDetails(url, dependencies));
       }
     }
   }
@@ -105,7 +98,7 @@ module.exports = async ({
   const transformedManifest = await transformManifest({
     additionalManifestEntries,
     dontCacheBustURLsMatching,
-    fileDetails,
+    fileDetails: allFileDetails,
     manifestTransforms,
     maximumFileSizeToCacheInBytes,
     modifyURLPrefix,

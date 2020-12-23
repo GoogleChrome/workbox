@@ -29,7 +29,7 @@ import {
 import './_version.js';
 
 
-interface GoogleAnalyticsInitializeOptions {
+export interface GoogleAnalyticsInitializeOptions {
   cacheName?: string;
   parameterOverrides?: {[paramName: string]: string};
   hitFilter?: (params: URLSearchParams) => void;

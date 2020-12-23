@@ -6,12 +6,14 @@
   https://opensource.org/licenses/MIT.
 */
 
-const getStringHash = require('./get-string-hash');
+import getStringHash from './get-string-hash';
 
-module.exports = (url, string) => {
+import {FileDetails} from '../types';
+
+export default function(url: string, str: string): FileDetails {
   return {
     file: url,
-    hash: getStringHash(string),
-    size: string.length,
+    hash: getStringHash(str),
+    size: str.length,
   };
 };
