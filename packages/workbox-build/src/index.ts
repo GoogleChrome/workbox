@@ -6,16 +6,16 @@
   https://opensource.org/licenses/MIT.
 */
 
-const {getModuleURL} = require('./lib/cdn-utils');
-const copyWorkboxLibraries = require('./lib/copy-workbox-libraries');
-const generateSW = require('./generate-sw');
-const getManifest = require('./get-manifest');
-const injectManifest = require('./inject-manifest');
+import {getModuleURL} from './lib/cdn-utils';
+import copyWorkboxLibraries from './lib/copy-workbox-libraries';
+import generateSW from './generate-sw';
+import getManifest from './get-manifest';
+import injectManifest from './inject-manifest';
 
 /**
  * @module workbox-build
  */
-module.exports = {
+export default {
   copyWorkboxLibraries,
   generateSW,
   getManifest,

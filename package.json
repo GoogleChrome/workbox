@@ -104,6 +104,7 @@
     "service-worker-mock": "^1.9.3",
     "sinon": "^9.0.3",
     "tempy": "^0.6.0",
+    "type-fest": "^0.20.2",
     "typescript": "^3.9.7",
     "upath": "^1.2.0",
     "webpack-v4": "npm:webpack@^4.44.2",

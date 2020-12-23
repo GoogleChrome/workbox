@@ -194,7 +194,7 @@ import writeServiceWorkerUsingDefaultTemplate from './lib/write-sw-using-default
  *
  * @memberof module:workbox-build
  */
-export async function generateSW(config: GenerateSWOptions): Promise<BuildResult> {
+export default async function(config: GenerateSWOptions): Promise<BuildResult> {
   const options: GenerateSWOptions = validate(config, generateSWSchema);
 
   if (options.globDirectory) {

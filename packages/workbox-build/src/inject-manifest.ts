@@ -6,20 +6,21 @@
   https://opensource.org/licenses/MIT.
 */
 
-const assert = require('assert');
-const fse = require('fs-extra');
-const sourceMapURL = require('source-map-url');
-const stringify = require('fast-json-stable-stringify');
-const upath = require('upath');
+import {RawSourceMap} from 'source-map';
+import assert from 'assert';
+import fse from 'fs-extra';
+import sourceMapURL from 'source-map-url';
+import stringify from 'fast-json-stable-stringify';
+import upath from 'upath';
 
-const errors = require('./lib/errors');
-const escapeRegexp = require('./lib/escape-regexp');
-const getFileManifestEntries = require('./lib/get-file-manifest-entries');
-const injectManifestSchema = require('./options/schema/inject-manifest');
-const rebasePath = require('./lib/rebase-path');
-const replaceAndUpdateSourceMap =
-  require('./lib/replace-and-update-source-map');
-const validate = require('./lib/validate-options');
+import {BuildResult, InjectManifestOptions} from './types';
+import errors from './lib/errors';
+import escapeRegexp from './lib/escape-regexp';
+import getFileManifestEntries from './lib/get-file-manifest-entries';
+import injectManifestSchema from './options/schema/inject-manifest';
+import rebasePath from './lib/rebase-path';
+import replaceAndUpdateSourceMap from './lib/replace-and-update-source-map';
+import validate from './lib/validate-options';
 
 // eslint-disable-next-line jsdoc/newline-after-description
 /**
@@ -116,8 +117,8 @@ const validate = require('./lib/validate-options');
  *
  * @memberof module:workbox-build
  */
-async function injectManifest(config) {
-  const options = validate(config, injectManifestSchema);
+export default async function(config: InjectManifestOptions): Promise<BuildResult> {
+  const options: InjectManifestOptions = validate(config, injectManifestSchema);
 
   // Make sure we leave swSrc and swDest out of the precache manifest.
   for (const file of [options.swSrc, options.swDest]) {
@@ -131,7 +132,7 @@ async function injectManifest(config) {
 
   const {count, size, manifestEntries, warnings} =
     await getFileManifestEntries(options);
-  let swFileContents;
+  let swFileContents: string;
   try {
     swFileContents = await fse.readFile(options.swSrc, 'utf8');
   } catch (error) {
@@ -153,9 +154,9 @@ async function injectManifest(config) {
     options.injectionPoint);
 
   const manifestString = stringify(manifestEntries);
-  const filesToWrite = {};
+  const filesToWrite: {[key: string]: string} = {};
 
-  const url = sourceMapURL.getFrom(swFileContents);
+  const url: string = sourceMapURL.getFrom(swFileContents);
   // If our swSrc file contains a sourcemap, we would invalidate that
   // mapping if we just replaced injectionPoint with the stringified manifest.
   // Instead, we need to update the swDest contents as well as the sourcemap
@@ -166,9 +167,9 @@ async function injectManifest(config) {
     const sourcemapSrcPath = upath.resolve(upath.dirname(options.swSrc), url);
     const sourcemapDestPath = upath.resolve(upath.dirname(options.swDest), url);
 
-    let originalMap;
+    let originalMap: RawSourceMap;
     try {
-      originalMap = await fse.readJSON(sourcemapSrcPath, 'utf8');
+      originalMap = await fse.readJSON(sourcemapSrcPath, {encoding: 'utf8'});
     } catch (error) {
       throw new Error(`${errors['cant-find-sourcemap']} ${error.message}`);
     }
@@ -209,5 +210,3 @@ async function injectManifest(config) {
     filePaths: Object.keys(filesToWrite).map((f) => upath.resolve(f)),
   };
 }
-
-module.exports = injectManifest;

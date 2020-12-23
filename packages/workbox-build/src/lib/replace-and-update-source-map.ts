@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-const {SourceMapConsumer, SourceMapGenerator} = require('source-map');
+import {RawSourceMap, SourceMapConsumer, SourceMapGenerator} from 'source-map';
 
 /**
  * Adapted from https://github.com/nsams/sourcemap-aware-replace, with modern
@@ -27,20 +27,26 @@ const {SourceMapConsumer, SourceMapGenerator} = require('source-map');
  *
  * @private
  */
-async function replaceAndUpdateSourceMap({
+export default async function({
   jsFilename,
   originalMap,
   originalSource,
   replaceString,
   searchString,
-}) {
+}: {
+  jsFilename: string;
+  originalMap: RawSourceMap;
+  originalSource: string;
+  replaceString: string;
+  searchString: string;
+}): Promise<{map: string; source: string}> {
   const generator = new SourceMapGenerator({
     file: jsFilename,
   });
 
   const consumer = await new SourceMapConsumer(originalMap);
 
-  let pos;
+  let pos: number;
   let src = originalSource;
   const replacements = [];
   let lineNum = 0;
@@ -92,7 +98,7 @@ async function replaceAndUpdateSourceMap({
 
   consumer.destroy();
 
-  const updatedSourceMap = Object.assign(JSON.parse(generator.toString()), {
+  const updatedSourceMap: RawSourceMap = Object.assign(JSON.parse(generator.toString()), {
     names: originalMap.names,
     sourceRoot: originalMap.sourceRoot,
     sources: originalMap.sources,
@@ -104,5 +110,3 @@ async function replaceAndUpdateSourceMap({
     source: src,
   };
 }
-
-module.exports = replaceAndUpdateSourceMap;
