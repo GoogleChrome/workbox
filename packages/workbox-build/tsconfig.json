@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "outDir": "build",
+    "resolveJsonModule": true,
+    "rootDir": "src",
+    "target": "ES2018",
+    "tsBuildInfoFile": "./tsconfig.tsbuildinfo"
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/cdn-details.json"
+  ]
+}

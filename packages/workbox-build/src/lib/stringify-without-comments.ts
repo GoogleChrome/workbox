@@ -6,12 +6,12 @@
   https://opensource.org/licenses/MIT.
 */
 
-const objectStringify = require('stringify-object');
-const stripComments = require('strip-comments');
+import objectStringify from 'stringify-object';
+import stripComments from 'strip-comments';
 
-module.exports = (obj) => {
+export default function(obj: {[key: string]: any}): string {
   return objectStringify(obj, {
-    transform: (_obj, _prop, str) =>
+    transform: (_obj: {[key: string]: any}, _prop: string, str: string) =>
       typeof _obj[_prop] === 'function' ? stripComments(str) : str,
   });
 };

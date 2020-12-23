@@ -60,6 +60,6 @@
   },
   "main": "build/index.js",
   "workbox": {
-    "packageType": "node"
+    "packageType": "node_ts"
   }
 }

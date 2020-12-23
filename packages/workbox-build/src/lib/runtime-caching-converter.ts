@@ -6,10 +6,14 @@
   https://opensource.org/licenses/MIT.
 */
 
-const ol = require('common-tags').oneLine;
+import {oneLine as ol} from 'common-tags';
 
-const errors = require('./errors');
-const stringifyWithoutComments = require('./stringify-without-comments');
+import {RuntimeCaching} from '../types';
+import ModuleRegistry from './module-registry';
+import errors from './errors';
+import stringifyWithoutComments from './stringify-without-comments';
+
+type OptionsToRemove = 'cacheName' | 'networkTimeoutSeconds' | 'fetchOptions' | 'matchOptions';
 
 /**
  * Given a set of options that configures runtime caching behavior, convert it
@@ -22,8 +26,8 @@ const stringifyWithoutComments = require('./stringify-without-comments');
  *
  * @private
  */
-function getOptionsString(moduleRegistry, options = {}) {
-  let plugins = [];
+function getOptionsString(moduleRegistry: ModuleRegistry, options: RuntimeCaching['options'] = {}) {
+  let plugins: Array<string> = [];
   if (options.plugins) {
     // Using libs because JSON.stringify won't handle functions.
     plugins = options.plugins.map(stringifyWithoutComments);
@@ -33,13 +37,13 @@ function getOptionsString(moduleRegistry, options = {}) {
   // Pull handler-specific config from the options object, since they are
   // not directly used to construct a plugin instance. If set, need to be
   // passed as options to the handler constructor instead.
-  const handlerOptionKeys = [
+  const handlerOptionKeys: Array<OptionsToRemove> = [
     'cacheName',
     'networkTimeoutSeconds',
     'fetchOptions',
     'matchOptions',
   ];
-  const handlerOptions = {};
+  const handlerOptions: {[key: string]: any} = {};
   for (const key of handlerOptionKeys) {
     if (key in options) {
       handlerOptions[key] = options[key];
@@ -126,7 +130,7 @@ function getOptionsString(moduleRegistry, options = {}) {
   }
 }
 
-module.exports = (moduleRegistry, runtimeCaching) => {
+module.exports = (moduleRegistry: ModuleRegistry, runtimeCaching: Array<RuntimeCaching>) => {
   return runtimeCaching.map((entry) => {
     const method = entry.method || 'GET';
 
@@ -162,5 +166,7 @@ module.exports = (moduleRegistry, runtimeCaching) => {
     } else if (typeof entry.handler === 'function') {
       return `${registerRoute}(${matcher}, ${entry.handler}, '${method}');\n`;
     }
+
+    return undefined;
   }).filter((entry) => Boolean(entry)); // Remove undefined map() return values.
 };

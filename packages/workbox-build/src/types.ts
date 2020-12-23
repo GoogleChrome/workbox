@@ -17,10 +17,10 @@ export interface ManifestEntry {
 
 type StrategyName = 'CacheFirst' | 'CacheOnly' | 'NetworkFirst' | 'NetworkOnly' | 'StaleWhileRevalidate';
 
-interface RuntimeCaching {
+export interface RuntimeCaching {
   handler: RouteHandler | StrategyName;
   method?: HTTPMethod;
-  options: {
+  options?: {
     backgroundSync?: {
       name: string;
       options?: QueueOptions;
@@ -39,8 +39,8 @@ interface RuntimeCaching {
     precacheFallback?: {
       fallbackURL: string;
     },
-    fetchOptions: RequestInit;
-    matchOptions: CacheQueryOptions;
+    fetchOptions?: RequestInit;
+    matchOptions?: CacheQueryOptions;
   };
   urlPattern: RegExp | string | RouteMatchCallback;
 }

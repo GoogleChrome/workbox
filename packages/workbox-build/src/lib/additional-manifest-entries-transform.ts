@@ -6,10 +6,12 @@
   https://opensource.org/licenses/MIT.
 */
 
-const errors = require('./errors');
+import errors from './errors';
 
-module.exports = (additionalManifestEntries) => {
-  return (manifest) => {
+import {ManifestEntry} from '../types';
+
+export default function(additionalManifestEntries: Array<ManifestEntry>) {
+  return (manifest: Array<ManifestEntry> & {size: number}) => {
     const warnings = [];
     const stringEntries = new Set();
 
@@ -39,4 +41,4 @@ module.exports = (additionalManifestEntries) => {
       warnings,
     };
   };
-};
+}
