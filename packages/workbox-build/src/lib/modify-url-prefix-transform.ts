@@ -9,7 +9,9 @@
 const errors = require('./errors');
 const escapeRegExp = require('./escape-regexp');
 
-module.exports = (modifyURLPrefix) => {
+import {ManifestTransform} from '../types';
+
+export default function(modifyURLPrefix: {[key: string]: string}): ManifestTransform {
   if (!modifyURLPrefix ||
       typeof modifyURLPrefix !== 'object' ||
       Array.isArray(modifyURLPrefix)) {
@@ -19,14 +21,16 @@ module.exports = (modifyURLPrefix) => {
   // If there are no entries in modifyURLPrefix, just return an identity
   // function as a shortcut.
   if (Object.keys(modifyURLPrefix).length === 0) {
-    return (entry) => entry;
+    return (manifest) => {
+      return {manifest};
+    };
   }
 
-  Object.keys(modifyURLPrefix).forEach((key) => {
+  for (const key of Object.keys(modifyURLPrefix)) {
     if (typeof modifyURLPrefix[key] !== 'string') {
       throw new Error(errors['modify-url-prefix-bad-prefixes']);
     }
-  });
+  }
 
   // Escape the user input so it's safe to use in a regex.
   const safeModifyURLPrefixes = Object.keys(modifyURLPrefix).map(escapeRegExp);

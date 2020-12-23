@@ -6,9 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
-const prettyBytes = require('pretty-bytes');
+import prettyBytes from 'pretty-bytes';
 
-module.exports = (maximumFileSizeToCacheInBytes) => {
+import {ManifestTransform} from '../types';
+
+export default function (maximumFileSizeToCacheInBytes: number): ManifestTransform {
   return (originalManifest) => {
     const warnings = [];
     const manifest = originalManifest.filter((entry) => {

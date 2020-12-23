@@ -43,10 +43,20 @@ interface RuntimeCaching {
   urlPattern: RegExp | string | RouteMatchCallback;
 }
 
-interface BasePartial {
+export interface ManifestTransformResult {
+  manifest: Array<ManifestEntry & {size: number}>;
+  warnings?: Array<string>;
+}
+
+export type ManifestTransform = (
+  manifestEntries: Array<ManifestEntry & {size: number}>,
+  compilation?: unknown
+) => Promise<ManifestTransformResult> | ManifestTransformResult;
+
+export interface BasePartial {
   additionalManifestEntries?: Array<string | ManifestEntry>;
   dontCacheBustURLsMatching?: RegExp;
-  manifestTransforms?: Array<() => {}>; // TODO: Add arity info.
+  manifestTransforms?: Array<ManifestTransform>;
   maximumFileSizeToCacheInBytes?: number;
   modifyURLPrefix: {
     [key: string]: string;

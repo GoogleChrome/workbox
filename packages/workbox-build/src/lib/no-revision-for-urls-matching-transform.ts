@@ -6,9 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
-const errors = require('./errors');
+import errors from './errors';
 
-module.exports = (regexp) => {
+import {ManifestTransform} from '../types';
+
+export default function(regexp: RegExp): ManifestTransform {
   if (!(regexp instanceof RegExp)) {
     throw new Error(errors['invalid-dont-cache-bust']);
   }

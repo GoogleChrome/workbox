@@ -6,8 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
-import errors from './errors';
+import {BasePartial, FileDetails, ManifestEntry, ManifestTransform} from '../types';
 import additionalManifestEntriesTransform from './additional-manifest-entries-transform';
+import errors from './errors';
 import maximumSizeTransform from './maximum-size-transform';
 import modifyURLPrefixTransform from './modify-url-prefix-transform';
 import noRevisionForURLsMatchingTransform from './no-revision-for-urls-matching-transform';
@@ -72,8 +73,13 @@ export default async function ({
   maximumFileSizeToCacheInBytes,
   modifyURLPrefix,
   transformParam,
+}: BasePartial & {
+  fileDetails: Array<FileDetails>;
+  // When this is called by the webpack plugin, transformParam will be the
+  // current webpack compilation.
+  transformParam?: unknown;
 }) {
-  let allWarnings = [];
+  const allWarnings: Array<string> = [];
 
   // Take the array of fileDetail objects and convert it into an array of
   // {url, revision, size} objects, with \ replaced with /.
@@ -85,7 +91,7 @@ export default async function ({
     };
   });
 
-  const transformsToApply = [];
+  const transformsToApply: Array<ManifestTransform> = [];
 
   if (maximumFileSizeToCacheInBytes) {
     transformsToApply.push(maximumSizeTransform(maximumFileSizeToCacheInBytes));
@@ -119,7 +125,7 @@ export default async function ({
     }
 
     transformedManifest = result.manifest;
-    allWarnings = allWarnings.concat(result.warnings || []);
+    allWarnings.push(...(result.warnings || []));
   }
 
   // Generate some metadata about the manifest before we clear out the size
@@ -134,7 +140,7 @@ export default async function ({
   return {
     count,
     size,
-    manifestEntries: transformedManifest,
+    manifestEntries: transformedManifest as Array<ManifestEntry>,
     warnings: allWarnings,
   };
 };

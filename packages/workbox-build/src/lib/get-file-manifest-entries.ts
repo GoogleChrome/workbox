@@ -98,15 +98,13 @@ export default async function ({
   const transformedManifest = await transformManifest({
     additionalManifestEntries,
     dontCacheBustURLsMatching,
-    fileDetails: allFileDetails,
     manifestTransforms,
     maximumFileSizeToCacheInBytes,
     modifyURLPrefix,
+    fileDetails: Array.from(allFileDetails.values()),
   });
 
-  if (warnings.length > 0) {
-    transformedManifest.warnings.push(...warnings);
-  }
+  transformedManifest.warnings.push(...warnings);
 
   return transformedManifest;
 };
