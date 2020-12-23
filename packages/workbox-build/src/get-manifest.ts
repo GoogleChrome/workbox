@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {BuildResult, GetManifestOptions} from './types';
+import {GetManifestResult, GetManifestOptions} from './types';
 import getFileManifestEntries from './lib/get-file-manifest-entries';
 import getManifestSchema from './options/schema/get-manifest';
 import validate from './lib/validate-options';
@@ -89,7 +89,7 @@ import validate from './lib/validate-options';
  *
  * @memberof module:workbox-build
  */
-export async function getManifest(config: GetManifestOptions): Promise<BuildResult> {
+export async function getManifest(config: GetManifestOptions): Promise<GetManifestResult> {
   const options: GetManifestOptions = validate(config, getManifestSchema);
 
   return await getFileManifestEntries(options);

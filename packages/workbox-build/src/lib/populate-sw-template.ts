@@ -6,15 +6,16 @@
   https://opensource.org/licenses/MIT.
 */
 
-const template = require('lodash/template');
-const swTemplate = require('../templates/sw-template');
+import template from 'lodash/template';
+import swTemplate from '../templates/sw-template';
 
-const errors = require('./errors');
-const ModuleRegistry = require('./module-registry');
-const runtimeCachingConverter = require('./runtime-caching-converter');
-const stringifyWithoutComments = require('./stringify-without-comments');
+import {GeneratePartial, ManifestEntry} from '../types';
+import errors from './errors';
+import ModuleRegistry from './module-registry';
+import runtimeCachingConverter from './runtime-caching-converter';
+import stringifyWithoutComments from './stringify-without-comments';
 
-module.exports = ({
+export default function({
   cacheId,
   cleanupOutdatedCaches,
   clientsClaim,
@@ -30,7 +31,7 @@ module.exports = ({
   offlineGoogleAnalytics,
   runtimeCaching = [],
   skipWaiting,
-}) => {
+}: GeneratePartial & {manifestEntries: Array<ManifestEntry>}): string {
   // There needs to be at least something to precache, or else runtime caching.
   if (!(manifestEntries.length > 0 || runtimeCaching.length > 0)) {
     throw new Error(errors['no-manifest-entries-or-runtime-caching']);
@@ -42,7 +43,7 @@ module.exports = ({
     // An array of RegExp objects can't be serialized by JSON.stringify()'s
     // default behavior, so if it's given, convert it manually.
     ignoreURLParametersMatching: ignoreURLParametersMatching ?
-      [] :
+      [] as Array<RegExp> :
       undefined,
   };
 
@@ -55,7 +56,7 @@ module.exports = ({
     );
   }
 
-  let offlineAnalyticsConfigString;
+  let offlineAnalyticsConfigString: string;
   if (offlineGoogleAnalytics) {
     // If offlineGoogleAnalytics is a truthy value, we need to convert it to the
     // format expected by the template.

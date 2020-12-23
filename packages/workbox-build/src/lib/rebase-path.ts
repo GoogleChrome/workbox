@@ -6,9 +6,12 @@
   https://opensource.org/licenses/MIT.
 */
 
-const upath = require('upath');
+import upath from 'upath';
 
-module.exports = ({baseDirectory, file}) => {
+export default function({
+  baseDirectory,
+  file
+}: {baseDirectory: string, file: string}): string {
   // The initial path is relative to the current directory, so make it absolute.
   const absolutePath = upath.resolve(file);
 
@@ -19,4 +22,4 @@ module.exports = ({baseDirectory, file}) => {
   const normalizedPath = upath.normalize(relativePath);
 
   return normalizedPath;
-};
+}

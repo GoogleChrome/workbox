@@ -6,25 +6,32 @@
   https://opensource.org/licenses/MIT.
 */
 
-const {babel} = require('@rollup/plugin-babel');
-const {nodeResolve} = require('@rollup/plugin-node-resolve');
-const {rollup} = require('rollup');
-const {terser} = require('rollup-plugin-terser');
-const {writeFile} = require('fs-extra');
-const omt = require('@surma/rollup-plugin-off-main-thread');
-const presetEnv = require('@babel/preset-env');
-const replace = require('@rollup/plugin-replace');
-const tempy = require('tempy');
-const upath = require('upath');
+import {babel} from '@rollup/plugin-babel';
+import {nodeResolve} from '@rollup/plugin-node-resolve';
+import {rollup, Plugin} from 'rollup';
+import {terser} from 'rollup-plugin-terser';
+import {writeFile} from 'fs-extra';
+import omt from '@surma/rollup-plugin-off-main-thread';
+import presetEnv from '@babel/preset-env';
+import replace from '@rollup/plugin-replace';
+import tempy from 'tempy';
+import upath from 'upath';
 
-module.exports = async ({
+import {GeneratePartial, SWDestPartial} from '../types';
+
+interface NameAndContents {
+  contents: string | Uint8Array;
+  name: string
+}
+
+export default async function({
   babelPresetEnvTargets,
   inlineWorkboxRuntime,
   mode,
   sourcemap,
   swDest,
   unbundledCode,
-}) => {
+}: Omit<GeneratePartial, 'runtimeCaching'> & SWDestPartial & {unbundledCode: string}): Promise<Array<NameAndContents>> {
   // We need to write this to the "real" file system, as Rollup won't read from
   // a custom file system.
   const {dir, base} = upath.parse(swDest);
@@ -61,7 +68,11 @@ module.exports = async ({
     }));
   }
 
-  const rollupConfig = {
+  const rollupConfig: {
+    input: string;
+    manualChunks?: (id: string) => string | undefined;
+    plugins: Array<Plugin>;
+  } = {
     plugins,
     input: temporaryFile,
   };
@@ -83,9 +94,9 @@ module.exports = async ({
     format: inlineWorkboxRuntime ? 'es' : 'amd',
   });
 
-  const files = [];
+  const files: Array<NameAndContents>= [];
   for (const chunkOrAsset of output) {
-    if (chunkOrAsset.isAsset) {
+    if (chunkOrAsset.type === 'asset') {
       files.push({
         name: chunkOrAsset.fileName,
         contents: chunkOrAsset.source,
@@ -116,7 +127,10 @@ module.exports = async ({
     file.name = upath.format({
       dir,
       base: file.name,
+      ext: undefined,
+      name: undefined,
+      root: undefined,
     });
     return file;
   });
-};
+}

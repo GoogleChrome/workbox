@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-module.exports = `/**
+export default `/**
  * Welcome to your Workbox-powered service worker!
  *
  * You'll need to register this file in your web app.

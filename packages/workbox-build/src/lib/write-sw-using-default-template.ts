@@ -6,14 +6,15 @@
   https://opensource.org/licenses/MIT.
 */
 
-const fse = require('fs-extra');
-const upath = require('upath');
+import fse from 'fs-extra';
+import upath from 'upath';
 
-const bundle = require('./bundle');
-const errors = require('./errors');
-const populateSWTemplate = require('./populate-sw-template');
+import {GenerateSWOptions, ManifestEntry} from '../types';
+import bundle from './bundle';
+import errors from './errors';
+import populateSWTemplate from './populate-sw-template';
 
-module.exports = async ({
+export default async function({
   babelPresetEnvTargets,
   cacheId,
   cleanupOutdatedCaches,
@@ -34,7 +35,7 @@ module.exports = async ({
   skipWaiting,
   sourcemap,
   swDest,
-}) => {
+}: GenerateSWOptions & {manifestEntries: Array<ManifestEntry>}): Promise<Array<string>> {
   const outputDir = upath.dirname(swDest);
   try {
     await fse.mkdirp(outputDir);
@@ -71,7 +72,7 @@ module.exports = async ({
       unbundledCode,
     });
 
-    const filePaths = [];
+    const filePaths: Array<string> = [];
 
     for (const file of files) {
       const filePath = upath.resolve(file.name);

@@ -6,14 +6,14 @@
   https://opensource.org/licenses/MIT.
 */
 
-const upath = require('upath');
+import upath from 'upath';
 
-const generateSWSchema = require('./options/schema/generate-sw');
-const getFileManifestEntries = require('./lib/get-file-manifest-entries');
-const rebasePath = require('./lib/rebase-path');
-const validate = require('./lib/validate-options');
-const writeServiceWorkerUsingDefaultTemplate =
-  require('./lib/write-sw-using-default-template');
+import {BuildResult, GenerateSWOptions} from './types';
+import generateSWSchema from './options/schema/generate-sw';
+import getFileManifestEntries from './lib/get-file-manifest-entries';
+import rebasePath from './lib/rebase-path';
+import validate from './lib/validate-options';
+import writeServiceWorkerUsingDefaultTemplate from './lib/write-sw-using-default-template';
 
 // eslint-disable-next-line jsdoc/newline-after-description
 /**
@@ -194,8 +194,8 @@ const writeServiceWorkerUsingDefaultTemplate =
  *
  * @memberof module:workbox-build
  */
-async function generateSW(config) {
-  const options = validate(config, generateSWSchema);
+export async function generateSW(config: GenerateSWOptions): Promise<BuildResult> {
+  const options: GenerateSWOptions = validate(config, generateSWSchema);
 
   if (options.globDirectory) {
     // Make sure we leave swDest out of the precache manifest.
@@ -225,5 +225,3 @@ async function generateSW(config) {
 
   return {count, filePaths, size, warnings};
 }
-
-module.exports = generateSW;

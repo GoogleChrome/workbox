@@ -63,7 +63,7 @@ export interface BasePartial {
   };
 }
 
-interface GeneratePartial {
+export interface GeneratePartial {
   babelPresetEnvTargets?: Array<string>;
   cacheId?: string;
   cleanupOutdatedCaches?: boolean;
@@ -108,7 +108,7 @@ interface WebpackPartial {
   mode?: string;
 }
 
-interface SWDestPartial {
+export interface SWDestPartial {
   swDest: string;
 }
 
@@ -127,15 +127,15 @@ export type WebpackInjectManifestOptions = WebpackPartial & InjectPartial & Base
   webpackCompilationPlugins?: Array<any>;
 };
 
-export interface BuildResult {
+export interface GetManifestResult {
   count: number,
   manifestEntries: Array<ManifestEntry>,
   size: number,
   warnings: Array<string>
 }
 
-export type BuildResultWithFiles = BuildResult & {
-  files: Array<string>;
+export type BuildResult = Omit<GetManifestResult, 'manifestEntries'> & {
+  filePaths: Array<string>;
 };
 
 export interface FileDetails {

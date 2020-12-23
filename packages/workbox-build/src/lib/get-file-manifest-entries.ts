@@ -8,7 +8,7 @@
 
 import assert from 'assert';
 
-import {BuildResult, FileDetails, GetManifestOptions} from '../types';
+import {GetManifestResult, FileDetails, GetManifestOptions} from '../types';
 import errors from './errors';
 import getCompositeDetails from './get-composite-details';
 import getFileDetails from './get-file-details';
@@ -27,7 +27,7 @@ export default async function ({
   maximumFileSizeToCacheInBytes,
   modifyURLPrefix,
   templatedURLs,
-}: GetManifestOptions): Promise<BuildResult> {
+}: GetManifestOptions): Promise<GetManifestResult> {
   const warnings: Array<string> = [];
   const allFileDetails = new Map<string, FileDetails>();
 
