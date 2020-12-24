@@ -13,8 +13,6 @@ import ModuleRegistry from './module-registry';
 import errors from './errors';
 import stringifyWithoutComments from './stringify-without-comments';
 
-type OptionsToRemove = 'cacheName' | 'networkTimeoutSeconds' | 'fetchOptions' | 'matchOptions';
-
 /**
  * Given a set of options that configures runtime caching behavior, convert it
  * to the equivalent Workbox method calls.
@@ -27,60 +25,55 @@ type OptionsToRemove = 'cacheName' | 'networkTimeoutSeconds' | 'fetchOptions' | 
  * @private
  */
 function getOptionsString(moduleRegistry: ModuleRegistry, options: RuntimeCaching['options'] = {}) {
-  let plugins: Array<string> = [];
-  if (options.plugins) {
-    // Using libs because JSON.stringify won't handle functions.
-    plugins = options.plugins.map(stringifyWithoutComments);
-    delete options.plugins;
-  }
+  const plugins: Array<string> = [];
+  const handlerOptions: {[key in keyof typeof options]: any} = {};
 
-  // Pull handler-specific config from the options object, since they are
-  // not directly used to construct a plugin instance. If set, need to be
-  // passed as options to the handler constructor instead.
-  const handlerOptionKeys: Array<OptionsToRemove> = [
-    'cacheName',
-    'networkTimeoutSeconds',
-    'fetchOptions',
-    'matchOptions',
-  ];
-  const handlerOptions: {[key: string]: any} = {};
-  for (const key of handlerOptionKeys) {
-    if (key in options) {
-      handlerOptions[key] = options[key];
-      delete options[key];
-    }
-  }
-
-  for (const [pluginName, pluginConfig] of Object.entries(options)) {
-    // Ensure that we have some valid configuration to pass to the plugin.
-    if (Object.keys(pluginConfig).length === 0) {
+  for (const optionName of Object.keys(options) as Array<keyof typeof options>) {
+    if (options[optionName] === undefined) {
       continue;
     }
 
-    let pluginCode;
-    switch (pluginName) {
+    switch (optionName) {
+      // Using a library here because JSON.stringify won't handle functions.
+      case 'plugins': {
+        plugins.push(...options.plugins!.map(stringifyWithoutComments));
+        break;
+      }
+
+      // These are the option properties that we want to pull out, so that
+      // they're passed to the handler constructor.
+      case 'cacheName':
+      case 'networkTimeoutSeconds':
+      case 'fetchOptions':
+      case 'matchOptions': {
+        handlerOptions[optionName] = options[optionName];
+        break;
+      }
+
+      // The following cases are all shorthands for creating a plugin with a
+      // given configuration.
       case 'backgroundSync': {
-        const name = pluginConfig.name;
+        const name = options.backgroundSync!.name;
         const plugin = moduleRegistry.use(
             'workbox-background-sync', 'BackgroundSyncPlugin');
 
-        pluginCode = `new ${plugin}(${JSON.stringify(name)}`;
-        if ('options' in pluginConfig) {
-          pluginCode += `, ${stringifyWithoutComments(pluginConfig.options)}`;
+        let pluginCode = `new ${plugin}(${JSON.stringify(name)}`;
+        if (options.backgroundSync!.options) {
+          pluginCode += `, ${stringifyWithoutComments(options.backgroundSync!.options)}`;
         }
         pluginCode += `)`;
 
+        plugins.push(pluginCode);
         break;
       }
 
       case 'broadcastUpdate': {
-        const channelName = pluginConfig.channelName;
-        const opts = Object.assign({channelName}, pluginConfig.options);
+        const channelName = options.broadcastUpdate!.channelName;
+        const opts = Object.assign({channelName}, options.broadcastUpdate!.options);
         const plugin = moduleRegistry.use(
             'workbox-broadcast-update', 'BroadcastUpdatePlugin');
 
-        pluginCode = `new ${plugin}(${stringifyWithoutComments(opts)})`;
-
+        plugins.push(`new ${plugin}(${stringifyWithoutComments(opts)})`);
         break;
       }
 
@@ -88,8 +81,7 @@ function getOptionsString(moduleRegistry: ModuleRegistry, options: RuntimeCachin
         const plugin = moduleRegistry.use(
             'workbox-cacheable-response', 'CacheableResponsePlugin');
 
-        pluginCode = `new ${plugin}(${stringifyWithoutComments(pluginConfig)})`;
-
+        plugins.push(`new ${plugin}(${stringifyWithoutComments(options.cacheableResponse!)})`);
         break;
       }
 
@@ -97,8 +89,7 @@ function getOptionsString(moduleRegistry: ModuleRegistry, options: RuntimeCachin
         const plugin = moduleRegistry.use(
             'workbox-expiration', 'ExpirationPlugin');
 
-        pluginCode = `new ${plugin}(${stringifyWithoutComments(pluginConfig)})`;
-
+        plugins.push(`new ${plugin}(${stringifyWithoutComments(options.expiration!)})`);
         break;
       }
 
@@ -106,17 +97,14 @@ function getOptionsString(moduleRegistry: ModuleRegistry, options: RuntimeCachin
         const plugin = moduleRegistry.use(
             'workbox-precaching', 'PrecacheFallbackPlugin');
 
-        pluginCode = `new ${plugin}(${stringifyWithoutComments(pluginConfig)})`;
-
+        plugins.push(`new ${plugin}(${stringifyWithoutComments(options.precacheFallback!)})`);
         break;
       }
 
       default: {
-        throw new Error(errors['bad-runtime-caching-config'] + pluginName);
+        throw new Error(errors['bad-runtime-caching-config'] + optionName);
       }
     }
-
-    plugins.push(pluginCode);
   }
 
   if (Object.keys(handlerOptions).length > 0 || plugins.length > 0) {
@@ -130,7 +118,7 @@ function getOptionsString(moduleRegistry: ModuleRegistry, options: RuntimeCachin
   }
 }
 
-module.exports = (moduleRegistry: ModuleRegistry, runtimeCaching: Array<RuntimeCaching>) => {
+export default function(moduleRegistry: ModuleRegistry, runtimeCaching: Array<RuntimeCaching>): Array<string> {
   return runtimeCaching.map((entry) => {
     const method = entry.method || 'GET';
 
@@ -142,8 +130,6 @@ module.exports = (moduleRegistry: ModuleRegistry, runtimeCaching: Array<RuntimeC
       throw new Error(errors['handler-is-required']);
     }
 
-    // This validation logic is a bit too gnarly for joi, so it's manually
-    // implemented here.
     if (entry.options && entry.options.networkTimeoutSeconds &&
         entry.handler !== 'NetworkFirst') {
       throw new Error(errors['invalid-network-timeout-seconds']);
@@ -167,6 +153,7 @@ module.exports = (moduleRegistry: ModuleRegistry, runtimeCaching: Array<RuntimeC
       return `${registerRoute}(${matcher}, ${entry.handler}, '${method}');\n`;
     }
 
-    return undefined;
-  }).filter((entry) => Boolean(entry)); // Remove undefined map() return values.
+    // '' will be filtered out.
+    return '';
+  }).filter((entry) => Boolean(entry));
 };
