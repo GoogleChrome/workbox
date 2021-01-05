@@ -282,7 +282,7 @@ class Router {
           return this._catchHandler.handle({url, request, event});
         }
 
-        return Promise.reject(err);
+        throw err;
       });
     }
 
