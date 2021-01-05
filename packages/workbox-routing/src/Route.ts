@@ -27,6 +27,7 @@ class Route {
   handler: RouteHandlerObject;
   match: RouteMatchCallback;
   method: HTTPMethod;
+  catchHandler?: RouteHandlerObject;
 
   /**
    * Constructor for Route class.
@@ -61,6 +62,15 @@ class Route {
     this.handler = normalizeHandler(handler);
     this.match = match;
     this.method = method;
+  }
+
+  /**
+   * 
+   * @param {module:workbox-routing-handlerCallback} handler A callback
+   * function that returns a Promise resolving to a Response
+   */
+  setCatchHandler(handler: RouteHandler) {
+    this.catchHandler = normalizeHandler(handler)
   }
 }
 
