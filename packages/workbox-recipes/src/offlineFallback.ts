@@ -17,6 +17,9 @@ export interface OfflineFallbackOptions {
   fontFallback?: string;
 }
 
+// Give TypeScript the correct global.
+declare let self: ServiceWorkerGlobalScope;
+
 /**
  * An implementation of the [comprehensive fallbacks recipe]{@link https://developers.google.com/web/tools/workbox/guides/advanced-recipes#comprehensive_fallbacks}. Be sure to include the fallbacks in your precache injection
  * 
@@ -32,21 +35,37 @@ function offlineFallback(options: OfflineFallbackOptions = {}) {
   const imageFallback = options.imageFallback || false;
   const fontFallback = options.fontFallback || false;
 
+  self.addEventListener('install', event => {
+    const files = [pageFallback];
+    if (imageFallback) {
+      files.push(imageFallback);
+    }
+    if (fontFallback) {
+      files.push(fontFallback);
+    }
+
+    event.waitUntil(self.caches.open('workbox-offline-fallbacks').then(cache => cache.addAll(files)));
+  });
+
   const handler: RouteHandler = async (
     options: RouteHandlerCallbackOptions
   ) => {
     const dest = options.request.destination;
+    const cache = await self.caches.open('workbox-offline-fallbacks');
 
     if (dest === "document") {
-      return (await matchPrecache(pageFallback)) || Response.error();
+      const match = await matchPrecache(pageFallback) || await cache.match(pageFallback);
+      return match || Response.error();
     }
 
     if (dest === "image" && imageFallback !== false) {
-      return (await matchPrecache(imageFallback)) || Response.error();
+      const match = await matchPrecache(imageFallback) || await cache.match(imageFallback);
+      return match || Response.error();
     }
 
     if (dest === "font" && fontFallback !== false) {
-      return (await matchPrecache(fontFallback)) || Response.error();
+      const match = await matchPrecache(fontFallback) || await cache.match(fontFallback);
+      return match || Response.error();
     }
 
     return Response.error();
