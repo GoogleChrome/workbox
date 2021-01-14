@@ -28,7 +28,7 @@ import './_version.js';
 declare let self: ServiceWorkerGlobalScope;
 
 declare global {
-  interface WorkerGlobalScope {
+  interface ServiceWorkerGlobalScope {
     __WB_MANIFEST: Array<PrecacheEntry|string>;
   }
 }
