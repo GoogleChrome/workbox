@@ -64,7 +64,7 @@ function imageCache(options: ImageCacheOptions = {}) {
 
   // Warms the cache
   if (options.warmCache) {
-    warmStrategyCache({paths: options.warmCache, strategy});
+    warmStrategyCache({urls: options.warmCache, strategy});
   }
 }
 
