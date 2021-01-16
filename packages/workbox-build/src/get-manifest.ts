@@ -8,8 +8,7 @@
 
 import {GetManifestResult, GetManifestOptions} from './types';
 import getFileManifestEntries from './lib/get-file-manifest-entries';
-import getManifestSchema from './options/schema/get-manifest';
-import validate from './lib/validate-options';
+import {validateGetManifestOptions} from './lib/validate-options';
 
 // eslint-disable-next-line jsdoc/newline-after-description
 /**
@@ -89,8 +88,8 @@ import validate from './lib/validate-options';
  *
  * @memberof module:workbox-build
  */
-export default async function(config: GetManifestOptions): Promise<GetManifestResult> {
-  const options: GetManifestOptions = validate(config, getManifestSchema);
+export default async function(config: unknown): Promise<GetManifestResult> {
+  const options = validateGetManifestOptions(config);
 
   return await getFileManifestEntries(options);
 }

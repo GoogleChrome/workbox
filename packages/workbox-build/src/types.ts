@@ -89,7 +89,7 @@ export interface GeneratePartial {
 export interface GlobPartial {
   globDirectory?: string;
   globFollow?: boolean;
-  globIgnores?: Array<string>;
+  globIgnores: Array<string>;
   globPatterns?: Array<string>;
   globStrict?: boolean;
   templatedURLs: {
@@ -98,7 +98,7 @@ export interface GlobPartial {
 }
 
 interface InjectPartial {
-  injectionPoint?: string;
+  injectionPoint: string;
   swSrc: string;
 }
 
@@ -114,16 +114,23 @@ export interface SWDestPartial {
   swDest: string;
 }
 
+/** @see {isGenerateSWOptions} ts-auto-guard:type-guard */
 export type GenerateSWOptions = GlobPartial & GeneratePartial & BasePartial & SWDestPartial;
 
+/** @see {isGetManifestOptions} ts-auto-guard:type-guard */
 export type GetManifestOptions = GlobPartial & BasePartial;
 
-export type InjectManifestOptions = InjectPartial & GlobPartial & BasePartial & SWDestPartial;
+/** @see {isInjectManifestOptions} ts-auto-guard:type-guard */
+export type InjectManifestOptions = InjectPartial & Omit<GlobPartial, 'globDirectory'> & BasePartial & SWDestPartial & {
+  globDirectory: string;
+};
 
+/** @see {isWebpackGenerateSWOptions} ts-auto-guard:type-guard */
 export type WebpackGenerateSWOptions = WebpackPartial & GeneratePartial & BasePartial & SWDestPartial & {
   importScriptsViaChunks: Array<string>;
 };
 
+/** @see {isWebpackInjectManifestOptions} ts-auto-guard:type-guard */
 export type WebpackInjectManifestOptions = WebpackPartial & InjectPartial & BasePartial & SWDestPartial & {
   compileSrc?: boolean;
   webpackCompilationPlugins?: Array<any>;

@@ -8,6 +8,7 @@
 
 const {parallel} = require('gulp');
 const execa = require('execa');
+const fse = require('fs-extra');
 const upath = require('upath');
 
 const constants = require('./utils/constants');
@@ -29,6 +30,14 @@ async function buildNodePackage(packagePath) {
 }
 
 async function buildNodeTSPackage(packagePath) {
+  const typesPath = upath.join(packagePath, 'src', 'types.ts');
+  if (fse.existsSync(typesPath)) {
+    await execa('ts-auto-guard', [typesPath], {
+      cwd: packagePath,
+      preferLocal: true,
+    });
+  }
+
   await execa('tsc', ['-b', packagePath], {preferLocal: true});
 }
 

@@ -8,11 +8,10 @@
 
 import upath from 'upath';
 
-import {BuildResult, GenerateSWOptions} from './types';
-import generateSWSchema from './options/schema/generate-sw';
+import {BuildResult} from './types';
 import getFileManifestEntries from './lib/get-file-manifest-entries';
 import rebasePath from './lib/rebase-path';
-import validate from './lib/validate-options';
+import {validateGenerateSWOptions} from './lib/validate-options';
 import writeServiceWorkerUsingDefaultTemplate from './lib/write-sw-using-default-template';
 
 // eslint-disable-next-line jsdoc/newline-after-description
@@ -194,8 +193,8 @@ import writeServiceWorkerUsingDefaultTemplate from './lib/write-sw-using-default
  *
  * @memberof module:workbox-build
  */
-export default async function(config: GenerateSWOptions): Promise<BuildResult> {
-  const options: GenerateSWOptions = validate(config, generateSWSchema);
+export default async function(config: unknown): Promise<BuildResult> {
+  const options = validateGenerateSWOptions(config);
 
   if (options.globDirectory) {
     // Make sure we leave swDest out of the precache manifest.

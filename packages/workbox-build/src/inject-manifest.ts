@@ -17,10 +17,9 @@ import {BuildResult, InjectManifestOptions} from './types';
 import errors from './lib/errors';
 import escapeRegexp from './lib/escape-regexp';
 import getFileManifestEntries from './lib/get-file-manifest-entries';
-import injectManifestSchema from './options/schema/inject-manifest';
 import rebasePath from './lib/rebase-path';
 import replaceAndUpdateSourceMap from './lib/replace-and-update-source-map';
-import validate from './lib/validate-options';
+import {validateInjectManifestOptions} from './lib/validate-options';
 
 // eslint-disable-next-line jsdoc/newline-after-description
 /**
@@ -117,8 +116,8 @@ import validate from './lib/validate-options';
  *
  * @memberof module:workbox-build
  */
-export default async function(config: InjectManifestOptions): Promise<BuildResult> {
-  const options: InjectManifestOptions = validate(config, injectManifestSchema);
+export default async function(config: unknown): Promise<BuildResult> {
+  const options = validateInjectManifestOptions(config);
 
   // Make sure we leave swSrc and swDest out of the precache manifest.
   for (const file of [options.swSrc, options.swDest]) {
