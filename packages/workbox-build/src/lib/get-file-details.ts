@@ -23,7 +23,7 @@ export default function({
   globStrict,
 }: Omit<GlobPartial, 'globPatterns' | 'templatedURLs'> & {globPattern: string}) {
   let globbedFiles: Array<string>;
-  let warning: string;
+  let warning = '';
 
   try {
     globbedFiles = glob.sync(globPattern, {

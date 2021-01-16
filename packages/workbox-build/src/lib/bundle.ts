@@ -127,9 +127,9 @@ export default async function({
     file.name = upath.format({
       dir,
       base: file.name,
-      ext: undefined,
-      name: undefined,
-      root: undefined,
+      ext: '',
+      name: '',
+      root: '',
     });
     return file;
   });

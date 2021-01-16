@@ -56,7 +56,7 @@ export default function({
     );
   }
 
-  let offlineAnalyticsConfigString: string;
+  let offlineAnalyticsConfigString: string | undefined = undefined;
   if (offlineGoogleAnalytics) {
     // If offlineGoogleAnalytics is a truthy value, we need to convert it to the
     // format expected by the template.

@@ -23,9 +23,11 @@ async function cleanPackage(packagePath) {
   if (await fse.pathExists(upath.join(packagePath, 'src', 'index.ts'))) {
     // Store the list of deleted files, so we can delete directories after.
     const deletedPaths = await del([
-      upath.join(packagePath, '**/*.+(js|mjs|d.ts)'),
+      `${packagePath}/**/*.+(js|mjs|d.ts)`,
       // Don't delete files in node_modules.
-      '!**/node_modules', '!**/node_modules/**/*',
+      '!**/node_modules/**/*',
+      // Don't delete anything under src.
+      `!${packagePath}/src/**/*`,
     ]);
 
     // Any directories in `deletedPaths` that are top-level directories to the

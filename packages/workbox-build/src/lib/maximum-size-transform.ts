@@ -12,7 +12,7 @@ import {ManifestTransform} from '../types';
 
 export default function (maximumFileSizeToCacheInBytes: number): ManifestTransform {
   return (originalManifest) => {
-    const warnings = [];
+    const warnings: Array<string> = [];
     const manifest = originalManifest.filter((entry) => {
       if (entry.size <= maximumFileSizeToCacheInBytes) {
         return true;

@@ -48,7 +48,7 @@ export default async function({
 
   let pos: number;
   let src = originalSource;
-  const replacements = [];
+  const replacements: Array<{line: number; column: number}> = [];
   let lineNum = 0;
   let filePos = 0;
 

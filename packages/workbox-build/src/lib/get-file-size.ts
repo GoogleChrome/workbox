@@ -10,7 +10,7 @@ import fse from 'fs-extra';
 
 import errors from './errors';
 
-export default function(file: string): number {
+export default function(file: string): number | null {
   try {
     const stat = fse.statSync(file);
     if (!stat.isFile()) {

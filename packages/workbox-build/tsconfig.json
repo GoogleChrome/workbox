@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig",
   "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
     "module": "CommonJS",
     "outDir": "build",
     "resolveJsonModule": true,
@@ -11,5 +12,13 @@
   "include": [
     "src/**/*.ts",
     "src/cdn-details.json"
+  ],
+  "references": [
+    {"path": "../workbox-background-sync/"},
+    {"path": "../workbox-broadcast-update/"},
+    {"path": "../workbox-cacheable-response/"},
+    {"path": "../workbox-core/"},
+    {"path": "../workbox-expiration/"},
+    {"path": "../workbox-google-analytics/"}
   ]
 }

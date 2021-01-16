@@ -195,7 +195,7 @@ export default async function(config: InjectManifestOptions): Promise<BuildResul
     try {
       await fse.mkdirp(upath.dirname(file));
     } catch (error) {
-      throw new Error(errors['unable-to-make-injection-directory'] +
+      throw new Error(errors['unable-to-make-sw-directory'] +
         ` '${error.message}'`);
     }
 
