@@ -11,7 +11,12 @@ import stripComments from 'strip-comments';
 
 export default function(obj: {[key: string]: any}): string {
   return objectStringify(obj, {
-    transform: (_obj: {[key: string]: any}, _prop: string, str: string) =>
-      typeof _obj[_prop] === 'function' ? stripComments(str) : str,
+    // See https://github.com/yeoman/stringify-object#transformobject-property-originalresult
+    transform: (_obj: {[key: string]: any}, _prop, str) => {
+      if (typeof _prop !== 'symbol' && typeof _obj[_prop] === 'function') {
+        return stripComments(str);
+      }
+      return str;
+    },
   });
 };

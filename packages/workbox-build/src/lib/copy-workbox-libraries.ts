@@ -48,7 +48,7 @@ export default async function(destDirectory: string): Promise<string> {
   await fse.ensureDir(workboxDirectoryPath);
 
   const copyPromises: Array<Promise<void>> = [];
-  const librariesToCopy = Object.keys(thisPkg.dependencies).filter(
+  const librariesToCopy = Object.keys(thisPkg.dependencies || {}).filter(
       (dependency) => dependency.startsWith(WORKBOX_PREFIX));
 
   for (const library of librariesToCopy) {
