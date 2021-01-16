@@ -117,7 +117,7 @@ export default async function ({
         additionalManifestEntriesTransform(additionalManifestEntries));
   }
 
-  let transformedManifest = normalizedManifest;
+  let transformedManifest: Array<ManifestEntry & {size: number}> = normalizedManifest;
   for (const transform of transformsToApply) {
     const result = await transform(transformedManifest, transformParam);
     if (!('manifest' in result)) {

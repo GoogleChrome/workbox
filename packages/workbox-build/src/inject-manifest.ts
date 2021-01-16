@@ -13,7 +13,7 @@ import sourceMapURL from 'source-map-url';
 import stringify from 'fast-json-stable-stringify';
 import upath from 'upath';
 
-import {BuildResult, InjectManifestOptions} from './types';
+import {BuildResult} from './types';
 import errors from './lib/errors';
 import escapeRegexp from './lib/escape-regexp';
 import getFileManifestEntries from './lib/get-file-manifest-entries';

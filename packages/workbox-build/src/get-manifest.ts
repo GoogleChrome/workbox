@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {GetManifestResult, GetManifestOptions} from './types';
+import {GetManifestResult} from './types';
 import getFileManifestEntries from './lib/get-file-manifest-entries';
 import {validateGetManifestOptions} from './lib/validate-options';
 

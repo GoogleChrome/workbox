@@ -90,7 +90,7 @@ export interface GlobPartial {
   globDirectory?: string;
   globFollow?: boolean;
   globIgnores: Array<string>;
-  globPatterns?: Array<string>;
+  globPatterns: Array<string>;
   globStrict?: boolean;
   templatedURLs: {
     [key: string]: string | Array<string>;

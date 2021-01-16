@@ -15,13 +15,26 @@ import getFileHash from './get-file-hash';
 
 import {GlobPartial} from '../types';
 
+interface FileDetails {
+  file: string;
+  hash: string;
+  size: number;
+};
+
 export default function({
   globDirectory,
   globFollow,
   globIgnores,
   globPattern,
   globStrict,
-}: Omit<GlobPartial, 'globPatterns' | 'templatedURLs'> & {globPattern: string}) {
+}: Omit<GlobPartial, 'globDirectory' | 'globPatterns' | 'templatedURLs'> & {
+  // This will only be called when globDirectory is not undefined.
+  globDirectory: string;
+  globPattern: string;
+}): {
+  globbedFileDetails: Array<FileDetails>;
+  warning: string;
+} {
   let globbedFiles: Array<string>;
   let warning = '';
 
@@ -41,23 +54,19 @@ export default function({
       JSON.stringify({globDirectory, globPattern, globIgnores}, null, 2);
   }
 
-  const fileDetails = globbedFiles.map((file) => {
+  const globbedFileDetails: Array<FileDetails> = [];
+  for (const file of globbedFiles) {
     const fullPath = upath.join(globDirectory, file);
     const fileSize = getFileSize(fullPath);
-    if (fileSize === null) {
-      return null;
+    if (fileSize !== null) {
+      const fileHash = getFileHash(fullPath);
+      globbedFileDetails.push({
+        file: `${upath.relative(globDirectory, fullPath)}`,
+        hash: fileHash,
+        size: fileSize,
+      });
     }
-
-    const fileHash = getFileHash(fullPath);
-    return {
-      file: `${upath.relative(globDirectory, fullPath)}`,
-      hash: fileHash,
-      size: fileSize,
-    };
-  });
-
-  // If !== null, means it's a valid file.
-  const globbedFileDetails = fileDetails.filter((details) => details !== null);
+  }
 
   return {globbedFileDetails, warning};
 };

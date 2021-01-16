@@ -47,7 +47,7 @@ export default async function ({
         }
 
         for (const details of globbedFileDetails) {
-          if (!allFileDetails.has(details.file)) {
+          if (details && !allFileDetails.has(details.file)) {
             allFileDetails.set(details.file, details);
           }
         }
@@ -57,40 +57,40 @@ export default async function ({
       // it back as a warning, and don't consider it fatal.
       warnings.push(error.message);
     }
-  }
 
-  if (templatedURLs) {
-    for (const url of Object.keys(templatedURLs)) {
-      assert(!allFileDetails.has(url), errors['templated-url-matches-glob']);
-
-      const dependencies = templatedURLs[url];
-      if (Array.isArray(dependencies)) {
-        const details = dependencies.reduce((previous, globPattern) => {
-          try {
-            const {globbedFileDetails, warning} = getFileDetails({
-              globDirectory,
-              globFollow,
-              globIgnores,
-              globPattern,
-              globStrict,
-            });
-
-            if (warning) {
-              warnings.push(warning);
+    if (templatedURLs) {
+      for (const url of Object.keys(templatedURLs)) {
+        assert(!allFileDetails.has(url), errors['templated-url-matches-glob']);
+  
+        const dependencies = templatedURLs[url];
+        if (Array.isArray(dependencies)) {
+          const details = dependencies.reduce((previous, globPattern) => {
+            try {
+              const {globbedFileDetails, warning} = getFileDetails({
+                globDirectory,
+                globFollow,
+                globIgnores,
+                globPattern,
+                globStrict,
+              });
+  
+              if (warning) {
+                warnings.push(warning);
+              }
+  
+              return previous.concat(globbedFileDetails);
+            } catch (error) {
+              const debugObj: {[key: string]: Array<string>} = {};
+              debugObj[url] = dependencies;
+              throw new Error(`${errors['bad-template-urls-asset']} ` +
+                `'${globPattern}' from '${JSON.stringify(debugObj)}':\n` +
+                error);
             }
-
-            return previous.concat(globbedFileDetails);
-          } catch (error) {
-            const debugObj = {};
-            debugObj[url] = dependencies;
-            throw new Error(`${errors['bad-template-urls-asset']} ` +
-              `'${globPattern}' from '${JSON.stringify(debugObj)}':\n` +
-              error);
-          }
-        }, []);
-        allFileDetails.set(url, getCompositeDetails(url, details));
-      } else if (typeof dependencies === 'string') {
-        allFileDetails.set(url, getStringDetails(url, dependencies));
+          }, []);
+          allFileDetails.set(url, getCompositeDetails(url, details));
+        } else if (typeof dependencies === 'string') {
+          allFileDetails.set(url, getStringDetails(url, dependencies));
+        }
       }
     }
   }

@@ -10,21 +10,27 @@ import errors from './errors';
 
 import {ManifestEntry} from '../types';
 
-export default function(additionalManifestEntries: Array<ManifestEntry>) {
-  return (manifest: Array<ManifestEntry> & {size: number}) => {
+export default function(additionalManifestEntries: Array<ManifestEntry | string>) {
+  return (manifest: Array<ManifestEntry & {size: number}>) => {
     const warnings = [];
     const stringEntries = new Set();
 
     for (const additionalEntry of additionalManifestEntries) {
-      // Warn about either a string or an object that lacks a precache property.
+      // Warn about either a string or an object that lacks a revision property.
       // (An object with a revision property set to null is okay.)
       if (typeof additionalEntry === 'string') {
         stringEntries.add(additionalEntry);
-      } else if (additionalEntry && additionalEntry.revision === undefined) {
-        stringEntries.add(additionalEntry.url);
+        manifest.push({
+          revision: null,
+          size: 0,
+          url: additionalEntry,
+        });
+      } else {
+        if (additionalEntry && additionalEntry.revision === undefined) {
+          stringEntries.add(additionalEntry.url);
+        }
+        manifest.push(Object.assign({size: 0}, additionalEntry));
       }
-
-      manifest.push(additionalEntry);
     }
 
     if (stringEntries.size > 0) {
