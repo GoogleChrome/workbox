@@ -8,10 +8,10 @@
 
 import fse from 'fs-extra';
 
-import getStringHash from './get-string-hash';
-import errors from './errors';
+import {getStringHash} from './get-string-hash';
+import {errors} from './errors';
 
-export default function(file: string): string {
+export function getFileHash(file: string): string {
   try {
     const str = fse.readFileSync(file, 'utf8');
     return getStringHash(str);

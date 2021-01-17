@@ -7,13 +7,13 @@
 */
 
 import template from 'lodash/template';
-import swTemplate from '../templates/sw-template';
 
+import {errors} from './errors';
 import {GeneratePartial, ManifestEntry} from '../types';
-import errors from './errors';
-import ModuleRegistry from './module-registry';
-import runtimeCachingConverter from './runtime-caching-converter';
-import stringifyWithoutComments from './stringify-without-comments';
+import {ModuleRegistry} from './module-registry';
+import {runtimeCachingConverter} from './runtime-caching-converter';
+import {stringifyWithoutComments} from './stringify-without-comments';
+import {swTemplate} from '../templates/sw-template';
 
 export default function({
   cacheId,

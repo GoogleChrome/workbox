@@ -10,10 +10,10 @@ const expect = require('chai').expect;
 const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 
-const errors = require('../../../../packages/workbox-build/src/lib/errors');
+const errors = require('../../../../packages/workbox-build/build/lib/errors');
 
 describe(`[workbox-build] lib/populate-sw-template.js`, function() {
-  const MODULE_PATH = '../../../../packages/workbox-build/src/lib/populate-sw-template';
+  const MODULE_PATH = '../../../../packages/workbox-build/build/lib/populate-sw-template';
 
   it(`should throw an error if templating fails`, function() {
     const manifestEntries = ['ignored'];

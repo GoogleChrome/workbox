@@ -15,7 +15,7 @@ import upath from 'upath';
  *
  * @private
  */
-export default class ModuleRegistry {
+export class ModuleRegistry {
   private _modulesUsed: Map<string, {moduleName: string, pkg: string}>;
   /**
    * @private

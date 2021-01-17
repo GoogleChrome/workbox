@@ -8,7 +8,7 @@
 
 import upath from 'upath';
 
-export default function({
+export function rebasePath({
   baseDirectory,
   file
 }: {baseDirectory: string, file: string}): string {

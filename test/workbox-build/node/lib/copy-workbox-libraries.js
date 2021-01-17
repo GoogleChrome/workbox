@@ -11,10 +11,10 @@ const upath = require('upath');
 const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 
-const errors = require('../../../../packages/workbox-build/src/lib/errors');
+const errors = require('../../../../packages/workbox-build/build/lib/errors');
 
 describe(`[workbox-build] lib/copy-workbox-libraries.js`, function() {
-  const MODULE_PATH = '../../../../packages/workbox-build/src/lib/copy-workbox-libraries';
+  const MODULE_PATH = '../../../../packages/workbox-build/build/lib/copy-workbox-libraries';
   const ABSOLUTE_DEST_DIRECTORY = upath.join('/', 'test-dir');
   const RELATIVE_DEST_DIRECTORY = upath.join('.', 'test-dir');
 

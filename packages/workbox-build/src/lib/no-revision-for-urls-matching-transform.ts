@@ -6,11 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import errors from './errors';
-
+import {errors} from './errors';
 import {ManifestTransform} from '../types';
 
-export default function(regexp: RegExp): ManifestTransform {
+export function noRevisionForURLsMatchingTransform(regexp: RegExp): ManifestTransform {
   if (!(regexp instanceof RegExp)) {
     throw new Error(errors['invalid-dont-cache-bust']);
   }

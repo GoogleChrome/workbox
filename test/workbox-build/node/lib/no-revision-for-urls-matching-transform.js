@@ -8,8 +8,8 @@
 
 const expect = require('chai').expect;
 
-const errors = require('../../../../packages/workbox-build/src/lib/errors');
-const noRevisionForURLsMatching = require('../../../../packages/workbox-build/src/lib/no-revision-for-urls-matching-transform');
+const errors = require('../../../../packages/workbox-build/build/lib/errors');
+const noRevisionForURLsMatching = require('../../../../packages/workbox-build/build/lib/no-revision-for-urls-matching-transform');
 
 describe(`[workbox-build] lib/no-revision-for-urls-matching-transform.js`, function() {
   const MANIFEST = [{

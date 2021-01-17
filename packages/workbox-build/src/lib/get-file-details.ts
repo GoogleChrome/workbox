@@ -9,9 +9,9 @@
 import glob from 'glob';
 import upath from 'upath';
 
-import errors from './errors';
-import getFileSize from './get-file-size';
-import getFileHash from './get-file-hash';
+import {errors} from './errors';
+import {getFileSize} from './get-file-size';
+import {getFileHash} from './get-file-hash';
 
 import {GlobPartial} from '../types';
 
@@ -21,7 +21,7 @@ interface FileDetails {
   size: number;
 };
 
-export default function({
+export function getFileDetails({
   globDirectory,
   globFollow,
   globIgnores,

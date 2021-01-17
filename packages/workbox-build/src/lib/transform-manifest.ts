@@ -7,11 +7,11 @@
 */
 
 import {BasePartial, FileDetails, ManifestEntry, ManifestTransform} from '../types';
-import additionalManifestEntriesTransform from './additional-manifest-entries-transform';
-import errors from './errors';
-import maximumSizeTransform from './maximum-size-transform';
-import modifyURLPrefixTransform from './modify-url-prefix-transform';
-import noRevisionForURLsMatchingTransform from './no-revision-for-urls-matching-transform';
+import {additionalManifestEntriesTransform} from './additional-manifest-entries-transform';
+import {errors} from './errors';
+import {maximumSizeTransform} from './maximum-size-transform';
+import {modifyURLPrefixTransform} from './modify-url-prefix-transform';
+import {noRevisionForURLsMatchingTransform} from './no-revision-for-urls-matching-transform';
 
 /**
  * A `ManifestTransform` function can be used to modify the modify the `url` or
@@ -65,7 +65,7 @@ import noRevisionForURLsMatchingTransform from './no-revision-for-urls-matching-
  * @memberof module:workbox-build
  */
 
-export default async function ({
+export async function transformManifest({
   additionalManifestEntries,
   dontCacheBustURLsMatching,
   fileDetails,
@@ -143,4 +143,4 @@ export default async function ({
     manifestEntries: transformedManifest as Array<ManifestEntry>,
     warnings: allWarnings,
   };
-};
+}

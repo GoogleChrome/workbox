@@ -8,10 +8,10 @@
 
 import {oneLine as ol} from 'common-tags';
 
+import {errors} from './errors';
+import {ModuleRegistry} from './module-registry';
 import {RuntimeCaching} from '../types';
-import ModuleRegistry from './module-registry';
-import errors from './errors';
-import stringifyWithoutComments from './stringify-without-comments';
+import {stringifyWithoutComments} from './stringify-without-comments';
 
 /**
  * Given a set of options that configures runtime caching behavior, convert it
@@ -118,7 +118,7 @@ function getOptionsString(moduleRegistry: ModuleRegistry, options: RuntimeCachin
   }
 }
 
-export default function(moduleRegistry: ModuleRegistry, runtimeCaching: Array<RuntimeCaching>): Array<string> {
+export function runtimeCachingConverter(moduleRegistry: ModuleRegistry, runtimeCaching: Array<RuntimeCaching>): Array<string> {
   return runtimeCaching.map((entry) => {
     const method = entry.method || 'GET';
 
@@ -156,4 +156,4 @@ export default function(moduleRegistry: ModuleRegistry, runtimeCaching: Array<Ru
     // '' will be filtered out.
     return '';
   }).filter((entry) => Boolean(entry));
-};
+}

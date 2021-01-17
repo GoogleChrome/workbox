@@ -8,7 +8,7 @@
 
 import crypto from 'crypto';
 
-export default function(str: string): string {
+export function getStringHash(str: string): string {
   const md5 = crypto.createHash('md5');
   md5.update(str);
   return md5.digest('hex');

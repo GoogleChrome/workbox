@@ -6,12 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
-const errors = require('./errors');
-const escapeRegExp = require('./escape-regexp');
-
+import {errors} from './errors';
+import {escapeRegExp} from './escape-regexp';
 import {ManifestTransform} from '../types';
 
-export default function(modifyURLPrefix: {[key: string]: string}): ManifestTransform {
+export function modifyURLPrefixTransform(modifyURLPrefix: {[key: string]: string}): ManifestTransform {
   if (!modifyURLPrefix ||
       typeof modifyURLPrefix !== 'object' ||
       Array.isArray(modifyURLPrefix)) {

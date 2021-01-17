@@ -24,7 +24,7 @@ interface NameAndContents {
   name: string
 }
 
-export default async function({
+export async function bundle({
   babelPresetEnvTargets,
   inlineWorkboxRuntime,
   mode,

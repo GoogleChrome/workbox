@@ -8,7 +8,7 @@
 
 const expect = require('chai').expect;
 
-const validateOptions = require('../../../../packages/workbox-build/src/lib/validate-options');
+const validateOptions = require('../../../../packages/workbox-build/build/lib/validate-options');
 
 describe(`[workbox-build] entry-points/options/validate.js`, function() {
   const testOptions = {

@@ -7,6 +7,6 @@
 */
 
 // From https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
-export default function(str: string) {
+export function escapeRegExp(str: string) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }

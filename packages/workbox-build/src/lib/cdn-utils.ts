@@ -9,8 +9,8 @@
 import assert from 'assert';
 
 import {BuildType, WorkboxPackageJSON} from '../types';
+import {errors} from './errors';
 import cdn from '../cdn-details.json';
-import errors from './errors';
 
 function getVersionedURL(): string {
   return `${getCDNPrefix()}/${cdn.latestVersion}`;

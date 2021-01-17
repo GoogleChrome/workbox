@@ -9,12 +9,12 @@
 import fse from 'fs-extra';
 import upath from 'upath';
 
+import {bundle} from './bundle';
+import {errors} from './errors';
 import {GenerateSWOptions, ManifestEntry} from '../types';
-import bundle from './bundle';
-import errors from './errors';
 import populateSWTemplate from './populate-sw-template';
 
-export default async function({
+export async function writeSWUsingDefaultTemplate({
   babelPresetEnvTargets,
   cacheId,
   cleanupOutdatedCaches,

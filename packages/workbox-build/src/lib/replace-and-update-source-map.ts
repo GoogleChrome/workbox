@@ -27,7 +27,7 @@ import {RawSourceMap, SourceMapConsumer, SourceMapGenerator} from 'source-map';
  *
  * @private
  */
-export default async function({
+export async function replaceAndUpdateSourceMap({
   jsFilename,
   originalMap,
   originalSource,

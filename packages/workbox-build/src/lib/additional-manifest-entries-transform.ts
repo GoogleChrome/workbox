@@ -6,11 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import errors from './errors';
-
+import {errors} from './errors';
 import {ManifestEntry} from '../types';
 
-export default function(additionalManifestEntries: Array<ManifestEntry | string>) {
+export function additionalManifestEntriesTransform(additionalManifestEntries: Array<ManifestEntry | string>) {
   return (manifest: Array<ManifestEntry & {size: number}>) => {
     const warnings = [];
     const stringEntries = new Set();

@@ -8,8 +8,8 @@
 
 const expect = require('chai').expect;
 
-const errors = require('../../../../packages/workbox-build/src/lib/errors');
-const additionalManifestEntriesTransform = require('../../../../packages/workbox-build/src/lib/additional-manifest-entries-transform');
+const errors = require('../../../../packages/workbox-build/build/lib/errors');
+const additionalManifestEntriesTransform = require('../../../../packages/workbox-build/build/lib/additional-manifest-entries-transform');
 
 describe(`[workbox-build] lib/additional-manifest-entries-transform.js`, function() {
   function getManifest() {

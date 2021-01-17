@@ -10,7 +10,7 @@ import prettyBytes from 'pretty-bytes';
 
 import {ManifestTransform} from '../types';
 
-export default function (maximumFileSizeToCacheInBytes: number): ManifestTransform {
+export function maximumSizeTransform(maximumFileSizeToCacheInBytes: number): ManifestTransform {
   return (originalManifest) => {
     const warnings: Array<string> = [];
     const manifest = originalManifest.filter((entry) => {

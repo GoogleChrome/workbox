@@ -10,7 +10,7 @@ import fse from 'fs-extra';
 import upath from 'upath';
 
 import {WorkboxPackageJSON} from '../types';
-import errors from './errors';
+import {errors} from './errors';
 
 // Used to filter the libraries to copy based on our package.json dependencies.
 const WORKBOX_PREFIX = 'workbox-';
@@ -37,7 +37,7 @@ const BUILD_DIR = 'build';
  *
  * @alias module:workbox-build.copyWorkboxLibraries
  */
-export default async function(destDirectory: string): Promise<string> {
+export async function copyWorkboxLibraries(destDirectory: string): Promise<string> {
   const thisPkg: WorkboxPackageJSON = require('../../package.json');
   // Use the version string from workbox-build in the name of the parent
   // directory. This should be safe, because lerna will bump workbox-build's

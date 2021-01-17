@@ -14,11 +14,11 @@ import stringify from 'fast-json-stable-stringify';
 import upath from 'upath';
 
 import {BuildResult} from './types';
-import errors from './lib/errors';
-import escapeRegexp from './lib/escape-regexp';
-import getFileManifestEntries from './lib/get-file-manifest-entries';
-import rebasePath from './lib/rebase-path';
-import replaceAndUpdateSourceMap from './lib/replace-and-update-source-map';
+import {errors} from './lib/errors';
+import {escapeRegExp} from './lib/escape-regexp';
+import {getFileManifestEntries} from './lib/get-file-manifest-entries';
+import {rebasePath} from './lib/rebase-path';
+import {replaceAndUpdateSourceMap} from './lib/replace-and-update-source-map';
 import {validateInjectManifestOptions} from './lib/validate-options';
 
 // eslint-disable-next-line jsdoc/newline-after-description
@@ -127,7 +127,7 @@ export default async function(config: unknown): Promise<BuildResult> {
     }));
   }
 
-  const globalRegexp = new RegExp(escapeRegexp(options.injectionPoint), 'g');
+  const globalRegexp = new RegExp(escapeRegExp(options.injectionPoint), 'g');
 
   const {count, size, manifestEntries, warnings} =
     await getFileManifestEntries(options);

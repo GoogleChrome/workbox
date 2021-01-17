@@ -9,7 +9,7 @@
 import objectStringify from 'stringify-object';
 import stripComments from 'strip-comments';
 
-export default function(obj: {[key: string]: any}): string {
+export function stringifyWithoutComments(obj: {[key: string]: any}): string {
   return objectStringify(obj, {
     // See https://github.com/yeoman/stringify-object#transformobject-property-originalresult
     transform: (_obj: {[key: string]: any}, _prop, str) => {

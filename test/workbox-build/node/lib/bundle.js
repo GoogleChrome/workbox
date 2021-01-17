@@ -11,7 +11,7 @@ const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 
 describe(`[workbox-build] lib/bundle.js`, function() {
-  const MODULE_PATH = '../../../../packages/workbox-build/src/lib/bundle';
+  const MODULE_PATH = '../../../../packages/workbox-build/build/lib/bundle';
   let bundle;
   let stubs;
 

@@ -6,8 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
+import {getFileManifestEntries} from './lib/get-file-manifest-entries';
 import {GetManifestResult} from './types';
-import getFileManifestEntries from './lib/get-file-manifest-entries';
 import {validateGetManifestOptions} from './lib/validate-options';
 
 // eslint-disable-next-line jsdoc/newline-after-description

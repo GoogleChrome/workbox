@@ -9,10 +9,10 @@
 import upath from 'upath';
 
 import {BuildResult} from './types';
-import getFileManifestEntries from './lib/get-file-manifest-entries';
-import rebasePath from './lib/rebase-path';
+import {getFileManifestEntries} from './lib/get-file-manifest-entries';
+import {rebasePath} from './lib/rebase-path';
 import {validateGenerateSWOptions} from './lib/validate-options';
-import writeServiceWorkerUsingDefaultTemplate from './lib/write-sw-using-default-template';
+import {writeSWUsingDefaultTemplate} from './lib/write-sw-using-default-template';
 
 // eslint-disable-next-line jsdoc/newline-after-description
 /**
@@ -218,7 +218,7 @@ export default async function(config: unknown): Promise<BuildResult> {
   const {count, size, manifestEntries, warnings} =
     await getFileManifestEntries(options);
 
-  const filePaths = await writeServiceWorkerUsingDefaultTemplate(Object.assign({
+  const filePaths = await writeSWUsingDefaultTemplate(Object.assign({
     manifestEntries,
   }, options));
 

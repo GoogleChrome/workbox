@@ -6,11 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import getStringHash from './get-string-hash';
-
 import {FileDetails} from '../types';
+import {getStringHash} from './get-string-hash';
 
-export default function(url: string, str: string): FileDetails {
+export function getStringDetails(url: string, str: string): FileDetails {
   return {
     file: url,
     hash: getStringHash(str),

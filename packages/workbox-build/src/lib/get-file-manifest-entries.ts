@@ -9,13 +9,13 @@
 import assert from 'assert';
 
 import {GetManifestResult, FileDetails, GetManifestOptions} from '../types';
-import errors from './errors';
-import getCompositeDetails from './get-composite-details';
-import getFileDetails from './get-file-details';
-import getStringDetails from './get-string-details';
-import transformManifest from './transform-manifest';
+import {errors} from './errors';
+import {getCompositeDetails} from './get-composite-details';
+import {getFileDetails} from './get-file-details';
+import {getStringDetails} from './get-string-details';
+import {transformManifest} from './transform-manifest';
 
-export default async function ({
+export async function getFileManifestEntries({
   additionalManifestEntries,
   dontCacheBustURLsMatching,
   globDirectory,
