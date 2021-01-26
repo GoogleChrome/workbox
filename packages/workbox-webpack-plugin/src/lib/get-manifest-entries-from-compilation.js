@@ -41,21 +41,54 @@ function checkConditions(asset, compilation, conditions = []) {
 }
 
 /**
- * Returns the names of all the assets in a chunk group.
+ * Returns the names of all the assets in all the chunks in a chunk group,
+ * if provided a chunk group name.
+ * Otherwise, if provided a chunk name, return all the assets in that chunk.
+ * Otherwise, if there isn't a chunk group or chunk with that name, return null.
  *
- * @param {ChunkGroup} chunkGroup
+ * @param {Compilation} compilation
+ * @param {string} chunkOrGroup
+ * @return {Array<Asset>|null}
+ * @private
+ */
+function getNamesOfAssetsInChunkOrGroup(compilation, chunkOrGroup) {
+  const chunkGroup = compilation.namedChunkGroups &&
+      compilation.namedChunkGroups.get(chunkOrGroup);
+  if (chunkGroup) {
+    const assetNames = [];
+    for (const chunk of chunkGroup.chunks) {
+      assetNames.push(...getNamesOfAssetsInChunk(chunk));
+    }
+    return assetNames;
+  } else {
+    const chunk = compilation.namedChunks &&
+        compilation.namedChunks.get(chunkOrGroup);
+    if (chunk) {
+      return getNamesOfAssetsInChunk(chunk);
+    }
+  }
+
+  // If we get here, there's no chunkGroup or chunk with that name.
+  return null;
+}
+
+/**
+ * Returns the names of all the assets in a chunk.
+ *
+ * @param {Chunk} chunk
  * @return {Array<Asset>}
  * @private
  */
-function getNamesOfAssetsInChunkGroup(chunkGroup) {
+function getNamesOfAssetsInChunk(chunk) {
   const assetNames = [];
-  for (const chunk of chunkGroup.chunks) {
-    assetNames.splice(0, 0, ...chunk.files);
-    // This only appears to be set in webpack v5.
-    if (chunk.auxiliaryFiles) {
-      assetNames.splice(0, 0, ...chunk.auxiliaryFiles);
-    }
+
+  assetNames.push(...chunk.files);
+
+  // This only appears to be set in webpack v5.
+  if (chunk.auxiliaryFiles) {
+    assetNames.push(...chunk.auxiliaryFiles);
   }
+
   return assetNames;
 }
 
@@ -77,14 +110,16 @@ function filterAssets(compilation, config) {
   const allowedAssetNames = new Set();
   // See https://github.com/GoogleChrome/workbox/issues/1287
   if (Array.isArray(config.chunks)) {
-    for (const chunkName of config.chunks) {
-      const namedChunkGroup = compilation.namedChunkGroups.get(chunkName);
-      if (namedChunkGroup) {
-        for (const assetName of getNamesOfAssetsInChunkGroup(namedChunkGroup)) {
+    for (const name of config.chunks) {
+      // See https://github.com/GoogleChrome/workbox/issues/2717
+      const assetsInChunkOrGroup = getNamesOfAssetsInChunkOrGroup(
+          compilation, name);
+      if (assetsInChunkOrGroup) {
+        for (const assetName of assetsInChunkOrGroup) {
           allowedAssetNames.add(assetName);
         }
       } else {
-        compilation.warnings.push(new Error(`The chunk '${chunkName}' was ` +
+        compilation.warnings.push(new Error(`The chunk '${name}' was ` +
           `provided in your Workbox chunks config, but was not found in the ` +
           `compilation.`));
       }
@@ -93,10 +128,12 @@ function filterAssets(compilation, config) {
 
   const deniedAssetNames = new Set();
   if (Array.isArray(config.excludeChunks)) {
-    for (const chunkName of config.excludeChunks) {
-      const namedChunkGroup = compilation.namedChunkGroups.get(chunkName);
-      if (namedChunkGroup) {
-        for (const assetName of getNamesOfAssetsInChunkGroup(namedChunkGroup)) {
+    for (const name of config.excludeChunks) {
+      // See https://github.com/GoogleChrome/workbox/issues/2717
+      const assetsInChunkOrGroup = getNamesOfAssetsInChunkOrGroup(
+          compilation, name);
+      if (assetsInChunkOrGroup) {
+        for (const assetName of assetsInChunkOrGroup) {
           deniedAssetNames.add(assetName);
         }
       } // Don't warn if the chunk group isn't found.
