@@ -140,7 +140,7 @@ class PrecacheStrategy extends Strategy {
   }
 
   async _handleInstall(request: Request, handler: StrategyHandler) {
-    const response = await handler.fetchAndCachePut(request);
+    const response = await handler.fetch(request);
 
     // Any time there's no response, consider it a precaching error.
     let responseSafeToPrecache = Boolean(response);
@@ -161,6 +161,10 @@ class PrecacheStrategy extends Strategy {
         status: response.status,
       });
     }
+
+    // Make sure we defer cachePut() until after we know the response
+    // should be cached; see https://github.com/GoogleChrome/workbox/issues/2737
+    await handler.cachePut(request, response.clone());
 
     return response;
   }

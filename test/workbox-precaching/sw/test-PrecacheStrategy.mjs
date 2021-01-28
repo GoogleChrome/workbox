@@ -103,9 +103,14 @@ describe(`PrecacheStrategy()`, function() {
     });
 
     it(`errors on 400+ responses during install if no custom cacheWillUpdate plugin callback is used`, async function() {
-      sandbox.stub(self, 'fetch').callsFake((request) => {
-        return new Response('Server Error', {status: 400});
-      });
+      // Also ensure that we don't cache the bad response;
+      // see https://github.com/GoogleChrome/workbox/issues/2737
+      const putStub = sandbox.stub().resolves();
+      sandbox.stub(self.caches, 'open').resolves({put: putStub});
+
+      sandbox.stub(self, 'fetch').resolves(new Response('Server Error', {
+        status: 400,
+      }));
 
       const request = new Request('/index.html');
       const event = new ExtendableEvent('install');
@@ -114,6 +119,9 @@ describe(`PrecacheStrategy()`, function() {
       const ps = new PrecacheStrategy();
       await expectError(
           () => ps.handle({event, request}), 'bad-precaching-response');
+
+      await eventDoneWaiting(event);
+      expect(putStub.callCount).to.eql(0);
     });
 
     it(`doesn't error on 400+ when a custom cacheWillUpdate plugin callback is used`, async function() {
