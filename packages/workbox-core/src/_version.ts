@@ -1,2 +1,2 @@
 // @ts-ignore
-try{self['workbox:core:6.0.2']&&_()}catch(e){}
+try{self['workbox:core:6.1.0']&&_()}catch(e){}
