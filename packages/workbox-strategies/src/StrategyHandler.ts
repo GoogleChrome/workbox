@@ -302,9 +302,11 @@ class StrategyHandler {
    * - cacheDidUpdate()
    *
    * @param {Request|string} key The request or URL to use as the cache key.
-   * @param {Promise<void>} response The response to cache.
+   * @param {Response} response The response to cache.
+   * @return {Promise<boolean>} `false` if a cacheWillUpdate caused the response
+   * not be cached, and `true` otherwise.
    */
-  async cachePut(key: RequestInfo, response: Response): Promise<void> {
+  async cachePut(key: RequestInfo, response: Response): Promise<boolean> {
     const request: Request = toRequest(key);
 
     // Run in the next task to avoid blocking other cache reads.
@@ -340,7 +342,7 @@ class StrategyHandler {
         logger.debug(`Response '${getFriendlyURL(effectiveRequest.url)}' ` +
         `will not be cached.`, responseToCache);
       }
-      return;
+      return false;
     }
 
     const {cacheName, matchOptions} = this._strategy;
@@ -379,6 +381,8 @@ class StrategyHandler {
         event: this.event,
       });
     }
+
+    return true;
   }
 
   /**
