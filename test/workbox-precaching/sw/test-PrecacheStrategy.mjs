@@ -113,7 +113,7 @@ describe(`PrecacheStrategy()`, function() {
       }));
 
       const defaultPluginSpy = sandbox.spy(
-        PrecacheStrategy.defaultPrecacheCacheabilityPlugin, 'cacheWillUpdate');
+          PrecacheStrategy.defaultPrecacheCacheabilityPlugin, 'cacheWillUpdate');
 
       const request = new Request('/index.html');
       const event = new ExtendableEvent('install');
@@ -142,7 +142,7 @@ describe(`PrecacheStrategy()`, function() {
       // Returning any valid Response will allow caching to proceed.
       const cacheWillUpdateStub = sandbox.stub().resolves(errorResponse);
       const defaultPluginSpy = sandbox.spy(
-        PrecacheStrategy.defaultPrecacheCacheabilityPlugin, 'cacheWillUpdate');
+          PrecacheStrategy.defaultPrecacheCacheabilityPlugin, 'cacheWillUpdate');
 
       const request = new Request('/index.html');
       const event = new ExtendableEvent('install');
@@ -180,7 +180,7 @@ describe(`PrecacheStrategy()`, function() {
       const cacheWillUpdateDenyStub = sandbox.stub().resolves(null);
 
       const defaultPluginSpy = sandbox.spy(
-        PrecacheStrategy.defaultPrecacheCacheabilityPlugin, 'cacheWillUpdate');
+          PrecacheStrategy.defaultPrecacheCacheabilityPlugin, 'cacheWillUpdate');
 
       const request = new Request('/index.html');
       const event = new ExtendableEvent('install');
@@ -195,7 +195,7 @@ describe(`PrecacheStrategy()`, function() {
       });
 
       await expectError(
-        () => ps.handle({event, request}), 'bad-precaching-response');
+          () => ps.handle({event, request}), 'bad-precaching-response');
 
       await eventDoneWaiting(event);
 
