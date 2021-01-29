@@ -176,7 +176,7 @@ class PrecacheStrategy extends Strategy {
    * 
    * At the time the strategy is used (i.e. during an `install` event), there
    * needs to be at least one plugin that implements `cacheWillUpdate` in the
-   * array, other the `copyRedirectedCacheableResponsesPlugin`.
+   * array, other than `copyRedirectedCacheableResponsesPlugin`.
    * 
    * - If this method is called and there are no suitable `cacheWillUpdate`
    * plugins, we need to add `defaultPrecacheCacheabilityPlugin`.
@@ -205,7 +205,7 @@ class PrecacheStrategy extends Strategy {
         continue;
       }
 
-      // Save the default plugin's index, in case it needs to be remove.
+      // Save the default plugin's index, in case it needs to be removed.
       if (plugin === PrecacheStrategy.defaultPrecacheCacheabilityPlugin) {
         defaultPluginIndex = index;
       }
