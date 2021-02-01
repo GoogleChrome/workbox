@@ -49,7 +49,7 @@ interface GoogleAnalyticsInitializeOptions {
 const createOnSyncCallback = (config: GoogleAnalyticsInitializeOptions) => {
   return async ({queue}: {queue: Queue}) => {
     let entry;
-    while (entry = await queue.shiftRequest()) {
+    while ((entry = await queue.shiftRequest())) {
       const {request, timestamp} = entry;
       const url = new URL(request.url);
 

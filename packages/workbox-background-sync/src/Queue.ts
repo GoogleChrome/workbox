@@ -318,7 +318,7 @@ class Queue {
    */
   async replayRequests() {
     let entry;
-    while (entry = await this.shiftRequest()) {
+    while ((entry = await this.shiftRequest())) {
       try {
         await fetch(entry.request.clone());
 
