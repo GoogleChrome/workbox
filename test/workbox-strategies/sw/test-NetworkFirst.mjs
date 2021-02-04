@@ -141,12 +141,13 @@ describe(`NetworkFirst`, function() {
       const cache = await caches.open(cacheNames.getRuntimeName());
       await cache.put(request, injectedResponse.clone());
 
-      const handlePromise = networkFirst.handle({
+      const [handlePromise, donePromise] = networkFirst.handleAll({
         request,
         event,
       });
 
       await eventDoneWaiting(event);
+      await donePromise;
 
       const populatedCacheResponse = await handlePromise;
       await compareResponses(populatedCacheResponse, injectedResponse, true);

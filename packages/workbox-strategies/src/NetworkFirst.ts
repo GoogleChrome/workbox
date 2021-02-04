@@ -112,12 +112,11 @@ class NetworkFirst extends Strategy {
         this._getNetworkPromise({timeoutId, request, logs, handler});
 
     promises.push(networkPromise);
-    for (const promise of promises) {
-      handler.waitUntil(promise);
-    }
 
     // Promise.race() will resolve as soon as the first promise resolves.
-    let response = await Promise.race(promises);
+    const combinedPromise = Promise.race(promises);
+    handler.waitUntil(combinedPromise);
+    let response = await combinedPromise;
     // If Promise.race() resolved with null, it might be due to a network
     // timeout + a cache miss. If that were to happen, we'd rather wait until
     // the networkPromise resolves instead of returning null.
