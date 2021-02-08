@@ -136,8 +136,8 @@ class StrategyHandler {
 
   /**
    * Fetches a given request (and invokes any applicable plugin callback
-   * methods) using the `fetchOptions` and `plugins` defined on the strategy
-   * object.
+   * methods) using the `fetchOptions` (for non-navigation requests) and
+   * `plugins` defined on the `Strategy` object.
    *
    * The following plugin lifecycle methods are invoked when using this method:
    * - `requestWillFetch()`
