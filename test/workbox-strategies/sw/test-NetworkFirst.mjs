@@ -158,7 +158,7 @@ describe(`NetworkFirst`, function() {
       const event = new FetchEvent('fetch', {request});
       spyOnEvent(event);
 
-      const networkTimeoutSeconds = 1000;
+      const networkTimeoutSeconds = 10;
 
       const injectedResponse = new Response('response body');
       sandbox.stub(self, 'fetch').resolves(injectedResponse);
@@ -170,8 +170,10 @@ describe(`NetworkFirst`, function() {
         event,
       });
 
+      const startTime = performance.now();
       await eventDoneWaiting(event);
       await donePromise;
+      expect(performance.now() - startTime).to.be.below(1000);
 
       const populatedCacheResponse = await handlePromise;
       await compareResponses(populatedCacheResponse, injectedResponse, true);
