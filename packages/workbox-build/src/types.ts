@@ -32,7 +32,7 @@ export interface RuntimeCaching {
       options: BroadcastCacheUpdateOptions;
     };
     cacheableResponse?: CacheableResponseOptions;
-    cacheName?: string;
+    cacheName?: string | null;
     expiration?: ExpirationPluginOptions;
     networkTimeoutSeconds?: number;
     plugins?: Array<WorkboxPlugin>;
@@ -67,16 +67,16 @@ export interface BasePartial {
 
 export interface GeneratePartial {
   babelPresetEnvTargets?: Array<string>;
-  cacheId?: string;
+  cacheId?: string | null;
   cleanupOutdatedCaches?: boolean;
   clientsClaim?: boolean;
-  directoryIndex?: string;
+  directoryIndex?: string | null;
   disableDevLogs?: boolean;
   ignoreURLParametersMatching?: Array<RegExp>;
   importScripts?: Array<string>;
   inlineWorkboxRuntime?: boolean;
-  mode?: string;
-  navigateFallback?: string;
+  mode?: string | null;
+  navigateFallback?: string | null;
   navigateFallbackAllowlist?: Array<RegExp>;
   navigateFallbackDenylist?: Array<RegExp>;
   navigationPreload?: boolean;
@@ -87,7 +87,7 @@ export interface GeneratePartial {
 }
 
 export interface GlobPartial {
-  globDirectory?: string;
+  globDirectory?: string | null;
   globFollow?: boolean;
   globIgnores: Array<string>;
   globPatterns: Array<string>;
@@ -107,7 +107,7 @@ interface WebpackPartial {
   exclude?: Array<string | RegExp | ((arg0: string) => any)>;
   excludeChunks?: Array<string>;
   include?: Array<string | RegExp | ((arg0: string) => any)>;
-  mode?: string;
+  mode?: string | null;
 }
 
 export interface SWDestPartial {
