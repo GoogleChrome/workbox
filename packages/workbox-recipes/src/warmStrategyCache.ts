@@ -1,4 +1,4 @@
-import { Strategy } from 'workbox-strategies/src/Strategy';
+import { Strategy } from 'workbox-strategies/Strategy.js';
 
 import './_version.js';
 
