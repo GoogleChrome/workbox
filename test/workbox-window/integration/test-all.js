@@ -151,12 +151,6 @@ describe(`[workbox-window] Workbox`, function() {
     });
 
     it(`reports all events for an external SW registration`, async function() {
-      // Skip this test in Safari due to this flakiness issue:
-      // https://github.com/GoogleChrome/workbox/issues/2150
-      if (seleniumBrowser.getId() === 'safari') {
-        this.skip();
-      }
-
       const firstTab = await getLastWindowHandle();
       await webdriver.switchTo().window(firstTab);
 
@@ -206,9 +200,7 @@ describe(`[workbox-window] Workbox`, function() {
         }
       });
 
-      // Close the second tab and switch back to the first tab before
-      // executing the following block.
-      await webdriver.close();
+      // Switch back to the first tab before executing the following block.
       await webdriver.switchTo().window(firstTab);
 
       const result = await executeAsyncAndCatch(async (cb) => {
