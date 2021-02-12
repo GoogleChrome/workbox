@@ -16,7 +16,7 @@ const {unregisterAllSWs} = require('../../../infra/testing/webdriver/unregisterA
 const {windowLoaded} = require('../../../infra/testing/webdriver/windowLoaded');
 
 // Store local references of these globals.
-const {webdriver, server, seleniumBrowser} = global.__workbox;
+const {webdriver, server} = global.__workbox;
 
 const testServerOrigin = server.getAddress();
 const testPath = `${testServerOrigin}/test/workbox-window/static/`;
