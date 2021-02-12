@@ -19,7 +19,7 @@ const {webdriver, server} = global.__workbox;
 
 describe(`[workbox-cacheable-response]`, function() {
   it(`passes all SW unit tests`, async function() {
-    await runUnitTests('/test/workbox-broadcast-update/sw/');
+    await runUnitTests('/test/workbox-cacheable-response/sw/');
   });
 });
 
@@ -52,9 +52,11 @@ describe(`[workbox-cacheable-response] Plugin`, function() {
     });
 
     const keys = await runInSW('cachesKeys');
-    expect(keys).to.contain('cacheable-response-cache');
+    expect(keys).to.deep.equal([
+      'cacheable-response-cache',
+    ]);
 
-    const cachedRequests = await runInSW('cacheURLs', 'cacheable-response-cache');
+    const cachedRequests = await runInSW('cacheURLs', keys[0]);
     expect(cachedRequests).to.eql([
       `${baseURL}example-1.txt`,
     ]);
