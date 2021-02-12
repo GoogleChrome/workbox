@@ -420,6 +420,7 @@ class Workbox extends WorkboxEventTarget {
       originalEvent: Event;
       isUpdate?: boolean;
       isExternal: boolean;
+      wasWaitingBeforeRegister?: boolean;
     } = {
       sw,
       isExternal,
@@ -443,6 +444,9 @@ class Workbox extends WorkboxEventTarget {
       this._waitingTimeout = self.setTimeout(() => {
         // Ensure the SW is still waiting (it may now be redundant).
         if (state === 'installed' && registration.waiting === sw) {
+          if (eventProps.wasWaitingBeforeRegister === undefined) {
+            eventProps.wasWaitingBeforeRegister = false;
+          }
           this.dispatchEvent(new WorkboxEvent('waiting', eventProps));
 
           if (process.env.NODE_ENV !== 'production') {
