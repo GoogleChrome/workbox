@@ -52,11 +52,9 @@ describe(`[workbox-cacheable-response] Plugin`, function() {
     });
 
     const keys = await runInSW('cachesKeys');
-    expect(keys).to.deep.equal([
-      'cacheable-response-cache',
-    ]);
+    expect(keys).to.contain('cacheable-response-cache');
 
-    const cachedRequests = await runInSW('cacheURLs', keys[0]);
+    const cachedRequests = await runInSW('cacheURLs', 'cacheable-response-cache');
     expect(cachedRequests).to.eql([
       `${baseURL}example-1.txt`,
     ]);
