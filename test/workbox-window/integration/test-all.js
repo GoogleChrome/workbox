@@ -150,7 +150,7 @@ describe(`[workbox-window] Workbox`, function() {
       expect(result.controllingSpyCallCount).to.equal(1);
     });
 
-    it(`reports all events for an external SW registration`, async function() {      
+    it(`reports all events for an external SW registration`, async function() {
       // Skip this test in Safari due to this flakiness issue:
       // https://github.com/GoogleChrome/workbox/issues/2150
       if (seleniumBrowser.getId() === 'safari') {
