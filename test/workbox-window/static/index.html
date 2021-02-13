@@ -26,6 +26,18 @@
 
   // Expose on the global object so it can be referenced by webdriver.
   window.Workbox = Workbox;
+
+  // Returns a promise that resolves when both the activated and controlling
+  // events have fired on the Workbox object.
+  window.activatedAndControlling = (wb) => {
+    const activatedPromise = new Promise((resolve) => {
+      wb.addEventListener('activated', () => resolve());
+    });
+    const controllingPromise = new Promise((resolve) => {
+      wb.addEventListener('controlling', () => resolve());
+    });
+    return Promise.all([activatedPromise, controllingPromise]);
+  }
   </script>
 </body>
 </html>
