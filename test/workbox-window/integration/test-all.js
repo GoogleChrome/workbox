@@ -7,13 +7,13 @@
 */
 
 const {expect} = require('chai');
-const templateData = require('../../../infra/testing/server/template-data');
+
 const {executeAsyncAndCatch} = require('../../../infra/testing/webdriver/executeAsyncAndCatch');
-const {getLastWindowHandle} = require('../../../infra/testing/webdriver/getLastWindowHandle');
-const {openNewTab} = require('../../../infra/testing/webdriver/openNewTab');
 const {runUnitTests} = require('../../../infra/testing/webdriver/runUnitTests');
+const {TabManager} = require('../../../infra/testing/webdriver/TabManager');
 const {unregisterAllSWs} = require('../../../infra/testing/webdriver/unregisterAllSWs');
 const {windowLoaded} = require('../../../infra/testing/webdriver/windowLoaded');
+const templateData = require('../../../infra/testing/server/template-data');
 
 // Store local references of these globals.
 const {webdriver, server, seleniumBrowser} = global.__workbox;
@@ -150,15 +150,14 @@ describe(`[workbox-window] Workbox`, function() {
       expect(result.controllingSpyCallCount).to.equal(1);
     });
 
-    it(`reports all events for an external SW registration`, async function() {
+    it(`reports all events for an external SW registration`, async function() {      
       // Skip this test in Safari due to this flakiness issue:
       // https://github.com/GoogleChrome/workbox/issues/2150
       if (seleniumBrowser.getId() === 'safari') {
         this.skip();
       }
 
-      const firstTab = await getLastWindowHandle();
-      await webdriver.switchTo().window(firstTab);
+      const tabManager = new TabManager(webdriver);
 
       await executeAsyncAndCatch(async (cb) => {
         try {
@@ -190,7 +189,7 @@ describe(`[workbox-window] Workbox`, function() {
       // Update the version in sw.js to trigger a new installation.
       templateData.assign({version: '2'});
 
-      await openNewTab(testPath);
+      await tabManager.openTab(testPath);
       await windowLoaded();
 
       await executeAsyncAndCatch(async (cb) => {
@@ -208,8 +207,7 @@ describe(`[workbox-window] Workbox`, function() {
 
       // Close the second tab and switch back to the first tab before
       // executing the following block.
-      await webdriver.close();
-      await webdriver.switchTo().window(firstTab);
+      await tabManager.closeOpenedTabs();
 
       const result = await executeAsyncAndCatch(async (cb) => {
         try {
