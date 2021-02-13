@@ -40,7 +40,9 @@ class TabManager {
     }
     this._openedHandles = new Set();
 
-    await this._driver.switchTo().window(this._initialHandle);
+    if (this._initialHandle) {
+      await this._driver.switchTo().window(this._initialHandle);
+    }
   }
 }
 

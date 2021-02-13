@@ -151,9 +151,9 @@ describe(`[workbox-window] Workbox`, function() {
     });
 
     it(`reports all events for an external SW registration`, async function() {
-      // Skip this test in Safari due to this flakiness issue:
-      // https://github.com/GoogleChrome/workbox/issues/2150
-      if (seleniumBrowser.getId() === 'safari') {
+      // Skip this test outside of Chrome due to this flakiness issue:
+      // https://github.com/GoogleChrome/workbox/issues/2321
+      if (seleniumBrowser.getId() !== 'chrome') {
         this.skip();
       }
 
