@@ -153,7 +153,7 @@ describe(`[workbox-window] Workbox`, function() {
 
     it(`reports all events for an external SW registration`, async function() {
       // This test doesn't work in Safari:
-      // https://github.com/GoogleChrome/workbox/issues/2321
+      // https://github.com/GoogleChrome/workbox/issues/2755
       if (seleniumBrowser.getId() === 'safari') {
         this.skip();
       }
