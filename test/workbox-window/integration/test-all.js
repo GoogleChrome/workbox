@@ -7,13 +7,13 @@
 */
 
 const {expect} = require('chai');
-const templateData = require('../../../infra/testing/server/template-data');
+
 const {executeAsyncAndCatch} = require('../../../infra/testing/webdriver/executeAsyncAndCatch');
-const {getLastWindowHandle} = require('../../../infra/testing/webdriver/getLastWindowHandle');
-const {openNewTab} = require('../../../infra/testing/webdriver/openNewTab');
 const {runUnitTests} = require('../../../infra/testing/webdriver/runUnitTests');
+const {TabManager} = require('../../../infra/testing/webdriver/TabManager');
 const {unregisterAllSWs} = require('../../../infra/testing/webdriver/unregisterAllSWs');
 const {windowLoaded} = require('../../../infra/testing/webdriver/windowLoaded');
+const templateData = require('../../../infra/testing/server/template-data');
 
 // Store local references of these globals.
 const {webdriver, server, seleniumBrowser} = global.__workbox;
@@ -65,7 +65,6 @@ describe(`[workbox-window] Workbox`, function() {
       const result = await executeAsyncAndCatch(async (cb) => {
         try {
           const wb = new Workbox('sw-clients-claim.js.njk');
-          await wb.register();
 
           const installedSpy = sinon.spy();
           const waitingSpy = sinon.spy();
@@ -74,17 +73,18 @@ describe(`[workbox-window] Workbox`, function() {
 
           wb.addEventListener('installed', installedSpy);
           wb.addEventListener('waiting', waitingSpy);
-          wb.addEventListener('controlling', controllingSpy);
           wb.addEventListener('activated', activatedSpy);
+          wb.addEventListener('controlling', controllingSpy);
 
-          wb.addEventListener('activated', () => {
-            cb({
-              isUpdate: installedSpy.args[0][0].isUpdate,
-              installedSpyCallCount: installedSpy.callCount,
-              waitingSpyCallCount: waitingSpy.callCount,
-              controllingSpyCallCount: controllingSpy.callCount,
-              activatedSpyCallCount: activatedSpy.callCount,
-            });
+          await wb.register();
+
+          await window.activatedAndControlling(wb);
+          cb({
+            isUpdate: installedSpy.args[0][0].isUpdate,
+            installedSpyCallCount: installedSpy.callCount,
+            waitingSpyCallCount: waitingSpy.callCount,
+            controllingSpyCallCount: controllingSpy.callCount,
+            activatedSpyCallCount: activatedSpy.callCount,
           });
         } catch (error) {
           cb({error: error.stack});
@@ -110,10 +110,9 @@ describe(`[workbox-window] Workbox`, function() {
           wb1.addEventListener('redundant', redundantSpy);
 
           await wb1.register();
-          await wb1.controlling;
+          await window.activatedAndControlling(wb1);
 
           const wb2 = new Workbox('sw-clients-claim.js.njk?v=2');
-          await wb2.register();
 
           const installedSpy = sinon.spy();
           const waitingSpy = sinon.spy();
@@ -122,18 +121,20 @@ describe(`[workbox-window] Workbox`, function() {
 
           wb2.addEventListener('installed', installedSpy);
           wb2.addEventListener('waiting', waitingSpy);
-          wb2.addEventListener('controlling', controllingSpy);
           wb2.addEventListener('activated', activatedSpy);
+          wb2.addEventListener('controlling', controllingSpy);
 
-          wb2.addEventListener('activated', () => {
-            cb({
-              wb1IsUpdate: redundantSpy.args[0][0].isUpdate,
-              wb2IsUpdate: installedSpy.args[0][0].isUpdate,
-              installedSpyCallCount: installedSpy.callCount,
-              waitingSpyCallCount: waitingSpy.callCount,
-              controllingSpyCallCount: controllingSpy.callCount,
-              activatedSpyCallCount: activatedSpy.callCount,
-            });
+          await wb2.register();
+
+          // Once the newly updated SW is in control, report back.
+          await window.activatedAndControlling(wb2);
+          cb({
+            wb1IsUpdate: redundantSpy.args[0][0].isUpdate,
+            wb2IsUpdate: installedSpy.args[0][0].isUpdate,
+            installedSpyCallCount: installedSpy.callCount,
+            waitingSpyCallCount: waitingSpy.callCount,
+            controllingSpyCallCount: controllingSpy.callCount,
+            activatedSpyCallCount: activatedSpy.callCount,
           });
         } catch (error) {
           cb({error: error.stack});
@@ -151,14 +152,13 @@ describe(`[workbox-window] Workbox`, function() {
     });
 
     it(`reports all events for an external SW registration`, async function() {
-      // Skip this test in Safari due to this flakiness issue:
-      // https://github.com/GoogleChrome/workbox/issues/2150
+      // This test doesn't work in Safari:
+      // https://github.com/GoogleChrome/workbox/issues/2755
       if (seleniumBrowser.getId() === 'safari') {
         this.skip();
       }
 
-      const firstTab = await getLastWindowHandle();
-      await webdriver.switchTo().window(firstTab);
+      const tabManager = new TabManager(webdriver);
 
       await executeAsyncAndCatch(async (cb) => {
         try {
@@ -175,13 +175,14 @@ describe(`[workbox-window] Workbox`, function() {
 
           wb.addEventListener('installed', self.__spies.installedSpy);
           wb.addEventListener('waiting', self.__spies.waitingSpy);
-          wb.addEventListener('controlling', self.__spies.controllingSpy);
           wb.addEventListener('activated', self.__spies.activatedSpy);
-
-          // Resolve this execution block once the SW is activated.
-          wb.addEventListener('activated', () => cb());
+          wb.addEventListener('controlling', self.__spies.controllingSpy);
 
           await wb.register();
+
+          // Resolve this execution block once the SW is in control.
+          await window.activatedAndControlling(wb);
+          cb();
         } catch (error) {
           cb({error: error.stack});
         }
@@ -190,38 +191,39 @@ describe(`[workbox-window] Workbox`, function() {
       // Update the version in sw.js to trigger a new installation.
       templateData.assign({version: '2'});
 
-      await openNewTab(testPath);
+      const secondTabPath = `${testPath}?second`;
+      await tabManager.openTab(secondTabPath);
       await windowLoaded();
 
-      await executeAsyncAndCatch(async (cb) => {
+      const location = await executeAsyncAndCatch(async (cb) => {
         try {
           const wb = new Workbox('sw-clients-claim.js.njk');
 
-          // Resolve this execution block once the SW has activated.
-          wb.addEventListener('activated', () => cb());
-
           await wb.register();
+
+          // Resolve this execution block once the updated SW is in control.
+          await window.activatedAndControlling(wb);
+          cb(location.href);
         } catch (error) {
           cb({error: error.stack});
         }
       });
 
+      // Just confirm we're operating on the page we expect.
+      expect(location).to.eql(secondTabPath);
+
       // Close the second tab and switch back to the first tab before
       // executing the following block.
-      await webdriver.close();
-      await webdriver.switchTo().window(firstTab);
+      await tabManager.closeOpenedTabs();
 
       const result = await executeAsyncAndCatch(async (cb) => {
-        try {
-          cb({
-            installedSpyArgs: JSON.stringify(self.__spies.installedSpy.args),
-            waitingSpyArgs: JSON.stringify(self.__spies.waitingSpy.args),
-            activatedSpyArgs: JSON.stringify(self.__spies.activatedSpy.args),
-            controllingSpyArgs: JSON.stringify(self.__spies.controllingSpy.args),
-          });
-        } catch (error) {
-          cb({error: error.stack});
-        }
+        cb({
+          location: location.href,
+          installedSpyArgs: JSON.stringify(self.__spies.installedSpy.args),
+          waitingSpyArgs: JSON.stringify(self.__spies.waitingSpy.args),
+          activatedSpyArgs: JSON.stringify(self.__spies.activatedSpy.args),
+          controllingSpyArgs: JSON.stringify(self.__spies.controllingSpy.args),
+        });
       });
 
       const installedSpyArgs = JSON.parse(result.installedSpyArgs);
@@ -229,10 +231,13 @@ describe(`[workbox-window] Workbox`, function() {
       const activatedSpyArgs = JSON.parse(result.activatedSpyArgs);
       const controllingSpyArgs = JSON.parse(result.controllingSpyArgs);
 
-      expect(installedSpyArgs.length).to.eql(2);
-      expect(waitingSpyArgs.length).to.eql(0);
-      expect(activatedSpyArgs.length).to.eql(2);
-      expect(controllingSpyArgs.length).to.eql(1);
+      // Just confirm we're operating on the page we expect.
+      expect(result.location).to.eql(testPath);
+
+      expect(installedSpyArgs.length, 'installedSpy').to.eql(2);
+      expect(waitingSpyArgs.length, 'waitingSpy').to.eql(0);
+      expect(activatedSpyArgs.length, 'activatedSpy').to.eql(2);
+      expect(controllingSpyArgs.length, 'controllingSpy').to.eql(1);
 
       expect(installedSpyArgs[0][0].isExternal).to.eql(false);
       expect(activatedSpyArgs[0][0].isExternal).to.eql(false);

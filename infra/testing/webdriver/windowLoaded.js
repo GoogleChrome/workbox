@@ -17,8 +17,7 @@ const windowLoaded = async () => {
   await executeAsyncAndCatch(async (cb) => {
     const loaded = () => {
       if (!window.Workbox) {
-        const error = new Error('Workbox not yet loaded...');
-        cb({error: error.stack});
+        cb({error: `window.Workbox is undefined; location is ${location.href}`});
       } else {
         cb();
       }
