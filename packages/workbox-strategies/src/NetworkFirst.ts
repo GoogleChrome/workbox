@@ -113,16 +113,16 @@ class NetworkFirst extends Strategy {
 
     promises.push(networkPromise);
 
-    const response = await handler.waitUntil((async () =>
+    const response = await handler.waitUntil((async () => {
       // Promise.race() will resolve as soon as the first promise resolves.
-      await handler.waitUntil(Promise.race(promises))
-      // If Promise.race() resolved with null, it might be due to a network
-      // timeout + a cache miss. If that were to happen, we'd rather wait until
-      // the networkPromise resolves instead of returning null.
-      // Note that it's fine to await an already-resolved promise, so we don't
-      // have to check to see if it's still "in flight".
-      || await networkPromise
-    )());
+      return await handler.waitUntil(Promise.race(promises)) ||
+          // If Promise.race() resolved with null, it might be due to a network
+          // timeout + a cache miss. If that were to happen, we'd rather wait until
+          // the networkPromise resolves instead of returning null.
+          // Note that it's fine to await an already-resolved promise, so we don't
+          // have to check to see if it's still "in flight".
+          await networkPromise;
+    })());
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(

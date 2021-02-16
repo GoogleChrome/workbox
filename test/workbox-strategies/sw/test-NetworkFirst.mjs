@@ -146,7 +146,6 @@ describe(`NetworkFirst`, function() {
         event,
       });
 
-      await eventDoneWaiting(event);
       await donePromise;
 
       const populatedCacheResponse = await handlePromise;
@@ -171,7 +170,6 @@ describe(`NetworkFirst`, function() {
       });
 
       const startTime = performance.now();
-      await eventDoneWaiting(event);
       await donePromise;
       expect(performance.now() - startTime).to.be.below(1000);
 
