@@ -141,12 +141,37 @@ describe(`NetworkFirst`, function() {
       const cache = await caches.open(cacheNames.getRuntimeName());
       await cache.put(request, injectedResponse.clone());
 
-      const handlePromise = networkFirst.handle({
+      const [handlePromise, donePromise] = networkFirst.handleAll({
         request,
         event,
       });
 
-      await eventDoneWaiting(event);
+      await donePromise;
+
+      const populatedCacheResponse = await handlePromise;
+      await compareResponses(populatedCacheResponse, injectedResponse, true);
+    });
+
+    it(`should signal completion if the network request completes before timing out`, async function() {
+      const request = new Request('http://example.io/test/');
+      const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
+
+      const networkTimeoutSeconds = 10;
+
+      const injectedResponse = new Response('response body');
+      sandbox.stub(self, 'fetch').resolves(injectedResponse);
+
+      const networkFirst = new NetworkFirst({networkTimeoutSeconds});
+
+      const [handlePromise, donePromise] = networkFirst.handleAll({
+        request,
+        event,
+      });
+
+      const startTime = performance.now();
+      await donePromise;
+      expect(performance.now() - startTime).to.be.below(1000);
 
       const populatedCacheResponse = await handlePromise;
       await compareResponses(populatedCacheResponse, injectedResponse, true);

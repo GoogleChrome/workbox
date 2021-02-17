@@ -497,7 +497,7 @@ class StrategyHandler {
    * @param {Promise} promise A promise to add to the extend lifetime promises
    *     of the event that triggered the request.
    */
-  waitUntil(promise: Promise<any>): Promise<any> {
+  waitUntil<T>(promise: Promise<T>): Promise<T> {
     this._extendLifetimePromises.push(promise);
     return promise;
   }
