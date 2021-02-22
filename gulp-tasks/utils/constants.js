@@ -15,7 +15,7 @@ module.exports = {
 
   // This is used in the publish-bundle step to avoid doing anything
   // with tags < v4.0.0.
-  MIN_RELEASE_TAG_TO_PUBLISH: 'v5.1.1',
+  MIN_RELEASE_TAG_TO_PUBLISH: 'v6.1.1',
   GITHUB_OWNER: 'GoogleChrome',
   GITHUB_REPO: 'workbox',
 
