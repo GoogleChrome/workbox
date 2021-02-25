@@ -25,7 +25,9 @@ export async function askQuestions(options = {}) {
     globPatterns,
     swDest,
     swSrc,
-    ignoreURLParametersMatching
+    ignoreURLParametersMatching: ignoreURLParametersMatching.map(
+      regExp => regExp.toString()
+    ),
   };
 
   return {
