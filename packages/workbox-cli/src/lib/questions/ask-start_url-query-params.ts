@@ -11,6 +11,7 @@ import {prompt} from 'inquirer';
 import {oneLine as ol} from 'common-tags';
 
 import {errors} from '../errors';
+import {constants} from '../constants';
 
 const START_URL_QUERY_PARAMS_PROMPT = 'Please enter the search parameter(s) that you would like to ignore (separated by comma):';
 
@@ -39,7 +40,7 @@ async function askQuestion(): Promise<{ shouldAskForIgnoreURLParametersMatching:
 }
 
 export async function askQueryParametersInStartUrl(
-  defaultIgnoredSearchParameters: RegExp[] = [/^utm_/, /^fbclid$/]
+  defaultIgnoredSearchParameters: RegExp[] = constants.ignoreURLParametersMatching
 ): Promise<RegExp[]> {
   const { shouldAskForIgnoreURLParametersMatching, ignoreURLParametersMatching = '' } = await askQuestion();
 
