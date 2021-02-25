@@ -28,4 +28,8 @@ export const errors = {
   'sw-src-missing-injection-point': ol`That is not a valid source service worker
     file. Please try again with a file containing
     'self.__WB_MANIFEST'.`,
+  'no-search-parameters-supplied': ol`Please provide the url search param(s)
+    you would like to ignore.`,
+  'invalid-search-parameters-supplied': ol`Please provide the valid URL search parameter(s)
+    without the leading '/' or '?' (i.e. source,version,language).`,
 };

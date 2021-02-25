@@ -6,8 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
+import * as assert from 'assert';
 import {prompt} from 'inquirer';
 import {oneLine as ol} from 'common-tags';
+
+import {errors} from '../errors';
 
 const START_URL_QUERY_PARAMS_PROMPT = 'Please enter the search parameter(s) that you would like to ignore (separated by comma):';
 
@@ -44,7 +47,14 @@ export async function askQueryParametersInStartUrl(
     return defaultIgnoredSearchParameters;
   }
 
+  assert(ignoreURLParametersMatching.length > 0, errors['no-search-parameters-supplied']);
+
   const ignoreSearchParameters = ignoreURLParametersMatching.trim().split(',').filter(Boolean);
+
+  assert(ignoreSearchParameters.length > 0, errors['no-search-parameters-supplied']);
+  assert(ignoreSearchParameters.every(
+    param => !param.match(/^[^\w|-]/g)
+  ), errors['invalid-search-parameters-supplied']);
 
   return defaultIgnoredSearchParameters.concat(
     ignoreSearchParameters
