@@ -19,29 +19,32 @@ describe(`[workbox-cli] lib/questions/ask-questions.js`, function() {
     // and to verify that the stub's responses are used to create the overall
     // response in the expected fashion.
     let count = 0;
-    const stub = sinon.stub().callsFake(() => Promise.resolve(count++));
+    const stub = sinon.stub();
 
     const {askQuestions} = proxyquire(MODULE_PATH, {
       './ask-root-of-web-app': {
-        askRootOfWebApp: stub,
+        askRootOfWebApp: stub.callsFake(() => Promise.resolve(count++)),
       },
       './ask-extensions-to-cache': {
-        askExtensionsToCache: stub,
+        askExtensionsToCache: stub.callsFake(() => Promise.resolve(count++)),
       },
       './ask-sw-dest': {
-        askSWDest: stub,
+        askSWDest: stub.callsFake(() => Promise.resolve(count++)),
       },
       './ask-config-location': {
-        askConfigLocation: stub,
+        askConfigLocation: stub.callsFake(() => Promise.resolve(count++)),
+      },
+      './ask-start_url-query-params': {
+        askQueryParametersInStartUrl: stub.onCall(4).callsFake(() => Promise.resolve([count++])),
       },
     });
 
     const answer = await askQuestions();
     expect(answer).to.eql({
-      config: {globDirectory: 0, globPatterns: 1, swDest: 2, swSrc: undefined},
+      config: {globDirectory: 0, globPatterns: 1, swDest: 2, swSrc: undefined, ignoreURLParametersMatching: ['4']},
       configLocation: 3,
     });
-    expect(stub.callCount).to.eql(4);
+    expect(stub.callCount).to.eql(5);
   });
 
   it(`should ask all the expected questions in the correct order, and return the expected result in injectManifest mode`, async function() {
@@ -50,32 +53,35 @@ describe(`[workbox-cli] lib/questions/ask-questions.js`, function() {
     // and to verify that the stub's responses are used to create the overall
     // response in the expected fashion.
     let count = 0;
-    const stub = sinon.stub().callsFake(() => Promise.resolve(count++));
+    const stub = sinon.stub();
 
     const {askQuestions} = proxyquire(MODULE_PATH, {
       './ask-root-of-web-app': {
-        askRootOfWebApp: stub,
+        askRootOfWebApp: stub.callsFake(() => Promise.resolve(count++)),
       },
       './ask-extensions-to-cache': {
-        askExtensionsToCache: stub,
+        askExtensionsToCache: stub.callsFake(() => Promise.resolve(count++)),
       },
       './ask-sw-src': {
-        askSWSrc: stub,
+        askSWSrc: stub.callsFake(() => Promise.resolve(count++)),
       },
       './ask-sw-dest': {
-        askSWDest: stub,
+        askSWDest: stub.callsFake(() => Promise.resolve(count++)),
       },
       './ask-config-location': {
-        askConfigLocation: stub,
+        askConfigLocation: stub.callsFake(() => Promise.resolve(count++)),
+      },
+      './ask-start_url-query-params': {
+        askQueryParametersInStartUrl: stub.onCall(5).callsFake(() => Promise.resolve([count++])),
       },
     });
 
     const answer = await askQuestions({injectManifest: true});
     expect(answer).to.eql({
-      config: {globDirectory: 0, globPatterns: 1, swSrc: 2, swDest: 3},
+      config: {globDirectory: 0, globPatterns: 1, swSrc: 2, swDest: 3, ignoreURLParametersMatching: ['5']},
       configLocation: 4,
     });
-    expect(stub.callCount).to.eql(5);
+    expect(stub.callCount).to.eql(6);
   });
 });
 
