@@ -34,7 +34,11 @@ module.exports = async ({
 
   const plugins = [
     nodeResolve(),
-    replace({'process.env.NODE_ENV': JSON.stringify(mode)}),
+    replace({
+      // See https://github.com/GoogleChrome/workbox/issues/2769
+      'preventAssignment': true,
+      'process.env.NODE_ENV': JSON.stringify(mode),
+    }),
     babel({
       babelHelpers: 'bundled',
       // Disable the logic that checks for local Babel config files:
