@@ -18,8 +18,8 @@ import {constants} from '../constants';
 const ROOT_PROMPT = 'Please enter the path to the root of your web app:';
 
 // The keys used for the questions/answers.
-const question_rootDirectory = 'globDirectory';
-const question_manualInput = 'manualDirectoryInput';
+const questionRootDirectory = 'globDirectory';
+const questionManualInput = 'manualDirectoryInput';
 
 /**
  * @return {Promise<Array<string>>} The subdirectories of the current
@@ -48,7 +48,7 @@ async function askQuestion(): Promise<{ globDirectory: string; manualDirectoryIn
   if (subdirectories.length > 0) {
     const manualEntryChoice = 'Manually enter path';
     return prompt([{
-      name: question_rootDirectory,
+      name: questionRootDirectory,
       type: 'list',
       message: ol`What is the root of your web app (i.e. which directory do
         you deploy)?`,
@@ -57,7 +57,7 @@ async function askQuestion(): Promise<{ globDirectory: string; manualDirectoryIn
         manualEntryChoice,
       ]),
     }, {
-      name: question_manualInput,
+      name: questionManualInput,
       when: (answers: { globDirectory: string }) => answers.globDirectory === manualEntryChoice,
       message: ROOT_PROMPT,
     }
@@ -65,7 +65,7 @@ async function askQuestion(): Promise<{ globDirectory: string; manualDirectoryIn
   }
 
   return prompt([{
-    name: question_rootDirectory,
+    name: questionRootDirectory,
     message: ROOT_PROMPT,
     default: '.',
   }]);
