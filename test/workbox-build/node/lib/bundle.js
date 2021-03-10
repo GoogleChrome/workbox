@@ -105,6 +105,7 @@ describe(`[workbox-build] lib/bundle.js`, function() {
     });
 
     expect(stubs['@rollup/plugin-replace'].args).to.eql([[{
+      'preventAssignment': true,
       'process.env.NODE_ENV': `"${mode}"`,
     }]]);
   });
