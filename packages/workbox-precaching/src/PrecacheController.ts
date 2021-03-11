@@ -177,8 +177,7 @@ class PrecacheController {
    * Note: this method calls `event.waitUntil()` for you, so you do not need
    * to call it yourself in your event handlers.
    *
-   * @param {Object} options
-   * @param {Event} options.event The install event.
+   * @param {ExtendableEvent} event
    * @return {Promise<module:workbox-precaching.InstallResult>}
    */
   install(event: ExtendableEvent) {
@@ -222,7 +221,7 @@ class PrecacheController {
    * Note: this method calls `event.waitUntil()` for you, so you do not need
    * to call it yourself in your event handlers.
    *
-   * @param {ExtendableEvent}
+   * @param {ExtendableEvent} event
    * @return {Promise<module:workbox-precaching.CleanupResult>}
    */
   activate(event: ExtendableEvent) {
