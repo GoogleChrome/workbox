@@ -196,21 +196,10 @@ describe(`NetworkFirst`, function() {
         return networkResponse;
       });
 
-      // To ensure an attempt to respond from cache is made.
-      const cacheReadSpy = sandbox.spy();
+      sandbox.stub(caches, 'match').resolves(undefined);
 
       const networkFirst = new NetworkFirst({
         networkTimeoutSeconds,
-        plugins: [
-          {
-            cacheKeyWillBeUsed: ({request, mode}) => {
-              if (mode === 'read') {
-                cacheReadSpy(request);
-              }
-              return request;
-            },
-          },
-        ],
       });
       const handlePromise = networkFirst.handle({
         request,
@@ -220,7 +209,7 @@ describe(`NetworkFirst`, function() {
       const handlerResponse = await handlePromise;
 
       expect(handlerResponse).to.equal(networkResponse);
-      expect(cacheReadSpy.firstCall.args[0]).to.equal(request);
+      expect(caches.match.firstCall.args[0]).to.equal(request);
     });
 
     it(`should throw when NetworkFirst() is called with an invalid networkTimeoutSeconds parameter`, function() {
