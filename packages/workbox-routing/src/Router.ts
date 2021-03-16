@@ -296,6 +296,8 @@ class Router {
    *
    * @param {Object} options
    * @param {URL} options.url
+   * @param {boolean} options.sameOrigin The result of comparing `url.origin`
+   *     against the current origin.
    * @param {Request} options.request The request to match.
    * @param {Event} options.event The corresponding event.
    * @return {Object} An object with `route` and `params` properties.
