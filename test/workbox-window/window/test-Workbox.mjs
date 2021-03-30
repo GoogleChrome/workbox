@@ -846,21 +846,30 @@ describe(`[workbox-window] Workbox`, function() {
 
         expect(controlling1Spy.callCount).to.equal(1);
         assertMatchesWorkboxEvent(controlling1Spy.args[0][0], {
-          type: 'controlling',
-          target: wb1,
-          sw: await wb1.getSW(),
-          originalEvent: {type: 'controllerchange'},
+          isExternal: false,
           isUpdate: true,
+          originalEvent: {type: 'controllerchange'},
+          sw: await wb1.getSW(),
+          target: wb1,
+          type: 'controlling',
         });
 
-        expect(controlling2Spy.callCount).to.equal(0);
+        // This will be an "external" event, due to wb3's SW taking control.
+        // wb2's SW never controls, because it's stuck in waiting.
+        expect(controlling2Spy.callCount).to.equal(1);
+        assertMatchesWorkboxEvent(controlling2Spy.args[0][0], {
+          isExternal: true,
+          isUpdate: true,
+          type: 'controlling',
+        });
 
         expect(controlling3Spy.callCount).to.equal(1);
         assertMatchesWorkboxEvent(controlling3Spy.args[0][0], {
-          type: 'controlling',
-          target: wb3,
-          sw: await wb3.getSW(),
+          isExternal: false,
           originalEvent: {type: 'controllerchange'},
+          sw: await wb3.getSW(),
+          target: wb3,
+          type: 'controlling',
         });
       });
     });
