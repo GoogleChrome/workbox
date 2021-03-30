@@ -84,6 +84,7 @@ describe(`[workbox-window] Workbox`, function() {
             installedSpyCallCount: installedSpy.callCount,
             waitingSpyCallCount: waitingSpy.callCount,
             controllingSpyCallCount: controllingSpy.callCount,
+            controllingIsExternal: controllingSpy.args[0][0].isExternal,
             activatedSpyCallCount: activatedSpy.callCount,
           });
         } catch (error) {
@@ -94,6 +95,7 @@ describe(`[workbox-window] Workbox`, function() {
       // Test for truthiness because some browsers structure clone
       // `undefined` to `null`.
       expect(result.isUpdate).to.not.be.ok;
+      expect(result.controllingIsExternal).to.not.be.ok;
       expect(result.installedSpyCallCount).to.equal(1);
       expect(result.activatedSpyCallCount).to.equal(1);
       expect(result.controllingSpyCallCount).to.equal(1);
@@ -107,7 +109,9 @@ describe(`[workbox-window] Workbox`, function() {
         try {
           const wb1 = new Workbox('sw-clients-claim.js.njk?v=1');
           const redundantSpy = sinon.spy();
+          const wb1ControllingSpy = sinon.spy();
           wb1.addEventListener('redundant', redundantSpy);
+          wb1.addEventListener('controlling', wb1ControllingSpy);
 
           await wb1.register();
           await window.activatedAndControlling(wb1);
@@ -117,12 +121,12 @@ describe(`[workbox-window] Workbox`, function() {
           const installedSpy = sinon.spy();
           const waitingSpy = sinon.spy();
           const activatedSpy = sinon.spy();
-          const controllingSpy = sinon.spy();
+          const wb2ControllingSpy = sinon.spy();
 
           wb2.addEventListener('installed', installedSpy);
           wb2.addEventListener('waiting', waitingSpy);
           wb2.addEventListener('activated', activatedSpy);
-          wb2.addEventListener('controlling', controllingSpy);
+          wb2.addEventListener('controlling', wb2ControllingSpy);
 
           await wb2.register();
 
@@ -131,9 +135,11 @@ describe(`[workbox-window] Workbox`, function() {
           cb({
             wb1IsUpdate: redundantSpy.args[0][0].isUpdate,
             wb2IsUpdate: installedSpy.args[0][0].isUpdate,
+            wb1ControllingIsExternal: wb1ControllingSpy.args[0][0].isExternal,
+            wb2ControllingIsExternal: wb2ControllingSpy.args[0][0].isExternal,
             installedSpyCallCount: installedSpy.callCount,
             waitingSpyCallCount: waitingSpy.callCount,
-            controllingSpyCallCount: controllingSpy.callCount,
+            controllingSpyCallCount: wb2ControllingSpy.callCount,
             activatedSpyCallCount: activatedSpy.callCount,
           });
         } catch (error) {
@@ -145,6 +151,8 @@ describe(`[workbox-window] Workbox`, function() {
       // `undefined` to `null`.
       expect(result.wb1IsUpdate).to.not.be.ok;
       expect(result.wb2IsUpdate).to.equal(true);
+      expect(result.wb1ControllingIsExternal).to.not.be.ok;
+      expect(result.wb2ControllingIsExternal).to.not.be.ok;
       expect(result.installedSpyCallCount).to.equal(1);
       expect(result.waitingSpyCallCount).to.equal(0);
       expect(result.activatedSpyCallCount).to.equal(1);

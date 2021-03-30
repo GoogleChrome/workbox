@@ -502,13 +502,20 @@ class Workbox extends WorkboxEventTarget {
    */
   private readonly _onControllerChange = (originalEvent: Event) => {
     const sw = this._sw;
-    if (sw === navigator.serviceWorker.controller) {
-      this.dispatchEvent(new WorkboxEvent('controlling', {
-        sw,
-        originalEvent,
-        isUpdate: this._isUpdate,
-      }));
+    const isExternal = sw !== navigator.serviceWorker.controller;
 
+    // Unconditionally dispatch the controlling event, with isExternal set
+    // to distinguish between controller changes due to the initial registration
+    // vs. an update-check or other tab's registration.
+    // See https://github.com/GoogleChrome/workbox/issues/2786
+    this.dispatchEvent(new WorkboxEvent('controlling', {
+      isExternal,
+      originalEvent,
+      sw,
+      isUpdate: this._isUpdate,
+    }));
+
+    if (!isExternal) {
       if (process.env.NODE_ENV !== 'production') {
         logger.log('Registered service worker now controlling this page.');
       }
@@ -627,6 +634,8 @@ export {Workbox};
  *     event.
  * @property {boolean|undefined} isUpdate True if a service worker was already
  *     controlling when this service worker was registered.
+ * @property {boolean|undefined} isExternal True if this event is associated
+ *     with an [external service worker]{@link https://developers.google.com/web/tools/workbox/modules/workbox-window#when_an_unexpected_version_of_the_service_worker_is_found}.
  * @property {string} type `controlling`.
  * @property {Workbox} target The `Workbox` instance.
  */
