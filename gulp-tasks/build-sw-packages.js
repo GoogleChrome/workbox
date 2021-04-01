@@ -145,6 +145,7 @@ async function buildSWBundle(packagePath, buildType) {
     sourcemap: true,
     format: 'iife',
     globals,
+    esModule: false,
   });
 }
 
