@@ -7,7 +7,6 @@ module.exports = {
   reject: [
     // See https://github.com/GoogleChrome/workbox/issues/2479
     '@octokit/rest',
-    'rollup',
     'service-worker-mock',
     // See https://github.com/GoogleChrome/workbox/issues/2602
     '@typescript-eslint/eslint-plugin',
