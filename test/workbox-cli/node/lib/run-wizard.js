@@ -41,13 +41,13 @@ describe(`[workbox-cli] lib/run-wizard.js`, function() {
     expect(fseArgs[0]).to.eql(configLocation);
     // See https://github.com/GoogleChrome/workbox/issues/2796
     expect(fseArgs[1]).to.eql(
-`module.exports = {
+        `module.exports = {
 \tdummy: 123,
 \tregExp: [
 \t\t/1/,
 \t\t/2/
 \t]
-};`
+};`,
     );
     expect(loggerStub.calledTwice).to.be.true;
   });
