@@ -7,23 +7,23 @@
 */
 
 import {Queue} from 'workbox-background-sync/Queue.mjs';
+import {QueueDb} from 'workbox-background-sync/lib/QueueDb.mjs';
+import {openDB} from 'idb';
 import {QueueStore} from 'workbox-background-sync/lib/QueueStore.mjs';
-import {DBWrapper} from 'workbox-core/_private/DBWrapper.mjs';
 import {logger} from 'workbox-core/_private/logger.mjs';
 import {dispatchAndWaitUntilDone} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
 
-
 const MINUTES = 60 * 1000;
-
 
 describe(`Queue`, function() {
   const sandbox = sinon.createSandbox();
-  const db = new DBWrapper('workbox-background-sync', 3, {
-    onupgradeneeded: QueueStore.prototype._upgradeDb,
-  });
+  let db = null;
 
   beforeEach(async function() {
     Queue._queueNames.clear();
+    db = await openDB('workbox-background-sync', 3, {
+      upgrade: QueueDb.prototype._upgradeDb,
+    });
     await db.clear('requests');
     sandbox.restore();
 

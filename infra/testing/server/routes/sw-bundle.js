@@ -40,7 +40,7 @@ async function handler(req, res) {
       plugins: [
         multiEntry(),
         nodeResolve({
-          moduleDirectories: ['packages'],
+          moduleDirectories: ['packages', 'node_modules'],
         }),
         // TODO(philipwalton): some of our shared testing helpers use commonjs
         // so we have to support this for the time being.

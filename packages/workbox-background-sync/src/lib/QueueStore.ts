@@ -7,27 +7,8 @@
 */
 
 import {assert} from 'workbox-core/_private/assert.js';
-import {DBWrapper} from 'workbox-core/_private/DBWrapper.js';
-import {RequestData} from './StorableRequest.js';
 import '../_version.js';
-
-
-const DB_VERSION = 3;
-const DB_NAME = 'workbox-background-sync';
-const OBJECT_STORE_NAME = 'requests';
-const INDEXED_PROP = 'queueName';
-
-export interface UnidentifiedQueueStoreEntry {
-  requestData: RequestData;
-  timestamp: number;
-  id?: number;
-  queueName?: string;
-  metadata?: object;
-}
-
-export interface QueueStoreEntry extends UnidentifiedQueueStoreEntry {
-  id: number;
-}
+import {UnidentifiedQueueStoreEntry, QueueStoreEntry, QueueDb} from './QueueDb';
 
 /**
  * A class to manage storing requests from a Queue in IndexedDB,
@@ -37,7 +18,7 @@ export interface QueueStoreEntry extends UnidentifiedQueueStoreEntry {
  */
 export class QueueStore {
   private readonly _queueName: string;
-  private readonly _db: DBWrapper;
+  private readonly _queueDb: QueueDb;
 
   /**
    * Associates this instance with a Queue instance, so entries added can be
@@ -48,9 +29,7 @@ export class QueueStore {
    */
   constructor(queueName: string) {
     this._queueName = queueName;
-    this._db = new DBWrapper(DB_NAME, DB_VERSION, {
-      onupgradeneeded: this._upgradeDb,
-    });
+    this._queueDb = new QueueDb();
   }
 
   /**
@@ -82,7 +61,7 @@ export class QueueStore {
     delete entry.id;
     entry.queueName = this._queueName;
 
-    await this._db.add!(OBJECT_STORE_NAME, entry);
+    await this._queueDb.addEntry(entry);
   }
 
   /**
@@ -110,9 +89,7 @@ export class QueueStore {
       });
     }
 
-    const [firstEntry] = await this._db.getAllMatching(OBJECT_STORE_NAME, {
-      count: 1,
-    });
+    const firstEntry = await this._queueDb.getFirstEntry();
 
     if (firstEntry) {
       // Pick an ID one less than the lowest ID in the object store.
@@ -123,7 +100,7 @@ export class QueueStore {
     }
     entry.queueName = this._queueName;
 
-    await this._db.add!(OBJECT_STORE_NAME, entry);
+    await this._queueDb.addEntry(entry);
   }
 
   /**
@@ -153,11 +130,10 @@ export class QueueStore {
    * @return {Promise<Array<Object>>}
    * @private
    */
-  async getAll(): Promise<QueueStoreEntry[]> {
-    return await this._db.getAllMatching(OBJECT_STORE_NAME, {
-      index: INDEXED_PROP,
-      query: IDBKeyRange.only(this._queueName),
-    });
+  async getAll(): Promise<QueueStoreEntry[] | any> {
+    return await this._queueDb.getAllEntriesFromIndex(
+      IDBKeyRange.only(this._queueName),
+    );
   }
 
   /**
@@ -172,7 +148,7 @@ export class QueueStore {
    * @param {number} id
    */
   async deleteEntry(id: number) {
-    await this._db.delete!(OBJECT_STORE_NAME, id);
+    await this._queueDb.deleteEntry(id);
   }
 
   /**
@@ -183,38 +159,14 @@ export class QueueStore {
    * @private
    */
   async _removeEntry({direction}: {direction?: IDBCursorDirection}) {
-    const [entry] = await this._db.getAllMatching(OBJECT_STORE_NAME, {
-      direction,
-      index: INDEXED_PROP,
-      query: IDBKeyRange.only(this._queueName),
-      count: 1,
-    });
+    const entry = await this._queueDb.getEndEntryFromIndex(
+      {direction},
+      IDBKeyRange.only(this._queueName),
+    );
 
     if (entry) {
       await this.deleteEntry(entry.id);
       return entry;
     }
-  }
-
-  /**
-   * Upgrades the database given an `upgradeneeded` event.
-   *
-   * @param {Event} event
-   * @private
-   */
-  private _upgradeDb(event: IDBVersionChangeEvent) {
-    const db = (event.target as IDBOpenDBRequest).result;
-
-    if (event.oldVersion > 0 && event.oldVersion < DB_VERSION) {
-      if (db.objectStoreNames.contains(OBJECT_STORE_NAME)) {
-        db.deleteObjectStore(OBJECT_STORE_NAME);
-      }
-    }
-
-    const objStore = db.createObjectStore(OBJECT_STORE_NAME, {
-      autoIncrement: true,
-      keyPath: 'id',
-    });
-    objStore.createIndex(INDEXED_PROP, INDEXED_PROP, {unique: false});
   }
 }
