@@ -35,13 +35,13 @@ describe(`[workbox-cli] lib/questions/ask-questions.js`, function() {
         askConfigLocation: stub.callsFake(() => Promise.resolve(count++)),
       },
       './ask-start_url-query-params': {
-        askQueryParametersInStartUrl: stub.onCall(4).callsFake(() => Promise.resolve([count++])),
+        askQueryParametersInStartUrl: stub.callsFake(() => Promise.resolve(count++)),
       },
     });
 
     const answer = await askQuestions();
     expect(answer).to.eql({
-      config: {globDirectory: 0, globPatterns: 1, swDest: 2, swSrc: undefined, ignoreURLParametersMatching: ['4']},
+      config: {globDirectory: 0, globPatterns: 1, swDest: 2, ignoreURLParametersMatching: 4},
       configLocation: 3,
     });
     expect(stub.callCount).to.eql(5);
@@ -72,13 +72,13 @@ describe(`[workbox-cli] lib/questions/ask-questions.js`, function() {
         askConfigLocation: stub.callsFake(() => Promise.resolve(count++)),
       },
       './ask-start_url-query-params': {
-        askQueryParametersInStartUrl: stub.onCall(5).callsFake(() => Promise.resolve([count++])),
+        askQueryParametersInStartUrl: stub.callsFake(() => Promise.resolve(count++)),
       },
     });
 
     const answer = await askQuestions({injectManifest: true});
     expect(answer).to.eql({
-      config: {globDirectory: 0, globPatterns: 1, swSrc: 2, swDest: 3, ignoreURLParametersMatching: ['5']},
+      config: {globDirectory: 0, globPatterns: 1, swSrc: 2, swDest: 3, ignoreURLParametersMatching: 5},
       configLocation: 4,
     });
     expect(stub.callCount).to.eql(6);

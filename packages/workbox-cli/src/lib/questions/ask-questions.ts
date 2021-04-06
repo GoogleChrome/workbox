@@ -20,15 +20,16 @@ export async function askQuestions(options = {}) {
   const swDest = await askSWDest(globDirectory);
   const configLocation = await askConfigLocation();
   const ignoreURLParametersMatching = await askQueryParametersInStartUrl();
-  const config = {
+  const config: {[key: string]: any} = {
     globDirectory,
     globPatterns,
+    ignoreURLParametersMatching,
     swDest,
-    swSrc,
-    ignoreURLParametersMatching: ignoreURLParametersMatching.map(
-      regExp => regExp.toString()
-    ),
   };
+
+  if (swSrc) {
+    config.swSrc = swSrc;
+  }
 
   return {
     config,
