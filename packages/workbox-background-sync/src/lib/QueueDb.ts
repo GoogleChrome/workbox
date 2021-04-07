@@ -8,7 +8,7 @@
 
 import {openDB, DBSchema, IDBPDatabase} from 'idb';
 import {RequestData} from './StorableRequest.js';
-import './_version.js';
+import '../_version.js';
 
 interface QueueDBSchema extends DBSchema {
   requests: {

@@ -11,7 +11,7 @@ import {logger} from 'workbox-core/_private/logger.js';
 import {assert} from 'workbox-core/_private/assert.js';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
 import {QueueStore} from './lib/QueueStore.js';
-import {UnidentifiedQueueStoreEntry} from './lib/QueueDb';
+import {UnidentifiedQueueStoreEntry} from './lib/QueueDb.js';
 import {StorableRequest} from './lib/StorableRequest.js';
 import './_version.js';
 
