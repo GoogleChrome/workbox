@@ -1,5 +1,5 @@
 /*
-  Copyright 2018 Google LLC
+  Copyright 2021 Google LLC
 
   Use of this source code is governed by an MIT-style
   license that can be found in the LICENSE file or at
@@ -8,6 +8,7 @@
 
 import {openDB, DBSchema, IDBPDatabase} from 'idb';
 import {RequestData} from './StorableRequest.js';
+import './_version.js';
 
 interface QueueDBSchema extends DBSchema {
   requests: {
