@@ -269,8 +269,8 @@ describe(`QueueDb`, () => {
     });
   });
 
-  describe('getFirstEntry', () => {
-    it(`should return the first entry in the IBDObjectStore`, async () => {
+  describe('getFirstEntryId', () => {
+    it(`should return the first entry id in the IBDObjectStore`, async () => {
       const queueDb = new QueueDb();
 
       await queueDb.addEntry(entry1);
@@ -281,18 +281,12 @@ describe(`QueueDb`, () => {
       await queueDb.addEntry(entry2);
       await queueDb.addEntry(entry3);
 
-      const result = await queueDb.getFirstEntry();
-      expect(result).to.deep.equal({
-        id: firstId,
-        queueName: 'a',
-        requestData: requestData1,
-        timestamp: 1000,
-        metadata: {name: 'meta1'},
-      });
+      const result = await queueDb.getFirstEntryId();
+      expect(result).to.equal(firstId);
     });
   });
 
-  describe('getAllEntriesFromIndex', () => {
+  describe('getAllEntriesByQueueName', () => {
     it(`should return all entries in IDB filtered by index`, async () => {
       const queueDb = new QueueDb();
 
@@ -306,7 +300,7 @@ describe(`QueueDb`, () => {
       await queueDb.addEntry(entry4);
       await queueDb.addEntry(entry5);
 
-      let results = await queueDb.getAllEntriesFromIndex(IDBKeyRange.only('b'));
+      let results = await queueDb.getAllEntriesByQueueName('b');
       expect(results).to.deep.equal([
         {
           id: firstId + 3,
@@ -324,7 +318,7 @@ describe(`QueueDb`, () => {
         },
       ]);
 
-      results = await queueDb.getAllEntriesFromIndex(IDBKeyRange.only('a'));
+      results = await queueDb.getAllEntriesByQueueName('a');
       expect(results).to.deep.equal([
         {
           id: firstId,
@@ -351,8 +345,8 @@ describe(`QueueDb`, () => {
 
       await db.clear('requests');
 
-      expect(await queueDb.getAllEntriesFromIndex(IDBKeyRange.only('a'))).to.deep.equal([]);
-      expect(await queueDb.getAllEntriesFromIndex(IDBKeyRange.only('b'))).to.deep.equal([]);
+      expect(await queueDb.getAllEntriesByQueueName('a')).to.deep.equal([]);
+      expect(await queueDb.getAllEntriesByQueueName('b')).to.deep.equal([]);
     });
   });
 
@@ -453,7 +447,7 @@ describe(`QueueDb`, () => {
     });
   });
 
-  describe('getEndEntryFromIndex', () => {
+  describe('getFirstEntryByQueueName', () => {
     it(`should return first entry in IDB filtered by index`, async () => {
       const queueDb = new QueueDb();
 
@@ -467,7 +461,7 @@ describe(`QueueDb`, () => {
       await queueDb.addEntry(entry4);
       await queueDb.addEntry(entry5);
 
-      let result = await queueDb.getEndEntryFromIndex({direction: 'next'}, IDBKeyRange.only('b'));
+      let result = await queueDb.getFirstEntryByQueueName('b');
       expect(result).to.deep.equal({
         id: firstId + 3,
         queueName: 'b',
@@ -476,7 +470,7 @@ describe(`QueueDb`, () => {
         metadata: {name: 'meta4'},
       });
 
-      result = await queueDb.getEndEntryFromIndex({direction: 'next'}, IDBKeyRange.only('a'));
+      result = await queueDb.getFirstEntryByQueueName('a');
       expect(result).to.deep.equal({
         id: firstId,
         queueName: 'a',
@@ -485,7 +479,9 @@ describe(`QueueDb`, () => {
         metadata: {name: 'meta1'},
       });
     });
+  });
 
+  describe('getLastEntryByQueueName', () => {
     it(`should return last entry in IDB filtered by index`, async () => {
       const queueDb = new QueueDb();
 
@@ -499,7 +495,7 @@ describe(`QueueDb`, () => {
       await queueDb.addEntry(entry4);
       await queueDb.addEntry(entry5);
 
-      let result = await queueDb.getEndEntryFromIndex({direction: 'prev'}, IDBKeyRange.only('b'));
+      let result = await queueDb.getLastEntryByQueueName('b');
       expect(result).to.deep.equal({
         id: firstId + 4,
         queueName: 'b',
@@ -508,7 +504,7 @@ describe(`QueueDb`, () => {
         metadata: {name: 'meta5'},
       });
 
-      result = await queueDb.getEndEntryFromIndex({direction: 'prev'}, IDBKeyRange.only('a'));
+      result = await queueDb.getLastEntryByQueueName('a');
       expect(result).to.deep.equal({
         id: firstId + 2,
         queueName: 'a',
@@ -516,11 +512,6 @@ describe(`QueueDb`, () => {
         timestamp: 3000,
         metadata: {name: 'meta3'},
       });
-
-      await db.clear('requests');
-
-      expect(await queueDb.getAllEntriesFromIndex(IDBKeyRange.only('a'))).to.deep.equal([]);
-      expect(await queueDb.getAllEntriesFromIndex(IDBKeyRange.only('b'))).to.deep.equal([]);
     });
   });
 });

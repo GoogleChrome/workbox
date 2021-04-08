@@ -8,7 +8,7 @@
 
 import {assert} from 'workbox-core/_private/assert.js';
 import '../_version.js';
-import {UnidentifiedQueueStoreEntry, QueueStoreEntry, QueueDb} from './QueueDb';
+import {UnidentifiedQueueStoreEntry, QueueStoreEntry, QueueDb} from './QueueDb.js';
 
 /**
  * A class to manage storing requests from a Queue in IndexedDB,
@@ -89,11 +89,11 @@ export class QueueStore {
       });
     }
 
-    const firstEntry = await this._queueDb.getFirstEntry();
+    const firstId = await this._queueDb.getFirstEntryId();
 
-    if (firstEntry) {
+    if (firstId) {
       // Pick an ID one less than the lowest ID in the object store.
-      entry.id = firstEntry.id - 1;
+      entry.id = firstId - 1;
     } else {
       // Otherwise let the auto-incrementor assign the ID.
       delete entry.id;
@@ -106,21 +106,21 @@ export class QueueStore {
   /**
    * Removes and returns the last entry in the queue matching the `queueName`.
    *
-   * @return {Promise<Object>}
+   * @return {Promise<QueueStoreEntry|undefined>}
    * @private
    */
-  async popEntry(): Promise<QueueStoreEntry> {
-    return this._removeEntry({direction: 'prev'});
+  async popEntry(): Promise<QueueStoreEntry | undefined> {
+    return this._removeEntry(await this._queueDb.getLastEntryByQueueName(this._queueName));
   }
 
   /**
    * Removes and returns the first entry in the queue matching the `queueName`.
    *
-   * @return {Promise<Object>}
+   * @return {Promise<QueueStoreEntry|undefined>}
    * @private
    */
-  async shiftEntry(): Promise<QueueStoreEntry> {
-    return this._removeEntry({direction: 'next'});
+  async shiftEntry(): Promise<QueueStoreEntry | undefined> {
+    return this._removeEntry(await this._queueDb.getFirstEntryByQueueName(this._queueName));
   }
 
   /**
@@ -130,16 +130,14 @@ export class QueueStore {
    * @return {Promise<Array<Object>>}
    * @private
    */
-  async getAll(): Promise<QueueStoreEntry[] | any> {
-    return await this._queueDb.getAllEntriesFromIndex(
-      IDBKeyRange.only(this._queueName),
-    );
+  async getAll(): Promise<QueueStoreEntry[]> {
+    return await this._queueDb.getAllEntriesByQueueName(this._queueName);
   }
 
   /**
    * Deletes the entry for the given ID.
    *
-   * WARNING: this method does not ensure the deleted enry belongs to this
+   * WARNING: this method does not ensure the deleted entry belongs to this
    * queue (i.e. matches the `queueName`). But this limitation is acceptable
    * as this class is not publicly exposed. An additional check would make
    * this method slower than it needs to be.
@@ -154,19 +152,14 @@ export class QueueStore {
   /**
    * Removes and returns the first or last entry in the queue (based on the
    * `direction` argument) matching the `queueName`.
-   *
-   * @return {Promise<Object>}
+   * 
+   * @return {Promise<QueueStoreEntry|undefined>}
    * @private
    */
-  async _removeEntry({direction}: {direction?: IDBCursorDirection}) {
-    const entry = await this._queueDb.getEndEntryFromIndex(
-      {direction},
-      IDBKeyRange.only(this._queueName),
-    );
-
+  async _removeEntry(entry?: QueueStoreEntry): Promise<QueueStoreEntry | undefined> {
     if (entry) {
       await this.deleteEntry(entry.id);
-      return entry;
     }
+    return entry;
   }
 }

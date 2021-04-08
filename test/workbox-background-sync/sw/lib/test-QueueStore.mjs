@@ -448,4 +448,53 @@ describe(`QueueStore`, function() {
       expect(await queueStore2.getAll()).to.deep.equal([]);
     });
   });
+
+  describe(`delete`, function() {
+    it(`should delete an entry for the given ID`, async function() {
+      const queueStore = new QueueStore('a');
+
+      const sr1 = await StorableRequest.fromRequest(new Request('/one'));
+      const sr2 = await StorableRequest.fromRequest(new Request('/two'));
+      const sr3 = await StorableRequest.fromRequest(new Request('/three'));
+
+      await queueStore.pushEntry({
+        requestData: sr1.toObject(),
+        timestamp: 1000,
+        metadata: {name: 'meta1'},
+      });
+
+      const entries = await db.getAll('requests');
+      const firstId = entries[0].id;
+
+      await queueStore.pushEntry({
+        requestData: sr2.toObject(),
+        timestamp: 2000,
+        metadata: {name: 'meta2'},
+      });
+      await queueStore.pushEntry({
+        requestData: sr3.toObject(),
+        timestamp: 3000,
+        metadata: {name: 'meta3'},
+      });
+
+      await queueStore.deleteEntry(firstId + 1);
+
+      expect(await db.getAll('requests')).to.deep.equal([
+        {
+          id: firstId,
+          queueName: 'a',
+          requestData: sr1.toObject(),
+          timestamp: 1000,
+          metadata: {name: 'meta1'},
+        },
+        {
+          id: firstId + 2,
+          queueName: 'a',
+          requestData: sr3.toObject(),
+          timestamp: 3000,
+          metadata: {name: 'meta3'},
+        },
+      ]);
+    });
+  });
 });
