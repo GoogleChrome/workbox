@@ -17,6 +17,7 @@ docs
 local-builds/
 firebase-debug.log
 .firebase
+.vscode/
 
 # Generated TypeScript files and build data
 tsconfig.tsbuildinfo
