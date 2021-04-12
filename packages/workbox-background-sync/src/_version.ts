@@ -1,2 +1,2 @@
 // @ts-ignore
-try{self['workbox:background-sync:6.1.2']&&_()}catch(e){}
+try{self['workbox:background-sync:6.1.3']&&_()}catch(e){}
