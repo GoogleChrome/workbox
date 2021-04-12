@@ -1,6 +1,6 @@
 {
   "name": "workbox-recipes",
-  "version": "6.1.3",
+  "version": "6.1.4",
   "license": "MIT",
   "author": "Google's Web DevRel Team",
   "description": "A service worker helper library to manage common request and caching patterns",
@@ -23,11 +23,11 @@
   "module": "index.mjs",
   "types": "index.d.ts",
   "dependencies": {
-    "workbox-cacheable-response": "^6.1.3",
-    "workbox-core": "^6.1.3",
-    "workbox-expiration": "^6.1.3",
-    "workbox-precaching": "^6.1.3",
-    "workbox-routing": "^6.1.3",
-    "workbox-strategies": "^6.1.3"
+    "workbox-cacheable-response": "^6.1.4",
+    "workbox-core": "^6.1.4",
+    "workbox-expiration": "^6.1.4",
+    "workbox-precaching": "^6.1.4",
+    "workbox-routing": "^6.1.4",
+    "workbox-strategies": "^6.1.4"
   }
 }
