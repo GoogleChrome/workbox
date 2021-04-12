@@ -1,6 +1,6 @@
 {
   "name": "workbox-cacheable-response",
-  "version": "6.1.4",
+  "version": "6.1.5",
   "license": "MIT",
   "author": "Google's Web DevRel Team",
   "description": "This library takes a Response object and determines whether it's cacheable based on a specific configuration.",
@@ -22,6 +22,7 @@
   "module": "index.mjs",
   "types": "index.d.ts",
   "dependencies": {
-    "workbox-core": "^6.1.4"
-  }
+    "workbox-core": "^6.1.5"
+  },
+  "gitHead": "2eb28ddd81b44aff8a39717a4ce8f511ba4e0467"
 }

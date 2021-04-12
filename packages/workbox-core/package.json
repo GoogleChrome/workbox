@@ -1,6 +1,6 @@
 {
   "name": "workbox-core",
-  "version": "6.1.4",
+  "version": "6.1.5",
   "license": "MIT",
   "author": "Google's Web DevRel Team",
   "description": "This module is used by a number of the other Workbox modules to share common code.",
@@ -19,5 +19,6 @@
   },
   "main": "index.js",
   "module": "index.mjs",
-  "types": "index.d.ts"
+  "types": "index.d.ts",
+  "gitHead": "2eb28ddd81b44aff8a39717a4ce8f511ba4e0467"
 }
