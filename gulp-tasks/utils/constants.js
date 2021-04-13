@@ -14,8 +14,8 @@ module.exports = {
   GENERATED_RELEASE_FILES_DIRNAME: 'generated-release-files',
 
   // This is used in the publish-bundle step to avoid doing anything
-  // with tags < v4.0.0.
-  MIN_RELEASE_TAG_TO_PUBLISH: 'v6.1.1',
+  // with tags that have known issues.
+  MIN_RELEASE_TAG_TO_PUBLISH: 'v6.1.5',
   GITHUB_OWNER: 'GoogleChrome',
   GITHUB_REPO: 'workbox',
 
