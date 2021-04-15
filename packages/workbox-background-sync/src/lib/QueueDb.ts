@@ -13,7 +13,7 @@ import '../_version.js';
 interface QueueDBSchema extends DBSchema {
   requests: {
     key: number;
-    value: UnidentifiedQueueStoreEntry;
+    value: QueueStoreEntry;
     indexes: {queueName: string};
   };
 }
@@ -53,7 +53,7 @@ export class QueueDb {
    */
   async addEntry(entry: UnidentifiedQueueStoreEntry) {
     const db = await this.getDb();
-    await db.add(REQUEST_OBJECT_STORE_NAME, entry);
+    await db.add(REQUEST_OBJECT_STORE_NAME, entry as QueueStoreEntry);
   }
 
   /**
@@ -77,7 +77,7 @@ export class QueueDb {
     queueName: string,
   ): Promise<QueueStoreEntry[]> {
     const db = await this.getDb();
-    const results = await db.getAllFromIndex(REQUEST_OBJECT_STORE_NAME, QUEUE_NAME_INDEX, IDBKeyRange.only(queueName)) as QueueStoreEntry[];
+    const results = await db.getAllFromIndex(REQUEST_OBJECT_STORE_NAME, QUEUE_NAME_INDEX, IDBKeyRange.only(queueName));
     return results ? results : new Array<QueueStoreEntry>();
   }
 
@@ -127,7 +127,7 @@ export class QueueDb {
     const cursor = await db.transaction(REQUEST_OBJECT_STORE_NAME)
       .store.index(QUEUE_NAME_INDEX)
       .openCursor(query, direction);
-    return cursor?.value as QueueStoreEntry;
+    return cursor?.value;
   }
 
   /**
@@ -141,7 +141,7 @@ export class QueueDb {
         upgrade: this._upgradeDb,
       });
     }
-    return this._db
+    return this._db;
   }
 
   /**
