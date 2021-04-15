@@ -8,14 +8,16 @@
 
 import * as fse from 'fs-extra';
 import {oneLine as ol} from 'common-tags';
+import * as stringifyObject from 'stringify-object';
 
 import {askQuestions} from './questions/ask-questions';
-import {logger} from './logger.js';
+import {logger} from './logger';
 
 export async function runWizard(options = {}) {
   const {configLocation, config} = await askQuestions(options);
 
-  const contents = `module.exports = ${JSON.stringify(config, null, 2)};`;
+  // See https://github.com/GoogleChrome/workbox/issues/2796
+  const contents = `module.exports = ${stringifyObject(config)};`;
   await fse.writeFile(configLocation, contents);
 
   const command = ("injectManifest" in options) ? 'injectManifest' : 'generateSW';

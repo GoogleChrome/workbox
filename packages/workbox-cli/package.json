@@ -1,6 +1,6 @@
 {
   "name": "workbox-cli",
-  "version": "6.1.2",
+  "version": "6.1.5",
   "description": "workbox-cli is the command line interface for Workbox.",
   "keywords": [
     "workbox",
@@ -35,9 +35,10 @@
     "meow": "^7.1.0",
     "ora": "^5.0.0",
     "pretty-bytes": "^5.3.0",
+    "stringify-object": "^3.3.0",
     "upath": "^1.2.0",
     "update-notifier": "^4.1.0",
-    "workbox-build": "^6.1.2"
+    "workbox-build": "^6.1.5"
   },
   "workbox": {
     "packageType": "node_ts"
@@ -47,6 +48,8 @@
     "@types/fs-extra": "^9.0.1",
     "@types/glob-watcher": "^5.0.0",
     "@types/inquirer": "^7.3.0",
+    "@types/stringify-object": "^3.3.0",
     "@types/update-notifier": "^4.1.1"
-  }
+  },
+  "gitHead": "2eb28ddd81b44aff8a39717a4ce8f511ba4e0467"
 }

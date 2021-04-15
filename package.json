@@ -5,7 +5,12 @@
   },
   "scripts": {
     "version": "gulp build && git add -A packages",
-    "gulp": "gulp"
+    "gulp": "gulp", 
+    "build": "gulp build",
+    "lint": "gulp lint",
+    "test_server" : "gulp test_server",
+    "test_node": "gulp test_node",
+    "test_integration": "gulp test_integration"
   },
   "nyc": {
     "include": [
