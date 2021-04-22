@@ -26,5 +26,5 @@
   "dependencies": {
     "workbox-core": "^6.1.5",
     "idb": "^6.0.0"
-  },
+  }
 }
