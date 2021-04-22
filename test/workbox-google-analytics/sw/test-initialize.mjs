@@ -195,7 +195,9 @@ describe(`initialize`, function() {
   });
 
   it(`should not alter successful hit payloads`, async function() {
-    sandbox.spy(self, 'fetch');
+    // Stub out fetch(), since this test is about routing, and doesn't need to
+    // contact the production Google Analytics endpoints.
+    sandbox.stub(self, 'fetch').callsFake(() => new Response('ignored'));
 
     initialize();
 
