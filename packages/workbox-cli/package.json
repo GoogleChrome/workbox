@@ -50,6 +50,5 @@
     "@types/inquirer": "^7.3.0",
     "@types/stringify-object": "^3.3.0",
     "@types/update-notifier": "^4.1.1"
-  },
-  "gitHead": "2eb28ddd81b44aff8a39717a4ce8f511ba4e0467"
+  }
 }
