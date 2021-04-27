@@ -42,15 +42,16 @@ class NetworkFirst extends Strategy {
 
   /**
    * @param {Object} [options]
-   * @param {string} [options.cacheName Cache name to store and retrieve
+   * @param {string} [options.cacheName] Cache name to store and retrieve
    * requests. Defaults to cache names provided by
    * [workbox-core]{@link module:workbox-core.cacheNames}.
-   * @param {Array<Object>} [options.plugins [Plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}
+   * @param {Array<Object>} [options.plugins] [Plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}
    * to use in conjunction with this caching strategy.
-   * @param {Object} [options.fetchOptions Values passed along to the
+   * @param {Object} [options.fetchOptions] Values passed along to the
    * [`init`](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch#Parameters)
-   * of all fetch() requests made by this strategy.
-   * @param {Object} [options.matchOptions [`CacheQueryOptions`](https://w3c.github.io/ServiceWorker/#dictdef-cachequeryoptions)
+   * of [non-navigation](https://github.com/GoogleChrome/workbox/issues/1796)
+   * `fetch()` requests made by this strategy.
+   * @param {Object} [options.matchOptions] [`CacheQueryOptions`](https://w3c.github.io/ServiceWorker/#dictdef-cachequeryoptions)
    * @param {number} [options.networkTimeoutSeconds] If set, any network requests
    * that fail to respond within the timeout will fallback to the cache.
    *
@@ -99,7 +100,7 @@ class NetworkFirst extends Strategy {
       });
     }
 
-    const promises = [];
+    const promises: Promise<Response | undefined>[] = [];
     let timeoutId: number | undefined;
 
     if (this._networkTimeoutSeconds) {
@@ -112,20 +113,17 @@ class NetworkFirst extends Strategy {
         this._getNetworkPromise({timeoutId, request, logs, handler});
 
     promises.push(networkPromise);
-    for (const promise of promises) {
-      handler.waitUntil(promise);
-    }
 
-    // Promise.race() will resolve as soon as the first promise resolves.
-    let response = await Promise.race(promises);
-    // If Promise.race() resolved with null, it might be due to a network
-    // timeout + a cache miss. If that were to happen, we'd rather wait until
-    // the networkPromise resolves instead of returning null.
-    // Note that it's fine to await an already-resolved promise, so we don't
-    // have to check to see if it's still "in flight".
-    if (!response) {
-      response = await networkPromise;
-    }
+    const response = await handler.waitUntil((async () => {
+      // Promise.race() will resolve as soon as the first promise resolves.
+      return await handler.waitUntil(Promise.race(promises)) ||
+          // If Promise.race() resolved with null, it might be due to a network
+          // timeout + a cache miss. If that were to happen, we'd rather wait until
+          // the networkPromise resolves instead of returning null.
+          // Note that it's fine to await an already-resolved promise, so we don't
+          // have to check to see if it's still "in flight".
+          await networkPromise;
+    })());
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(

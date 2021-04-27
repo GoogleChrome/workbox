@@ -78,6 +78,7 @@ module.exports = {
 
     // This is what the build should be
     const replaceOptions = {
+      'preventAssignment': true,
       'WORKBOX_CDN_ROOT_URL': getVersionsCDNUrl(),
     };
 

@@ -11,6 +11,7 @@ import {imageCache} from './imageCache';
 import {staticResourceCache} from './staticResourceCache';
 import {pageCache} from './pageCache';
 import {offlineFallback} from './offlineFallback';
+import {warmStrategyCache} from './warmStrategyCache';
 
 import './_version.js';
 
@@ -24,5 +25,6 @@ export {
   imageCache,
   staticResourceCache,
   pageCache,
-  offlineFallback
+  offlineFallback,
+  warmStrategyCache
 };

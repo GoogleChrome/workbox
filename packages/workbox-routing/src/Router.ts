@@ -244,18 +244,45 @@ class Router {
       responsePromise = Promise.reject(err);
     }
 
-    if (responsePromise instanceof Promise && this._catchHandler) {
-      responsePromise = responsePromise.catch((err) => {
-        if (process.env.NODE_ENV !== 'production') {
-          // Still include URL here as it will be async from the console group
-          // and may not make sense without the URL
-          logger.groupCollapsed(`Error thrown when responding to: ` +
-            ` ${getFriendlyURL(url)}. Falling back to Catch Handler.`);
-          logger.error(`Error thrown by:`, route);
-          logger.error(err);
-          logger.groupEnd();
+    // Get route's catch handler, if it exists
+    const catchHandler = route && route.catchHandler;
+
+    if (responsePromise instanceof Promise && (this._catchHandler || catchHandler)) {
+      responsePromise = responsePromise.catch(async (err) => {
+        // If there's a route catch handler, process that first
+        if (catchHandler) {
+          if (process.env.NODE_ENV !== 'production') {
+            // Still include URL here as it will be async from the console group
+            // and may not make sense without the URL
+            logger.groupCollapsed(`Error thrown when responding to: ` +
+              ` ${getFriendlyURL(url)}. Falling back to route's Catch Handler.`);
+            logger.error(`Error thrown by:`, route);
+            logger.error(err);
+            logger.groupEnd();
+          }
+
+          try {
+            return await catchHandler.handle({url, request, event, params});
+          } catch (catchErr) {
+            err = catchErr;
+          }
         }
-        return this._catchHandler!.handle({url, request, event});
+
+        if (this._catchHandler) {
+          if (process.env.NODE_ENV !== 'production') {
+            // Still include URL here as it will be async from the console group
+            // and may not make sense without the URL
+            logger.groupCollapsed(`Error thrown when responding to: ` +
+              ` ${getFriendlyURL(url)}. Falling back to global Catch Handler.`);
+            logger.error(`Error thrown by:`, route);
+            logger.error(err);
+            logger.groupEnd();
+          }
+          
+          return this._catchHandler.handle({url, request, event});
+        }
+
+        throw err;
       });
     }
 
@@ -269,6 +296,8 @@ class Router {
    *
    * @param {Object} options
    * @param {URL} options.url
+   * @param {boolean} options.sameOrigin The result of comparing `url.origin`
+   *     against the current origin.
    * @param {Request} options.request The request to match.
    * @param {Event} options.event The corresponding event.
    * @return {Object} An object with `route` and `params` properties.

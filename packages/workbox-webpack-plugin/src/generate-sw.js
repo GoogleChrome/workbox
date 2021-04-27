@@ -129,7 +129,7 @@ class GenerateSW {
    *
    * @param {string} [config.mode] If set to 'production', then an optimized service
    * worker bundle that excludes debugging info will be produced. If not explicitly
-   * configured here, the `mode` value configured in the current `webpack` compiltion
+   * configured here, the `mode` value configured in the current `webpack` compilation
    * will be used.
    *
    * @param {object<string, string>} [config.modifyURLPrefix] A mapping of prefixes

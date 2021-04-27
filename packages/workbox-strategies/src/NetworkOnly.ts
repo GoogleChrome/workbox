@@ -43,7 +43,8 @@ class NetworkOnly extends Strategy {
    * to use in conjunction with this caching strategy.
    * @param {Object} [options.fetchOptions] Values passed along to the
    * [`init`](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch#Parameters)
-   * of all fetch() requests made by this strategy.
+   * of [non-navigation](https://github.com/GoogleChrome/workbox/issues/1796)
+   * `fetch()` requests made by this strategy.
    * @param {number} [options.networkTimeoutSeconds] If set, any network requests
    * that fail to respond within the timeout will result in a network error.
    */

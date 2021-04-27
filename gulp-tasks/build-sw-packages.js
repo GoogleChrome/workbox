@@ -118,7 +118,7 @@ async function buildSWBundle(packagePath, buildType) {
     input: packageIndex,
     external: externalAndPure,
     treeshake: {
-      pureExternalModules: externalAndPure,
+      moduleSideEffects: externalAndPure ? 'no-external' : false,
     },
     plugins,
     onwarn: (warning) => {
@@ -145,6 +145,7 @@ async function buildSWBundle(packagePath, buildType) {
     sourcemap: true,
     format: 'iife',
     globals,
+    esModule: false,
   });
 }
 

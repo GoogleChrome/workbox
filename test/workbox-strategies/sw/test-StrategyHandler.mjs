@@ -895,7 +895,7 @@ describe(`StrategyHandler`, function() {
       sandbox.spy(handler, 'cachePut');
       sandbox.spy(handler, 'waitUntil');
 
-      handler.fetchAndCachePut('/url');
+      await handler.fetchAndCachePut('/url');
 
       await handler.doneWaiting();
       expect(handler.waitUntil.calledWith(

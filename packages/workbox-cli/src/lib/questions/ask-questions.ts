@@ -11,6 +11,7 @@ import {askExtensionsToCache} from './ask-extensions-to-cache';
 import {askRootOfWebApp} from './ask-root-of-web-app';
 import {askSWDest} from './ask-sw-dest';
 import {askSWSrc} from './ask-sw-src';
+import {askQueryParametersInStartUrl} from './ask-start_url-query-params';
 
 export async function askQuestions(options = {}) {
   const globDirectory = await askRootOfWebApp();
@@ -18,12 +19,17 @@ export async function askQuestions(options = {}) {
   const swSrc = ("injectManifest" in options) ? await askSWSrc() : undefined;
   const swDest = await askSWDest(globDirectory);
   const configLocation = await askConfigLocation();
-  const config = {
+  const ignoreURLParametersMatching = await askQueryParametersInStartUrl();
+  const config: {[key: string]: any} = {
     globDirectory,
     globPatterns,
+    ignoreURLParametersMatching,
     swDest,
-    swSrc,
   };
+
+  if (swSrc) {
+    config.swSrc = swSrc;
+  }
 
   return {
     config,

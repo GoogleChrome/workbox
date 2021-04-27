@@ -40,9 +40,7 @@ async function handler(req, res) {
       plugins: [
         multiEntry(),
         nodeResolve({
-          customResolveOptions: {
-            moduleDirectory: 'packages',
-          },
+          moduleDirectories: ['packages', 'node_modules'],
         }),
         // TODO(philipwalton): some of our shared testing helpers use commonjs
         // so we have to support this for the time being.
@@ -50,6 +48,7 @@ async function handler(req, res) {
           exclude: '*.mjs',
         }),
         replace({
+          'preventAssignment': true,
           'process.env.NODE_ENV': JSON.stringify(env),
           'SW_NAMESPACES': JSON.stringify(SW_NAMESPACES),
           'WORKBOX_CDN_ROOT_URL': '/__WORKBOX/buildFile',

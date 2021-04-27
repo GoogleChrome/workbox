@@ -1,2 +1,2 @@
 // @ts-ignore
-try{self['workbox:strategies:6.0.2']&&_()}catch(e){}
+try{self['workbox:strategies:6.1.5']&&_()}catch(e){}
