@@ -10,10 +10,10 @@ import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
 import {logger} from 'workbox-core/_private/logger.js';
 import {assert} from 'workbox-core/_private/assert.js';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
-import {UnidentifiedQueueStoreEntry, QueueStore} from './lib/QueueStore.js';
+import {QueueStore} from './lib/QueueStore.js';
+import {UnidentifiedQueueStoreEntry} from './lib/QueueDb.js';
 import {StorableRequest} from './lib/StorableRequest.js';
 import './_version.js';
-
 
 // Give TypeScript the correct global.
 declare let self: ServiceWorkerGlobalScope;
@@ -238,7 +238,6 @@ class Queue {
 
     return unexpiredEntries;
   }
-
 
   /**
    * Adds the entry to the QueueStore and registers for a sync event.
