@@ -13,8 +13,8 @@ import {errors} from './errors';
 
 export function getFileHash(file: string): string {
   try {
-    const str = fse.readFileSync(file, 'utf8');
-    return getStringHash(str);
+    const buffer = fse.readFileSync(file);
+    return getStringHash(buffer);
   } catch (err) {
     throw new Error(errors['unable-to-get-file-hash'] + ` '${err.message}'`);
   }

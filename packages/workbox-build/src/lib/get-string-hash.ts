@@ -8,8 +8,8 @@
 
 import crypto from 'crypto';
 
-export function getStringHash(str: string): string {
+export function getStringHash(input: crypto.BinaryLike): string {
   const md5 = crypto.createHash('md5');
-  md5.update(str);
+  md5.update(input);
   return md5.digest('hex');
 };
