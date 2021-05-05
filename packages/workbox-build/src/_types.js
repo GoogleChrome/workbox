@@ -89,13 +89,13 @@ import './_version.mjs';
  * property to use when creating the
  * [`ExpirationPlugin`]{@link module:workbox-expiration.ExpirationPlugin}.
  *
- * @property {number} [options.expiration.maxEntries] The `maxAgeSeconds`
+ * @property {number} [options.expiration.maxEntries] The `maxEntries`
  * property to use when creating the
  * [`ExpirationPlugin`]{@link module:workbox-expiration.ExpirationPlugin}.
  *
  * @property {Object} [options.precacheFallback]
  *
- * @property {number} [options.precacheFallback.fallbackURL] The `fallbackURL`
+ * @property {string} [options.precacheFallback.fallbackURL] The `fallbackURL`
  * property to use when creating the
  * [`PrecacheFallbackPlugin`]{@link module:workbox-precaching.PrecacheFallbackPlugin}.
  *
