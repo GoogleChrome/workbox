@@ -8,6 +8,7 @@
 
 import {assert} from 'workbox-core/_private/assert.js';
 import {cacheMatchIgnoreParams} from 'workbox-core/_private/cacheMatchIgnoreParams.js';
+import {dontWaitFor} from 'workbox-core/_private/dontWaitFor.js';
 import {Deferred} from 'workbox-core/_private/Deferred.js';
 import {executeQuotaErrorCallbacks} from 'workbox-core/_private/executeQuotaErrorCallbacks.js';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
@@ -240,7 +241,7 @@ class StrategyHandler {
     const response = await this.fetch(input);
     const responseClone = response.clone();
 
-    this.waitUntil(this.cachePut(input, responseClone));
+    this.waitUntil(dontWaitFor(this.cachePut(input, responseClone)));
 
     return response;
   }
@@ -575,4 +576,4 @@ class StrategyHandler {
   }
 }
 
-export {StrategyHandler}
+export {StrategyHandler};
