@@ -474,7 +474,7 @@ class StrategyHandler {
           // TODO(philipwalton): not sure why `any` is needed. It seems like
           // this should work with `as WorkboxPluginCallbackParam[C]`.
           return plugin[name]!(statefulParam as any);
-        }
+        };
         yield statefulCallback as NonNullable<WorkboxPlugin[C]>;
       }
     }
