@@ -59,7 +59,7 @@ class CacheTimestampsModel {
   /**
    * Performs an upgrade of indexedDB.
    *
-   * @param {IDBPDatabase<CacheDbSchema} db
+   * @param {IDBPDatabase<CacheDbSchema>} db
    *
    * @private
    */
@@ -81,7 +81,7 @@ class CacheTimestampsModel {
   /**
    * Performs an upgrade of indexedDB and deletes deprecated DBs.
    *
-   * @param {IDBPDatabase<CacheDbSchema} db
+   * @param {IDBPDatabase<CacheDbSchema>} db
    *
    * @private
    */
