@@ -76,9 +76,18 @@ class CacheTimestampsModel {
     objStore.createIndex('cacheName', 'cacheName', {unique: false});
     objStore.createIndex('timestamp', 'timestamp', {unique: false});
 
-    // Previous versions of `workbox-expiration` used `this._cacheName`
-    // as the IDBDatabase name.
-    if (this?._cacheName) {
+  }
+
+  /**
+   * Should perform an upgrade of indexedDB.
+   *
+   * @param {Event} event
+   *
+   * @private
+   */
+  private _upgradeDbAndDeleteOldDbs(db: IDBPDatabase<CacheDbSchema>) {
+    this._upgradeDb(db);
+    if (this._cacheName) {
       deleteDB(this._cacheName);
     }
   }
@@ -198,7 +207,7 @@ class CacheTimestampsModel {
   private async getDb() {
     if (!this._db) {
       this._db = await openDB(DB_NAME, 1, {
-        upgrade: this._upgradeDb,
+        upgrade: this._upgradeDbAndDeleteOldDbs,
       });
     }
     return this._db;
