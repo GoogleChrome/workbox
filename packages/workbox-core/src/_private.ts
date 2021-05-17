@@ -13,9 +13,7 @@ import {cacheMatchIgnoreParams} from './_private/cacheMatchIgnoreParams.js';
 import {canConstructReadableStream} from './_private/canConstructReadableStream.js';
 import {canConstructResponseFromBodyStream} from './_private/canConstructResponseFromBodyStream.js';
 import {dontWaitFor} from './_private/dontWaitFor.js';
-import {DBWrapper} from './_private/DBWrapper.js';
 import {Deferred} from './_private/Deferred.js';
-import {deleteDatabase} from './_private/deleteDatabase.js';
 import {executeQuotaErrorCallbacks} from './_private/executeQuotaErrorCallbacks.js';
 import {getFriendlyURL} from './_private/getFriendlyURL.js';
 import {logger} from './_private/logger.js';
@@ -33,9 +31,7 @@ export {
   canConstructReadableStream,
   canConstructResponseFromBodyStream,
   dontWaitFor,
-  DBWrapper,
   Deferred,
-  deleteDatabase,
   executeQuotaErrorCallbacks,
   getFriendlyURL,
   logger,
