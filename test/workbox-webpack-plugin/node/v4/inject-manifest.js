@@ -691,6 +691,100 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v4`, function() {
         }
       });
     });
+
+    // See https://github.com/GoogleChrome/workbox/issues/2729
+    it(`should produce valid JavaScript when eval-cheap-source-map and minimization are used`, function(done) {
+      const outputDir = tempy.directory();
+
+      const config = {
+        mode: 'development',
+        entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        output: {
+          filename: WEBPACK_ENTRY_FILENAME,
+          path: outputDir,
+        },
+        devtool: 'eval-cheap-source-map',
+        optimization: {
+          minimize: true,
+        },
+        plugins: [
+          new InjectManifest({
+            swSrc: upath.join(__dirname, '..', '..', 'static', 'module-import-sw.js'),
+            swDest: 'service-worker.js',
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError, stats) => {
+        const swFile = upath.join(outputDir, 'service-worker.js');
+        try {
+          webpackBuildCheck(webpackError, stats);
+
+          const files = await globby('**', {cwd: outputDir});
+          expect(files).to.have.length(2);
+
+          await validateServiceWorkerRuntime({
+            swFile,
+            entryPoint: 'injectManifest',
+            // We can't verify expectedMethodCalls here, since we're using
+            // a compiled ES module import, not the workbox-sw interfaces.
+            // This test just confirms that the compilation produces valid JS.
+          });
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+
+    // See https://github.com/GoogleChrome/workbox/issues/2729
+    it(`should produce valid JavaScript when eval-cheap-source-map is used without minimization`, function(done) {
+      const outputDir = tempy.directory();
+
+      const config = {
+        mode: 'development',
+        entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        output: {
+          filename: WEBPACK_ENTRY_FILENAME,
+          path: outputDir,
+        },
+        devtool: 'eval-cheap-source-map',
+        optimization: {
+          minimize: false,
+        },
+        plugins: [
+          new InjectManifest({
+            swSrc: upath.join(__dirname, '..', '..', 'static', 'module-import-sw.js'),
+            swDest: 'service-worker.js',
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError, stats) => {
+        const swFile = upath.join(outputDir, 'service-worker.js');
+        try {
+          webpackBuildCheck(webpackError, stats);
+
+          const files = await globby('**', {cwd: outputDir});
+          expect(files).to.have.length(2);
+
+          await validateServiceWorkerRuntime({
+            swFile,
+            entryPoint: 'injectManifest',
+            // We can't verify expectedMethodCalls here, since we're using
+            // a compiled ES module import, not the workbox-sw interfaces.
+            // This test just confirms that the compilation produces valid JS.
+          });
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
   });
 
   describe(`[workbox-webpack-plugin] Filtering via include/exclude`, function() {

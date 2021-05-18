@@ -316,8 +316,12 @@ class InjectManifest {
     const {size, sortedEntries} = await getManifestEntriesFromCompilation(
         compilation, config);
 
-    let manifestString = stringify(sortedEntries);
-    if (this.config.compileSrc) {
+    let manifestString = stringify(sortedEntries);  
+    if (this.config.compileSrc &&
+      // See https://github.com/GoogleChrome/workbox/issues/2729
+      !(compilation.options?.devtool === 'eval-cheap-source-map' &&
+        compilation.options?.optimization?.minimize)
+    ) {
       // See https://github.com/GoogleChrome/workbox/issues/2263
       manifestString = manifestString.replace(/"/g, `'`);
     }
