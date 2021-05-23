@@ -182,7 +182,7 @@ class CacheExpiration {
     } else {
       const timestamp = await this._timestampModel.getTimestamp(url);
       const expireOlderThan = Date.now() - (this._maxAgeSeconds * 1000);
-      return (timestamp < expireOlderThan);
+      return timestamp !== undefined ? (timestamp < expireOlderThan) : true;
     }
   }
 

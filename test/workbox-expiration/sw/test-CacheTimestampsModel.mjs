@@ -7,17 +7,18 @@
 */
 
 import {CacheTimestampsModel} from 'workbox-expiration/models/CacheTimestampsModel.mjs';
-import {DBWrapper} from 'workbox-core/_private/DBWrapper.mjs';
+import {openDB} from 'idb';
 
 
 describe(`CacheTimestampsModel`, function() {
   const sandbox = sinon.createSandbox();
-  const db = new DBWrapper('workbox-expiration', 1, {
-    onupgradeneeded: CacheTimestampsModel.prototype._handleUpgrade,
-  });
+  let db = null;
 
   beforeEach(async function() {
     sandbox.restore();
+    db = await openDB('workbox-expiration', 1, {
+      upgrade: CacheTimestampsModel.prototype._upgradeDb,
+    });
     await db.clear('cache-entries');
   });
 
