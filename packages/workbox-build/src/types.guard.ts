@@ -10,6 +10,7 @@ export function isGenerateSWOptions(obj: any, _argumentName?: string): obj is Ge
             typeof obj === "object" ||
             typeof obj === "function") &&
             (typeof obj.globDirectory === "undefined" ||
+                obj.globDirectory === null ||
                 typeof obj.globDirectory === "string") &&
             (typeof obj.globFollow === "undefined" ||
                 obj.globFollow === false ||
@@ -37,6 +38,7 @@ export function isGenerateSWOptions(obj: any, _argumentName?: string): obj is Ge
                     typeof e === "string"
                 )) &&
             (typeof obj.cacheId === "undefined" ||
+                obj.cacheId === null ||
                 typeof obj.cacheId === "string") &&
             (typeof obj.cleanupOutdatedCaches === "undefined" ||
                 obj.cleanupOutdatedCaches === false ||
@@ -45,6 +47,7 @@ export function isGenerateSWOptions(obj: any, _argumentName?: string): obj is Ge
                 obj.clientsClaim === false ||
                 obj.clientsClaim === true) &&
             (typeof obj.directoryIndex === "undefined" ||
+                obj.directoryIndex === null ||
                 typeof obj.directoryIndex === "string") &&
             (typeof obj.disableDevLogs === "undefined" ||
                 obj.disableDevLogs === false ||
@@ -63,8 +66,10 @@ export function isGenerateSWOptions(obj: any, _argumentName?: string): obj is Ge
                 obj.inlineWorkboxRuntime === false ||
                 obj.inlineWorkboxRuntime === true) &&
             (typeof obj.mode === "undefined" ||
+                obj.mode === null ||
                 typeof obj.mode === "string") &&
             (typeof obj.navigateFallback === "undefined" ||
+                obj.navigateFallback === null ||
                 typeof obj.navigateFallback === "string") &&
             (typeof obj.navigateFallbackAllowlist === "undefined" ||
                 Array.isArray(obj.navigateFallbackAllowlist) &&
@@ -100,6 +105,7 @@ export function isGenerateSWOptions(obj: any, _argumentName?: string): obj is Ge
                         (typeof e.options.broadcastUpdate.channelName === "undefined" ||
                             typeof e.options.broadcastUpdate.channelName === "string")) &&
                     (typeof e.options.cacheName === "undefined" ||
+                        e.options.cacheName === null ||
                         typeof e.options.cacheName === "string") &&
                     (typeof e.options.networkTimeoutSeconds === "undefined" ||
                         typeof e.options.networkTimeoutSeconds === "number") &&
@@ -151,7 +157,10 @@ export function isGenerateSWOptions(obj: any, _argumentName?: string): obj is Ge
                             ) ||
                             (e.options.fetchOptions.headers !== null &&
                                 typeof e.options.fetchOptions.headers === "object" ||
-                                typeof e.options.fetchOptions.headers === "function")) &&
+                                typeof e.options.fetchOptions.headers === "function") &&
+                            Object.entries(e.options.fetchOptions.headers)
+                                .every(([key, value]) => (typeof value === "string" &&
+                                    typeof key === "string"))) &&
                         (typeof e.options.fetchOptions.integrity === "undefined" ||
                             typeof e.options.fetchOptions.integrity === "string") &&
                         (typeof e.options.fetchOptions.keepalive === "undefined" ||
@@ -209,24 +218,24 @@ export function isGenerateSWOptions(obj: any, _argumentName?: string): obj is Ge
             (typeof obj.additionalManifestEntries === "undefined" ||
                 Array.isArray(obj.additionalManifestEntries) &&
                 obj.additionalManifestEntries.every((e: any) =>
-                    (typeof e === "string" ||
-                        (e !== null &&
-                            typeof e === "object" ||
-                            typeof e === "function") &&
-                        (typeof e.integrity === "undefined" ||
-                            typeof e.integrity === "string") &&
-                        (e.revision === null ||
-                            typeof e.revision === "string") &&
-                        typeof e.url === "string")
+                (typeof e === "string" ||
+                    (e !== null &&
+                        typeof e === "object" ||
+                        typeof e === "function") &&
+                    (typeof e.integrity === "undefined" ||
+                        typeof e.integrity === "string") &&
+                    (e.revision === null ||
+                        typeof e.revision === "string") &&
+                    typeof e.url === "string")
                 )) &&
             (typeof obj.dontCacheBustURLsMatching === "undefined" ||
                 obj.dontCacheBustURLsMatching instanceof RegExp) &&
             (typeof obj.manifestTransforms === "undefined" ||
                 Array.isArray(obj.manifestTransforms) &&
                 obj.manifestTransforms.every((e: any) =>
-                    (e !== null &&
-                        typeof e === "object" ||
-                        typeof e === "function")
+                (e !== null &&
+                    typeof e === "object" ||
+                    typeof e === "function")
                 )) &&
             (typeof obj.maximumFileSizeToCacheInBytes === "undefined" ||
                 typeof obj.maximumFileSizeToCacheInBytes === "number") &&
@@ -246,6 +255,7 @@ export function isGetManifestOptions(obj: any, _argumentName?: string): obj is G
             typeof obj === "object" ||
             typeof obj === "function") &&
             (typeof obj.globDirectory === "undefined" ||
+                obj.globDirectory === null ||
                 typeof obj.globDirectory === "string") &&
             (typeof obj.globFollow === "undefined" ||
                 obj.globFollow === false ||
@@ -270,24 +280,24 @@ export function isGetManifestOptions(obj: any, _argumentName?: string): obj is G
             (typeof obj.additionalManifestEntries === "undefined" ||
                 Array.isArray(obj.additionalManifestEntries) &&
                 obj.additionalManifestEntries.every((e: any) =>
-                    (typeof e === "string" ||
-                        (e !== null &&
-                            typeof e === "object" ||
-                            typeof e === "function") &&
-                        (typeof e.integrity === "undefined" ||
-                            typeof e.integrity === "string") &&
-                        (e.revision === null ||
-                            typeof e.revision === "string") &&
-                        typeof e.url === "string")
+                (typeof e === "string" ||
+                    (e !== null &&
+                        typeof e === "object" ||
+                        typeof e === "function") &&
+                    (typeof e.integrity === "undefined" ||
+                        typeof e.integrity === "string") &&
+                    (e.revision === null ||
+                        typeof e.revision === "string") &&
+                    typeof e.url === "string")
                 )) &&
             (typeof obj.dontCacheBustURLsMatching === "undefined" ||
                 obj.dontCacheBustURLsMatching instanceof RegExp) &&
             (typeof obj.manifestTransforms === "undefined" ||
                 Array.isArray(obj.manifestTransforms) &&
                 obj.manifestTransforms.every((e: any) =>
-                    (e !== null &&
-                        typeof e === "object" ||
-                        typeof e === "function")
+                (e !== null &&
+                    typeof e === "object" ||
+                    typeof e === "function")
                 )) &&
             (typeof obj.maximumFileSizeToCacheInBytes === "undefined" ||
                 typeof obj.maximumFileSizeToCacheInBytes === "number") &&
@@ -330,24 +340,24 @@ export function isInjectManifestOptions(obj: any, _argumentName?: string): obj i
             (typeof obj.additionalManifestEntries === "undefined" ||
                 Array.isArray(obj.additionalManifestEntries) &&
                 obj.additionalManifestEntries.every((e: any) =>
-                    (typeof e === "string" ||
-                        (e !== null &&
-                            typeof e === "object" ||
-                            typeof e === "function") &&
-                        (typeof e.integrity === "undefined" ||
-                            typeof e.integrity === "string") &&
-                        (e.revision === null ||
-                            typeof e.revision === "string") &&
-                        typeof e.url === "string")
+                (typeof e === "string" ||
+                    (e !== null &&
+                        typeof e === "object" ||
+                        typeof e === "function") &&
+                    (typeof e.integrity === "undefined" ||
+                        typeof e.integrity === "string") &&
+                    (e.revision === null ||
+                        typeof e.revision === "string") &&
+                    typeof e.url === "string")
                 )) &&
             (typeof obj.dontCacheBustURLsMatching === "undefined" ||
                 obj.dontCacheBustURLsMatching instanceof RegExp) &&
             (typeof obj.manifestTransforms === "undefined" ||
                 Array.isArray(obj.manifestTransforms) &&
                 obj.manifestTransforms.every((e: any) =>
-                    (e !== null &&
-                        typeof e === "object" ||
-                        typeof e === "function")
+                (e !== null &&
+                    typeof e === "object" ||
+                    typeof e === "function")
                 )) &&
             (typeof obj.maximumFileSizeToCacheInBytes === "undefined" ||
                 typeof obj.maximumFileSizeToCacheInBytes === "number") &&
@@ -378,11 +388,11 @@ export function isWebpackGenerateSWOptions(obj: any, _argumentName?: string): ob
             (typeof obj.exclude === "undefined" ||
                 Array.isArray(obj.exclude) &&
                 obj.exclude.every((e: any) =>
-                    (typeof e === "string" ||
-                        e instanceof RegExp ||
-                        (e !== null &&
-                            typeof e === "object" ||
-                            typeof e === "function"))
+                (typeof e === "string" ||
+                    e instanceof RegExp ||
+                    (e !== null &&
+                        typeof e === "object" ||
+                        typeof e === "function"))
                 )) &&
             (typeof obj.excludeChunks === "undefined" ||
                 Array.isArray(obj.excludeChunks) &&
@@ -392,13 +402,14 @@ export function isWebpackGenerateSWOptions(obj: any, _argumentName?: string): ob
             (typeof obj.include === "undefined" ||
                 Array.isArray(obj.include) &&
                 obj.include.every((e: any) =>
-                    (typeof e === "string" ||
-                        e instanceof RegExp ||
-                        (e !== null &&
-                            typeof e === "object" ||
-                            typeof e === "function"))
+                (typeof e === "string" ||
+                    e instanceof RegExp ||
+                    (e !== null &&
+                        typeof e === "object" ||
+                        typeof e === "function"))
                 )) &&
             (typeof obj.mode === "undefined" ||
+                obj.mode === null ||
                 typeof obj.mode === "string") ||
             (obj !== null &&
                 typeof obj === "object" ||
@@ -409,6 +420,7 @@ export function isWebpackGenerateSWOptions(obj: any, _argumentName?: string): ob
                     typeof e === "string"
                 )) &&
             (typeof obj.cacheId === "undefined" ||
+                obj.cacheId === null ||
                 typeof obj.cacheId === "string") &&
             (typeof obj.cleanupOutdatedCaches === "undefined" ||
                 obj.cleanupOutdatedCaches === false ||
@@ -417,6 +429,7 @@ export function isWebpackGenerateSWOptions(obj: any, _argumentName?: string): ob
                 obj.clientsClaim === false ||
                 obj.clientsClaim === true) &&
             (typeof obj.directoryIndex === "undefined" ||
+                obj.directoryIndex === null ||
                 typeof obj.directoryIndex === "string") &&
             (typeof obj.disableDevLogs === "undefined" ||
                 obj.disableDevLogs === false ||
@@ -435,8 +448,10 @@ export function isWebpackGenerateSWOptions(obj: any, _argumentName?: string): ob
                 obj.inlineWorkboxRuntime === false ||
                 obj.inlineWorkboxRuntime === true) &&
             (typeof obj.mode === "undefined" ||
+                obj.mode === null ||
                 typeof obj.mode === "string") &&
             (typeof obj.navigateFallback === "undefined" ||
+                obj.navigateFallback === null ||
                 typeof obj.navigateFallback === "string") &&
             (typeof obj.navigateFallbackAllowlist === "undefined" ||
                 Array.isArray(obj.navigateFallbackAllowlist) &&
@@ -472,6 +487,7 @@ export function isWebpackGenerateSWOptions(obj: any, _argumentName?: string): ob
                         (typeof e.options.broadcastUpdate.channelName === "undefined" ||
                             typeof e.options.broadcastUpdate.channelName === "string")) &&
                     (typeof e.options.cacheName === "undefined" ||
+                        e.options.cacheName === null ||
                         typeof e.options.cacheName === "string") &&
                     (typeof e.options.networkTimeoutSeconds === "undefined" ||
                         typeof e.options.networkTimeoutSeconds === "number") &&
@@ -523,7 +539,10 @@ export function isWebpackGenerateSWOptions(obj: any, _argumentName?: string): ob
                             ) ||
                             (e.options.fetchOptions.headers !== null &&
                                 typeof e.options.fetchOptions.headers === "object" ||
-                                typeof e.options.fetchOptions.headers === "function")) &&
+                                typeof e.options.fetchOptions.headers === "function") &&
+                            Object.entries(e.options.fetchOptions.headers)
+                                .every(([key, value]) => (typeof value === "string" &&
+                                    typeof key === "string"))) &&
                         (typeof e.options.fetchOptions.integrity === "undefined" ||
                             typeof e.options.fetchOptions.integrity === "string") &&
                         (typeof e.options.fetchOptions.keepalive === "undefined" ||
@@ -581,24 +600,24 @@ export function isWebpackGenerateSWOptions(obj: any, _argumentName?: string): ob
             (typeof obj.additionalManifestEntries === "undefined" ||
                 Array.isArray(obj.additionalManifestEntries) &&
                 obj.additionalManifestEntries.every((e: any) =>
-                    (typeof e === "string" ||
-                        (e !== null &&
-                            typeof e === "object" ||
-                            typeof e === "function") &&
-                        (typeof e.integrity === "undefined" ||
-                            typeof e.integrity === "string") &&
-                        (e.revision === null ||
-                            typeof e.revision === "string") &&
-                        typeof e.url === "string")
+                (typeof e === "string" ||
+                    (e !== null &&
+                        typeof e === "object" ||
+                        typeof e === "function") &&
+                    (typeof e.integrity === "undefined" ||
+                        typeof e.integrity === "string") &&
+                    (e.revision === null ||
+                        typeof e.revision === "string") &&
+                    typeof e.url === "string")
                 )) &&
             (typeof obj.dontCacheBustURLsMatching === "undefined" ||
                 obj.dontCacheBustURLsMatching instanceof RegExp) &&
             (typeof obj.manifestTransforms === "undefined" ||
                 Array.isArray(obj.manifestTransforms) &&
                 obj.manifestTransforms.every((e: any) =>
-                    (e !== null &&
-                        typeof e === "object" ||
-                        typeof e === "function")
+                (e !== null &&
+                    typeof e === "object" ||
+                    typeof e === "function")
                 )) &&
             (typeof obj.maximumFileSizeToCacheInBytes === "undefined" ||
                 typeof obj.maximumFileSizeToCacheInBytes === "number") &&
@@ -632,11 +651,11 @@ export function isWebpackInjectManifestOptions(obj: any, _argumentName?: string)
             (typeof obj.exclude === "undefined" ||
                 Array.isArray(obj.exclude) &&
                 obj.exclude.every((e: any) =>
-                    (typeof e === "string" ||
-                        e instanceof RegExp ||
-                        (e !== null &&
-                            typeof e === "object" ||
-                            typeof e === "function"))
+                (typeof e === "string" ||
+                    e instanceof RegExp ||
+                    (e !== null &&
+                        typeof e === "object" ||
+                        typeof e === "function"))
                 )) &&
             (typeof obj.excludeChunks === "undefined" ||
                 Array.isArray(obj.excludeChunks) &&
@@ -646,13 +665,14 @@ export function isWebpackInjectManifestOptions(obj: any, _argumentName?: string)
             (typeof obj.include === "undefined" ||
                 Array.isArray(obj.include) &&
                 obj.include.every((e: any) =>
-                    (typeof e === "string" ||
-                        e instanceof RegExp ||
-                        (e !== null &&
-                            typeof e === "object" ||
-                            typeof e === "function"))
+                (typeof e === "string" ||
+                    e instanceof RegExp ||
+                    (e !== null &&
+                        typeof e === "object" ||
+                        typeof e === "function"))
                 )) &&
             (typeof obj.mode === "undefined" ||
+                obj.mode === null ||
                 typeof obj.mode === "string") ||
             (obj !== null &&
                 typeof obj === "object" ||
@@ -665,24 +685,24 @@ export function isWebpackInjectManifestOptions(obj: any, _argumentName?: string)
             (typeof obj.additionalManifestEntries === "undefined" ||
                 Array.isArray(obj.additionalManifestEntries) &&
                 obj.additionalManifestEntries.every((e: any) =>
-                    (typeof e === "string" ||
-                        (e !== null &&
-                            typeof e === "object" ||
-                            typeof e === "function") &&
-                        (typeof e.integrity === "undefined" ||
-                            typeof e.integrity === "string") &&
-                        (e.revision === null ||
-                            typeof e.revision === "string") &&
-                        typeof e.url === "string")
+                (typeof e === "string" ||
+                    (e !== null &&
+                        typeof e === "object" ||
+                        typeof e === "function") &&
+                    (typeof e.integrity === "undefined" ||
+                        typeof e.integrity === "string") &&
+                    (e.revision === null ||
+                        typeof e.revision === "string") &&
+                    typeof e.url === "string")
                 )) &&
             (typeof obj.dontCacheBustURLsMatching === "undefined" ||
                 obj.dontCacheBustURLsMatching instanceof RegExp) &&
             (typeof obj.manifestTransforms === "undefined" ||
                 Array.isArray(obj.manifestTransforms) &&
                 obj.manifestTransforms.every((e: any) =>
-                    (e !== null &&
-                        typeof e === "object" ||
-                        typeof e === "function")
+                (e !== null &&
+                    typeof e === "object" ||
+                    typeof e === "function")
                 )) &&
             (typeof obj.maximumFileSizeToCacheInBytes === "undefined" ||
                 typeof obj.maximumFileSizeToCacheInBytes === "number") &&
