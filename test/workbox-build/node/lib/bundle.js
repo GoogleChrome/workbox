@@ -10,7 +10,7 @@ const expect = require('chai').expect;
 const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 
-describe(`[workbox-build] lib/bundle.js`, function() {
+describe(`[workbox-build] lib/bundle`, function() {
   const MODULE_PATH = '../../../../packages/workbox-build/build/lib/bundle';
   let bundle;
   let stubs;
@@ -19,16 +19,16 @@ describe(`[workbox-build] lib/bundle.js`, function() {
     const rollupStub = {
       generate: sinon.stub().resolves({output: [{
         fileName: 'asset-filename',
-        isAsset: true,
+        type: 'asset',
         source: 'asset-source',
       }, {
         code: 'chunk1-code',
         fileName: 'chunk1-filename',
-        isAsset: false,
+        type: 'chunk',
       }, {
         code: 'chunk2-code',
         fileName: 'chunk2-filename',
-        isAsset: false,
+        type: 'chunk',
         map: 'sourcemap-contents',
       }]}),
     };
@@ -40,24 +40,35 @@ describe(`[workbox-build] lib/bundle.js`, function() {
         writeFile: sinon.stub().resolves(),
       },
       'upath': {
-        parse: sinon.stub().returns({base: 'sw.js', dir: ''}),
+        default: {
+          format: sinon.stub().callsFake(args => `${args.dir}${args.base}`),
+          parse: sinon.stub().returns({base: 'sw.js', dir: ''}),
+        },
       },
       'tempy': {
-        file: sinon.stub().returns('sw.js'),
+        default: {
+          file: sinon.stub().returns('sw.js'),
+        },
       },
       '@rollup/plugin-node-resolve': sinon.stub(),
-      '@rollup/plugin-replace': sinon.stub(),
-      '@rollup/plugin-babel': {babel: sinon.stub()},
+      '@rollup/plugin-replace': {
+        default: sinon.stub(),
+      },
+      '@rollup/plugin-babel': {
+          babel: sinon.stub(),
+      },
       'rollup-plugin-terser': {
         terser: sinon.stub(),
       },
-      '@surma/rollup-plugin-off-main-thread': sinon.stub(),
+      '@surma/rollup-plugin-off-main-thread': {
+        default: sinon.stub(),
+      },
       'rollup': {
         rollup: sinon.stub().resolves(rollupStub),
       },
     };
 
-    bundle = proxyquire(MODULE_PATH, stubs);
+    bundle = proxyquire(MODULE_PATH, stubs).bundle;
   });
 
   it(`should pass 'babelPresetEnvTargets' to @babel/preset-env`, async function() {
@@ -71,7 +82,7 @@ describe(`[workbox-build] lib/bundle.js`, function() {
       babelHelpers: 'bundled',
       babelrc: false,
       configFile: false,
-      presets: [[stubs['@babel/preset-env'], {
+      presets: [[stubs['@babel/preset-env'].default, {
         targets: {
           browsers: babelPresetEnvTargets,
         },
@@ -86,7 +97,7 @@ describe(`[workbox-build] lib/bundle.js`, function() {
     });
 
     expect(stubs.rollup.rollup.args[0][0].manualChunks).to.be.a('function');
-    expect(stubs['@surma/rollup-plugin-off-main-thread'].calledOnce).to.be.true;
+    expect(stubs['@surma/rollup-plugin-off-main-thread'].default.calledOnce).to.be.true;
   });
 
   it(`should not use loadz0r or configure manualChunks when 'inlineWorkboxRuntime' is true`, async function() {
@@ -95,7 +106,7 @@ describe(`[workbox-build] lib/bundle.js`, function() {
     });
 
     expect(stubs.rollup.rollup.args[0][0].manualChunks).not.to.exist;
-    expect(stubs['@surma/rollup-plugin-off-main-thread'].notCalled).to.be.true;
+    expect(stubs['@surma/rollup-plugin-off-main-thread'].default.notCalled).to.be.true;
   });
 
   it(`should replace NODE_ENV with the 'mode' value`, async function() {
@@ -104,7 +115,7 @@ describe(`[workbox-build] lib/bundle.js`, function() {
       mode,
     });
 
-    expect(stubs['@rollup/plugin-replace'].args).to.eql([[{
+    expect(stubs['@rollup/plugin-replace'].default.args).to.eql([[{
       'preventAssignment': true,
       'process.env.NODE_ENV': `"${mode}"`,
     }]]);
