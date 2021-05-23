@@ -84,11 +84,48 @@ export function isGenerateSWOptions(obj: any, _argumentName?: string): obj is Ge
             (typeof obj.navigationPreload === "undefined" ||
                 obj.navigationPreload === false ||
                 obj.navigationPreload === true) &&
+            (typeof obj.offlineGoogleAnalytics === "undefined" ||
+                obj.offlineGoogleAnalytics === false ||
+                obj.offlineGoogleAnalytics === true ||
+                (obj.offlineGoogleAnalytics !== null &&
+                    typeof obj.offlineGoogleAnalytics === "object" ||
+                    typeof obj.offlineGoogleAnalytics === "function") &&
+                (typeof obj.offlineGoogleAnalytics.cacheName === "undefined" ||
+                    typeof obj.offlineGoogleAnalytics.cacheName === "string") &&
+                (typeof obj.offlineGoogleAnalytics.parameterOverrides === "undefined" ||
+                    (obj.offlineGoogleAnalytics.parameterOverrides !== null &&
+                        typeof obj.offlineGoogleAnalytics.parameterOverrides === "object" ||
+                        typeof obj.offlineGoogleAnalytics.parameterOverrides === "function")) &&
+                (typeof obj.offlineGoogleAnalytics.hitFilter === "undefined" ||
+                    (obj.offlineGoogleAnalytics.hitFilter !== null &&
+                        typeof obj.offlineGoogleAnalytics.hitFilter === "object" ||
+                        typeof obj.offlineGoogleAnalytics.hitFilter === "function"))) &&
             Array.isArray(obj.runtimeCaching) &&
             obj.runtimeCaching.every((e: any) =>
                 (e !== null &&
                     typeof e === "object" ||
                     typeof e === "function") &&
+                ((e.handler !== null &&
+                    typeof e.handler === "object" ||
+                    typeof e.handler === "function") ||
+                    (e.handler !== null &&
+                        typeof e.handler === "object" ||
+                        typeof e.handler === "function") &&
+                    (e.handler.handle !== null &&
+                        typeof e.handler.handle === "object" ||
+                        typeof e.handler.handle === "function") ||
+                    e.handler === "CacheFirst" ||
+                    e.handler === "CacheOnly" ||
+                    e.handler === "NetworkFirst" ||
+                    e.handler === "NetworkOnly" ||
+                    e.handler === "StaleWhileRevalidate") &&
+                (typeof e.method === "undefined" ||
+                    e.method === "DELETE" ||
+                    e.method === "GET" ||
+                    e.method === "HEAD" ||
+                    e.method === "PATCH" ||
+                    e.method === "POST" ||
+                    e.method === "PUT") &&
                 (typeof e.options === "undefined" ||
                     (e.options !== null &&
                         typeof e.options === "object" ||
@@ -97,20 +134,132 @@ export function isGenerateSWOptions(obj: any, _argumentName?: string): obj is Ge
                         (e.options.backgroundSync !== null &&
                             typeof e.options.backgroundSync === "object" ||
                             typeof e.options.backgroundSync === "function") &&
-                        typeof e.options.backgroundSync.name === "string") &&
+                        typeof e.options.backgroundSync.name === "string" &&
+                        (typeof e.options.backgroundSync.options === "undefined" ||
+                            (e.options.backgroundSync.options !== null &&
+                                typeof e.options.backgroundSync.options === "object" ||
+                                typeof e.options.backgroundSync.options === "function") &&
+                            (typeof e.options.backgroundSync.options.onSync === "undefined" ||
+                                (e.options.backgroundSync.options.onSync !== null &&
+                                    typeof e.options.backgroundSync.options.onSync === "object" ||
+                                    typeof e.options.backgroundSync.options.onSync === "function")) &&
+                            (typeof e.options.backgroundSync.options.maxRetentionTime === "undefined" ||
+                                typeof e.options.backgroundSync.options.maxRetentionTime === "number"))) &&
                     (typeof e.options.broadcastUpdate === "undefined" ||
                         (e.options.broadcastUpdate !== null &&
                             typeof e.options.broadcastUpdate === "object" ||
                             typeof e.options.broadcastUpdate === "function") &&
                         (typeof e.options.broadcastUpdate.channelName === "undefined" ||
-                            typeof e.options.broadcastUpdate.channelName === "string")) &&
+                            typeof e.options.broadcastUpdate.channelName === "string") &&
+                        (e.options.broadcastUpdate.options !== null &&
+                            typeof e.options.broadcastUpdate.options === "object" ||
+                            typeof e.options.broadcastUpdate.options === "function") &&
+                        (typeof e.options.broadcastUpdate.options.headersToCheck === "undefined" ||
+                            Array.isArray(e.options.broadcastUpdate.options.headersToCheck) &&
+                            e.options.broadcastUpdate.options.headersToCheck.every((e: any) =>
+                                typeof e === "string"
+                            )) &&
+                        (typeof e.options.broadcastUpdate.options.generatePayload === "undefined" ||
+                            (e.options.broadcastUpdate.options.generatePayload !== null &&
+                                typeof e.options.broadcastUpdate.options.generatePayload === "object" ||
+                                typeof e.options.broadcastUpdate.options.generatePayload === "function"))) &&
+                    (typeof e.options.cacheableResponse === "undefined" ||
+                        (e.options.cacheableResponse !== null &&
+                            typeof e.options.cacheableResponse === "object" ||
+                            typeof e.options.cacheableResponse === "function") &&
+                        (typeof e.options.cacheableResponse.statuses === "undefined" ||
+                            Array.isArray(e.options.cacheableResponse.statuses) &&
+                            e.options.cacheableResponse.statuses.every((e: any) =>
+                                typeof e === "number"
+                            )) &&
+                        (typeof e.options.cacheableResponse.headers === "undefined" ||
+                            (e.options.cacheableResponse.headers !== null &&
+                                typeof e.options.cacheableResponse.headers === "object" ||
+                                typeof e.options.cacheableResponse.headers === "function"))) &&
                     (typeof e.options.cacheName === "undefined" ||
                         e.options.cacheName === null ||
                         typeof e.options.cacheName === "string") &&
+                    (typeof e.options.expiration === "undefined" ||
+                        (e.options.expiration !== null &&
+                            typeof e.options.expiration === "object" ||
+                            typeof e.options.expiration === "function") &&
+                        (typeof e.options.expiration.maxEntries === "undefined" ||
+                            typeof e.options.expiration.maxEntries === "number") &&
+                        (typeof e.options.expiration.maxAgeSeconds === "undefined" ||
+                            typeof e.options.expiration.maxAgeSeconds === "number") &&
+                        (typeof e.options.expiration.matchOptions === "undefined" ||
+                            (e.options.expiration.matchOptions !== null &&
+                                typeof e.options.expiration.matchOptions === "object" ||
+                                typeof e.options.expiration.matchOptions === "function") &&
+                            (typeof e.options.expiration.matchOptions.ignoreMethod === "undefined" ||
+                                e.options.expiration.matchOptions.ignoreMethod === false ||
+                                e.options.expiration.matchOptions.ignoreMethod === true) &&
+                            (typeof e.options.expiration.matchOptions.ignoreSearch === "undefined" ||
+                                e.options.expiration.matchOptions.ignoreSearch === false ||
+                                e.options.expiration.matchOptions.ignoreSearch === true) &&
+                            (typeof e.options.expiration.matchOptions.ignoreVary === "undefined" ||
+                                e.options.expiration.matchOptions.ignoreVary === false ||
+                                e.options.expiration.matchOptions.ignoreVary === true)) &&
+                        (typeof e.options.expiration.purgeOnQuotaError === "undefined" ||
+                            e.options.expiration.purgeOnQuotaError === false ||
+                            e.options.expiration.purgeOnQuotaError === true)) &&
                     (typeof e.options.networkTimeoutSeconds === "undefined" ||
                         typeof e.options.networkTimeoutSeconds === "number") &&
                     (typeof e.options.plugins === "undefined" ||
-                        Array.isArray(e.options.plugins)) &&
+                        Array.isArray(e.options.plugins) &&
+                        e.options.plugins.every((e: any) =>
+                            (e !== null &&
+                                typeof e === "object" ||
+                                typeof e === "function") &&
+                            (typeof e.cacheDidUpdate === "undefined" ||
+                                (e.cacheDidUpdate !== null &&
+                                    typeof e.cacheDidUpdate === "object" ||
+                                    typeof e.cacheDidUpdate === "function")) &&
+                            (typeof e.cachedResponseWillBeUsed === "undefined" ||
+                                (e.cachedResponseWillBeUsed !== null &&
+                                    typeof e.cachedResponseWillBeUsed === "object" ||
+                                    typeof e.cachedResponseWillBeUsed === "function")) &&
+                            (typeof e.cacheKeyWillBeUsed === "undefined" ||
+                                (e.cacheKeyWillBeUsed !== null &&
+                                    typeof e.cacheKeyWillBeUsed === "object" ||
+                                    typeof e.cacheKeyWillBeUsed === "function")) &&
+                            (typeof e.cacheWillUpdate === "undefined" ||
+                                (e.cacheWillUpdate !== null &&
+                                    typeof e.cacheWillUpdate === "object" ||
+                                    typeof e.cacheWillUpdate === "function")) &&
+                            (typeof e.fetchDidFail === "undefined" ||
+                                (e.fetchDidFail !== null &&
+                                    typeof e.fetchDidFail === "object" ||
+                                    typeof e.fetchDidFail === "function")) &&
+                            (typeof e.fetchDidSucceed === "undefined" ||
+                                (e.fetchDidSucceed !== null &&
+                                    typeof e.fetchDidSucceed === "object" ||
+                                    typeof e.fetchDidSucceed === "function")) &&
+                            (typeof e.handlerDidComplete === "undefined" ||
+                                (e.handlerDidComplete !== null &&
+                                    typeof e.handlerDidComplete === "object" ||
+                                    typeof e.handlerDidComplete === "function")) &&
+                            (typeof e.handlerDidError === "undefined" ||
+                                (e.handlerDidError !== null &&
+                                    typeof e.handlerDidError === "object" ||
+                                    typeof e.handlerDidError === "function")) &&
+                            (typeof e.handlerDidRespond === "undefined" ||
+                                (e.handlerDidRespond !== null &&
+                                    typeof e.handlerDidRespond === "object" ||
+                                    typeof e.handlerDidRespond === "function")) &&
+                            (typeof e.handlerWillRespond === "undefined" ||
+                                (e.handlerWillRespond !== null &&
+                                    typeof e.handlerWillRespond === "object" ||
+                                    typeof e.handlerWillRespond === "function")) &&
+                            (typeof e.handlerWillStart === "undefined" ||
+                                (e.handlerWillStart !== null &&
+                                    typeof e.handlerWillStart === "object" ||
+                                    typeof e.handlerWillStart === "function")) &&
+                            (typeof e.requestWillFetch === "undefined" ||
+                                (e.requestWillFetch !== null &&
+                                    typeof e.requestWillFetch === "object" ||
+                                    typeof e.requestWillFetch === "function"))
+                        )) &&
                     (typeof e.options.precacheFallback === "undefined" ||
                         (e.options.precacheFallback !== null &&
                             typeof e.options.precacheFallback === "object" ||
@@ -123,6 +272,7 @@ export function isGenerateSWOptions(obj: any, _argumentName?: string): obj is Ge
                         (typeof e.options.fetchOptions.body === "undefined" ||
                             e.options.fetchOptions.body === null ||
                             typeof e.options.fetchOptions.body === "string" ||
+                            e.options.fetchOptions.body instanceof URLSearchParams ||
                             e.options.fetchOptions.body instanceof Blob ||
                             (e.options.fetchOptions.body !== null &&
                                 typeof e.options.fetchOptions.body === "object" ||
@@ -133,7 +283,6 @@ export function isGenerateSWOptions(obj: any, _argumentName?: string): obj is Ge
                             typeof e.options.fetchOptions.body.byteOffset === "number" ||
                             e.options.fetchOptions.body instanceof ArrayBuffer ||
                             e.options.fetchOptions.body instanceof FormData ||
-                            e.options.fetchOptions.body instanceof URLSearchParams ||
                             e.options.fetchOptions.body instanceof ReadableStream) &&
                         (typeof e.options.fetchOptions.cache === "undefined" ||
                             e.options.fetchOptions.cache === "default" ||
@@ -204,7 +353,12 @@ export function isGenerateSWOptions(obj: any, _argumentName?: string): obj is Ge
                             e.options.matchOptions.ignoreSearch === true) &&
                         (typeof e.options.matchOptions.ignoreVary === "undefined" ||
                             e.options.matchOptions.ignoreVary === false ||
-                            e.options.matchOptions.ignoreVary === true)))
+                            e.options.matchOptions.ignoreVary === true))) &&
+                (typeof e.urlPattern === "string" ||
+                    e.urlPattern instanceof RegExp ||
+                    (e.urlPattern !== null &&
+                        typeof e.urlPattern === "object" ||
+                        typeof e.urlPattern === "function"))
             ) &&
             (typeof obj.skipWaiting === "undefined" ||
                 obj.skipWaiting === false ||
@@ -466,11 +620,48 @@ export function isWebpackGenerateSWOptions(obj: any, _argumentName?: string): ob
             (typeof obj.navigationPreload === "undefined" ||
                 obj.navigationPreload === false ||
                 obj.navigationPreload === true) &&
+            (typeof obj.offlineGoogleAnalytics === "undefined" ||
+                obj.offlineGoogleAnalytics === false ||
+                obj.offlineGoogleAnalytics === true ||
+                (obj.offlineGoogleAnalytics !== null &&
+                    typeof obj.offlineGoogleAnalytics === "object" ||
+                    typeof obj.offlineGoogleAnalytics === "function") &&
+                (typeof obj.offlineGoogleAnalytics.cacheName === "undefined" ||
+                    typeof obj.offlineGoogleAnalytics.cacheName === "string") &&
+                (typeof obj.offlineGoogleAnalytics.parameterOverrides === "undefined" ||
+                    (obj.offlineGoogleAnalytics.parameterOverrides !== null &&
+                        typeof obj.offlineGoogleAnalytics.parameterOverrides === "object" ||
+                        typeof obj.offlineGoogleAnalytics.parameterOverrides === "function")) &&
+                (typeof obj.offlineGoogleAnalytics.hitFilter === "undefined" ||
+                    (obj.offlineGoogleAnalytics.hitFilter !== null &&
+                        typeof obj.offlineGoogleAnalytics.hitFilter === "object" ||
+                        typeof obj.offlineGoogleAnalytics.hitFilter === "function"))) &&
             Array.isArray(obj.runtimeCaching) &&
             obj.runtimeCaching.every((e: any) =>
                 (e !== null &&
                     typeof e === "object" ||
                     typeof e === "function") &&
+                ((e.handler !== null &&
+                    typeof e.handler === "object" ||
+                    typeof e.handler === "function") ||
+                    (e.handler !== null &&
+                        typeof e.handler === "object" ||
+                        typeof e.handler === "function") &&
+                    (e.handler.handle !== null &&
+                        typeof e.handler.handle === "object" ||
+                        typeof e.handler.handle === "function") ||
+                    e.handler === "CacheFirst" ||
+                    e.handler === "CacheOnly" ||
+                    e.handler === "NetworkFirst" ||
+                    e.handler === "NetworkOnly" ||
+                    e.handler === "StaleWhileRevalidate") &&
+                (typeof e.method === "undefined" ||
+                    e.method === "DELETE" ||
+                    e.method === "GET" ||
+                    e.method === "HEAD" ||
+                    e.method === "PATCH" ||
+                    e.method === "POST" ||
+                    e.method === "PUT") &&
                 (typeof e.options === "undefined" ||
                     (e.options !== null &&
                         typeof e.options === "object" ||
@@ -479,20 +670,132 @@ export function isWebpackGenerateSWOptions(obj: any, _argumentName?: string): ob
                         (e.options.backgroundSync !== null &&
                             typeof e.options.backgroundSync === "object" ||
                             typeof e.options.backgroundSync === "function") &&
-                        typeof e.options.backgroundSync.name === "string") &&
+                        typeof e.options.backgroundSync.name === "string" &&
+                        (typeof e.options.backgroundSync.options === "undefined" ||
+                            (e.options.backgroundSync.options !== null &&
+                                typeof e.options.backgroundSync.options === "object" ||
+                                typeof e.options.backgroundSync.options === "function") &&
+                            (typeof e.options.backgroundSync.options.onSync === "undefined" ||
+                                (e.options.backgroundSync.options.onSync !== null &&
+                                    typeof e.options.backgroundSync.options.onSync === "object" ||
+                                    typeof e.options.backgroundSync.options.onSync === "function")) &&
+                            (typeof e.options.backgroundSync.options.maxRetentionTime === "undefined" ||
+                                typeof e.options.backgroundSync.options.maxRetentionTime === "number"))) &&
                     (typeof e.options.broadcastUpdate === "undefined" ||
                         (e.options.broadcastUpdate !== null &&
                             typeof e.options.broadcastUpdate === "object" ||
                             typeof e.options.broadcastUpdate === "function") &&
                         (typeof e.options.broadcastUpdate.channelName === "undefined" ||
-                            typeof e.options.broadcastUpdate.channelName === "string")) &&
+                            typeof e.options.broadcastUpdate.channelName === "string") &&
+                        (e.options.broadcastUpdate.options !== null &&
+                            typeof e.options.broadcastUpdate.options === "object" ||
+                            typeof e.options.broadcastUpdate.options === "function") &&
+                        (typeof e.options.broadcastUpdate.options.headersToCheck === "undefined" ||
+                            Array.isArray(e.options.broadcastUpdate.options.headersToCheck) &&
+                            e.options.broadcastUpdate.options.headersToCheck.every((e: any) =>
+                                typeof e === "string"
+                            )) &&
+                        (typeof e.options.broadcastUpdate.options.generatePayload === "undefined" ||
+                            (e.options.broadcastUpdate.options.generatePayload !== null &&
+                                typeof e.options.broadcastUpdate.options.generatePayload === "object" ||
+                                typeof e.options.broadcastUpdate.options.generatePayload === "function"))) &&
+                    (typeof e.options.cacheableResponse === "undefined" ||
+                        (e.options.cacheableResponse !== null &&
+                            typeof e.options.cacheableResponse === "object" ||
+                            typeof e.options.cacheableResponse === "function") &&
+                        (typeof e.options.cacheableResponse.statuses === "undefined" ||
+                            Array.isArray(e.options.cacheableResponse.statuses) &&
+                            e.options.cacheableResponse.statuses.every((e: any) =>
+                                typeof e === "number"
+                            )) &&
+                        (typeof e.options.cacheableResponse.headers === "undefined" ||
+                            (e.options.cacheableResponse.headers !== null &&
+                                typeof e.options.cacheableResponse.headers === "object" ||
+                                typeof e.options.cacheableResponse.headers === "function"))) &&
                     (typeof e.options.cacheName === "undefined" ||
                         e.options.cacheName === null ||
                         typeof e.options.cacheName === "string") &&
+                    (typeof e.options.expiration === "undefined" ||
+                        (e.options.expiration !== null &&
+                            typeof e.options.expiration === "object" ||
+                            typeof e.options.expiration === "function") &&
+                        (typeof e.options.expiration.maxEntries === "undefined" ||
+                            typeof e.options.expiration.maxEntries === "number") &&
+                        (typeof e.options.expiration.maxAgeSeconds === "undefined" ||
+                            typeof e.options.expiration.maxAgeSeconds === "number") &&
+                        (typeof e.options.expiration.matchOptions === "undefined" ||
+                            (e.options.expiration.matchOptions !== null &&
+                                typeof e.options.expiration.matchOptions === "object" ||
+                                typeof e.options.expiration.matchOptions === "function") &&
+                            (typeof e.options.expiration.matchOptions.ignoreMethod === "undefined" ||
+                                e.options.expiration.matchOptions.ignoreMethod === false ||
+                                e.options.expiration.matchOptions.ignoreMethod === true) &&
+                            (typeof e.options.expiration.matchOptions.ignoreSearch === "undefined" ||
+                                e.options.expiration.matchOptions.ignoreSearch === false ||
+                                e.options.expiration.matchOptions.ignoreSearch === true) &&
+                            (typeof e.options.expiration.matchOptions.ignoreVary === "undefined" ||
+                                e.options.expiration.matchOptions.ignoreVary === false ||
+                                e.options.expiration.matchOptions.ignoreVary === true)) &&
+                        (typeof e.options.expiration.purgeOnQuotaError === "undefined" ||
+                            e.options.expiration.purgeOnQuotaError === false ||
+                            e.options.expiration.purgeOnQuotaError === true)) &&
                     (typeof e.options.networkTimeoutSeconds === "undefined" ||
                         typeof e.options.networkTimeoutSeconds === "number") &&
                     (typeof e.options.plugins === "undefined" ||
-                        Array.isArray(e.options.plugins)) &&
+                        Array.isArray(e.options.plugins) &&
+                        e.options.plugins.every((e: any) =>
+                            (e !== null &&
+                                typeof e === "object" ||
+                                typeof e === "function") &&
+                            (typeof e.cacheDidUpdate === "undefined" ||
+                                (e.cacheDidUpdate !== null &&
+                                    typeof e.cacheDidUpdate === "object" ||
+                                    typeof e.cacheDidUpdate === "function")) &&
+                            (typeof e.cachedResponseWillBeUsed === "undefined" ||
+                                (e.cachedResponseWillBeUsed !== null &&
+                                    typeof e.cachedResponseWillBeUsed === "object" ||
+                                    typeof e.cachedResponseWillBeUsed === "function")) &&
+                            (typeof e.cacheKeyWillBeUsed === "undefined" ||
+                                (e.cacheKeyWillBeUsed !== null &&
+                                    typeof e.cacheKeyWillBeUsed === "object" ||
+                                    typeof e.cacheKeyWillBeUsed === "function")) &&
+                            (typeof e.cacheWillUpdate === "undefined" ||
+                                (e.cacheWillUpdate !== null &&
+                                    typeof e.cacheWillUpdate === "object" ||
+                                    typeof e.cacheWillUpdate === "function")) &&
+                            (typeof e.fetchDidFail === "undefined" ||
+                                (e.fetchDidFail !== null &&
+                                    typeof e.fetchDidFail === "object" ||
+                                    typeof e.fetchDidFail === "function")) &&
+                            (typeof e.fetchDidSucceed === "undefined" ||
+                                (e.fetchDidSucceed !== null &&
+                                    typeof e.fetchDidSucceed === "object" ||
+                                    typeof e.fetchDidSucceed === "function")) &&
+                            (typeof e.handlerDidComplete === "undefined" ||
+                                (e.handlerDidComplete !== null &&
+                                    typeof e.handlerDidComplete === "object" ||
+                                    typeof e.handlerDidComplete === "function")) &&
+                            (typeof e.handlerDidError === "undefined" ||
+                                (e.handlerDidError !== null &&
+                                    typeof e.handlerDidError === "object" ||
+                                    typeof e.handlerDidError === "function")) &&
+                            (typeof e.handlerDidRespond === "undefined" ||
+                                (e.handlerDidRespond !== null &&
+                                    typeof e.handlerDidRespond === "object" ||
+                                    typeof e.handlerDidRespond === "function")) &&
+                            (typeof e.handlerWillRespond === "undefined" ||
+                                (e.handlerWillRespond !== null &&
+                                    typeof e.handlerWillRespond === "object" ||
+                                    typeof e.handlerWillRespond === "function")) &&
+                            (typeof e.handlerWillStart === "undefined" ||
+                                (e.handlerWillStart !== null &&
+                                    typeof e.handlerWillStart === "object" ||
+                                    typeof e.handlerWillStart === "function")) &&
+                            (typeof e.requestWillFetch === "undefined" ||
+                                (e.requestWillFetch !== null &&
+                                    typeof e.requestWillFetch === "object" ||
+                                    typeof e.requestWillFetch === "function"))
+                        )) &&
                     (typeof e.options.precacheFallback === "undefined" ||
                         (e.options.precacheFallback !== null &&
                             typeof e.options.precacheFallback === "object" ||
@@ -505,6 +808,7 @@ export function isWebpackGenerateSWOptions(obj: any, _argumentName?: string): ob
                         (typeof e.options.fetchOptions.body === "undefined" ||
                             e.options.fetchOptions.body === null ||
                             typeof e.options.fetchOptions.body === "string" ||
+                            e.options.fetchOptions.body instanceof URLSearchParams ||
                             e.options.fetchOptions.body instanceof Blob ||
                             (e.options.fetchOptions.body !== null &&
                                 typeof e.options.fetchOptions.body === "object" ||
@@ -515,7 +819,6 @@ export function isWebpackGenerateSWOptions(obj: any, _argumentName?: string): ob
                             typeof e.options.fetchOptions.body.byteOffset === "number" ||
                             e.options.fetchOptions.body instanceof ArrayBuffer ||
                             e.options.fetchOptions.body instanceof FormData ||
-                            e.options.fetchOptions.body instanceof URLSearchParams ||
                             e.options.fetchOptions.body instanceof ReadableStream) &&
                         (typeof e.options.fetchOptions.cache === "undefined" ||
                             e.options.fetchOptions.cache === "default" ||
@@ -586,7 +889,12 @@ export function isWebpackGenerateSWOptions(obj: any, _argumentName?: string): ob
                             e.options.matchOptions.ignoreSearch === true) &&
                         (typeof e.options.matchOptions.ignoreVary === "undefined" ||
                             e.options.matchOptions.ignoreVary === false ||
-                            e.options.matchOptions.ignoreVary === true)))
+                            e.options.matchOptions.ignoreVary === true))) &&
+                (typeof e.urlPattern === "string" ||
+                    e.urlPattern instanceof RegExp ||
+                    (e.urlPattern !== null &&
+                        typeof e.urlPattern === "object" ||
+                        typeof e.urlPattern === "function"))
             ) &&
             (typeof obj.skipWaiting === "undefined" ||
                 obj.skipWaiting === false ||
