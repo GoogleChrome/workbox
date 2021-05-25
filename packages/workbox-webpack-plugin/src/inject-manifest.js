@@ -316,7 +316,7 @@ class InjectManifest {
     const {size, sortedEntries} = await getManifestEntriesFromCompilation(
         compilation, config);
 
-    let manifestString = stringify(sortedEntries);  
+    let manifestString = stringify(sortedEntries);
     if (this.config.compileSrc &&
       // See https://github.com/GoogleChrome/workbox/issues/2729
       // (TODO: Switch to ?. once our linter supports it.)
