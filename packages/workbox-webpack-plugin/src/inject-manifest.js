@@ -319,8 +319,11 @@ class InjectManifest {
     let manifestString = stringify(sortedEntries);  
     if (this.config.compileSrc &&
       // See https://github.com/GoogleChrome/workbox/issues/2729
-      !(compilation.options?.devtool === 'eval-cheap-source-map' &&
-        compilation.options?.optimization?.minimize)
+      // (TODO: Switch to ?. once our linter supports it.)
+      !(compilation.options &&
+        compilation.options.devtool === 'eval-cheap-source-map' &&
+        compilation.options.optimization &&
+        compilation.options.optimization.minimize)
     ) {
       // See https://github.com/GoogleChrome/workbox/issues/2263
       manifestString = manifestString.replace(/"/g, `'`);
