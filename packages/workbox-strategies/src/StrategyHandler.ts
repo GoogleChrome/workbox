@@ -266,7 +266,7 @@ class StrategyHandler {
     const effectiveRequest = await this.getCacheKey(request, 'read');
     const multiMatchOptions = {...matchOptions, ...{cacheName}};
 
-    cachedResponse = await caches.match(effectiveRequest, multiMatchOptions);
+    cachedResponse = await self.caches.match(effectiveRequest, multiMatchOptions);
 
     if (process.env.NODE_ENV !== 'production') {
       if (cachedResponse) {
