@@ -21,7 +21,7 @@ export async function getFileManifestEntries({
   globDirectory,
   globFollow,
   globIgnores,
-  globPatterns,
+  globPatterns = [],
   globStrict,
   manifestTransforms,
   maximumFileSizeToCacheInBytes,
@@ -88,6 +88,10 @@ export async function getFileManifestEntries({
               error);
           }
         }, []);
+        if (details.length === 0) {
+          throw new Error(`${errors['bad-template-urls-asset']} The glob ` +
+            `pattern '${dependencies}' did not match anything.`);
+        }
         allFileDetails.set(url, getCompositeDetails(url, details));
       } else if (typeof dependencies === 'string') {
         allFileDetails.set(url, getStringDetails(url, dependencies));
