@@ -6,11 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
-import assert from 'assert';
+import {ok} from 'assert';
 
 import {BuildType, WorkboxPackageJSON} from '../types';
 import {errors} from './errors';
-import cdn from '../cdn-details.json';
+import * as cdn from '../cdn-details.json';
 
 function getVersionedURL(): string {
   return `${getCDNPrefix()}/${cdn.latestVersion}`;
@@ -21,7 +21,7 @@ function getCDNPrefix() {
 }
 
 export function getModuleURL(moduleName: string, buildType: BuildType) {
-  assert(moduleName, errors['no-module-name']);
+  ok(moduleName, errors['no-module-name']);
 
   if (buildType) {
     const pkgJson: WorkboxPackageJSON = require(`${moduleName}/package.json`);
