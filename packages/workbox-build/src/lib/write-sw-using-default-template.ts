@@ -12,7 +12,7 @@ import upath from 'upath';
 import {bundle} from './bundle';
 import {errors} from './errors';
 import {GenerateSWOptions, ManifestEntry} from '../types';
-import populateSWTemplate from './populate-sw-template';
+import {populateSWTemplate} from './populate-sw-template';
 
 export async function writeSWUsingDefaultTemplate({
   babelPresetEnvTargets,

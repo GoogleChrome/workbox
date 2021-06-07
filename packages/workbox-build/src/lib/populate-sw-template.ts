@@ -15,7 +15,7 @@ import {runtimeCachingConverter} from './runtime-caching-converter';
 import {stringifyWithoutComments} from './stringify-without-comments';
 import {swTemplate} from '../templates/sw-template';
 
-export default function({
+export function populateSWTemplate({
   cacheId,
   cleanupOutdatedCaches,
   clientsClaim,
