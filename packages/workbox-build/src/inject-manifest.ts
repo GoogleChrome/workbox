@@ -116,7 +116,7 @@ import {validateInjectManifestOptions} from './lib/validate-options';
  *
  * @memberof module:workbox-build
  */
-export default async function(config: unknown): Promise<BuildResult> {
+export async function injectManifest(config: unknown): Promise<BuildResult> {
   const options = validateInjectManifestOptions(config);
 
   // Make sure we leave swSrc and swDest out of the precache manifest.

@@ -88,7 +88,7 @@ import {validateGetManifestOptions} from './lib/validate-options';
  *
  * @memberof module:workbox-build
  */
-export default async function(config: unknown): Promise<GetManifestResult> {
+export async function getManifest(config: unknown): Promise<GetManifestResult> {
   const options = validateGetManifestOptions(config);
 
   return await getFileManifestEntries(options);
