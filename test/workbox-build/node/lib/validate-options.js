@@ -7,35 +7,37 @@
 */
 
 const expect = require('chai').expect;
+const proxyquire = require('proxyquire');
 
-const validateOptions = require('../../../../packages/workbox-build/build/lib/validate-options');
+// The integration tests will exercise the actual validation logic.
+describe(`[workbox-build] entry-points/options/validate-options.js`, function() {
+  const MODULE_PATH = '../../../../packages/workbox-build/build/lib/validate-options';
+  const testCases = new Map([
+    ['validateGenerateSWOptions', 'isGenerateSWOptions'],
+    ['validateGetManifestOptions', 'isGetManifestOptions'],
+    ['validateInjectManifestOptions', 'isInjectManifestOptions'],
+  ]);
 
-describe(`[workbox-build] entry-points/options/validate.js`, function() {
-  const testOptions = {
-    ignored: 'test',
-  };
-
-  it(`should throw when the call to schema.validate() returns an error`, function() {
-    const error = 'dummy error';
-    const schema = {
-      validate: (options) => {
-        expect(options).to.eql(testOptions);
-        return {error};
-      },
-    };
-
-    expect(() => validateOptions(testOptions, schema)).to.throw(error);
-  });
-
-  it(`should pass through the value when the call to schema.validate() doesn't return an error`, function() {
-    const schema = {
-      validate: (options) => {
-        expect(options).to.eql(testOptions);
-        return {value: options};
-      },
-    };
-
-    const value = validateOptions(testOptions, schema);
-    expect(value).to.eql(testOptions);
-  });
+  for (const [func, guardFunc] of testCases) {
+    it(`${func}() should throw when ${guardFunc}() returns false`, function() {
+      const validateOptions = proxyquire(MODULE_PATH, {
+        '../types.guard': {
+          [guardFunc]: () => false,
+        },
+      });
+  
+      expect(() => validateOptions[func]()).to.throw('Validation failed.');
+    });
+  
+    it(`${func}() should return options with defaults when ${guardFunc}() returns true`, function() {
+      const validateOptions = proxyquire(MODULE_PATH, {
+        '../types.guard': {
+          [guardFunc]: () => true,
+        },
+      });
+  
+      const defaultOptions = validateOptions[func]();
+      expect(defaultOptions).to.be.an('object');
+    });
+  }
 });
