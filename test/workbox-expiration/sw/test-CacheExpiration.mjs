@@ -6,17 +6,19 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {DBWrapper} from 'workbox-core/_private/DBWrapper.mjs';
 import {CacheTimestampsModel} from 'workbox-expiration/models/CacheTimestampsModel.mjs';
 import {CacheExpiration} from 'workbox-expiration/CacheExpiration.mjs';
+import {openDB} from 'idb';
+
 
 describe(`CacheExpiration`, function() {
   const sandbox = sinon.createSandbox();
-  const db = new DBWrapper('workbox-expiration', 1, {
-    onupgradeneeded: CacheTimestampsModel.prototype._handleUpgrade,
-  });
+  let db = null;
 
   beforeEach(async function() {
+    db = await openDB('workbox-expiration', 1, {
+      upgrade: CacheTimestampsModel.prototype._upgradeDb,
+    });
     await db.clear('cache-entries');
 
     const cacheKeys = await caches.keys();
