@@ -21,7 +21,11 @@ function validate<T>(input: unknown, schemaFile: string): T {
     return input;
   }
 
-  throw new Error(JSON.stringify(validate.errors));
+  // TODO: Update this code to use better-ajv-errors once
+  // https://github.com/apideck-libraries/better-ajv-errors/pull/2 is merged.
+  const error = new Error(JSON.stringify(validate.errors));
+  error.name = 'ValidationError';
+  throw error;
 }
 
 export function validateGenerateSWOptions(input: unknown): GenerateSWOptions {

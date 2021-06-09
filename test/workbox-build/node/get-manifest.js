@@ -15,7 +15,7 @@ const tempy = require('tempy');
 chai.use(chaiMatchPattern);
 const {expect} = chai;
 
-const getManifest = require('../../../packages/workbox-build/build/get-manifest');
+const {getManifest} = require('../../../packages/workbox-build/build/get-manifest');
 
 describe(`[workbox-build] get-manifest.js (End to End)`, function() {
   const SRC_DIR = upath.join(__dirname, '..', 'static', 'example-project-1');

@@ -11,8 +11,8 @@ const fse = require('fs-extra');
 const upath = require('upath');
 const tempy = require('tempy');
 
-const errors = require('../../../packages/workbox-build/build/lib/errors');
-const injectManifest = require('../../../packages/workbox-build/build/inject-manifest');
+const {errors} = require('../../../packages/workbox-build/build/lib/errors');
+const {injectManifest} = require('../../../packages/workbox-build/build/inject-manifest');
 const validateServiceWorkerRuntime = require('../../../infra/testing/validator/service-worker-runtime');
 
 describe(`[workbox-build] inject-manifest.js (End to End)`, function() {

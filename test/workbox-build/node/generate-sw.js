@@ -12,8 +12,8 @@ const upath = require('upath');
 const tempy = require('tempy');
 
 const confirmDirectoryContains = require('../../../infra/testing/confirm-directory-contains');
-const errors = require('../../../packages/workbox-build/build/lib/errors');
-const generateSW = require('../../../packages/workbox-build/build/generate-sw');
+const {errors} = require('../../../packages/workbox-build/build/lib/errors');
+const {generateSW} = require('../../../packages/workbox-build/build/generate-sw');
 const validateServiceWorkerRuntime = require('../../../infra/testing/validator/service-worker-runtime');
 
 describe(`[workbox-build] generate-sw.js (End to End)`, function() {
