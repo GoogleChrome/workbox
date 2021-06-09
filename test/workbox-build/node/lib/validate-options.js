@@ -8,35 +8,51 @@
 
 const expect = require('chai').expect;
 const proxyquire = require('proxyquire');
+const sinon = require('sinon');
+
+const INJECTED_ERROR = 'Injected error.';
+class AJVFailsValidation {
+  compile() {
+    const stub = sinon.stub().returns(false);
+    stub.errors = [INJECTED_ERROR];
+    return stub;
+  }
+}
+
+class AJVPassesValidation {
+  compile() {
+    return sinon.stub().returns(true);
+  }
+}
 
 // The integration tests will exercise the actual validation logic.
 describe(`[workbox-build] entry-points/options/validate-options.js`, function() {
   const MODULE_PATH = '../../../../packages/workbox-build/build/lib/validate-options';
-  const testCases = new Map([
-    ['validateGenerateSWOptions', 'isGenerateSWOptions'],
-    ['validateGetManifestOptions', 'isGetManifestOptions'],
-    ['validateInjectManifestOptions', 'isInjectManifestOptions'],
-  ]);
+  const testCases = [
+    'validateGenerateSWOptions',
+    'validateGetManifestOptions',
+    'validateInjectManifestOptions',
+  ];
 
-  for (const [func, guardFunc] of testCases) {
-    it.skip(`${func}() should throw when ${guardFunc}() returns false`, function() {
+  for (const func of testCases) {
+    it(`${func}() should throw when validation fails`, function() {
       const validateOptions = proxyquire(MODULE_PATH, {
-        '../types.guard': {
-          [guardFunc]: () => false,
+        'ajv': {
+          default: AJVFailsValidation,
         },
       });
   
-      expect(() => validateOptions[func]()).to.throw('Validation failed.');
+      expect(() => validateOptions[func]()).to.throw(INJECTED_ERROR);
     });
   
-    it.skip(`${func}() should return options with defaults when ${guardFunc}() returns true`, function() {
+    it(`${func}() should not throw when validation passes`, function() {
       const validateOptions = proxyquire(MODULE_PATH, {
-        '../types.guard': {
-          [guardFunc]: () => true,
+        'ajv': {
+          default: AJVPassesValidation,
         },
       });
   
-      const defaultOptions = validateOptions[func]();
+      const defaultOptions = validateOptions[func]({});
       expect(defaultOptions).to.be.an('object');
     });
   }
