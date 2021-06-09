@@ -19,7 +19,7 @@ describe(`[workbox-build] entry-points/options/validate-options.js`, function() 
   ]);
 
   for (const [func, guardFunc] of testCases) {
-    it(`${func}() should throw when ${guardFunc}() returns false`, function() {
+    it.skip(`${func}() should throw when ${guardFunc}() returns false`, function() {
       const validateOptions = proxyquire(MODULE_PATH, {
         '../types.guard': {
           [guardFunc]: () => false,
@@ -29,7 +29,7 @@ describe(`[workbox-build] entry-points/options/validate-options.js`, function() 
       expect(() => validateOptions[func]()).to.throw('Validation failed.');
     });
   
-    it(`${func}() should return options with defaults when ${guardFunc}() returns true`, function() {
+    it.skip(`${func}() should return options with defaults when ${guardFunc}() returns true`, function() {
       const validateOptions = proxyquire(MODULE_PATH, {
         '../types.guard': {
           [guardFunc]: () => true,

@@ -10,7 +10,7 @@ import Ajv, {DefinedError, JSONSchemaType} from 'ajv';
 
 import {GenerateSWOptions, GetManifestOptions, InjectManifestOptions} from '../types';
 
-const ajv = new Ajv();
+const ajv = new Ajv({useDefaults: true});
 
 // const defaults = {
 //   babelPresetEnvTargets: ['chrome >= 56'],

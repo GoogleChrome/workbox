@@ -13,7 +13,8 @@
     "src/cdn-details.json"
   ],
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "src/schema/*.json"
   ],
   "references": [
     {"path": "../workbox-background-sync/"},

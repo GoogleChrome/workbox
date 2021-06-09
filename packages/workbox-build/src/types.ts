@@ -91,6 +91,9 @@ export interface GlobPartial {
   globFollow?: boolean;
   globIgnores: Array<string>;
   globPatterns: Array<string>;
+  /**
+   * @default true
+   */
   globStrict?: boolean;
   templatedURLs: {
     [key: string]: string | Array<string>;
