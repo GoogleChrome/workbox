@@ -6,11 +6,13 @@
   https://opensource.org/licenses/MIT.
 */
 
-import Ajv, {DefinedError, JSONSchemaType} from 'ajv';
+import Ajv, {JSONSchemaType} from 'ajv';
 
 import {GenerateSWOptions, GetManifestOptions, InjectManifestOptions} from '../types';
 
-const ajv = new Ajv({useDefaults: true});
+const ajv = new Ajv({
+  useDefaults: true,
+});
 
 export function validateGenerateSWOptions(input: unknown): GenerateSWOptions {
   const jsonSchema: JSONSchemaType<GenerateSWOptions> =
@@ -20,8 +22,7 @@ export function validateGenerateSWOptions(input: unknown): GenerateSWOptions {
     return input;
   }
 
-  const errors = validate.errors as DefinedError[];
-  throw new Error(JSON.stringify(errors));
+  throw new Error(JSON.stringify(validate.errors));
 }
 
 export function validateGetManifestOptions(input: unknown): GetManifestOptions {
@@ -32,8 +33,7 @@ export function validateGetManifestOptions(input: unknown): GetManifestOptions {
     return input;
   }
 
-  const errors = validate.errors as DefinedError[];
-  throw new Error(JSON.stringify(errors));
+  throw new Error(JSON.stringify(validate.errors));
 }
 
 export function validateInjectManifestOptions(input: unknown): InjectManifestOptions {
@@ -44,6 +44,5 @@ export function validateInjectManifestOptions(input: unknown): InjectManifestOpt
     return input;
   }
 
-  const errors = validate.errors as DefinedError[];
-  throw new Error(JSON.stringify(errors));
+  throw new Error(JSON.stringify(validate.errors));
 }
