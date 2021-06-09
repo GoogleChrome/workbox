@@ -70,7 +70,7 @@ export interface BasePartial {
 
 export interface GeneratePartial {
   /**
-   * @default ['chrome >= 56']
+   * @default ["chrome >= 56"]
    */
   babelPresetEnvTargets?: Array<string>;
   cacheId?: string | null;
@@ -94,7 +94,7 @@ export interface GeneratePartial {
    */
   inlineWorkboxRuntime?: boolean;
   /**
-   * @default 'production'
+   * @default "production"
    */
   mode?: string | null;
   /**
@@ -129,11 +129,11 @@ export interface GlobPartial {
    */
   globFollow?: boolean;
   /**
-   * @default ['**\/node_modules\/**\/*']
+   * @default ["**\/node_modules\/**\/*"]
    */
   globIgnores?: Array<string>;
   /**
-   * @default ['**\/*.{js,css,html}']
+   * @default ["**\/*.{js,css,html}"]
    */
   globPatterns?: Array<string>;
   /**
@@ -147,7 +147,7 @@ export interface GlobPartial {
 
 interface InjectPartial {
   /**
-   * @default 'self.__WB_MANIFEST'
+   * @default "self.__WB_MANIFEST"
    */
   injectionPoint?: string;
   swSrc: string;
@@ -166,7 +166,7 @@ interface WebpackPartial {
 
 export interface SWDestPartial {
   /**
-   * @default 'service-worker.js'
+   * @default "service-worker.js"
    */
   swDest: string;
 }
