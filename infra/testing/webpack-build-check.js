@@ -7,7 +7,7 @@
 */
 
 function joinMessages(errorsOrWarnings) {
-  if ('message' in errorsOrWarnings[0]) {
+  if (errorsOrWarnings[0].message) {
     return errorsOrWarnings.map((item) => item.message).join('\n');
   } else {
     return errorsOrWarnings.join('\n');

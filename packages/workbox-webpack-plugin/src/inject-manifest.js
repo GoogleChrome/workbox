@@ -6,16 +6,15 @@
   https://opensource.org/licenses/MIT.
 */
 
-const escapeRegexp = require('workbox-build/build/lib/escape-regexp');
+const {validateWebpackInjectManifestOptions} =
+  require('workbox-build/build/lib/validate-options');
+const {escapeRegExp} = require('workbox-build/build/lib/escape-regexp');
 const prettyBytes = require('pretty-bytes');
-const replaceAndUpdateSourceMap = require(
-    'workbox-build/build/lib/replace-and-update-source-map');
+const replaceAndUpdateSourceMap =
+  require('workbox-build/build/lib/replace-and-update-source-map');
 const stringify = require('fast-json-stable-stringify');
 const upath = require('upath');
-const validate = require('workbox-build/build/lib/validate-options');
 const webpack = require('webpack');
-const webpackInjectManifestSchema = require(
-    'workbox-build/build/options/schema/webpack-inject-manifest');
 
 const getManifestEntriesFromCompilation =
   require('./lib/get-manifest-entries-from-compilation');
@@ -250,7 +249,7 @@ class InjectManifest {
    */
   async handleMake(compilation, parentCompiler) {
     try {
-      this.config = validate(this.config, webpackInjectManifestSchema);
+      this.config = validateWebpackInjectManifestOptions(this.config);
     } catch (error) {
       throw new Error(`Please check your ${this.constructor.name} plugin ` +
         `configuration:\n${error.message}`);
@@ -301,7 +300,7 @@ class InjectManifest {
     const swAsset = compilation.getAsset(config.swDest);
     const swAssetString = swAsset.source.source();
 
-    const globalRegexp = new RegExp(escapeRegexp(config.injectionPoint), 'g');
+    const globalRegexp = new RegExp(escapeRegExp(config.injectionPoint), 'g');
     const injectionResults = swAssetString.match(globalRegexp);
 
     if (!injectionResults) {

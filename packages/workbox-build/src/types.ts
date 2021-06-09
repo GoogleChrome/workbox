@@ -155,9 +155,10 @@ interface InjectPartial {
 
 interface WebpackPartial {
   chunks?: Array<string>;
-  /**
-   * @default [/\.map$/, /^manifest.*\.js$/,]
-   */
+  // We can't use the @default annotation here to assign the value via AJV, as
+  // an Array<RegExp> can't be serialized into JSON.
+  // The default value of [/\.map$/, /^manifest.*\.js$/] will be assigned by
+  // the validation function, and we need to reflect that in the docs.
   exclude?: Array<string | RegExp | ((arg0: string) => any)>;
   excludeChunks?: Array<string>;
   include?: Array<string | RegExp | ((arg0: string) => any)>;
@@ -184,7 +185,7 @@ export type InjectManifestOptions = InjectPartial & Omit<GlobPartial, 'globDirec
 };
 
 export type WebpackGenerateSWOptions = WebpackPartial & GeneratePartial & BasePartial & OptionalSWDestPartial & {
-  importScriptsViaChunks: Array<string>;
+  importScriptsViaChunks?: Array<string>;
 };
 
 export type WebpackInjectManifestOptions = WebpackPartial & InjectPartial & BasePartial & OptionalSWDestPartial & {

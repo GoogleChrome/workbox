@@ -8,17 +8,27 @@
 
 import Ajv, {JSONSchemaType} from 'ajv';
 
-import {GenerateSWOptions, GetManifestOptions, InjectManifestOptions} from '../types';
+import {
+  GenerateSWOptions,
+  GetManifestOptions,
+  InjectManifestOptions,
+  WebpackGenerateSWOptions,
+  WebpackInjectManifestOptions,
+} from '../types';
 
 const ajv = new Ajv({
   useDefaults: true,
 });
 
+const DEFAULT_EXCLUDE_VALUE= [/\.map$/, /^manifest.*\.js$/];
+
 function validate<T>(input: unknown, schemaFile: string): T {
+  // Don't mutate input: https://github.com/GoogleChrome/workbox/issues/2158
+  const inputCopy = Object.assign({}, input);
   const jsonSchema: JSONSchemaType<T> = require(schemaFile);
   const validate = ajv.compile(jsonSchema);
-  if (validate(input)) {
-    return input;
+  if (validate(inputCopy)) {
+    return inputCopy;
   }
 
   // TODO: Update this code to use better-ajv-errors once
@@ -29,13 +39,29 @@ function validate<T>(input: unknown, schemaFile: string): T {
 }
 
 export function validateGenerateSWOptions(input: unknown): GenerateSWOptions {
-  return validate<GenerateSWOptions>(input, `../schema/GenerateSWOptions.json`);
+  return validate<GenerateSWOptions>(input, '../schema/GenerateSWOptions.json');
 }
 
 export function validateGetManifestOptions(input: unknown): GetManifestOptions {
-  return validate<GetManifestOptions>(input, `../schema/GetManifestOptions.json`);
+  return validate<GetManifestOptions>(input, '../schema/GetManifestOptions.json');
 }
 
 export function validateInjectManifestOptions(input: unknown): InjectManifestOptions {
-  return validate<InjectManifestOptions>(input, `../schema/InjectManifestOptions.json`);
+  return validate<InjectManifestOptions>(input, '../schema/InjectManifestOptions.json');
+}
+
+// The default exclude: [/\.map$/, /^manifest.*\.js$/] value can't be
+// represented in the JSON schema, so manually set it for the webpack options.
+export function validateWebpackGenerateSWOptions(input: unknown): WebpackGenerateSWOptions {
+  const inputWithExcludeDefault = Object.assign({
+    exclude: DEFAULT_EXCLUDE_VALUE,
+  }, input);
+  return validate<WebpackGenerateSWOptions>(inputWithExcludeDefault, '../schema/WebpackGenerateSWOptions.json');
+}
+
+export function validateWebpackInjectManifestOptions(input: unknown): WebpackInjectManifestOptions {
+  const inputWithExcludeDefault = Object.assign({
+    exclude: DEFAULT_EXCLUDE_VALUE,
+  }, input);
+  return validate<WebpackInjectManifestOptions>(inputWithExcludeDefault, '../schema/WebpackInjectManifestOptions.json');
 }
