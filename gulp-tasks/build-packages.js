@@ -59,12 +59,12 @@ module.exports = {
   build_packages_clean: cleanSequence(),
   build_packages: series(
       cleanSequence(),
+      // This needs to be a series, not in parallel, so that there isn't a
+      // race condition with the terser nameCache.
+      series(build_sw_packages, build_window_packages),
       parallel(
           build_node_packages,
           build_node_ts_packages,
-          // This needs to be a series, not in parallel, so that there isn't a
-          // race condition with the terser nameCache.
-          series(build_sw_packages, build_window_packages),
       ),
   ),
 };

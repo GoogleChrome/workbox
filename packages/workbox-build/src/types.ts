@@ -1,13 +1,13 @@
 import {PackageJson} from 'type-fest';
 
-import {BroadcastCacheUpdateOptions} from 'workbox-broadcast-update/BroadcastCacheUpdate';
-import {GoogleAnalyticsInitializeOptions} from 'workbox-google-analytics/initialize';
-import {HTTPMethod} from 'workbox-routing/utils/constants';
-import {QueueOptions} from 'workbox-background-sync/Queue';
-import {RouteHandler, RouteMatchCallback} from 'workbox-core/types';
-import {CacheableResponseOptions} from 'workbox-cacheable-response/CacheableResponse';
-import {ExpirationPluginOptions} from 'workbox-expiration/ExpirationPlugin';
-import {WorkboxPlugin} from 'workbox-core/types';
+import {BroadcastCacheUpdateOptions} from 'workbox-broadcast-update/BroadcastCacheUpdate.js';
+import {GoogleAnalyticsInitializeOptions} from 'workbox-google-analytics/initialize.js';
+import {HTTPMethod} from 'workbox-routing/utils/constants.js';
+import {QueueOptions} from 'workbox-background-sync/Queue.js';
+import {RouteHandler, RouteMatchCallback} from 'workbox-core/types.js';
+import {CacheableResponseOptions} from 'workbox-cacheable-response/CacheableResponse.js';
+import {ExpirationPluginOptions} from 'workbox-expiration/ExpirationPlugin.js';
+import {WorkboxPlugin} from 'workbox-core/types.js';
 
 export interface ManifestEntry {
   integrity?: string;
@@ -114,23 +114,18 @@ export interface SWDestPartial {
   swDest: string;
 }
 
-/** @see {isGenerateSWOptions} ts-auto-guard:type-guard */
 export type GenerateSWOptions = GlobPartial & GeneratePartial & BasePartial & SWDestPartial;
 
-/** @see {isGetManifestOptions} ts-auto-guard:type-guard */
 export type GetManifestOptions = GlobPartial & BasePartial;
 
-/** @see {isInjectManifestOptions} ts-auto-guard:type-guard */
 export type InjectManifestOptions = InjectPartial & Omit<GlobPartial, 'globDirectory'> & BasePartial & SWDestPartial & {
   globDirectory: string;
 };
 
-/** @see {isWebpackGenerateSWOptions} ts-auto-guard:type-guard */
 export type WebpackGenerateSWOptions = WebpackPartial & GeneratePartial & BasePartial & SWDestPartial & {
   importScriptsViaChunks: Array<string>;
 };
 
-/** @see {isWebpackInjectManifestOptions} ts-auto-guard:type-guard */
 export type WebpackInjectManifestOptions = WebpackPartial & InjectPartial & BasePartial & SWDestPartial & {
   compileSrc?: boolean;
   webpackCompilationPlugins?: Array<any>;

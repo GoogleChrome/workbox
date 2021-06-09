@@ -3,15 +3,17 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "module": "CommonJS",
-    "outDir": "build",
+    "outDir": "./build",
     "resolveJsonModule": true,
-    "rootDir": "src",
+    "rootDir": "./src",
     "target": "ES2018",
     "tsBuildInfoFile": "./tsconfig.tsbuildinfo"
   },
-  "include": [
-    "src/**/*.ts",
+  "files": [
     "src/cdn-details.json"
+  ],
+  "include": [
+    "src/**/*.ts"
   ],
   "references": [
     {"path": "../workbox-background-sync/"},

@@ -132,7 +132,7 @@ export async function transformManifest({
   // properties from each entry.
   const count = transformedManifest.length;
   let size = 0;
-  for (const manifestEntry of transformedManifest) {
+  for (const manifestEntry of transformedManifest as Array<ManifestEntry & {size?: number}>) {
     size += manifestEntry.size || 0;
     delete manifestEntry.size;
   }

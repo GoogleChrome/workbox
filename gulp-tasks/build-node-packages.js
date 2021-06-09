@@ -9,6 +9,7 @@
 const {parallel} = require('gulp');
 const execa = require('execa');
 const fse = require('fs-extra');
+const TJS = require('typescript-json-schema');
 const upath = require('upath');
 
 const constants = require('./utils/constants');
@@ -29,13 +30,29 @@ async function buildNodePackage(packagePath) {
   ], {preferLocal: true});
 }
 
+async function generateWorkboxBuildJSONSchema(packagePath) {
+  const program = TJS.programFromConfig(upath.join(packagePath,
+    'tsconfig.json'));
+  const generator = TJS.buildGenerator(program);
+  const optionTypes = [
+    'GenerateSWOptions',
+    'GetManifestOptions',
+    'InjectManifestOptions',
+    'WebpackGenerateSWOptions',
+    'WebpackInjectManifestOptions'
+  ];
+  for (const optionType of optionTypes) {
+    const schema = generator.getSchemaForSymbol(optionType);
+    await fse.writeJSON(upath.join(packagePath, 'src', 'schema',
+      `${optionType}.json`), schema);
+  }
+}
+
 async function buildNodeTSPackage(packagePath) {
-  const typesPath = upath.join(packagePath, 'src', 'types.ts');
-  if (fse.existsSync(typesPath)) {
-    await execa('ts-auto-guard', [typesPath], {
-      cwd: packagePath,
-      preferLocal: true,
-    });
+  // Hardcode special logic for workbox-build, as it's the only package
+  // that requires JSON schema generation.
+  if (packagePath.endsWith('workbox-build')) {
+    await generateWorkboxBuildJSONSchema(packagePath);
   }
 
   await execa('tsc', ['-b', packagePath], {preferLocal: true});
