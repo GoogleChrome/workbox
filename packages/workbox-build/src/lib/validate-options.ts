@@ -20,11 +20,8 @@ export function validateGenerateSWOptions(input: unknown): GenerateSWOptions {
     return input;
   }
 
-  const errorStrings = [];
-  for (const err of validate.errors as DefinedError[]) {
-    errorStrings.push(err.message);
-  }
-  throw new Error(`Incorrect generateSW options:\n\t${errorStrings.join('\n\t')}`);
+  const errors = validate.errors as DefinedError[];
+  throw new Error(JSON.stringify(errors));
 }
 
 export function validateGetManifestOptions(input: unknown): GetManifestOptions {
@@ -47,9 +44,6 @@ export function validateInjectManifestOptions(input: unknown): InjectManifestOpt
     return input;
   }
 
-  const errorStrings = [];
-  for (const err of validate.errors as DefinedError[]) {
-    errorStrings.push(err.message);
-  }
-  throw new Error(`Incorrect injectManifestOptions options:\n\t${errorStrings.join('\n\t')}`);
+  const errors = validate.errors as DefinedError[];
+  throw new Error(JSON.stringify(errors));
 }

@@ -33,7 +33,10 @@ async function buildNodePackage(packagePath) {
 async function generateWorkboxBuildJSONSchema(packagePath) {
   const program = TJS.programFromConfig(upath.join(packagePath,
     'tsconfig.json'));
-  const generator = TJS.buildGenerator(program, {noExtraProps: true});
+  const generator = TJS.buildGenerator(program, {
+    noExtraProps: true,
+    required: true,
+  });
   const optionTypes = [
     'GenerateSWOptions',
     'GetManifestOptions',

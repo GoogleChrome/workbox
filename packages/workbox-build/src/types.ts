@@ -63,7 +63,7 @@ export interface BasePartial {
    * @default 2097152
    */
   maximumFileSizeToCacheInBytes?: number;
-  modifyURLPrefix: {
+  modifyURLPrefix?: {
     [key: string]: string;
   };
 }
@@ -111,7 +111,7 @@ export interface GeneratePartial {
    * @default false
    */
   offlineGoogleAnalytics?: boolean | GoogleAnalyticsInitializeOptions;
-  runtimeCaching: Array<RuntimeCaching>;
+  runtimeCaching?: Array<RuntimeCaching>;
   /**
    * @default false
    */
@@ -123,7 +123,7 @@ export interface GeneratePartial {
 }
 
 export interface GlobPartial {
-  globDirectory?: string | null;
+  globDirectory: string;
   /**
    * @default true
    */
@@ -140,7 +140,7 @@ export interface GlobPartial {
    * @default true
    */
   globStrict?: boolean;
-  templatedURLs: {
+  templatedURLs?: {
     [key: string]: string | Array<string>;
   };
 }
