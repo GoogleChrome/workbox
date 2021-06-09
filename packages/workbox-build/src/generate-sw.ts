@@ -198,7 +198,7 @@ export async function generateSW(config: unknown): Promise<BuildResult> {
 
   if (options.globDirectory) {
     // Make sure we leave swDest out of the precache manifest.
-    options.globIgnores.push(rebasePath({
+    options.globIgnores!.push(rebasePath({
       baseDirectory: options.globDirectory,
       file: options.swDest,
     }));
@@ -208,7 +208,7 @@ export async function generateSW(config: unknown): Promise<BuildResult> {
     if (!options.inlineWorkboxRuntime) {
       const swDestDir = upath.dirname(options.swDest);
       const workboxRuntimeFile = upath.join(swDestDir, 'workbox-*.js');
-      options.globIgnores.push(rebasePath({
+      options.globIgnores!.push(rebasePath({
         baseDirectory: options.globDirectory,
         file: workboxRuntimeFile,
       }));

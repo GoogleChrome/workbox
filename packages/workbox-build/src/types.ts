@@ -59,6 +59,9 @@ export interface BasePartial {
   additionalManifestEntries?: Array<string | ManifestEntry>;
   dontCacheBustURLsMatching?: RegExp;
   manifestTransforms?: Array<ManifestTransform>;
+  /**
+   * @default 2097152
+   */
   maximumFileSizeToCacheInBytes?: number;
   modifyURLPrefix: {
     [key: string]: string;
@@ -66,31 +69,73 @@ export interface BasePartial {
 }
 
 export interface GeneratePartial {
+  /**
+   * @default ['chrome >= 56']
+   */
   babelPresetEnvTargets?: Array<string>;
   cacheId?: string | null;
+  /**
+   * @default false
+   */
   cleanupOutdatedCaches?: boolean;
+  /**
+   * @default false
+   */
   clientsClaim?: boolean;
   directoryIndex?: string | null;
+  /**
+   * @default false
+   */
   disableDevLogs?: boolean;
   ignoreURLParametersMatching?: Array<RegExp>;
   importScripts?: Array<string>;
+  /**
+   * @default false
+   */
   inlineWorkboxRuntime?: boolean;
+  /**
+   * @default 'production'
+   */
   mode?: string | null;
+  /**
+   * @default null
+   */
   navigateFallback?: string | null;
   navigateFallbackAllowlist?: Array<RegExp>;
   navigateFallbackDenylist?: Array<RegExp>;
+  /**
+   * @default false
+   */
   navigationPreload?: boolean;
+  /**
+   * @default false
+   */
   offlineGoogleAnalytics?: boolean | GoogleAnalyticsInitializeOptions;
   runtimeCaching: Array<RuntimeCaching>;
+  /**
+   * @default false
+   */
   skipWaiting?: boolean;
+  /**
+   * @default true
+   */
   sourcemap?: boolean;
 }
 
 export interface GlobPartial {
   globDirectory?: string | null;
+  /**
+   * @default true
+   */
   globFollow?: boolean;
-  globIgnores: Array<string>;
-  globPatterns: Array<string>;
+  /**
+   * @default ['**\/node_modules\/**\/*']
+   */
+  globIgnores?: Array<string>;
+  /**
+   * @default ['**\/*.{js,css,html}']
+   */
+  globPatterns?: Array<string>;
   /**
    * @default true
    */
@@ -101,12 +146,18 @@ export interface GlobPartial {
 }
 
 interface InjectPartial {
-  injectionPoint: string;
+  /**
+   * @default 'self.__WB_MANIFEST'
+   */
+  injectionPoint?: string;
   swSrc: string;
 }
 
 interface WebpackPartial {
   chunks?: Array<string>;
+  /**
+   * @default [/\.map$/, /^manifest.*\.js$/,]
+   */
   exclude?: Array<string | RegExp | ((arg0: string) => any)>;
   excludeChunks?: Array<string>;
   include?: Array<string | RegExp | ((arg0: string) => any)>;
@@ -114,6 +165,9 @@ interface WebpackPartial {
 }
 
 export interface SWDestPartial {
+  /**
+   * @default 'service-worker.js'
+   */
   swDest: string;
 }
 
@@ -130,6 +184,9 @@ export type WebpackGenerateSWOptions = WebpackPartial & GeneratePartial & BasePa
 };
 
 export type WebpackInjectManifestOptions = WebpackPartial & InjectPartial & BasePartial & SWDestPartial & {
+  /**
+   * @default true
+   */
   compileSrc?: boolean;
   webpackCompilationPlugins?: Array<any>;
 };

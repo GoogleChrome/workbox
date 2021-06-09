@@ -12,33 +12,6 @@ import {GenerateSWOptions, GetManifestOptions, InjectManifestOptions} from '../t
 
 const ajv = new Ajv({useDefaults: true});
 
-// const defaults = {
-//   babelPresetEnvTargets: ['chrome >= 56'],
-//   cleanupOutdatedCaches: false,
-//   clientsClaim: false,
-//   compileSrc: true,
-//   disableDevLogs: false,
-//   exclude: [
-//     /\.map$/,
-//     /^manifest.*\.js$/,
-//   ],
-//   globFollow: true,
-//   globIgnores: ['**/node_modules/**/*'],
-//   globPatterns: ['**/*.{js,css,html}'],
-//   globStrict: true,
-//   injectionPoint: 'self.__WB_MANIFEST',
-//   inlineWorkboxRuntime: false,
-//   maximumFileSizeToCacheInBytes: 2 * 1024 * 1024,
-//   mode: 'production',
-//   navigateFallback: null,
-//   navigationPreload: false,
-//   offlineGoogleAnalytics: false,
-//   purgeOnQuotaError: true,
-//   skipWaiting: false,
-//   sourcemap: true,
-//   swDestFilename: 'service-worker.js',
-// };
-
 export function validateGenerateSWOptions(input: unknown): GenerateSWOptions {
   const jsonSchema: JSONSchemaType<GenerateSWOptions> =
     require(`../schema/GenerateSWOptions.json`);
@@ -62,11 +35,8 @@ export function validateGetManifestOptions(input: unknown): GetManifestOptions {
     return input;
   }
 
-  const errorStrings = [];
-  for (const err of validate.errors as DefinedError[]) {
-    errorStrings.push(err.message);
-  }
-  throw new Error(`Incorrect getManifest options:\n\t${errorStrings.join('\n\t')}`);
+  const errors = validate.errors as DefinedError[];
+  throw new Error(JSON.stringify(errors));
 }
 
 export function validateInjectManifestOptions(input: unknown): InjectManifestOptions {

@@ -121,13 +121,13 @@ export async function injectManifest(config: unknown): Promise<BuildResult> {
 
   // Make sure we leave swSrc and swDest out of the precache manifest.
   for (const file of [options.swSrc, options.swDest]) {
-    options.globIgnores.push(rebasePath({
+    options.globIgnores!.push(rebasePath({
       file,
       baseDirectory: options.globDirectory,
     }));
   }
 
-  const globalRegexp = new RegExp(escapeRegExp(options.injectionPoint), 'g');
+  const globalRegexp = new RegExp(escapeRegExp(options.injectionPoint!), 'g');
 
   const {count, size, manifestEntries, warnings} =
     await getFileManifestEntries(options);
@@ -178,7 +178,7 @@ export async function injectManifest(config: unknown): Promise<BuildResult> {
       jsFilename: upath.basename(options.swDest),
       originalSource: swFileContents,
       replaceString: manifestString,
-      searchString: options.injectionPoint,
+      searchString: options.injectionPoint!,
     });
 
     filesToWrite[options.swDest] = source;
