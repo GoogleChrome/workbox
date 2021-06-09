@@ -14,35 +14,24 @@ const ajv = new Ajv({
   useDefaults: true,
 });
 
-export function validateGenerateSWOptions(input: unknown): GenerateSWOptions {
-  const jsonSchema: JSONSchemaType<GenerateSWOptions> =
-    require(`../schema/GenerateSWOptions.json`);
+function validate<T>(input: unknown, schemaFile: string): T {
+  const jsonSchema: JSONSchemaType<T> = require(schemaFile);
   const validate = ajv.compile(jsonSchema);
   if (validate(input)) {
     return input;
   }
 
   throw new Error(JSON.stringify(validate.errors));
+}
+
+export function validateGenerateSWOptions(input: unknown): GenerateSWOptions {
+  return validate<GenerateSWOptions>(input, `../schema/GenerateSWOptions.json`);
 }
 
 export function validateGetManifestOptions(input: unknown): GetManifestOptions {
-  const jsonSchema: JSONSchemaType<GetManifestOptions> =
-    require(`../schema/GetManifestOptions.json`);
-  const validate = ajv.compile(jsonSchema);
-  if (validate(input)) {
-    return input;
-  }
-
-  throw new Error(JSON.stringify(validate.errors));
+  return validate<GetManifestOptions>(input, `../schema/GetManifestOptions.json`);
 }
 
 export function validateInjectManifestOptions(input: unknown): InjectManifestOptions {
-  const jsonSchema: JSONSchemaType<InjectManifestOptions> =
-    require(`../schema/InjectManifestOptions.json`);
-  const validate = ajv.compile(jsonSchema);
-  if (validate(input)) {
-    return input;
-  }
-
-  throw new Error(JSON.stringify(validate.errors));
+  return validate<InjectManifestOptions>(input, `../schema/InjectManifestOptions.json`);
 }
