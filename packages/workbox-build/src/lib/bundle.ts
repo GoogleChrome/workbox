@@ -17,7 +17,7 @@ import replace from '@rollup/plugin-replace';
 import tempy from 'tempy';
 import upath from 'upath';
 
-import {GeneratePartial, SWDestPartial} from '../types';
+import {GeneratePartial, RequiredSWDestPartial} from '../types';
 
 interface NameAndContents {
   contents: string | Uint8Array;
@@ -31,7 +31,7 @@ export async function bundle({
   sourcemap,
   swDest,
   unbundledCode,
-}: Omit<GeneratePartial, 'runtimeCaching'> & SWDestPartial & {unbundledCode: string}): Promise<Array<NameAndContents>> {
+}: Omit<GeneratePartial, 'runtimeCaching'> & RequiredSWDestPartial & {unbundledCode: string}): Promise<Array<NameAndContents>> {
   // We need to write this to the "real" file system, as Rollup won't read from
   // a custom file system.
   const {dir, base} = upath.parse(swDest);

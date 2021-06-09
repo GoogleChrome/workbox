@@ -164,26 +164,30 @@ interface WebpackPartial {
   mode?: string | null;
 }
 
-export interface SWDestPartial {
-  /**
-   * @default "service-worker.js"
-   */
+export interface RequiredSWDestPartial {
   swDest: string;
 }
 
-export type GenerateSWOptions = GlobPartial & GeneratePartial & BasePartial & SWDestPartial;
+export interface OptionalSWDestPartial {
+  /**
+   * @default "service-worker.js"
+   */
+  swDest?: string;
+}
+
+export type GenerateSWOptions = GlobPartial & GeneratePartial & BasePartial & RequiredSWDestPartial;
 
 export type GetManifestOptions = GlobPartial & BasePartial;
 
-export type InjectManifestOptions = InjectPartial & Omit<GlobPartial, 'globDirectory'> & BasePartial & SWDestPartial & {
+export type InjectManifestOptions = InjectPartial & Omit<GlobPartial, 'globDirectory'> & BasePartial & RequiredSWDestPartial & {
   globDirectory: string;
 };
 
-export type WebpackGenerateSWOptions = WebpackPartial & GeneratePartial & BasePartial & SWDestPartial & {
+export type WebpackGenerateSWOptions = WebpackPartial & GeneratePartial & BasePartial & OptionalSWDestPartial & {
   importScriptsViaChunks: Array<string>;
 };
 
-export type WebpackInjectManifestOptions = WebpackPartial & InjectPartial & BasePartial & SWDestPartial & {
+export type WebpackInjectManifestOptions = WebpackPartial & InjectPartial & BasePartial & OptionalSWDestPartial & {
   /**
    * @default true
    */
