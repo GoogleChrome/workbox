@@ -6,15 +6,20 @@
   https://opensource.org/licenses/MIT.
 */
 
-const expect = require('chai').expect;
+const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
 const fse = require('fs-extra');
 const upath = require('upath');
 const tempy = require('tempy');
 
-const confirmDirectoryContains = require('../../../infra/testing/confirm-directory-contains');
 const {errors} = require('../../../packages/workbox-build/build/lib/errors');
 const {generateSW} = require('../../../packages/workbox-build/build/generate-sw');
+const {WorkboxConfigError} = require('../../../packages/workbox-build/build/lib/validate-options');
+const confirmDirectoryContains = require('../../../infra/testing/confirm-directory-contains');
 const validateServiceWorkerRuntime = require('../../../infra/testing/validator/service-worker-runtime');
+
+chai.use(chaiAsPromised);
+const {expect} = chai;
 
 describe(`[workbox-build] generate-sw.js (End to End)`, function() {
   const GLOB_DIR = upath.join(__dirname, '..', 'static', 'example-project-1');
@@ -64,64 +69,50 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
 
   describe('[workbox-build] required parameters', function() {
     for (const requiredParam of REQUIRED_PARAMS) {
-      it(`should reject with a ValidationError when '${requiredParam}' is missing`, async function() {
+      it(`should fail validation when '${requiredParam}' is missing`, async function() {
         const options = Object.assign({}, BASE_OPTIONS);
         delete options[requiredParam];
 
-        try {
-          await generateSW(options);
-          throw new Error('Unexpected success.');
-        } catch (error) {
-          expect(error.name).to.eql('ValidationError', error.message);
-          expect(error.details[0].context.key).to.eql(requiredParam);
-        }
+        await expect(generateSW(options)).to.eventually.be.rejectedWith(
+          WorkboxConfigError, requiredParam);
       });
     }
   });
 
   describe('[workbox-build] unsupported parameters', function() {
     for (const unsupportedParam of UNSUPPORTED_PARAMS) {
-      it(`should reject with a ValidationError when '${unsupportedParam}' is present`, async function() {
+      it(`should fail validation when '${unsupportedParam}' is present`, async function() {
         const options = Object.assign({}, BASE_OPTIONS);
         options[unsupportedParam] = unsupportedParam;
 
-        try {
-          await generateSW(options);
-          throw new Error('Unexpected success.');
-        } catch (error) {
-          expect(error.name).to.eql('ValidationError', error.message);
-          expect(error.details[0].context.key).to.eql(unsupportedParam);
-        }
+        await expect(generateSW(options)).to.eventually.be.rejectedWith(
+          WorkboxConfigError, unsupportedParam);
       });
     }
   });
 
   describe('[workbox-build] invalid parameter values', function() {
     for (const param of SUPPORTED_PARAMS) {
-      it(`should reject with a ValidationError when '${param}' is null`, async function() {
-        const options = Object.assign({}, BASE_OPTIONS);
-        options[param] = null;
-
-        try {
-          await generateSW(options);
-          throw new Error('Unexpected success.');
-        } catch (error) {
-          expect(error.name).to.eql('ValidationError', error.message);
-          expect(error.details[0].context.key).to.eql(param);
+      it(`should fail validation when '${param}' is an unexpected value`, async function() {
+        if (['modifyURLPrefix', 'templatedURLs'].includes(param)) {
+          // https://github.com/YousefED/typescript-json-schema/issues/424
+          this.skip();
         }
+        const options = Object.assign({}, BASE_OPTIONS);
+        options[param] = () => {};
+
+        await expect(generateSW(options)).to.eventually.be.rejectedWith(
+          WorkboxConfigError, param);
       });
     }
 
     it(`should reject when there are no manifest entries or runtimeCaching`, async function() {
       const options = Object.assign({}, BASE_OPTIONS);
-      delete options.globDirectory;
+      // This temporary directory will be empty.
+      options.globDirectory = tempy.directory();
 
-      try {
-        await generateSW(options);
-        throw new Error('Unexpected success.');
-      } catch (error) {
-        expect(error.message).to.eql(errors['no-manifest-entries-or-runtime-caching']);
-      }
+      await expect(generateSW(options)).to.eventually.be.rejectedWith(
+        errors['no-manifest-entries-or-runtime-caching']);
     });
   });
 
@@ -362,7 +353,10 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
         }, {
           url: 'webpackEntry.js',
           revision: /^[0-9a-f]{32}$/,
-        }, '/one', {
+        }, {
+          revision: null,
+          url: '/one',
+        }, {
           revision: null,
           url: '/two',
         }, {
@@ -1082,17 +1076,12 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
 
     it(`should reject with a ValidationError when 'navigationPreload' is true and 'runtimeCaching' is invalid`, async function() {
       const options = Object.assign({}, BASE_OPTIONS, {
-        runtimeCaching: 'invalid',
+        runtimeCaching: undefined,
         navigationPreload: true,
       });
 
-      try {
-        await generateSW(options);
-        throw new Error('Unexpected success.');
-      } catch (error) {
-        expect(error.name).to.eql('ValidationError', error.message);
-        expect(error.details[0].context.key).to.eql('runtimeCaching');
-      }
+      await expect(generateSW(options)).to.eventually.be.rejectedWith(
+        WorkboxConfigError, errors['nav-preload-runtime-caching']);
     });
 
     it(`should generate when 'navigationPreload' is true and 'runtimeCaching' is valid`, async function() {

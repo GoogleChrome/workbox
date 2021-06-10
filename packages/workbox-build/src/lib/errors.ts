@@ -114,4 +114,6 @@ export const errors = {
     runtimeCaching option.`,
   'cant-find-sourcemap': ol`The swSrc file refers to a sourcemap that can't be
     opened:`,
+  'nav-preload-runtime-caching': ol`When using navigationPreload, you must also
+    configure a runtimeCaching route that will use the preloaded response.`,
 };

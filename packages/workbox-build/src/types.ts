@@ -104,6 +104,8 @@ export interface GeneratePartial {
   navigateFallbackAllowlist?: Array<RegExp>;
   navigateFallbackDenylist?: Array<RegExp>;
   /**
+   * navigationPreload is only valid when runtimeCaching is configured. However,
+   * this can't be expressed via TypeScript, so it's enforced via runtime logic.
    * @default false
    */
   navigationPreload?: boolean;

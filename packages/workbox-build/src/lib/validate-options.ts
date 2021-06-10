@@ -11,6 +11,8 @@ import {oneLine as ol} from 'common-tags';
 import Ajv, {JSONSchemaType} from 'ajv';
 import ajvKeywords from 'ajv-keywords';
 
+import {errors} from './errors';
+
 import {
   GenerateSWOptions,
   GetManifestOptions,
@@ -58,8 +60,19 @@ function validate<T>(input: unknown, methodName: MethodNames): T {
   throw new WorkboxConfigError(messages.join('\n\n'));
 }
 
+function ensureValidNavigationPreloadConfig(
+  options: GenerateSWOptions | WebpackGenerateSWOptions,
+): void {
+  if (options.navigationPreload &&
+      (!Array.isArray(options.runtimeCaching) ||
+        options.runtimeCaching.length === 0)) {
+      throw new WorkboxConfigError(errors['nav-preload-runtime-caching']);
+  }
+}
 export function validateGenerateSWOptions(input: unknown): GenerateSWOptions {
-  return validate<GenerateSWOptions>(input, 'GenerateSW');
+  const validatedOptions = validate<GenerateSWOptions>(input, 'GenerateSW');
+  ensureValidNavigationPreloadConfig(validatedOptions);
+  return validatedOptions;
 }
 
 export function validateGetManifestOptions(input: unknown): GetManifestOptions {
@@ -77,7 +90,9 @@ export function validateWebpackGenerateSWOptions(input: unknown): WebpackGenerat
     // Make a copy, as exclude can be mutated when used.
     exclude: Array.from(DEFAULT_EXCLUDE_VALUE),
   }, input);
-  return validate<WebpackGenerateSWOptions>(inputWithExcludeDefault, 'WebpackGenerateSW');
+  const validatedOptions = validate<WebpackGenerateSWOptions>(inputWithExcludeDefault, 'WebpackGenerateSW');
+  ensureValidNavigationPreloadConfig(validatedOptions);
+  return validatedOptions;
 }
 
 export function validateWebpackInjectManifestOptions(input: unknown): WebpackInjectManifestOptions {
