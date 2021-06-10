@@ -72,7 +72,7 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v4`, function() {
           const statsJson = stats.toJson();
           expect(statsJson.warnings).to.be.empty;
           expect(statsJson.errors).to.have.members([
-            `Please check your InjectManifest plugin configuration:\n"invalid" is not allowed`,
+            `Please check your InjectManifest plugin configuration:\n[WebpackInjectManifest] 'invalid' property is not expected to be here. Did you mean property 'include'?`,
           ]);
 
           done();
