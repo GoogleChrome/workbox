@@ -171,13 +171,6 @@ export interface RequiredSWDestPartial {
   swDest: string;
 }
 
-export interface OptionalSWDestPartial {
-  /**
-   * @default "service-worker.js"
-   */
-  swDest?: string;
-}
-
 export type GenerateSWOptions = GlobPartial & GeneratePartial & BasePartial & RequiredSWDestPartial;
 
 export type GetManifestOptions = GlobPartial & BasePartial;
@@ -186,15 +179,22 @@ export type InjectManifestOptions = InjectPartial & Omit<GlobPartial, 'globDirec
   globDirectory: string;
 };
 
-export type WebpackGenerateSWOptions = WebpackPartial & GeneratePartial & BasePartial & OptionalSWDestPartial & {
+export type WebpackGenerateSWOptions = WebpackPartial & GeneratePartial & BasePartial & {
   importScriptsViaChunks?: Array<string>;
+  /**
+   * @default "service-worker.js"
+   */
+  swDest?: string;
 };
 
-export type WebpackInjectManifestOptions = WebpackPartial & InjectPartial & BasePartial & OptionalSWDestPartial & {
+export type WebpackInjectManifestOptions = WebpackPartial & InjectPartial & BasePartial & {
   /**
    * @default true
    */
   compileSrc?: boolean;
+  // This doesn't have a hardcoded default value; instead, the default will be
+  // set at runtime to the swSrc basename, with the hardcoded extension .js.
+  swDest?: string;
   // This can only be set if compileSrc is true, but that restriction can't be
   // represented in TypeScript. It's enforced via custom runtime validation
   // logic and needs to be documented.

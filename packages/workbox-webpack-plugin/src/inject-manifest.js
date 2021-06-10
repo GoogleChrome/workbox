@@ -136,6 +136,8 @@ class InjectManifest {
     // there take precedence over derived properties from the compiler.
     this.config = Object.assign({
       mode: compiler.mode,
+      // Use swSrc with a hardcoded .js extension, in case swSrc is a .ts file.
+      swDest: upath.parse(this.config.swSrc).name + '.js',
     }, this.config);
   }
 
