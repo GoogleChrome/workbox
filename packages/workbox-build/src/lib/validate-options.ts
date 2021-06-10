@@ -6,6 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
+import {betterAjvErrors} from '@apideck/better-ajv-errors';
+import {oneLine as ol} from 'common-tags';
 import Ajv, {JSONSchemaType} from 'ajv';
 import ajvKeywords from 'ajv-keywords';
 
@@ -17,6 +19,9 @@ import {
   WebpackInjectManifestOptions,
 } from '../types';
 
+type MethodNames = 'GenerateSW' | 'GetManifest' | 'InjectManifest' |
+  'WebpackGenerateSW' | 'WebpackInjectManifest';
+
 const ajv = new Ajv({
   useDefaults: true,
 });
@@ -24,42 +29,55 @@ ajvKeywords(ajv, ['typeof']);
 
 const DEFAULT_EXCLUDE_VALUE= [/\.map$/, /^manifest.*\.js$/];
 
-function validate<T>(input: unknown, schemaFile: string): T {
+export class WorkboxConfigError extends Error {
+  constructor(message?: string) {
+    super(message);
+    Object.setPrototypeOf(this, new.target.prototype);
+  }
+}
+
+function validate<T>(input: unknown, methodName: MethodNames): T {
   // Don't mutate input: https://github.com/GoogleChrome/workbox/issues/2158
   const inputCopy = Object.assign({}, input);
-  const jsonSchema: JSONSchemaType<T> = require(schemaFile);
+  const jsonSchema: JSONSchemaType<T> = require(`../schema/${methodName}Options.json`);
   const validate = ajv.compile(jsonSchema);
   if (validate(inputCopy)) {
     return inputCopy;
   }
 
-  // TODO: Update this code to use better-ajv-errors once
-  // https://github.com/apideck-libraries/better-ajv-errors/pull/2 is merged.
-  const error = new Error(JSON.stringify(validate.errors));
-  error.name = 'ValidationError';
-  throw error;
+  const betterErrors = betterAjvErrors({
+    basePath: methodName,
+    data: input,
+    errors: validate.errors,
+    // This is needed as JSONSchema6 is expected, but JSONSchemaType works.
+    schema: jsonSchema as any,
+  });
+  const messages = betterErrors.map((err) => ol`[${err.path}] ${err.message}.
+    ${err.suggestion ? err.suggestion : ''}`);
+
+  throw new WorkboxConfigError(messages.join('\n\n'));
 }
 
 export function validateGenerateSWOptions(input: unknown): GenerateSWOptions {
-  return validate<GenerateSWOptions>(input, '../schema/GenerateSWOptions.json');
+  return validate<GenerateSWOptions>(input, 'GenerateSW');
 }
 
 export function validateGetManifestOptions(input: unknown): GetManifestOptions {
-  return validate<GetManifestOptions>(input, '../schema/GetManifestOptions.json');
+  return validate<GetManifestOptions>(input, 'GetManifest');
 }
 
 export function validateInjectManifestOptions(input: unknown): InjectManifestOptions {
-  return validate<InjectManifestOptions>(input, '../schema/InjectManifestOptions.json');
+  return validate<InjectManifestOptions>(input, 'InjectManifest');
 }
 
-// The default exclude: [/\.map$/, /^manifest.*\.js$/] value can't be
+// The default `exclude: [/\.map$/, /^manifest.*\.js$/]` value can't be
 // represented in the JSON schema, so manually set it for the webpack options.
 export function validateWebpackGenerateSWOptions(input: unknown): WebpackGenerateSWOptions {
   const inputWithExcludeDefault = Object.assign({
     // Make a copy, as exclude can be mutated when used.
     exclude: Array.from(DEFAULT_EXCLUDE_VALUE),
   }, input);
-  return validate<WebpackGenerateSWOptions>(inputWithExcludeDefault, '../schema/WebpackGenerateSWOptions.json');
+  return validate<WebpackGenerateSWOptions>(inputWithExcludeDefault, 'WebpackGenerateSW');
 }
 
 export function validateWebpackInjectManifestOptions(input: unknown): WebpackInjectManifestOptions {
@@ -67,5 +85,5 @@ export function validateWebpackInjectManifestOptions(input: unknown): WebpackInj
     // Make a copy, as exclude can be mutated when used.
     exclude: Array.from(DEFAULT_EXCLUDE_VALUE),
   }, input);
-  return validate<WebpackInjectManifestOptions>(inputWithExcludeDefault, '../schema/WebpackInjectManifestOptions.json');
+  return validate<WebpackInjectManifestOptions>(inputWithExcludeDefault, 'WebpackInjectManifest');
 }
