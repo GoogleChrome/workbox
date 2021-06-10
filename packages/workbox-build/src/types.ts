@@ -63,9 +63,9 @@ export interface BasePartial {
    * @default 2097152
    */
   maximumFileSizeToCacheInBytes?: number;
-  modifyURLPrefix?: {
-    [key: string]: string;
-  };
+  // This would ideally be {[key: string]: string}, but the JSON Schema
+  // generator is unhappy with that right now.
+  modifyURLPrefix?: any;
 }
 
 export interface GeneratePartial {
@@ -193,19 +193,19 @@ interface WebpackInjectManifestPartial {
   webpackCompilationPlugins?: Array<any>;
 }
 
-export type GenerateSWOptions = GlobPartial & GeneratePartial &
+export type GenerateSWOptions = BasePartial & GlobPartial & GeneratePartial &
   RequiredSWDestPartial;
 
-export type GetManifestOptions = GlobPartial & BasePartial;
+export type GetManifestOptions = BasePartial & GlobPartial;
 
-export type InjectManifestOptions = GlobPartial & BasePartial & InjectPartial &
+export type InjectManifestOptions = BasePartial & GlobPartial & InjectPartial &
   RequiredSWDestPartial;
 
-export type WebpackGenerateSWOptions = WebpackPartial & GeneratePartial &
-  BasePartial & WebpackGenerateSWPartial;
+export type WebpackGenerateSWOptions = BasePartial & WebpackPartial &
+  GeneratePartial & WebpackGenerateSWPartial;
 
-export type WebpackInjectManifestOptions = WebpackPartial & InjectPartial &
-  BasePartial & WebpackInjectManifestPartial;
+export type WebpackInjectManifestOptions = BasePartial & WebpackPartial &
+  InjectPartial & WebpackInjectManifestPartial;
 
 export interface GetManifestResult {
   count: number,
