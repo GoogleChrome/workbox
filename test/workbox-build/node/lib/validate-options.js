@@ -10,18 +10,23 @@ const expect = require('chai').expect;
 const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 
-const INJECTED_ERROR = 'Injected error.';
 class AJVFailsValidation {
   compile() {
     const stub = sinon.stub().returns(false);
-    stub.errors = [INJECTED_ERROR];
+    stub.errors = [];
     return stub;
+  }
+  addKeyword() {
+    // no-op
   }
 }
 
 class AJVPassesValidation {
   compile() {
     return sinon.stub().returns(true);
+  }
+  addKeyword() {
+    // no-op
   }
 }
 
@@ -40,9 +45,23 @@ describe(`[workbox-build] entry-points/options/validate-options.js`, function() 
         'ajv': {
           default: AJVFailsValidation,
         },
+        '@apideck/better-ajv-errors': {
+          betterAjvErrors: sinon.stub().returns([{
+            message: 'message1',
+            path: 'path1',
+            suggestion: 'suggestion1',
+          }, {
+            message: 'message2',
+            path: 'path2',
+            suggestion: 'suggestion2',
+          }]),
+        },
       });
-  
-      expect(() => validateOptions[func]()).to.throw(INJECTED_ERROR);
+
+      expect(() => validateOptions[func]()).to.throw(
+        validateOptions.WorkboxConfigError,
+        `[path1] message1. suggestion1\n\n[path2] message2. suggestion2`
+      );
     });
   
     it(`${func}() should not throw when validation passes`, function() {
