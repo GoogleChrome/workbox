@@ -6,12 +6,12 @@
   https://opensource.org/licenses/MIT.
 */
 
+const {escapeRegExp} = require('workbox-build/build/lib/escape-regexp');
+const {replaceAndUpdateSourceMap} =
+  require('workbox-build/build/lib/replace-and-update-source-map');
 const {validateWebpackInjectManifestOptions} =
   require('workbox-build/build/lib/validate-options');
-const {escapeRegExp} = require('workbox-build/build/lib/escape-regexp');
 const prettyBytes = require('pretty-bytes');
-const replaceAndUpdateSourceMap =
-  require('workbox-build/build/lib/replace-and-update-source-map');
 const stringify = require('fast-json-stable-stringify');
 const upath = require('upath');
 const webpack = require('webpack');
