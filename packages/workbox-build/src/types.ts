@@ -159,9 +159,11 @@ interface WebpackPartial {
   // an Array<RegExp> can't be serialized into JSON.
   // The default value of [/\.map$/, /^manifest.*\.js$/] will be assigned by
   // the validation function, and we need to reflect that in the docs.
-  exclude?: Array<string | RegExp | ((arg0: string) => any)>;
+  // This and include should probably be typed to `string | RegExp | Function`
+  // instead of `any`, but that also causes validation problems. 
+  exclude?: Array<any>;
   excludeChunks?: Array<string>;
-  include?: Array<string | RegExp | ((arg0: string) => any)>;
+  include?: Array<any>;
   mode?: string | null;
 }
 
@@ -193,6 +195,9 @@ export type WebpackInjectManifestOptions = WebpackPartial & InjectPartial & Base
    * @default true
    */
   compileSrc?: boolean;
+  // This can only be set if compileSrc is true, but that restriction can't be
+  // represented in TypeScript. It's enforced via custom runtime validation
+  // logic and needs to be documented.
   webpackCompilationPlugins?: Array<any>;
 };
 
