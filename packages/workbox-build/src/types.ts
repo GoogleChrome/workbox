@@ -171,23 +171,15 @@ export interface RequiredSWDestPartial {
   swDest: string;
 }
 
-export type GenerateSWOptions = GlobPartial & GeneratePartial & BasePartial & RequiredSWDestPartial;
-
-export type GetManifestOptions = GlobPartial & BasePartial;
-
-export type InjectManifestOptions = InjectPartial & Omit<GlobPartial, 'globDirectory'> & BasePartial & RequiredSWDestPartial & {
-  globDirectory: string;
-};
-
-export type WebpackGenerateSWOptions = WebpackPartial & GeneratePartial & BasePartial & {
+interface WebpackGenerateSWPartial {
   importScriptsViaChunks?: Array<string>;
   /**
    * @default "service-worker.js"
    */
   swDest?: string;
-};
+}
 
-export type WebpackInjectManifestOptions = WebpackPartial & InjectPartial & BasePartial & {
+interface WebpackInjectManifestPartial {
   /**
    * @default true
    */
@@ -199,7 +191,21 @@ export type WebpackInjectManifestOptions = WebpackPartial & InjectPartial & Base
   // represented in TypeScript. It's enforced via custom runtime validation
   // logic and needs to be documented.
   webpackCompilationPlugins?: Array<any>;
-};
+}
+
+export type GenerateSWOptions = GlobPartial & GeneratePartial &
+  RequiredSWDestPartial;
+
+export type GetManifestOptions = GlobPartial & BasePartial;
+
+export type InjectManifestOptions = GlobPartial & BasePartial & InjectPartial &
+  RequiredSWDestPartial;
+
+export type WebpackGenerateSWOptions = WebpackPartial & GeneratePartial &
+  BasePartial & WebpackGenerateSWPartial;
+
+export type WebpackInjectManifestOptions = WebpackPartial & InjectPartial &
+  BasePartial & WebpackInjectManifestPartial;
 
 export interface GetManifestResult {
   count: number,

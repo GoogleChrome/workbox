@@ -36,6 +36,7 @@ async function generateWorkboxBuildJSONSchema(packagePath) {
   const generator = TJS.buildGenerator(program, {
     noExtraProps: true,
     required: true,
+    typeOfKeyword: true,
   });
   const optionTypes = [
     'GenerateSWOptions',

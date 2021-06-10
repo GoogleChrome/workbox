@@ -7,6 +7,7 @@
 */
 
 import Ajv, {JSONSchemaType} from 'ajv';
+import ajvKeywords from 'ajv-keywords';
 
 import {
   GenerateSWOptions,
@@ -19,6 +20,7 @@ import {
 const ajv = new Ajv({
   useDefaults: true,
 });
+ajvKeywords(ajv, ['typeof']);
 
 const DEFAULT_EXCLUDE_VALUE= [/\.map$/, /^manifest.*\.js$/];
 
