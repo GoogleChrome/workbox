@@ -63,8 +63,8 @@ export interface BasePartial {
    * @default 2097152
    */
   maximumFileSizeToCacheInBytes?: number;
-  // This would ideally be {[key: string]: string}, but the JSON Schema
-  // generator is unhappy with that right now.
+  // https://github.com/YousefED/typescript-json-schema/issues/424
+  // This would ideally be {[key: string]: string}
   modifyURLPrefix?: any;
 }
 
@@ -140,9 +140,9 @@ export interface GlobPartial {
    * @default true
    */
   globStrict?: boolean;
-  templatedURLs?: {
-    [key: string]: string | Array<string>;
-  };
+  // https://github.com/YousefED/typescript-json-schema/issues/424
+  // This would ideally be {[key: string]: string | Array<string>}
+  templatedURLs?: any;
 }
 
 interface InjectPartial {
