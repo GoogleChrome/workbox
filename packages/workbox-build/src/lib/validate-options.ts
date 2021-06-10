@@ -54,14 +54,16 @@ export function validateInjectManifestOptions(input: unknown): InjectManifestOpt
 // represented in the JSON schema, so manually set it for the webpack options.
 export function validateWebpackGenerateSWOptions(input: unknown): WebpackGenerateSWOptions {
   const inputWithExcludeDefault = Object.assign({
-    exclude: DEFAULT_EXCLUDE_VALUE,
+    // Make a copy, as exclude can be mutated when used.
+    exclude: Array.from(DEFAULT_EXCLUDE_VALUE),
   }, input);
   return validate<WebpackGenerateSWOptions>(inputWithExcludeDefault, '../schema/WebpackGenerateSWOptions.json');
 }
 
 export function validateWebpackInjectManifestOptions(input: unknown): WebpackInjectManifestOptions {
   const inputWithExcludeDefault = Object.assign({
-    exclude: DEFAULT_EXCLUDE_VALUE,
+    // Make a copy, as exclude can be mutated when used.
+    exclude: Array.from(DEFAULT_EXCLUDE_VALUE),
   }, input);
   return validate<WebpackInjectManifestOptions>(inputWithExcludeDefault, '../schema/WebpackInjectManifestOptions.json');
 }

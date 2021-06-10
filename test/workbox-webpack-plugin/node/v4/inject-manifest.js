@@ -1740,7 +1740,7 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v4`, function() {
       });
     });
 
-    it(`•should support injecting a manifest into a CJS module`, function(done) {
+    it(`should support injecting a manifest into a CJS module`, function(done) {
       const outputDir = tempy.directory();
 
       const config = {
