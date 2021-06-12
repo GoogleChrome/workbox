@@ -70,6 +70,7 @@ module.exports = {
         maxEntries: joi.number().min(1),
         maxAgeSeconds: joi.number().min(1),
         purgeOnQuotaError: joi.boolean().default(defaults.purgeOnQuotaError),
+        matchOptions: joi.object(),
       }).or('maxEntries', 'maxAgeSeconds'),
       networkTimeoutSeconds: joi.number().min(1),
       plugins: joi.array().items(joi.object()),
