@@ -24,7 +24,6 @@
     "@babel/core": "^7.11.1",
     "@babel/preset-env": "^7.11.0",
     "@babel/runtime": "^7.11.2",
-    "@hapi/joi": "^16.1.8",
     "@rollup/plugin-babel": "^5.2.0",
     "@rollup/plugin-node-resolve": "^11.2.1",
     "@rollup/plugin-replace": "^2.4.1",

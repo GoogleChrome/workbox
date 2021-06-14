@@ -6,13 +6,17 @@
   https://opensource.org/licenses/MIT.
 */
 
-const expect = require('chai').expect;
-const upath = require('upath');
+const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
 const proxyquire = require('proxyquire');
 const sinon = require('sinon');
+const upath = require('upath');
 
 const {constants} = require('../../../packages/workbox-cli/build/lib/constants');
 const {errors} = require('../../../packages/workbox-cli/build/lib/errors');
+
+chai.use(chaiAsPromised);
+const {expect} = chai;
 
 describe(`[workbox-cli] app.js`, function() {
   const MODULE_PATH = '../../../packages/workbox-cli/build/app';
@@ -43,31 +47,18 @@ describe(`[workbox-cli] app.js`, function() {
     const {app} = require(MODULE_PATH);
 
     it(`should reject when both parameters are missing`, async function() {
-      try {
-        await app();
-        throw new Error('Unexpected success.');
-      } catch (error) {
-        expect(error.message).to.have.string(errors['missing-input']);
-      }
+      await expect(app()).to.eventually.be.rejectedWith(
+        errors['missing-input']);
     });
 
     it(`should reject when the command is unknown and options is present`, async function() {
-      try {
-        await app({input: [UNKNOWN_COMMAND, PROXIED_CONFIG_FILE]});
-        throw new Error('Unexpected success.');
-      } catch (error) {
-        expect(error.message).to.have.string(errors['unknown-command']);
-        expect(error.message).to.have.string(UNKNOWN_COMMAND);
-      }
+      await expect(app({input: [UNKNOWN_COMMAND, PROXIED_CONFIG_FILE]})).to
+        .eventually.be.rejectedWith(errors['unknown-command']);
     });
 
     it(`should reject when the command parameter is copyLibraries and options is missing`, async function() {
-      try {
-        await app({input: ['copyLibraries']});
-        throw new Error('Unexpected success.');
-      } catch (error) {
-        expect(error.message).to.have.string(errors['missing-dest-dir-param']);
-      }
+      await expect(app({input: ['copyLibraries']})).to
+        .eventually.be.rejectedWith(errors['missing-dest-dir-param']);
     });
 
     for (const command of WORKBOX_BUILD_COMMANDS) {
@@ -108,7 +99,10 @@ describe(`[workbox-cli] app.js`, function() {
         it(`should reject with a validation error when workbox-build.${command}(${JSON.stringify(config)}) is called`, async function() {
           const {app} = proxyquire(MODULE_PATH, {
             './lib/logger': {
-              logger: {log: sinon.stub()},
+              logger: {
+                error: sinon.stub(),
+                log: sinon.stub(),
+              },
             },
             './lib/read-config': {
               readConfig: (options) => {
@@ -118,12 +112,8 @@ describe(`[workbox-cli] app.js`, function() {
             },
           });
 
-          try {
-            await app({input: [command, PROXIED_CONFIG_FILE]});
-            throw new Error('Unexpected success.');
-          } catch (error) {
-            expect(error.message).to.have.string(errors['config-validation-failed']);
-          }
+          await expect(app({input: [command, PROXIED_CONFIG_FILE]})).to
+            .eventually.be.rejectedWith(errors['config-validation-failed']);
         });
       }
 
