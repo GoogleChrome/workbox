@@ -36,7 +36,6 @@ async function generateWorkboxBuildJSONSchema(packagePath) {
   const generator = TJS.buildGenerator(program, {
     noExtraProps: true,
     required: true,
-    typeOfKeyword: true,
   });
   const optionTypes = [
     'GenerateSWOptions',
@@ -47,6 +46,18 @@ async function generateWorkboxBuildJSONSchema(packagePath) {
   ];
   for (const optionType of optionTypes) {
     const schema = generator.getSchemaForSymbol(optionType);
+    // Ideally, we'd set typeOfKeyword so that functions could be represented.
+    // Instead, we need to hardcode a few overrides to deal with functions.
+    // See https://github.com/YousefED/typescript-json-schema/issues/424
+    if (schema.properties.manifestTransforms) {
+      schema.properties.manifestTransforms.items = {typeof: 'function'};
+    }
+    if (schema.properties.exclude) {
+      schema.properties.exclude.items.anyOf.push({typeof: 'function'});
+    }
+    if (schema.properties.include) {
+      schema.properties.include.items.anyOf.push({typeof: 'function'});
+    }
     await fse.writeJSON(upath.join(packagePath, 'src', 'schema',
       `${optionType}.json`), schema);
   }

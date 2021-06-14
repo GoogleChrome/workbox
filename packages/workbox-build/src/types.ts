@@ -63,9 +63,9 @@ export interface BasePartial {
    * @default 2097152
    */
   maximumFileSizeToCacheInBytes?: number;
-  // https://github.com/YousefED/typescript-json-schema/issues/424
-  // This would ideally be {[key: string]: string}
-  modifyURLPrefix?: any;
+  modifyURLPrefix?: {
+    [key: string]: string,
+  };
 }
 
 export interface GeneratePartial {
@@ -142,9 +142,9 @@ export interface GlobPartial {
    * @default true
    */
   globStrict?: boolean;
-  // https://github.com/YousefED/typescript-json-schema/issues/424
-  // This would ideally be {[key: string]: string | Array<string>}
-  templatedURLs?: any;
+  templatedURLs?: {
+    [key: string]: string | Array<string>;
+  };
 }
 
 interface InjectPartial {
@@ -161,11 +161,9 @@ interface WebpackPartial {
   // an Array<RegExp> can't be serialized into JSON.
   // The default value of [/\.map$/, /^manifest.*\.js$/] will be assigned by
   // the validation function, and we need to reflect that in the docs.
-  // This and include should probably be typed to `string | RegExp | Function`
-  // instead of `any`, but that also causes validation problems. 
-  exclude?: Array<any>;
+  exclude?: Array<string | RegExp>;
   excludeChunks?: Array<string>;
-  include?: Array<any>;
+  include?: Array<string | RegExp>;
   mode?: string | null;
 }
 
