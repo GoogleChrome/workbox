@@ -8,7 +8,7 @@
 
 import upath from 'upath';
 
-import {BuildResult} from './types';
+import {BuildResult, GetManifestOptions} from './types';
 import {getFileManifestEntries} from './lib/get-file-manifest-entries';
 import {rebasePath} from './lib/rebase-path';
 import {validateGenerateSWOptions} from './lib/validate-options';
@@ -195,6 +195,7 @@ import {writeSWUsingDefaultTemplate} from './lib/write-sw-using-default-template
  */
 export async function generateSW(config: unknown): Promise<BuildResult> {
   const options = validateGenerateSWOptions(config);
+  let entriesResult;
 
   if (options.globDirectory) {
     // Make sure we leave swDest out of the precache manifest.
@@ -213,14 +214,27 @@ export async function generateSW(config: unknown): Promise<BuildResult> {
         file: workboxRuntimeFile,
       }));
     }
+
+    // We've previously asserted that options.globDirectory is set, so this
+    // should be a safe cast.
+    entriesResult = await getFileManifestEntries(options as GetManifestOptions);
+  } else {
+    entriesResult = {
+      count: 0,
+      manifestEntries: [],
+      size: 0,
+      warnings: [],
+    };
   }
 
-  const {count, size, manifestEntries, warnings} =
-    await getFileManifestEntries(options);
-
   const filePaths = await writeSWUsingDefaultTemplate(Object.assign({
-    manifestEntries,
+    manifestEntries: entriesResult.manifestEntries,
   }, options));
 
-  return {count, filePaths, size, warnings};
+  return {
+    filePaths,
+    count: entriesResult.count,
+    size: entriesResult.size,
+    warnings: entriesResult.warnings,
+  };
 }

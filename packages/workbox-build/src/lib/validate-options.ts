@@ -80,10 +80,21 @@ function ensureValidCacheExpiration(
   }
 }
 
+function ensureValidRuntimeCachingOrGlobDirectory(
+  options: GenerateSWOptions,
+): void {
+  if (!options.globDirectory &&
+      (!Array.isArray(options.runtimeCaching) ||
+       options.runtimeCaching.length === 0)) {
+    throw new WorkboxConfigError(errors['no-manifest-entries-or-runtime-caching']);
+  }
+}
+
 export function validateGenerateSWOptions(input: unknown): GenerateSWOptions {
   const validatedOptions = validate<GenerateSWOptions>(input, 'GenerateSW');
   ensureValidNavigationPreloadConfig(validatedOptions);
   ensureValidCacheExpiration(validatedOptions);
+  ensureValidRuntimeCachingOrGlobDirectory(validatedOptions);
   return validatedOptions;
 }
 

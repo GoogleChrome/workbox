@@ -124,8 +124,18 @@ export interface GeneratePartial {
   sourcemap?: boolean;
 }
 
-export interface GlobPartial {
+// This needs to be set when using GetManifest or InjectManifest, but is
+// optional when using GenerateSW if runtimeCaching is also used. This is
+// enforced via runtime validation, and needs to be documented.
+export interface RequiredGlobDirectoryPartial {
   globDirectory: string;
+}
+
+export interface OptionalGlobDirectoryPartial {
+  globDirectory?: string;
+}
+
+export interface GlobPartial {
   /**
    * @default true
    */
@@ -194,12 +204,13 @@ interface WebpackInjectManifestPartial {
 }
 
 export type GenerateSWOptions = BasePartial & GlobPartial & GeneratePartial &
-  RequiredSWDestPartial;
+  RequiredSWDestPartial & OptionalGlobDirectoryPartial
 
-export type GetManifestOptions = BasePartial & GlobPartial;
+export type GetManifestOptions = BasePartial & GlobPartial &
+  RequiredGlobDirectoryPartial;
 
 export type InjectManifestOptions = BasePartial & GlobPartial & InjectPartial &
-  RequiredSWDestPartial;
+  RequiredSWDestPartial & RequiredGlobDirectoryPartial;
 
 export type WebpackGenerateSWOptions = BasePartial & WebpackPartial &
   GeneratePartial & WebpackGenerateSWPartial;

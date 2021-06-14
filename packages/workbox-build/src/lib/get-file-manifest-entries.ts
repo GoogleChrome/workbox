@@ -31,35 +31,33 @@ export async function getFileManifestEntries({
   const warnings: Array<string> = [];
   const allFileDetails = new Map<string, FileDetails>();
 
-  if (globDirectory) {
-    try {
-      for (const globPattern of globPatterns) {
-        const {globbedFileDetails, warning} = getFileDetails({
-          globDirectory,
-          globFollow,
-          globIgnores,
-          globPattern,
-          globStrict,
-        });
+  try {
+    for (const globPattern of globPatterns) {
+      const {globbedFileDetails, warning} = getFileDetails({
+        globDirectory,
+        globFollow,
+        globIgnores,
+        globPattern,
+        globStrict,
+      });
 
-        if (warning) {
-          warnings.push(warning);
-        }
+      if (warning) {
+        warnings.push(warning);
+      }
 
-        for (const details of globbedFileDetails) {
-          if (details && !allFileDetails.has(details.file)) {
-            allFileDetails.set(details.file, details);
-          }
+      for (const details of globbedFileDetails) {
+        if (details && !allFileDetails.has(details.file)) {
+          allFileDetails.set(details.file, details);
         }
       }
-    } catch (error) {
-      // If there's an exception thrown while globbing, then report
-      // it back as a warning, and don't consider it fatal.
-      warnings.push(error.message);
     }
+  } catch (error) {
+    // If there's an exception thrown while globbing, then report
+    // it back as a warning, and don't consider it fatal.
+    warnings.push(error.message);
   }
 
-  if (globDirectory && templatedURLs) {
+  if (templatedURLs) {
     for (const url of Object.keys(templatedURLs)) {
       assert(!allFileDetails.has(url), errors['templated-url-matches-glob']);
 
