@@ -66,6 +66,10 @@ async function generateWorkboxBuildJSONSchema(packagePath) {
         {typeof: 'function'},
       ]
     }
+    if (schema.definitions.RouteMatchCallback) {
+      delete schema.definitions.RouteMatchCallback.type;
+      schema.definitions.RouteMatchCallback.typeof = 'function';
+    }
     await fse.writeJSON(upath.join(packagePath, 'src', 'schema',
       `${optionType}.json`), schema);
   }
