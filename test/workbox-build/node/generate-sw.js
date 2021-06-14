@@ -94,10 +94,6 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
   describe('[workbox-build] invalid parameter values', function() {
     for (const param of SUPPORTED_PARAMS) {
       it(`should fail validation when '${param}' is an unexpected value`, async function() {
-        if (['modifyURLPrefix', 'templatedURLs'].includes(param)) {
-          // https://github.com/YousefED/typescript-json-schema/issues/424
-          this.skip();
-        }
         const options = Object.assign({}, BASE_OPTIONS);
         options[param] = () => {};
 
@@ -689,12 +685,8 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
         runtimeCaching: [{handler}],
       });
 
-      try {
-        await generateSW(options);
-        throw new Error('Unexpected success.');
-      } catch (error) {
-        expect(error.message).to.include(errors['urlPattern-is-required']);
-      }
+      await expect(generateSW(options)).to.eventually.be.rejectedWith(
+        WorkboxConfigError, 'urlPattern');
     });
 
     it(`should reject when 'handler' is missing from 'runtimeCaching'`, async function() {
@@ -703,12 +695,8 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
         runtimeCaching: [{urlPattern}],
       });
 
-      try {
-        await generateSW(options);
-        throw new Error('Unexpected success.');
-      } catch (error) {
-        expect(error.message).to.include(errors['handler-is-required']);
-      }
+      await expect(generateSW(options)).to.eventually.be.rejectedWith(
+        WorkboxConfigError, 'handler');
     });
 
     it(`should reject when 'handler' is not a valid strategy name`, async function() {
@@ -1060,21 +1048,16 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
   });
 
   describe(`[workbox-build] behavior with 'navigationPreload'`, function() {
-    it(`should reject with a ValidationError when 'navigationPreload' is true and 'runtimeCaching' is undefined`, async function() {
+    it(`should reject when 'navigationPreload' is true and 'runtimeCaching' is undefined`, async function() {
       const options = Object.assign({}, BASE_OPTIONS, {
         navigationPreload: true,
       });
 
-      try {
-        await generateSW(options);
-        throw new Error('Unexpected success.');
-      } catch (error) {
-        expect(error.name).to.eql('ValidationError', error.message);
-        expect(error.details[0].context.key).to.eql('runtimeCaching');
-      }
+      await expect(generateSW(options)).to.eventually.be.rejectedWith(
+        WorkboxConfigError, errors['nav-preload-runtime-caching']);
     });
 
-    it(`should reject with a ValidationError when 'navigationPreload' is true and 'runtimeCaching' is invalid`, async function() {
+    it(`should reject when 'navigationPreload' is true and 'runtimeCaching' is invalid`, async function() {
       const options = Object.assign({}, BASE_OPTIONS, {
         runtimeCaching: undefined,
         navigationPreload: true,

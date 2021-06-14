@@ -69,10 +69,6 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function() {
   describe('[workbox-build] invalid parameter values', function() {
     for (const param of SUPPORTED_PARAMS) {
       it(`should fail validation when '${param}' is an unexpected value`, async function() {
-        if (['modifyURLPrefix', 'templatedURLs'].includes(param)) {
-          // https://github.com/YousefED/typescript-json-schema/issues/424
-          this.skip();
-        }
         const options = Object.assign({}, BASE_OPTIONS);
         options[param] = () => {};
 
