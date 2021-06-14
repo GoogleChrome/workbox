@@ -917,12 +917,8 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
         swDest,
       });
 
-      try {
-        await generateSW(options);
-        throw new Error('Unexpected success.');
-      } catch (error) {
-        expect(error.message).to.include(errors['invalid-network-timeout-seconds']);
-      }
+      await expect(generateSW(options)).to.eventually.be.rejectedWith(
+        errors['invalid-network-timeout-seconds']);
     });
 
     it(`should support 'networkTimeoutSeconds' when handler is 'NetworkFirst'`, async function() {
