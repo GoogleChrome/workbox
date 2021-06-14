@@ -161,9 +161,9 @@ interface WebpackPartial {
   // an Array<RegExp> can't be serialized into JSON.
   // The default value of [/\.map$/, /^manifest.*\.js$/] will be assigned by
   // the validation function, and we need to reflect that in the docs.
-  exclude?: Array<string | RegExp>;
+  exclude?: Array<string | RegExp | ((arg0: string) => boolean)>;
   excludeChunks?: Array<string>;
-  include?: Array<string | RegExp>;
+  include?: Array<string | RegExp | ((arg0: string) => boolean)>;
   mode?: string | null;
 }
 

@@ -53,10 +53,18 @@ async function generateWorkboxBuildJSONSchema(packagePath) {
       schema.properties.manifestTransforms.items = {typeof: 'function'};
     }
     if (schema.properties.exclude) {
-      schema.properties.exclude.items.anyOf.push({typeof: 'function'});
+      schema.properties.exclude.items.anyOf = [
+        {'$ref': '#/definitions/RegExp'},
+        {type: 'string'},
+        {typeof: 'function'},
+      ]
     }
     if (schema.properties.include) {
-      schema.properties.include.items.anyOf.push({typeof: 'function'});
+      schema.properties.include.items.anyOf = [
+        {'$ref': '#/definitions/RegExp'},
+        {type: 'string'},
+        {typeof: 'function'},
+      ]
     }
     await fse.writeJSON(upath.join(packagePath, 'src', 'schema',
       `${optionType}.json`), schema);
