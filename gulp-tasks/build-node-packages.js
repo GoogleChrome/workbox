@@ -68,6 +68,7 @@ async function generateWorkboxBuildJSONSchema(packagePath) {
     }
     if (schema.definitions.RouteMatchCallback) {
       delete schema.definitions.RouteMatchCallback.type;
+      delete schema.definitions.RouteMatchCallback.additionalProperties;
       schema.definitions.RouteMatchCallback.typeof = 'function';
     }
     await fse.writeJSON(upath.join(packagePath, 'src', 'schema',

@@ -8,8 +8,8 @@
 
 const {validateWebpackGenerateSWOptions} =
   require('workbox-build/build/lib/validate-options');
-const bundle = require('workbox-build/build/lib/bundle');
-const populateSWTemplate =
+const {bundle} = require('workbox-build/build/lib/bundle');
+const {populateSWTemplate} =
   require('workbox-build/build/lib/populate-sw-template');
 const prettyBytes = require('pretty-bytes');
 const webpack = require('webpack');
