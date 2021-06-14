@@ -708,13 +708,8 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
         }],
       });
 
-      try {
-        await generateSW(options);
-        throw new Error('Unexpected success.');
-      } catch (error) {
-        expect(error.name).to.eql('ValidationError', error.message);
-        expect(error.details[0].context.key).to.eql('handler');
-      }
+      await expect(generateSW(options)).to.eventually.be.rejectedWith(
+        WorkboxConfigError, 'handler');
     });
 
     // See https://github.com/GoogleChrome/workbox/issues/2078
@@ -996,13 +991,8 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
         }],
       });
 
-      try {
-        await generateSW(options);
-        throw new Error('Unexpected success.');
-      } catch (error) {
-        expect(error.name).to.eql('ValidationError', error.message);
-        expect(error.details[0].context.main).to.eql('expiration');
-      }
+      await expect(generateSW(options)).to.eventually.be.rejectedWith(
+        WorkboxConfigError, errors['cache-name-required']);
     });
 
     it(`should ignore swDest and workbox-*.js when generating manifest entries`, async function() {

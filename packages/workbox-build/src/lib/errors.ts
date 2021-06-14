@@ -116,4 +116,6 @@ export const errors = {
     opened:`,
   'nav-preload-runtime-caching': ol`When using navigationPreload, you must also
     configure a runtimeCaching route that will use the preloaded response.`,
+  'cache-name-required': ol`When using cache expiration, you must also
+    configure a custom cacheName.`,
 };

@@ -69,9 +69,21 @@ function ensureValidNavigationPreloadConfig(
       throw new WorkboxConfigError(errors['nav-preload-runtime-caching']);
   }
 }
+
+function ensureValidCacheExpiration(
+  options: GenerateSWOptions | WebpackGenerateSWOptions,
+): void {
+  for (const runtimeCaching of options.runtimeCaching || []) {
+    if (runtimeCaching.options?.expiration && !runtimeCaching.options?.cacheName) {
+      throw new WorkboxConfigError(errors['cache-name-required']);
+    }
+  }
+}
+
 export function validateGenerateSWOptions(input: unknown): GenerateSWOptions {
   const validatedOptions = validate<GenerateSWOptions>(input, 'GenerateSW');
   ensureValidNavigationPreloadConfig(validatedOptions);
+  ensureValidCacheExpiration(validatedOptions);
   return validatedOptions;
 }
 
@@ -92,6 +104,7 @@ export function validateWebpackGenerateSWOptions(input: unknown): WebpackGenerat
   }, input);
   const validatedOptions = validate<WebpackGenerateSWOptions>(inputWithExcludeDefault, 'WebpackGenerateSW');
   ensureValidNavigationPreloadConfig(validatedOptions);
+  ensureValidCacheExpiration(validatedOptions);
   return validatedOptions;
 }
 
