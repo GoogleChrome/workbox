@@ -71,7 +71,9 @@ describe(`[workbox-build] entry-points/options/validate-options.js`, function() 
         },
       });
   
-      const defaultOptions = validateOptions[func]({});
+      const defaultOptions = validateOptions[func]({
+        globDirectory: '.',
+      });
       expect(defaultOptions).to.be.an('object');
     });
   }
