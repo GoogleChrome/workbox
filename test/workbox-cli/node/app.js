@@ -14,6 +14,7 @@ const upath = require('upath');
 
 const {constants} = require('../../../packages/workbox-cli/build/lib/constants');
 const {errors} = require('../../../packages/workbox-cli/build/lib/errors');
+const {WorkboxConfigError} = require('../../../packages/workbox-build/build/lib/validate-options');
 
 chai.use(chaiAsPromised);
 const {expect} = chai;
@@ -23,7 +24,10 @@ describe(`[workbox-cli] app.js`, function() {
   const PROXIED_CONFIG_FILE = upath.resolve(process.cwd(), '/will/be/proxied');
   const PROXIED_DEST_DIR = upath.resolve(process.cwd(), 'build');
   const PROXIED_ERROR = new Error('proxied error message');
-  const PROXIED_CONFIG = {};
+  const PROXIED_CONFIG = {
+    globDirectory: '.',
+    swDest: 'sw.js',
+  };
   const INVALID_CONFIG_FILE = upath.resolve(process.cwd(), upath.join('does', 'not', 'exist'));
   const UNKNOWN_COMMAND = 'unknown-command';
   const WORKBOX_BUILD_COMMANDS = [
@@ -96,7 +100,7 @@ describe(`[workbox-cli] app.js`, function() {
       ];
 
       for (const config of badConfigs) {
-        it(`should reject with a validation error when workbox-build.${command}(${JSON.stringify(config)}) is called`, async function() {
+        it(`should reject with a WorkboxConfigError when workbox-build.${command}(${JSON.stringify(config)}) is called`, async function() {
           const {app} = proxyquire(MODULE_PATH, {
             './lib/logger': {
               logger: {
@@ -113,17 +117,15 @@ describe(`[workbox-cli] app.js`, function() {
           });
 
           await expect(app({input: [command, PROXIED_CONFIG_FILE]})).to
-            .eventually.be.rejectedWith(errors['config-validation-failed']);
+            .eventually.be.rejectedWith(WorkboxConfigError);
         });
       }
 
       it(`should reject with a generic runtime error when the workbox-build.${command}() rejects for any other reason`, async function() {
-        const loggerErrorStub = sinon.stub();
         const {app} = proxyquire(MODULE_PATH, {
           './lib/logger': {
             logger: {
               log: sinon.stub(),
-              error: loggerErrorStub,
             },
           },
           './lib/read-config': {
@@ -133,23 +135,17 @@ describe(`[workbox-cli] app.js`, function() {
             },
           },
           'workbox-build': {
-            [command]: (config) => {
-              expect(config).to.eql(PROXIED_CONFIG);
-              throw PROXIED_ERROR;
+            default: {
+              [command]: (config) => {
+                expect(config).to.eql(PROXIED_CONFIG);
+                throw PROXIED_ERROR;
+              },
             },
           },
         });
 
-        try {
-          await app({input: [command, PROXIED_CONFIG_FILE]});
-          throw new Error('Unexpected success.');
-        } catch (error) {
-          expect(loggerErrorStub.calledOnce).to.be.true;
-          expect(
-              loggerErrorStub.alwaysCalledWithExactly(errors['workbox-build-runtime-error']),
-          ).to.be.true;
-          expect(error).to.eql(PROXIED_ERROR);
-        }
+        await expect(app({input: [command, PROXIED_CONFIG_FILE]})).to
+          .eventually.be.rejectedWith(PROXIED_ERROR);
       });
     }
   });
@@ -171,8 +167,10 @@ describe(`[workbox-cli] app.js`, function() {
             },
           },
           'workbox-build': {
-            [command]: () => {
-              return WORKBOX_BUILD_NO_WARNINGS_RETURN_VALUE;
+            default: {
+              [command]: () => {
+                return WORKBOX_BUILD_NO_WARNINGS_RETURN_VALUE;
+              },
             },
           },
         });
@@ -198,9 +196,11 @@ describe(`[workbox-cli] app.js`, function() {
             },
           },
           'workbox-build': {
-            [command]: () => {
-              return WORKBOX_BUILD_WITH_WARNINGS_RETURN_VALUE;
-            },
+            default: {
+              [command]: () => {
+                return WORKBOX_BUILD_WITH_WARNINGS_RETURN_VALUE;
+              },
+            }
           },
         });
 
@@ -222,11 +222,14 @@ describe(`[workbox-cli] app.js`, function() {
           './lib/logger': {
             logger: {
               log: loggerLogStub,
+              error: loggerLogStub,
             },
           },
           'workbox-build': {
-            [command]: () => {
-              return WORKBOX_BUILD_NO_WARNINGS_RETURN_VALUE;
+            default: {
+              [command]: () => {
+                return WORKBOX_BUILD_NO_WARNINGS_RETURN_VALUE;
+              },
             },
           },
         });
@@ -245,9 +248,11 @@ describe(`[workbox-cli] app.js`, function() {
           },
         },
         'workbox-build': {
-          copyWorkboxLibraries: (destDir) => {
-            expect(destDir).to.eql(PROXIED_DEST_DIR);
-            return upath.join(destDir, 'workbox');
+          default: {
+            copyWorkboxLibraries: (destDir) => {
+              expect(destDir).to.eql(PROXIED_DEST_DIR);
+              return upath.join(destDir, 'workbox');
+            },
           },
         },
       });

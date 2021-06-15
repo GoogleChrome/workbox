@@ -22,11 +22,10 @@ import {runWizard} from './lib/run-wizard.js';
 import {SupportedFlags} from './bin.js'
 
 interface BuildCommand {
-  command: 'generateSW'|'injectManifest';
+  command: 'generateSW' | 'injectManifest';
   config: any;
   watch: boolean;
 }
-
 
 /**
  * Runs the specified build command with the provided configuration.
@@ -34,39 +33,27 @@ interface BuildCommand {
  * @param {Object} options
  */
 async function runBuildCommand({command, config, watch}: BuildCommand) {
-  try {
-    const {count, filePaths, size, warnings} =
-        await workboxBuild[command](config);
-        
+  const {count, filePaths, size, warnings} = await workboxBuild[command](config);
 
-    for (const warning of warnings) {
-      logger.warn(warning);
-    }
+  for (const warning of warnings) {
+    logger.warn(warning);
+  }
 
-    if (filePaths.length === 1) {
-      logger.log(`The service worker file was written to ${config.swDest}`);
-    } else {
-      const message = filePaths
-          .sort()
-          .map((filePath) => `  • ${filePath}`)
-          .join(`\n`);
-      logger.log(`The service worker files were written to:\n${message}`);
-    }
+  if (filePaths.length === 1) {
+    logger.log(`The service worker file was written to ${config.swDest}`);
+  } else {
+    const message = filePaths
+        .sort()
+        .map((filePath) => `  • ${filePath}`)
+        .join(`\n`);
+    logger.log(`The service worker files were written to:\n${message}`);
+  }
 
-    logger.log(`The service worker will precache ${count} URLs, ` +
-        `totaling ${prettyBytes(size)}.`);
+  logger.log(`The service worker will precache ${count} URLs, ` +
+      `totaling ${prettyBytes(size)}.`);
 
-    if (watch) {
-      logger.log(`\nWatching for changes...`);
-    }
-  } catch (error) {
-    // See https://github.com/hapijs/joi/blob/v11.3.4/API.md#errors
-    if (typeof error.annotate === 'function') {
-      throw new Error(
-          `${errors['config-validation-failed']}\n${error.annotate()}`);
-    }
-    logger.error(errors['workbox-build-runtime-error']);
-    throw error;
+  if (watch) {
+    logger.log(`\nWatching for changes...`);
   }
 }
 

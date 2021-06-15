@@ -10,5 +10,8 @@
   },
   "include": [
     "src/**/*.ts"
+  ],
+  "references": [
+    {"path": "../workbox-build/"},
   ]
 }
