@@ -1043,7 +1043,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
           WorkboxConfigError, errors['nav-preload-runtime-caching']);
     });
 
-    it(`should reject when 'navigationPreload' is true and 'runtimeCaching' is invalid`, async function() {
+    it(`should reject when 'navigationPreload' is true and 'runtimeCaching' is undefined`, async function() {
       const options = Object.assign({}, BASE_OPTIONS, {
         runtimeCaching: undefined,
         navigationPreload: true,
