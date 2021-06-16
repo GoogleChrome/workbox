@@ -40,7 +40,7 @@ describe(`[workbox-build] lib/bundle`, function() {
         writeFile: sinon.stub().resolves(),
       },
       'upath': {
-        format: sinon.stub().callsFake(args => `${args.dir}${args.base}`),
+        format: sinon.stub().callsFake((args) => `${args.dir}${args.base}`),
         parse: sinon.stub().returns({base: 'sw.js', dir: ''}),
       },
       'tempy': {
@@ -49,7 +49,7 @@ describe(`[workbox-build] lib/bundle`, function() {
       '@rollup/plugin-node-resolve': sinon.stub(),
       '@rollup/plugin-replace': sinon.stub(),
       '@rollup/plugin-babel': {
-          babel: sinon.stub(),
+        babel: sinon.stub(),
       },
       'rollup-plugin-terser': {
         terser: sinon.stub(),

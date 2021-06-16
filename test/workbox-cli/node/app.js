@@ -52,17 +52,17 @@ describe(`[workbox-cli] app.js`, function() {
 
     it(`should reject when both parameters are missing`, async function() {
       await expect(app()).to.eventually.be.rejectedWith(
-        errors['missing-input']);
+          errors['missing-input']);
     });
 
     it(`should reject when the command is unknown and options is present`, async function() {
       await expect(app({input: [UNKNOWN_COMMAND, PROXIED_CONFIG_FILE]})).to
-        .eventually.be.rejectedWith(errors['unknown-command']);
+          .eventually.be.rejectedWith(errors['unknown-command']);
     });
 
     it(`should reject when the command parameter is copyLibraries and options is missing`, async function() {
       await expect(app({input: ['copyLibraries']})).to
-        .eventually.be.rejectedWith(errors['missing-dest-dir-param']);
+          .eventually.be.rejectedWith(errors['missing-dest-dir-param']);
     });
 
     for (const command of WORKBOX_BUILD_COMMANDS) {
@@ -117,7 +117,7 @@ describe(`[workbox-cli] app.js`, function() {
           });
 
           await expect(app({input: [command, PROXIED_CONFIG_FILE]})).to
-            .eventually.be.rejectedWith(WorkboxConfigError);
+              .eventually.be.rejectedWith(WorkboxConfigError);
         });
       }
 
@@ -145,7 +145,7 @@ describe(`[workbox-cli] app.js`, function() {
         });
 
         await expect(app({input: [command, PROXIED_CONFIG_FILE]})).to
-          .eventually.be.rejectedWith(PROXIED_ERROR);
+            .eventually.be.rejectedWith(PROXIED_ERROR);
       });
     }
   });
@@ -200,7 +200,7 @@ describe(`[workbox-cli] app.js`, function() {
               [command]: () => {
                 return WORKBOX_BUILD_WITH_WARNINGS_RETURN_VALUE;
               },
-            }
+            },
           },
         });
 

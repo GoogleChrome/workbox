@@ -32,7 +32,7 @@ async function buildNodePackage(packagePath) {
 
 async function generateWorkboxBuildJSONSchema(packagePath) {
   const program = TJS.programFromConfig(upath.join(packagePath,
-    'tsconfig.json'));
+      'tsconfig.json'));
   const generator = TJS.buildGenerator(program, {
     noExtraProps: true,
     required: true,
@@ -42,7 +42,7 @@ async function generateWorkboxBuildJSONSchema(packagePath) {
     'GetManifestOptions',
     'InjectManifestOptions',
     'WebpackGenerateSWOptions',
-    'WebpackInjectManifestOptions'
+    'WebpackInjectManifestOptions',
   ];
   for (const optionType of optionTypes) {
     const schema = generator.getSchemaForSymbol(optionType);
@@ -57,14 +57,14 @@ async function generateWorkboxBuildJSONSchema(packagePath) {
         {'$ref': '#/definitions/RegExp'},
         {type: 'string'},
         {typeof: 'function'},
-      ]
+      ];
     }
     if (schema.properties.include) {
       schema.properties.include.items.anyOf = [
         {'$ref': '#/definitions/RegExp'},
         {type: 'string'},
         {typeof: 'function'},
-      ]
+      ];
     }
     if (schema.definitions.RouteMatchCallback) {
       delete schema.definitions.RouteMatchCallback.type;
@@ -72,7 +72,7 @@ async function generateWorkboxBuildJSONSchema(packagePath) {
       schema.definitions.RouteMatchCallback.typeof = 'function';
     }
     await fse.writeJSON(upath.join(packagePath, 'src', 'schema',
-      `${optionType}.json`), schema);
+        `${optionType}.json`), schema);
   }
 }
 

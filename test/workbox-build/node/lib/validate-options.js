@@ -59,18 +59,18 @@ describe(`[workbox-build] entry-points/options/validate-options.js`, function() 
       });
 
       expect(() => validateOptions[func]()).to.throw(
-        validateOptions.WorkboxConfigError,
-        `[path1] message1. suggestion1\n\n[path2] message2. suggestion2`
+          validateOptions.WorkboxConfigError,
+          `[path1] message1. suggestion1\n\n[path2] message2. suggestion2`,
       );
     });
-  
+
     it(`${func}() should not throw when validation passes`, function() {
       const validateOptions = proxyquire(MODULE_PATH, {
         'ajv': {
           default: AJVPassesValidation,
         },
       });
-  
+
       const defaultOptions = validateOptions[func]({
         globDirectory: '.',
       });

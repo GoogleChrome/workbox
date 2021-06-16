@@ -71,7 +71,7 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function() {
           const statsJson = stats.toJson();
           expect(statsJson.warnings).to.be.empty;
           expect(statsJson.errors[0].message).to.eql(
-              `Please check your InjectManifest plugin configuration:\n[WebpackInjectManifest] \'invalid\' property is not expected to be here. Did you mean property \'include\'?`,
+              `Please check your InjectManifest plugin configuration:\n[WebpackInjectManifest] 'invalid' property is not expected to be here. Did you mean property 'include'?`,
           );
 
           done();
@@ -1645,7 +1645,7 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function() {
           const statsJson = stats.toJson();
           expect(statsJson.errors).to.be.empty;
           expect(statsJson.warnings[0].message).to.eql(
-            'compileSrc is false, so the webpackCompilationPlugins option will be ignored.',
+              'compileSrc is false, so the webpackCompilationPlugins option will be ignored.',
           );
 
           done();
@@ -1697,7 +1697,7 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function() {
 
     it(`should support injecting a manifest into a CJS module`, function(done) {
       const outputDir = tempy.directory();
-  
+
       const config = {
         mode: 'production',
         entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
@@ -1713,21 +1713,21 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function() {
           }),
         ],
       };
-  
+
       const compiler = webpack(config);
       compiler.run(async (webpackError, stats) => {
         try {
           webpackBuildCheck(webpackError, stats);
-  
+
           const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(2);
-  
+
           const manifest = require(upath.join(outputDir, 'injected-manifest.js'));
           expect(manifest).to.matchPattern([{
             revision: null,
             url: /^main\.[0-9a-f]{20}\.js$/,
           }]);
-  
+
           done();
         } catch (error) {
           done(error);

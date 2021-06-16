@@ -61,7 +61,7 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function() {
         options[unsupportedParam] = unsupportedParam;
 
         await expect(getManifest(options)).to.eventually.be.rejectedWith(
-          WorkboxConfigError, unsupportedParam);
+            WorkboxConfigError, unsupportedParam);
       });
     }
   });
@@ -73,7 +73,7 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function() {
         options[param] = () => {};
 
         await expect(getManifest(options)).to.eventually.be.rejectedWith(
-          WorkboxConfigError, param);
+            WorkboxConfigError, param);
       });
     }
   });
@@ -324,7 +324,7 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function() {
         });
 
         await expect(getManifest(options)).to.eventually.be.rejectedWith(
-          WorkboxConfigError, option);
+            WorkboxConfigError, option);
       });
     }
   });

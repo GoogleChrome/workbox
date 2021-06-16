@@ -74,7 +74,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
         delete options[requiredParam];
 
         await expect(generateSW(options)).to.eventually.be.rejectedWith(
-          WorkboxConfigError, requiredParam);
+            WorkboxConfigError, requiredParam);
       });
     }
   });
@@ -86,7 +86,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
         options[unsupportedParam] = unsupportedParam;
 
         await expect(generateSW(options)).to.eventually.be.rejectedWith(
-          WorkboxConfigError, unsupportedParam);
+            WorkboxConfigError, unsupportedParam);
       });
     }
   });
@@ -98,7 +98,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
         options[param] = () => {};
 
         await expect(generateSW(options)).to.eventually.be.rejectedWith(
-          WorkboxConfigError, param);
+            WorkboxConfigError, param);
       });
     }
 
@@ -108,7 +108,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       options.globDirectory = tempy.directory();
 
       await expect(generateSW(options)).to.eventually.be.rejectedWith(
-        errors['no-manifest-entries-or-runtime-caching']);
+          errors['no-manifest-entries-or-runtime-caching']);
     });
   });
 
@@ -686,7 +686,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       });
 
       await expect(generateSW(options)).to.eventually.be.rejectedWith(
-        WorkboxConfigError, 'urlPattern');
+          WorkboxConfigError, 'urlPattern');
     });
 
     it(`should reject when 'handler' is missing from 'runtimeCaching'`, async function() {
@@ -696,7 +696,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       });
 
       await expect(generateSW(options)).to.eventually.be.rejectedWith(
-        WorkboxConfigError, 'handler');
+          WorkboxConfigError, 'handler');
     });
 
     it(`should reject when 'handler' is not a valid strategy name`, async function() {
@@ -709,7 +709,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       });
 
       await expect(generateSW(options)).to.eventually.be.rejectedWith(
-        WorkboxConfigError, 'handler');
+          WorkboxConfigError, 'handler');
     });
 
     // See https://github.com/GoogleChrome/workbox/issues/2078
@@ -918,7 +918,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       });
 
       await expect(generateSW(options)).to.eventually.be.rejectedWith(
-        errors['invalid-network-timeout-seconds']);
+          errors['invalid-network-timeout-seconds']);
     });
 
     it(`should support 'networkTimeoutSeconds' when handler is 'NetworkFirst'`, async function() {
@@ -988,7 +988,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       });
 
       await expect(generateSW(options)).to.eventually.be.rejectedWith(
-        WorkboxConfigError, errors['cache-name-required']);
+          WorkboxConfigError, errors['cache-name-required']);
     });
 
     it(`should ignore swDest and workbox-*.js when generating manifest entries`, async function() {
@@ -1040,7 +1040,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       });
 
       await expect(generateSW(options)).to.eventually.be.rejectedWith(
-        WorkboxConfigError, errors['nav-preload-runtime-caching']);
+          WorkboxConfigError, errors['nav-preload-runtime-caching']);
     });
 
     it(`should reject when 'navigationPreload' is true and 'runtimeCaching' is invalid`, async function() {
@@ -1050,7 +1050,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       });
 
       await expect(generateSW(options)).to.eventually.be.rejectedWith(
-        WorkboxConfigError, errors['nav-preload-runtime-caching']);
+          WorkboxConfigError, errors['nav-preload-runtime-caching']);
     });
 
     it(`should generate when 'navigationPreload' is true and 'runtimeCaching' is valid`, async function() {

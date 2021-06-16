@@ -67,7 +67,7 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
         delete options[requiredParam];
 
         await expect(injectManifest(options)).to.eventually.be.rejectedWith(
-          WorkboxConfigError, requiredParam);
+            WorkboxConfigError, requiredParam);
       });
     }
   });
@@ -79,7 +79,7 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
         options[unsupportedParam] = unsupportedParam;
 
         await expect(injectManifest(options)).to.eventually.be.rejectedWith(
-          WorkboxConfigError, unsupportedParam);
+            WorkboxConfigError, unsupportedParam);
       });
     }
   });
@@ -91,7 +91,7 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
         options[param] = null;
 
         await expect(injectManifest(options)).to.eventually.be.rejectedWith(
-          WorkboxConfigError, param);
+            WorkboxConfigError, param);
       });
     }
   });
@@ -103,7 +103,7 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
       });
 
       await expect(injectManifest(options)).to.eventually.be.rejectedWith(
-        errors['invalid-sw-src']);
+          errors['invalid-sw-src']);
     });
 
     it(`should throw the expected error when there is no match for 'injectionPoint'`, async function() {
@@ -112,7 +112,7 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
       });
 
       await expect(injectManifest(options)).to.eventually.be.rejectedWith(
-        errors['injection-point-not-found']);
+          errors['injection-point-not-found']);
     });
 
     it(`should throw the expected error when there is no match for 'injectionPoint' and 'swSrc' and 'swDest' are the same`, async function() {
@@ -123,7 +123,7 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
       });
 
       await expect(injectManifest(options)).to.eventually.be.rejectedWith(
-        errors['same-src-and-dest']);
+          errors['same-src-and-dest']);
     });
 
     it(`should throw the expected error when there are multiple matches for 'injectionPoint'`, async function() {
@@ -132,7 +132,7 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
       });
 
       await expect(injectManifest(options)).to.eventually.be.rejectedWith(
-        errors['multiple-injection-points']);
+          errors['multiple-injection-points']);
     });
   });
 
@@ -425,7 +425,7 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
         });
 
         await expect(injectManifest(options)).to.eventually.be.rejectedWith(
-          WorkboxConfigError, option);
+            WorkboxConfigError, option);
       });
     }
   });
