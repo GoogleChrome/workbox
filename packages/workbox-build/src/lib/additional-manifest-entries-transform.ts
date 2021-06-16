@@ -12,7 +12,7 @@ import {ManifestEntry} from '../types';
 export function additionalManifestEntriesTransform(additionalManifestEntries: Array<ManifestEntry | string>) {
   return (manifest: Array<ManifestEntry & {size: number}>) => {
     const warnings = [];
-    const stringEntries = new Set();
+    const stringEntries = new Set<string>();
 
     for (const additionalEntry of additionalManifestEntries) {
       // Warn about either a string or an object that lacks a revision property.
