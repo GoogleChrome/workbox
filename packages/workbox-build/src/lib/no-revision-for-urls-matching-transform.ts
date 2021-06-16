@@ -29,4 +29,4 @@ export function noRevisionForURLsMatchingTransform(regexp: RegExp): ManifestTran
 
     return {manifest};
   };
-};
+}

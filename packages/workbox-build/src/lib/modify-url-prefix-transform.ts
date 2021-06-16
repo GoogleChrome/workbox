@@ -54,4 +54,4 @@ export function modifyURLPrefixTransform(modifyURLPrefix: {[key: string]: string
 
     return {manifest};
   };
-};
+}

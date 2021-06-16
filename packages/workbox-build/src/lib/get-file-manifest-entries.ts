@@ -109,4 +109,4 @@ export async function getFileManifestEntries({
   transformedManifest.warnings.push(...warnings);
 
   return transformedManifest;
-};
+}

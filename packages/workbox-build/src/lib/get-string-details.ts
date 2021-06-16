@@ -15,4 +15,4 @@ export function getStringDetails(url: string, str: string): FileDetails {
     hash: getStringHash(str),
     size: str.length,
   };
-};
+}

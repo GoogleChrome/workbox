@@ -11,7 +11,7 @@ import upath from 'upath';
 export function rebasePath({
   baseDirectory,
   file
-}: {baseDirectory: string, file: string}): string {
+}: {baseDirectory: string; file: string}): string {
   // The initial path is relative to the current directory, so make it absolute.
   const absolutePath = upath.resolve(file);
 

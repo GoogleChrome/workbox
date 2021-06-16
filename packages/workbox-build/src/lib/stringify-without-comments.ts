@@ -19,4 +19,4 @@ export function stringifyWithoutComments(obj: {[key: string]: any}): string {
       return str;
     },
   });
-};
+}

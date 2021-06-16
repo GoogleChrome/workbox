@@ -18,4 +18,4 @@ export function getFileHash(file: string): string {
   } catch (err) {
     throw new Error(errors['unable-to-get-file-hash'] + ` '${err.message}'`);
   }
-};
+}

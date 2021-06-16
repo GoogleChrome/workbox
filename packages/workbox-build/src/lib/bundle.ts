@@ -21,7 +21,7 @@ import {GeneratePartial, RequiredSWDestPartial} from '../types';
 
 interface NameAndContents {
   contents: string | Uint8Array;
-  name: string
+  name: string;
 }
 
 export async function bundle({

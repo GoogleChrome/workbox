@@ -24,7 +24,7 @@ export interface ExpirationPluginOptions {
   maxAgeSeconds?: number;
   matchOptions?: CacheQueryOptions;
   purgeOnQuotaError?: boolean;
-};
+}
 
 /**
  * This plugin can be used in a `workbox-strategy` to regularly enforce a

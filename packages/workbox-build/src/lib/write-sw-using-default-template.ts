@@ -88,4 +88,4 @@ export async function writeSWUsingDefaultTemplate({
     }
     throw new Error(`${errors['sw-write-failure']} '${error.message}'`);
   }
-};
+}

@@ -20,4 +20,4 @@ export function getFileSize(file: string): number | null {
   } catch (err) {
     throw new Error(errors['unable-to-get-file-size'] + ` '${err.message}'`);
   }
-};
+}

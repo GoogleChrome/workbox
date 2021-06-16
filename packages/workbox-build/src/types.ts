@@ -38,7 +38,7 @@ export interface RuntimeCaching {
     plugins?: Array<WorkboxPlugin>;
     precacheFallback?: {
       fallbackURL: string;
-    },
+    };
     fetchOptions?: RequestInit;
     matchOptions?: CacheQueryOptions;
   };
@@ -64,7 +64,7 @@ export interface BasePartial {
    */
   maximumFileSizeToCacheInBytes?: number;
   modifyURLPrefix?: {
-    [key: string]: string,
+    [key: string]: string;
   };
 }
 
@@ -219,10 +219,10 @@ export type WebpackInjectManifestOptions = BasePartial & WebpackPartial &
   InjectPartial & WebpackInjectManifestPartial;
 
 export interface GetManifestResult {
-  count: number,
-  manifestEntries: Array<ManifestEntry>,
-  size: number,
-  warnings: Array<string>
+  count: number;
+  manifestEntries: Array<ManifestEntry>;
+  size: number;
+  warnings: Array<string>;
 }
 
 export type BuildResult = Omit<GetManifestResult, 'manifestEntries'> & {
@@ -239,8 +239,8 @@ export type BuildType = 'dev' | 'prod';
 
 export interface WorkboxPackageJSON extends PackageJson {
   workbox?: {
-    browserNamespace?: string,
+    browserNamespace?: string;
     packageType?: string;
     prodOnly?: boolean;
   };
-};
+}

@@ -98,4 +98,4 @@ export function populateSWTemplate({
     throw new Error(
         `${errors['populating-sw-tmpl-failed']} '${error.message}'`);
   }
-};
+}

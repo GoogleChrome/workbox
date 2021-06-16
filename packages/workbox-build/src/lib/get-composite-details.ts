@@ -28,4 +28,4 @@ export function getCompositeDetails(compositeURL: string, dependencyDetails: Arr
     hash: hashOfHashes,
     size: totalSize,
   };
-};
+}

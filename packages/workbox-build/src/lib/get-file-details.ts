@@ -19,7 +19,7 @@ interface FileDetails {
   file: string;
   hash: string;
   size: number;
-};
+}
 
 export function getFileDetails({
   globDirectory,
@@ -69,4 +69,4 @@ export function getFileDetails({
   }
 
   return {globbedFileDetails, warning};
-};
+}

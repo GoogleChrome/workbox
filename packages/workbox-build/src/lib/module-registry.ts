@@ -16,7 +16,7 @@ import upath from 'upath';
  * @private
  */
 export class ModuleRegistry {
-  private _modulesUsed: Map<string, {moduleName: string, pkg: string}>;
+  private readonly _modulesUsed: Map<string, {moduleName: string; pkg: string}>;
   /**
    * @private
    */

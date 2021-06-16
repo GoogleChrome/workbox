@@ -26,4 +26,4 @@ export function maximumSizeTransform(maximumFileSizeToCacheInBytes: number): Man
 
     return {manifest, warnings};
   };
-};
+}

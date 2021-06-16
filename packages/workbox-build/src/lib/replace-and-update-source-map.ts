@@ -71,7 +71,7 @@ export async function replaceAndUpdateSourceMap({
 
   consumer.eachMapping((mapping) => {
     for (const replacement of replacements) {
-      if (replacement.line == mapping.generatedLine &&
+      if (replacement.line === mapping.generatedLine &&
           mapping.generatedColumn > replacement.column) {
         const offset = searchString.length - replaceString.length;
         mapping.generatedColumn -= offset;
