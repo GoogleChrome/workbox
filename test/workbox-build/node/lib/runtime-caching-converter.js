@@ -32,6 +32,7 @@ function validate(runtimeCachingOptions, convertedOptions) {
     workbox_background_sync_BackgroundSyncPlugin: sinon.spy(),
     workbox_broadcast_update_BroadcastUpdatePlugin: sinon.spy(),
     workbox_precaching_PrecacheFallbackPlugin: sinon.spy(),
+    workbox_range_requests_RangeRequestsPlugin: sinon.spy(),
     workbox_routing_registerRoute: sinon.spy(),
     workbox_strategies_CacheFirst: sinon.spy(),
     workbox_strategies_CacheOnly: sinon.spy(),
@@ -100,6 +101,10 @@ function validate(runtimeCachingOptions, convertedOptions) {
 
       if (options.precacheFallback) {
         expect(globalScope.workbox_precaching_PrecacheFallbackPlugin.calledWith(options.precacheFallback)).to.be.true;
+      }
+
+      if (options.rangeRequests) {
+        expect(globalScope.workbox_range_requests_RangeRequestsPlugin.calledWith()).to.be.true;
       }
 
       if (options.backgroundSync) {
@@ -190,6 +195,7 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
         precacheFallback: {
           fallbackURL: '/test1',
         },
+        rangeRequests: false,
         fetchOptions: {
           headers: {
             'Custom': 'Header',
@@ -218,6 +224,7 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
             maxRetentionTime: 123,
           },
         },
+        rangeRequests: true,
         precacheFallback: {
           fallbackURL: '/test2',
         },

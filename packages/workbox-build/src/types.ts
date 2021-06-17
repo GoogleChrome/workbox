@@ -39,6 +39,7 @@ export interface RuntimeCaching {
     precacheFallback?: {
       fallbackURL: string;
     };
+    rangeRequests?: boolean;
     fetchOptions?: RequestInit;
     matchOptions?: CacheQueryOptions;
   };
