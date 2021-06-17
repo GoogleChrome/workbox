@@ -11,7 +11,7 @@ import {ManifestEntry} from '../types';
 
 export function additionalManifestEntriesTransform(additionalManifestEntries: Array<ManifestEntry | string>) {
   return (manifest: Array<ManifestEntry & {size: number}>) => {
-    const warnings : Array<string> = [];
+    const warnings: Array<string> = [];
     const stringEntries = new Set<string>();
 
     for (const additionalEntry of additionalManifestEntries) {
