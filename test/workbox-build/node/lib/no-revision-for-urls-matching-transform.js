@@ -8,8 +8,8 @@
 
 const expect = require('chai').expect;
 
-const errors = require('../../../../packages/workbox-build/src/lib/errors');
-const noRevisionForURLsMatching = require('../../../../packages/workbox-build/src/lib/no-revision-for-urls-matching-transform');
+const {errors} = require('../../../../packages/workbox-build/build/lib/errors');
+const {noRevisionForURLsMatchingTransform} = require('../../../../packages/workbox-build/build/lib/no-revision-for-urls-matching-transform');
 
 describe(`[workbox-build] lib/no-revision-for-urls-matching-transform.js`, function() {
   const MANIFEST = [{
@@ -32,7 +32,7 @@ describe(`[workbox-build] lib/no-revision-for-urls-matching-transform.js`, funct
       [],
     ];
 
-    const transform = noRevisionForURLsMatching(/ignored/);
+    const transform = noRevisionForURLsMatchingTransform(/ignored/);
     for (const badInput of badInputs) {
       expect(
           () => transform([{url: badInput}]),
@@ -55,13 +55,13 @@ describe(`[workbox-build] lib/no-revision-for-urls-matching-transform.js`, funct
 
     for (const badInput of badInputs) {
       expect(
-          () => noRevisionForURLsMatching(badInput),
+          () => noRevisionForURLsMatchingTransform(badInput),
       ).to.throw(errors['invalid-dont-cache-bust']);
     }
   });
 
   it(`should set revision info to null in a single matching entry`, function() {
-    const transform = noRevisionForURLsMatching(/first-match/);
+    const transform = noRevisionForURLsMatchingTransform(/first-match/);
     expect(transform(MANIFEST)).to.eql({manifest: [{
       url: '/first-match/12345/hello',
       revision: null,
@@ -74,7 +74,7 @@ describe(`[workbox-build] lib/no-revision-for-urls-matching-transform.js`, funct
   });
 
   it(`should set revision info to null in multiple matching entries`, function() {
-    const transform = noRevisionForURLsMatching(/12345/);
+    const transform = noRevisionForURLsMatchingTransform(/12345/);
     expect(transform(MANIFEST)).to.eql({manifest: [{
       url: '/first-match/12345/hello',
       revision: null,
@@ -88,7 +88,7 @@ describe(`[workbox-build] lib/no-revision-for-urls-matching-transform.js`, funct
   });
 
   it(`should do nothing when there's a match for an entry without a revision`, function() {
-    const transform = noRevisionForURLsMatching(/third-match/);
+    const transform = noRevisionForURLsMatchingTransform(/third-match/);
     expect(transform(MANIFEST)).to.eql({manifest: MANIFEST});
   });
 });

@@ -7,7 +7,8 @@
 */
 
 const {matchPart} = require('webpack').ModuleFilenameHelpers;
-const transformManifest = require('workbox-build/build/lib/transform-manifest');
+const {transformManifest} =
+    require('workbox-build/build/lib/transform-manifest');
 
 const getAssetHash = require('./get-asset-hash');
 const resolveWebpackURL = require('./resolve-webpack-url');

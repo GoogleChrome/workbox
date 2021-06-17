@@ -10,8 +10,8 @@ const expect = require('chai').expect;
 const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 
-describe(`[workbox-build] lib/bundle.js`, function() {
-  const MODULE_PATH = '../../../../packages/workbox-build/src/lib/bundle';
+describe(`[workbox-build] lib/bundle`, function() {
+  const MODULE_PATH = '../../../../packages/workbox-build/build/lib/bundle';
   let bundle;
   let stubs;
 
@@ -19,16 +19,16 @@ describe(`[workbox-build] lib/bundle.js`, function() {
     const rollupStub = {
       generate: sinon.stub().resolves({output: [{
         fileName: 'asset-filename',
-        isAsset: true,
+        type: 'asset',
         source: 'asset-source',
       }, {
         code: 'chunk1-code',
         fileName: 'chunk1-filename',
-        isAsset: false,
+        type: 'chunk',
       }, {
         code: 'chunk2-code',
         fileName: 'chunk2-filename',
-        isAsset: false,
+        type: 'chunk',
         map: 'sourcemap-contents',
       }]}),
     };
@@ -40,6 +40,7 @@ describe(`[workbox-build] lib/bundle.js`, function() {
         writeFile: sinon.stub().resolves(),
       },
       'upath': {
+        format: sinon.stub().callsFake((args) => `${args.dir}${args.base}`),
         parse: sinon.stub().returns({base: 'sw.js', dir: ''}),
       },
       'tempy': {
@@ -47,7 +48,9 @@ describe(`[workbox-build] lib/bundle.js`, function() {
       },
       '@rollup/plugin-node-resolve': sinon.stub(),
       '@rollup/plugin-replace': sinon.stub(),
-      '@rollup/plugin-babel': {babel: sinon.stub()},
+      '@rollup/plugin-babel': {
+        babel: sinon.stub(),
+      },
       'rollup-plugin-terser': {
         terser: sinon.stub(),
       },
@@ -57,7 +60,7 @@ describe(`[workbox-build] lib/bundle.js`, function() {
       },
     };
 
-    bundle = proxyquire(MODULE_PATH, stubs);
+    bundle = proxyquire(MODULE_PATH, stubs).bundle;
   });
 
   it(`should pass 'babelPresetEnvTargets' to @babel/preset-env`, async function() {
@@ -67,17 +70,9 @@ describe(`[workbox-build] lib/bundle.js`, function() {
       babelPresetEnvTargets,
     });
 
-    expect(stubs['@rollup/plugin-babel'].babel.args).to.eql([[{
-      babelHelpers: 'bundled',
-      babelrc: false,
-      configFile: false,
-      presets: [[stubs['@babel/preset-env'], {
-        targets: {
-          browsers: babelPresetEnvTargets,
-        },
-        loose: true,
-      }]],
-    }]]);
+    // This is ugly, but necessary due to the way babel() is configured.
+    const babelParams = stubs['@rollup/plugin-babel'].babel.args[0][0];
+    expect(babelParams.presets[0][1].targets.browsers).to.eql(babelPresetEnvTargets);
   });
 
   it(`should use loadz0r and configure manualChunks when 'inlineWorkboxRuntime' is false`, async function() {

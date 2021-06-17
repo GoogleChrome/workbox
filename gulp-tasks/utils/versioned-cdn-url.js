@@ -6,8 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-const {getCDNOrigin} = require(
-    '../../packages/workbox-build/src/lib/cdn-utils');
+const cdn = require('../../packages/workbox-build/src/cdn-details.json');
 const lernaPkg = require('../../lerna.json');
 
-module.exports = () => `${getCDNOrigin()}/${lernaPkg.version}`;
+module.exports = () => `${cdn.origin}/${cdn.bucketName}/${cdn.releasesDir}` +
+    `/${lernaPkg.version}`;

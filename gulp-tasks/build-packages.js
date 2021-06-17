@@ -23,9 +23,11 @@ async function cleanPackage(packagePath) {
   if (await fse.pathExists(upath.join(packagePath, 'src', 'index.ts'))) {
     // Store the list of deleted files, so we can delete directories after.
     const deletedPaths = await del([
-      upath.join(packagePath, '**/*.+(js|mjs|d.ts)'),
+      `${packagePath}/**/*.+(js|mjs|d.ts)`,
       // Don't delete files in node_modules.
-      '!**/node_modules', '!**/node_modules/**/*',
+      '!**/node_modules/**/*',
+      // Don't delete anything under src.
+      `!${packagePath}/src/**/*`,
     ]);
 
     // Any directories in `deletedPaths` that are top-level directories to the
@@ -57,12 +59,12 @@ module.exports = {
   build_packages_clean: cleanSequence(),
   build_packages: series(
       cleanSequence(),
+      // This needs to be a series, not in parallel, so that there isn't a
+      // race condition with the terser nameCache.
+      series(build_sw_packages, build_window_packages),
       parallel(
           build_node_packages,
           build_node_ts_packages,
-          // This needs to be a series, not in parallel, so that there isn't a
-          // race condition with the terser nameCache.
-          series(build_sw_packages, build_window_packages),
       ),
   ),
 };

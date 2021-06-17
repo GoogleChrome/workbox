@@ -11,18 +11,18 @@ const upath = require('upath');
 const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 
-const errors = require('../../../../packages/workbox-build/src/lib/errors');
+const {errors} = require('../../../../packages/workbox-build/build/lib/errors');
 
 describe(`[workbox-build] lib/copy-workbox-libraries.js`, function() {
-  const MODULE_PATH = '../../../../packages/workbox-build/src/lib/copy-workbox-libraries';
+  const MODULE_PATH = '../../../../packages/workbox-build/build/lib/copy-workbox-libraries';
   const ABSOLUTE_DEST_DIRECTORY = upath.join('/', 'test-dir');
   const RELATIVE_DEST_DIRECTORY = upath.join('.', 'test-dir');
 
   it(`should reject with an error when the copy fails`, async function() {
-    const copyWorkboxLibraries = proxyquire(MODULE_PATH, {
+    const {copyWorkboxLibraries} = proxyquire(MODULE_PATH, {
       'fs-extra': {
         ensureDir: sinon.stub().resolves(),
-        copy: sinon.stub().rejects(),
+        copy: sinon.stub().rejects('INJECTED_ERROR'),
       },
     });
 
@@ -39,7 +39,7 @@ describe(`[workbox-build] lib/copy-workbox-libraries.js`, function() {
       const copyStub = sinon.stub().resolves();
       const ensureDirStub = sinon.stub().resolves();
 
-      const copyWorkboxLibraries = proxyquire(MODULE_PATH, {
+      const {copyWorkboxLibraries} = proxyquire(MODULE_PATH, {
         'fs-extra': {
           copy: copyStub,
           ensureDir: ensureDirStub,

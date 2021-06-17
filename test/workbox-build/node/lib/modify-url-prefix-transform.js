@@ -8,8 +8,8 @@
 
 const expect = require('chai').expect;
 
-const errors = require('../../../../packages/workbox-build/src/lib/errors');
-const modifyURLPrefix = require('../../../../packages/workbox-build/src/lib/modify-url-prefix-transform');
+const {errors} = require('../../../../packages/workbox-build/build/lib/errors');
+const {modifyURLPrefixTransform} = require('../../../../packages/workbox-build/build/lib/modify-url-prefix-transform');
 
 describe(`[workbox-build] lib/modify-url-prefix-transform.js`, function() {
   function getManifest() {
@@ -35,7 +35,7 @@ describe(`[workbox-build] lib/modify-url-prefix-transform.js`, function() {
       '/example-2/multi-section/1234': '/example-2-altered/5678',
     };
 
-    const transform = modifyURLPrefix(modifications);
+    const transform = modifyURLPrefixTransform(modifications);
     for (const badInput of badInputs) {
       expect(
           () => transform([{url: badInput}]),
@@ -43,7 +43,7 @@ describe(`[workbox-build] lib/modify-url-prefix-transform.js`, function() {
     }
   });
 
-  it(`should handle bad modifyURLPrefix input`, function() {
+  it(`should handle bad modifyURLPrefixTransform input`, function() {
     const badInputs = [
       null,
       undefined,
@@ -58,7 +58,7 @@ describe(`[workbox-build] lib/modify-url-prefix-transform.js`, function() {
 
     for (const badInput of badInputs) {
       expect(
-          () => modifyURLPrefix(badInput),
+          () => modifyURLPrefixTransform(badInput),
       ).to.throw(errors['modify-url-prefix-bad-prefixes']);
     }
   });
@@ -68,7 +68,7 @@ describe(`[workbox-build] lib/modify-url-prefix-transform.js`, function() {
       '/first-match': '',
     };
 
-    const transform = modifyURLPrefix(modifications);
+    const transform = modifyURLPrefixTransform(modifications);
     expect(transform(getManifest())).to.eql({manifest: [{
       url: '/12345/hello',
     }, {
@@ -81,7 +81,7 @@ describe(`[workbox-build] lib/modify-url-prefix-transform.js`, function() {
       '': '/public',
     };
 
-    const transform = modifyURLPrefix(modifications);
+    const transform = modifyURLPrefixTransform(modifications);
     expect(transform(getManifest())).to.eql({manifest: [{
       url: '/public/first-match/12345/hello',
     }, {
@@ -95,7 +95,7 @@ describe(`[workbox-build] lib/modify-url-prefix-transform.js`, function() {
       '/second-match': '/third-match',
     };
 
-    const transform = modifyURLPrefix(modifications);
+    const transform = modifyURLPrefixTransform(modifications);
     expect(transform(getManifest())).to.eql({manifest: [{
       url: '/second-match/12345/hello',
     }, {
@@ -108,7 +108,7 @@ describe(`[workbox-build] lib/modify-url-prefix-transform.js`, function() {
       '/hello': '/altered',
     };
 
-    const transform = modifyURLPrefix(modifications);
+    const transform = modifyURLPrefixTransform(modifications);
     expect(transform(getManifest())).to.eql({manifest: getManifest()});
   });
 });

@@ -21,6 +21,7 @@ describe(`[workbox-build] Test Dependencies`, function() {
         ignoreMatches: [
           '@babel/preset-env',
           '@babel/runtime',
+          'type-fest',
           'workbox-background-sync',
           'workbox-broadcast-update',
           'workbox-cacheable-response',

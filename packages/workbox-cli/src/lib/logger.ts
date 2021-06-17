@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 
 export const logger = {
   debug: (...args: string[]) => console.log(chalk.gray(...args)),

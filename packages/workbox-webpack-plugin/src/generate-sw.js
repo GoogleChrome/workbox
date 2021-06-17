@@ -6,14 +6,13 @@
   https://opensource.org/licenses/MIT.
 */
 
-const bundle = require('workbox-build/build/lib/bundle');
-const populateSWTemplate =
+const {validateWebpackGenerateSWOptions} =
+  require('workbox-build/build/lib/validate-options');
+const {bundle} = require('workbox-build/build/lib/bundle');
+const {populateSWTemplate} =
   require('workbox-build/build/lib/populate-sw-template');
 const prettyBytes = require('pretty-bytes');
-const validate = require('workbox-build/build/lib/validate-options');
 const webpack = require('webpack');
-const webpackGenerateSWSchema = require(
-    'workbox-build/build/options/schema/webpack-generate-sw');
 
 const getScriptFilesForChunks = require('./lib/get-script-files-for-chunks');
 const getManifestEntriesFromCompilation =
@@ -272,7 +271,7 @@ class GenerateSW {
       // emit might be called multiple times; instead of modifying this.config,
       // use a validated copy.
       // See https://github.com/GoogleChrome/workbox/issues/2158
-      config = validate(this.config, webpackGenerateSWSchema);
+      config = validateWebpackGenerateSWOptions(this.config);
     } catch (error) {
       throw new Error(`Please check your ${this.constructor.name} plugin ` +
         `configuration:\n${error.message}`);

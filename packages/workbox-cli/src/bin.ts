@@ -9,8 +9,8 @@
 */
 
 
-import * as meow from 'meow'
-import * as updateNotifier from 'update-notifier';
+import meow from 'meow'
+import updateNotifier from 'update-notifier';
 
 import {app} from './app';
 import {cleanupStackTrace} from './lib/cleanup-stack-trace.js';

@@ -6,16 +6,15 @@
   https://opensource.org/licenses/MIT.
 */
 
-const escapeRegexp = require('workbox-build/build/lib/escape-regexp');
+const {escapeRegExp} = require('workbox-build/build/lib/escape-regexp');
+const {replaceAndUpdateSourceMap} =
+  require('workbox-build/build/lib/replace-and-update-source-map');
+const {validateWebpackInjectManifestOptions} =
+  require('workbox-build/build/lib/validate-options');
 const prettyBytes = require('pretty-bytes');
-const replaceAndUpdateSourceMap = require(
-    'workbox-build/build/lib/replace-and-update-source-map');
 const stringify = require('fast-json-stable-stringify');
 const upath = require('upath');
-const validate = require('workbox-build/build/lib/validate-options');
 const webpack = require('webpack');
-const webpackInjectManifestSchema = require(
-    'workbox-build/build/options/schema/webpack-inject-manifest');
 
 const getManifestEntriesFromCompilation =
   require('./lib/get-manifest-entries-from-compilation');
@@ -137,6 +136,8 @@ class InjectManifest {
     // there take precedence over derived properties from the compiler.
     this.config = Object.assign({
       mode: compiler.mode,
+      // Use swSrc with a hardcoded .js extension, in case swSrc is a .ts file.
+      swDest: upath.parse(this.config.swSrc).name + '.js',
     }, this.config);
   }
 
@@ -250,7 +251,7 @@ class InjectManifest {
    */
   async handleMake(compilation, parentCompiler) {
     try {
-      this.config = validate(this.config, webpackInjectManifestSchema);
+      this.config = validateWebpackInjectManifestOptions(this.config);
     } catch (error) {
       throw new Error(`Please check your ${this.constructor.name} plugin ` +
         `configuration:\n${error.message}`);
@@ -263,6 +264,13 @@ class InjectManifest {
       await this.performChildCompilation(compilation, parentCompiler);
     } else {
       this.addSrcToAssets(compilation, parentCompiler);
+      // This used to be a fatal error, but just warn at runtime because we
+      // can't validate it easily.
+      if (Array.isArray(this.config.webpackCompilationPlugins) &&
+          this.config.webpackCompilationPlugins.length > 0) {
+        compilation.warnings.push(new Error('compileSrc is false, so the ' +
+          'webpackCompilationPlugins option will be ignored.'));
+      }
     }
   }
 
@@ -301,7 +309,7 @@ class InjectManifest {
     const swAsset = compilation.getAsset(config.swDest);
     const swAssetString = swAsset.source.source();
 
-    const globalRegexp = new RegExp(escapeRegexp(config.injectionPoint), 'g');
+    const globalRegexp = new RegExp(escapeRegExp(config.injectionPoint), 'g');
     const injectionResults = swAssetString.match(globalRegexp);
 
     if (!injectionResults) {

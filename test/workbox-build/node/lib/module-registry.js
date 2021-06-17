@@ -7,8 +7,9 @@
 */
 
 const expect = require('chai').expect;
-const ModuleRegistry = require('../../../../packages/workbox-build/src/lib/module-registry');
 const upath = require('upath');
+
+const {ModuleRegistry} = require('../../../../packages/workbox-build/build/lib/module-registry');
 
 describe(`[workbox-build] lib/module-registry.js`, function() {
   let moduleRegistry;

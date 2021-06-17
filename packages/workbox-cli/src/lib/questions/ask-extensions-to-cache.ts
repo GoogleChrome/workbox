@@ -6,11 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
-import * as assert from 'assert';
+import assert from 'assert';
 import {prompt} from 'inquirer';
-import * as glob from 'glob';
-import * as ora from 'ora';
-import * as upath from 'upath';
+import glob from 'glob';
+import ora from 'ora';
+import upath from 'upath';
 
 import {errors} from '../errors';
 import {constants} from '../constants';
