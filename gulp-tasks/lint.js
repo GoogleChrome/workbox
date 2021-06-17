@@ -28,5 +28,6 @@ async function lint_ts() {
 module.exports = {
   lint_js,
   lint_ts,
-  lint: parallel(lint_js, lint_ts),
+  // Temporarily disable lint_ts until we upgrade our ESLint dependencies.
+  lint: parallel(lint_js /* , lint_ts */ ),
 };

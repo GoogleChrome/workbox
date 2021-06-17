@@ -191,7 +191,7 @@ describe(`[workbox-cli] app.js`, function() {
               warn: loggerWarningStub,
             },
           },
-          'workbox-build': {      
+          'workbox-build': {
             [command]: () => {
               return WORKBOX_BUILD_WITH_WARNINGS_RETURN_VALUE;
             },
