@@ -9,6 +9,7 @@
 import {Deferred} from 'workbox-core/_private/Deferred.js';
 import {dontWaitFor} from 'workbox-core/_private/dontWaitFor.js';
 import {logger} from 'workbox-core/_private/logger.js';
+import {TrustedScriptURL} from 'trusted-types/lib';
 
 import {messageSW} from './messageSW.js';
 import {WorkboxEventTarget} from './utils/WorkboxEventTarget.js';
@@ -44,7 +45,7 @@ const SKIP_WAITING_MESSAGE = {type: 'SKIP_WAITING'};
  * @memberof module:workbox-window
  */
 class Workbox extends WorkboxEventTarget {
-  private readonly _scriptURL: string;
+  private readonly _scriptURL: string | TrustedScriptURL;
   private readonly _registerOptions: RegistrationOptions = {};
   private _updateFoundCount = 0;
 
@@ -68,12 +69,13 @@ class Workbox extends WorkboxEventTarget {
    * calling `navigator.serviceWorker.register(scriptURL, options)`. See:
    * https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register
    *
-   * @param {string} scriptURL The service worker script associated with this
-   *     instance.
+   * @param {string|TrustedScriptURL} scriptURL The service worker script
+   *     associated with this instance. Using a
+   *     [`TrustedScriptURL`](https://web.dev/trusted-types/) is supported.
    * @param {Object} [registerOptions] The service worker options associated
    *     with this instance.
    */
-  constructor(scriptURL: string, registerOptions: {} = {}) {
+  constructor(scriptURL: string | TrustedScriptURL, registerOptions: {} = {}) {
     super();
 
     this._scriptURL = scriptURL;
@@ -136,7 +138,8 @@ class Workbox extends WorkboxEventTarget {
     // page wasn't fully unloaded before this page started loading).
     // https://developers.google.com/web/fundamentals/primers/service-workers/lifecycle#waiting
     const waitingSW = this._registration.waiting;
-    if (waitingSW && urlsMatch(waitingSW.scriptURL, this._scriptURL)) {
+    if (waitingSW &&
+        urlsMatch(waitingSW.scriptURL, this._scriptURL.toString())) {
       // Store the waiting SW as the "own" Sw, even if it means overwriting
       // a compatible controller.
       this._sw = waitingSW;
@@ -162,7 +165,8 @@ class Workbox extends WorkboxEventTarget {
     }
 
     if (process.env.NODE_ENV !== 'production') {
-      logger.log('Successfully registered service worker.', this._scriptURL);
+      logger.log('Successfully registered service worker.',
+          this._scriptURL.toString());
 
       if (navigator.serviceWorker.controller) {
         if (this._compatibleControllingSW) {
@@ -177,7 +181,9 @@ class Workbox extends WorkboxEventTarget {
 
       const currentPageIsOutOfScope = () => {
         const scopeURL = new URL(
-            this._registerOptions.scope || this._scriptURL, document.baseURI);
+          this._registerOptions.scope || this._scriptURL.toString(),
+          document.baseURI
+        );
         const scopeURLBasePath = new URL('./', scopeURL.href).pathname;
         return !location.pathname.startsWith(scopeURLBasePath);
       };
@@ -302,7 +308,8 @@ class Workbox extends WorkboxEventTarget {
    */
   private _getControllingSWIfCompatible() {
     const controller = navigator.serviceWorker.controller;
-    if (controller && urlsMatch(controller.scriptURL, this._scriptURL)) {
+    if (controller &&
+        urlsMatch(controller.scriptURL, this._scriptURL.toString())) {
       return controller;
     } else {
       return undefined;
@@ -317,8 +324,11 @@ class Workbox extends WorkboxEventTarget {
    */
   private async _registerScript() {
     try {
+      // this._scriptURL may be a TrustedScriptURL, but there's no support for
+      // passing that to register() in lib.dom right now.
+      // https://github.com/GoogleChrome/workbox/issues/2855
       const reg = await navigator.serviceWorker.register(
-          this._scriptURL, this._registerOptions);
+          this._scriptURL as string, this._registerOptions);
 
       // Keep track of when registration happened, so it can be used in the
       // `this._onUpdateFound` heuristic. Also use the presence of this
@@ -364,7 +374,7 @@ class Workbox extends WorkboxEventTarget {
         // If the script URL of the installing SW is different from this
         // instance's script URL, we know it's definitely not from our
         // registration.
-        !urlsMatch(installingSW.scriptURL, this._scriptURL) ||
+        !urlsMatch(installingSW.scriptURL, this._scriptURL.toString()) ||
         // If all of the above are false, then we use a time-based heuristic:
         // Any `updatefound` event that occurs long after our registration is
         // assumed to be external.
