@@ -16,7 +16,7 @@ import {injectManifest} from './inject-manifest';
 /**
  * @module workbox-build
  */
-export default {
+export {
   copyWorkboxLibraries,
   generateSW,
   getManifest,

@@ -12,7 +12,7 @@ import GlobWatcher from 'glob-watcher';
 import meow from 'meow';
 import prettyBytes from 'pretty-bytes';
 import upath from 'upath';
-import workboxBuild from 'workbox-build';
+import * as workboxBuild from 'workbox-build';
 
 import {constants} from './lib/constants.js';
 import {errors} from './lib/errors.js';

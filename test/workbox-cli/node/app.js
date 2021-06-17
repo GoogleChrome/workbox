@@ -135,11 +135,9 @@ describe(`[workbox-cli] app.js`, function() {
             },
           },
           'workbox-build': {
-            default: {
-              [command]: (config) => {
-                expect(config).to.eql(PROXIED_CONFIG);
-                throw PROXIED_ERROR;
-              },
+            [command]: (config) => {
+              expect(config).to.eql(PROXIED_CONFIG);
+              throw PROXIED_ERROR;
             },
           },
         });
@@ -167,10 +165,8 @@ describe(`[workbox-cli] app.js`, function() {
             },
           },
           'workbox-build': {
-            default: {
-              [command]: () => {
-                return WORKBOX_BUILD_NO_WARNINGS_RETURN_VALUE;
-              },
+            [command]: () => {
+              return WORKBOX_BUILD_NO_WARNINGS_RETURN_VALUE;
             },
           },
         });
@@ -195,11 +191,9 @@ describe(`[workbox-cli] app.js`, function() {
               warn: loggerWarningStub,
             },
           },
-          'workbox-build': {
-            default: {
-              [command]: () => {
-                return WORKBOX_BUILD_WITH_WARNINGS_RETURN_VALUE;
-              },
+          'workbox-build': {      
+            [command]: () => {
+              return WORKBOX_BUILD_WITH_WARNINGS_RETURN_VALUE;
             },
           },
         });
@@ -226,10 +220,8 @@ describe(`[workbox-cli] app.js`, function() {
             },
           },
           'workbox-build': {
-            default: {
-              [command]: () => {
-                return WORKBOX_BUILD_NO_WARNINGS_RETURN_VALUE;
-              },
+            [command]: () => {
+              return WORKBOX_BUILD_NO_WARNINGS_RETURN_VALUE;
             },
           },
         });
@@ -248,11 +240,9 @@ describe(`[workbox-cli] app.js`, function() {
           },
         },
         'workbox-build': {
-          default: {
-            copyWorkboxLibraries: (destDir) => {
-              expect(destDir).to.eql(PROXIED_DEST_DIR);
-              return upath.join(destDir, 'workbox');
-            },
+          copyWorkboxLibraries: (destDir) => {
+            expect(destDir).to.eql(PROXIED_DEST_DIR);
+            return upath.join(destDir, 'workbox');
           },
         },
       });
