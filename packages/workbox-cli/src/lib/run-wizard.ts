@@ -6,9 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
-import * as fse from 'fs-extra';
+import fse from 'fs-extra';
 import {oneLine as ol} from 'common-tags';
-import * as stringifyObject from 'stringify-object';
+import stringifyObject from 'stringify-object';
 
 import {askQuestions} from './questions/ask-questions';
 import {logger} from './logger';

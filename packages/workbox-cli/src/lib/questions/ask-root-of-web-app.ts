@@ -6,9 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
-import * as assert from 'assert';
-import * as fse from 'fs-extra';
-import * as glob from 'glob';
+import assert from 'assert';
+import fse from 'fs-extra';
+import glob from 'glob';
 import {prompt, Separator} from 'inquirer';
 import {oneLine as ol} from 'common-tags';
 

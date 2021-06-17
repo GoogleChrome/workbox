@@ -9,15 +9,15 @@
 const expect = require('chai').expect;
 const proxyquire = require('proxyquire');
 
-const errors = require('../../../../packages/workbox-build/src/lib/errors');
+const {errors} = require('../../../../packages/workbox-build/build/lib/errors');
 
 describe(`[workbox-build] lib/get-file-hash.js`, function() {
-  const MODULE_PATH = '../../../../packages/workbox-build/src/lib/get-file-hash';
+  const MODULE_PATH = '../../../../packages/workbox-build/build/lib/get-file-hash';
   const FILE = 'file.txt';
 
   it(`should throw when there's a fs.readFileSync() error`, function() {
-    const getFileHash = proxyquire(MODULE_PATH, {
-      fs: {
+    const {getFileHash} = proxyquire(MODULE_PATH, {
+      'fs-extra': {
         readFileSync: () => {
           throw new Error();
         },
@@ -36,8 +36,8 @@ describe(`[workbox-build] lib/get-file-hash.js`, function() {
     const buffer = Buffer.alloc(10);
     const hashForBuffer = 'a63c90cc3684ad8b0a2176a6a8fe9005';
 
-    const getFileHash = proxyquire(MODULE_PATH, {
-      fs: {
+    const {getFileHash} = proxyquire(MODULE_PATH, {
+      'fs-extra': {
         readFileSync: (file) => {
           if (file !== FILE) {
             throw new Error(`Unexpected file name: ${file}`);

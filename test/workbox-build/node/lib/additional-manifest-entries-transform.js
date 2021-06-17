@@ -8,10 +8,10 @@
 
 const expect = require('chai').expect;
 
-const errors = require('../../../../packages/workbox-build/src/lib/errors');
-const additionalManifestEntriesTransform = require('../../../../packages/workbox-build/src/lib/additional-manifest-entries-transform');
+const {errors} = require('../../../../packages/workbox-build/build/lib/errors');
+const {additionalManifestEntriesTransform} = require('../../../../packages/workbox-build/build/lib/additional-manifest-entries-transform');
 
-describe(`[workbox-build] lib/additional-manifest-entries-transform.js`, function() {
+describe(`[workbox-build] lib/additional-manifest-entries-transform`, function() {
   function getManifest() {
     return [{
       url: '/first',
@@ -36,8 +36,8 @@ describe(`[workbox-build] lib/additional-manifest-entries-transform.js`, functio
     expect(transform(getManifest())).to.eql({
       manifest: [
         {url: '/first', revision: null},
-        {url: '/second', revision: null},
-        {url: '/third', revision: null},
+        {url: '/second', size: 0, revision: null},
+        {url: '/third', size: 0, revision: null},
       ],
       warnings: [],
     });
@@ -52,8 +52,8 @@ describe(`[workbox-build] lib/additional-manifest-entries-transform.js`, functio
     expect(transform(getManifest())).to.eql({
       manifest: [
         {url: '/first', revision: null},
-        '/second',
-        {url: '/third'},
+        {url: '/second', size: 0, revision: null},
+        {url: '/third', size: 0},
       ],
       warnings: [errors['string-entry-warning'] + '\n  - /second\n  - /third\n'],
     });

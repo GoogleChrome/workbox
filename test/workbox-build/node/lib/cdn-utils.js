@@ -8,16 +8,11 @@
 
 const expect = require('chai').expect;
 
-const cdnUtils = require('../../../../packages/workbox-build/src/lib/cdn-utils');
-const errors = require('../../../../packages/workbox-build/src/lib/errors');
+const cdnUtils = require('../../../../packages/workbox-build/build/lib/cdn-utils');
+const {errors} = require('../../../../packages/workbox-build/build/lib/errors');
 
 describe(`[workbox-build] lib/cdn-utils.js`, function() {
   const CDN_ORIGIN = 'https://storage.googleapis.com/workbox-cdn/releases';
-
-  it(`getCDNOrigin() should return the expected base URL`, function() {
-    const url = cdnUtils.getCDNOrigin();
-    expect(url).to.eql(CDN_ORIGIN);
-  });
 
   it(`getModuleURL() should throw when moduleName is undefined`, function() {
     expect(

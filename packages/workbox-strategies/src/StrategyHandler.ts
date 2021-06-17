@@ -520,7 +520,7 @@ class StrategyHandler {
    * `waitUntil()` promises.
    */
   destroy() {
-    this._handlerDeferred.resolve();
+    this._handlerDeferred.resolve(null);
   }
 
   /**

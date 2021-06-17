@@ -19,6 +19,13 @@ import {CacheExpiration} from './CacheExpiration.js';
 
 import './_version.js';
 
+export interface ExpirationPluginOptions {
+  maxEntries?: number;
+  maxAgeSeconds?: number;
+  matchOptions?: CacheQueryOptions;
+  purgeOnQuotaError?: boolean;
+}
+
 /**
  * This plugin can be used in a `workbox-strategy` to regularly enforce a
  * limit on the age and / or the number of cached requests.
@@ -58,12 +65,7 @@ class ExpirationPlugin implements WorkboxPlugin {
    * @param {boolean} [config.purgeOnQuotaError] Whether to opt this cache in to
    * automatic deletion if the available storage quota has been exceeded.
    */
-  constructor(config: {
-    maxEntries?: number;
-    maxAgeSeconds?: number;
-    matchOptions?: CacheQueryOptions;
-    purgeOnQuotaError?: boolean;
-  } = {}) {
+  constructor(config: ExpirationPluginOptions = {}) {
     if (process.env.NODE_ENV !== 'production') {
       if (!(config.maxEntries || config.maxAgeSeconds)) {
         throw new WorkboxError('max-entries-or-age-required', {

@@ -8,7 +8,7 @@
 
 const expect = require('chai').expect;
 
-const getCompositeDetails = require('../../../../packages/workbox-build/src/lib/get-composite-details');
+const {getCompositeDetails} = require('../../../../packages/workbox-build/build/lib/get-composite-details');
 
 describe(`[workbox-build] lib/get-composite-details.js`, function() {
   const URL = '/test';

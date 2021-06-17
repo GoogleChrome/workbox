@@ -6,9 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
-import * as assert from 'assert';
+import assert from 'assert';
 import {prompt} from 'inquirer';
-import * as upath from 'upath';
+import upath from 'upath';
 
 import {errors} from '../errors';
 

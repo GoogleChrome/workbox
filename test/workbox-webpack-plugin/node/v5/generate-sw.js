@@ -65,7 +65,9 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
           const statsJson = stats.toJson();
           expect(statsJson.warnings).to.be.empty;
           expect(statsJson.errors).to.have.length(1);
-          expect(statsJson.errors[0].message).to.eql(`Please check your GenerateSW plugin configuration:\n"invalid" is not allowed`);
+          expect(statsJson.errors[0].message).to.eql(
+              `Please check your GenerateSW plugin configuration:\n[WebpackGenerateSW] 'invalid' property is not expected to be here. Did you mean property 'include'?`,
+          );
 
           done();
         } catch (error) {

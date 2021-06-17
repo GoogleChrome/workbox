@@ -72,7 +72,7 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v4`, function() {
           const statsJson = stats.toJson();
           expect(statsJson.warnings).to.be.empty;
           expect(statsJson.errors).to.have.members([
-            `Please check your InjectManifest plugin configuration:\n"invalid" is not allowed`,
+            `Please check your InjectManifest plugin configuration:\n[WebpackInjectManifest] 'invalid' property is not expected to be here. Did you mean property 'include'?`,
           ]);
 
           done();
@@ -1757,7 +1757,7 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v4`, function() {
   });
 
   describe(`[workbox-webpack-plugin] Non-compilation scenarios`, function() {
-    it(`should error when compileSrc is false and webpackCompilationPlugins is used`, function(done) {
+    it(`should warn when compileSrc is false and webpackCompilationPlugins is used`, function(done) {
       const outputDir = tempy.directory();
 
       const config = {
@@ -1782,11 +1782,10 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v4`, function() {
         try {
           expect(webpackError).not.to.exist;
           const statsJson = stats.toJson();
-          expect(statsJson.warnings).to.be.empty;
-          expect(statsJson.errors).to.have.members([
-            `Please check your InjectManifest plugin configuration:\n"webpackCompilationPlugins" is not allowed`,
+          expect(statsJson.errors).to.be.empty;
+          expect(statsJson.warnings).to.have.members([
+            'compileSrc is false, so the webpackCompilationPlugins option will be ignored.',
           ]);
-
           done();
         } catch (error) {
           done(error);
