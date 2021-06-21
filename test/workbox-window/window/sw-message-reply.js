@@ -17,7 +17,8 @@ addEventListener('message', async (event) => {
       includeUncontrolled: true,
     });
     for (const win of windows) {
-      win.postMessage('postMessage from SW!');
+      const channel = new MessageChannel();
+      win.postMessage('postMessage from SW!', [channel.port1]);
     }
   } else if (event.data.type === 'BROADCAST_BACK') {
     const bc = new BroadcastChannel('workbox');
