@@ -528,7 +528,7 @@ class Workbox extends WorkboxEventTarget {
    * @param {Event} originalEvent
    */
   private readonly _onMessage = async (originalEvent: MessageEvent) => {
-    const {data, source} = originalEvent;
+    const {data, ports, source} = originalEvent;
 
     // Wait until there's an "own" service worker. This is used to buffer
     // `message` events that may be received prior to calling `register()`.
@@ -543,8 +543,9 @@ class Workbox extends WorkboxEventTarget {
     if (this._ownSWs.has(source as ServiceWorker)) {
       this.dispatchEvent(new WorkboxEvent('message', {
         data,
-        sw: source as ServiceWorker,
         originalEvent,
+        ports,
+        sw: source as ServiceWorker,
       }));
     }
   }
@@ -564,6 +565,7 @@ export {Workbox};
  * @property {Event} originalEvent The original [`message`]{@link https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent}
  *     event.
  * @property {string} type `message`.
+ * @property {MessagePort[]} ports The `ports` value from `originalEvent`.
  * @property {Workbox} target The `Workbox` instance.
  */
 
