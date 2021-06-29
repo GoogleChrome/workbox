@@ -250,7 +250,7 @@ describe(`[workbox-window] Workbox`, function() {
 
       expect(installedSpyArgs[0][0].isExternal).to.eql(false);
       expect(activatedSpyArgs[0][0].isExternal).to.eql(false);
-      expect(controllingSpyArgs[1][0].isExternal).to.eql(true);
+      expect(controllingSpyArgs[0][0].isExternal).to.eql(false);
       expect(installedSpyArgs[1][0].isExternal).to.eql(true);
       expect(activatedSpyArgs[1][0].isExternal).to.eql(true);
       expect(controllingSpyArgs[1][0].isExternal).to.eql(true);
