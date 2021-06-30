@@ -570,11 +570,13 @@ describe(`[workbox-window] Workbox`, function() {
         wb.messageSW({type: 'POST_MESSAGE_BACK'});
         await nextEvent(wb, 'message');
 
-        assertMatchesWorkboxEvent(messageSpy.args[0][0], {
-          type: 'message',
-          target: wb,
+        const wbEvent = messageSpy.args[0][0];
+        assertMatchesWorkboxEvent(wbEvent, {
           data: 'postMessage from SW!',
           originalEvent: {type: 'message'},
+          ports: wbEvent.originalEvent.ports,
+          target: wb,
+          type: 'message',
         });
       });
 
