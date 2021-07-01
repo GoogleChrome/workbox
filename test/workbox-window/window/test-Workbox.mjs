@@ -846,9 +846,17 @@ describe(`[workbox-window] Workbox`, function() {
         // the first time a page registers a SW). This case is tested in the
         // integration tests.
 
-        expect(controlling1Spy.callCount).to.equal(1);
+        expect(controlling1Spy.callCount).to.equal(2);
         assertMatchesWorkboxEvent(controlling1Spy.args[0][0], {
           isExternal: false,
+          isUpdate: true,
+          originalEvent: {type: 'controllerchange'},
+          sw: await wb1.getSW(),
+          target: wb1,
+          type: 'controlling',
+        });
+        assertMatchesWorkboxEvent(controlling1Spy.args[1][0], {
+          isExternal: true,
           isUpdate: true,
           originalEvent: {type: 'controllerchange'},
           sw: await wb1.getSW(),
@@ -871,6 +879,51 @@ describe(`[workbox-window] Workbox`, function() {
           originalEvent: {type: 'controllerchange'},
           sw: await wb3.getSW(),
           target: wb3,
+          type: 'controlling',
+        });
+      });
+
+      it(`runs every time the registered SW is updated`, async function() {
+        const scriptURL = uniq('sw-skip-waiting.js.njk');
+        const wb1 = new Workbox(scriptURL);
+        const controlling1Spy = sandbox.spy();
+        wb1.addEventListener('controlling', controlling1Spy);
+        await wb1.register();
+        await nextEvent(wb1, 'controlling');
+
+        await updateVersion('2.0.0', scriptURL);
+
+        wb1.update();
+        await nextEvent(wb1, 'controlling');
+
+        await updateVersion('3.0.0', scriptURL);
+
+        wb1.update();
+        await nextEvent(wb1, 'controlling');
+
+        expect(controlling1Spy.callCount).to.equal(3);
+        assertMatchesWorkboxEvent(controlling1Spy.args[0][0], {
+          isExternal: false,
+          isUpdate: true,
+          originalEvent: {type: 'controllerchange'},
+          sw: await wb1.getSW(),
+          target: wb1,
+          type: 'controlling',
+        });
+        assertMatchesWorkboxEvent(controlling1Spy.args[1][0], {
+          isExternal: true,
+          isUpdate: true,
+          originalEvent: {type: 'controllerchange'},
+          sw: await wb1.getSW(),
+          target: wb1,
+          type: 'controlling',
+        });
+        assertMatchesWorkboxEvent(controlling1Spy.args[2][0], {
+          isExternal: true,
+          isUpdate: true,
+          originalEvent: {type: 'controllerchange'},
+          sw: await wb1.getSW(),
+          target: wb1,
           type: 'controlling',
         });
       });
