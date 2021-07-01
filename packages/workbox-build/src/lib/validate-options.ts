@@ -41,6 +41,7 @@ export class WorkboxConfigError extends Error {
 function validate<T>(input: unknown, methodName: MethodNames): T {
   // Don't mutate input: https://github.com/GoogleChrome/workbox/issues/2158
   const inputCopy = Object.assign({}, input);
+  // eslint-disable-next-line  @typescript-eslint/no-unsafe-assignment
   const jsonSchema: JSONSchemaType<T> = require(`../schema/${methodName}Options.json`);
   const validate = ajv.compile(jsonSchema);
   if (validate(inputCopy)) {
@@ -52,6 +53,7 @@ function validate<T>(input: unknown, methodName: MethodNames): T {
     data: input,
     errors: validate.errors,
     // This is needed as JSONSchema6 is expected, but JSONSchemaType works.
+    // eslint-disable-next-line  @typescript-eslint/no-unsafe-assignment
     schema: jsonSchema as any,
   });
   const messages = betterErrors.map((err) => ol`[${err.path}] ${err.message}.

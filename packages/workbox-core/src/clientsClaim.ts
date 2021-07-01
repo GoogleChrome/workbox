@@ -18,7 +18,7 @@ declare let self: ServiceWorkerGlobalScope;
  *
  * @memberof module:workbox-core
  */
-function clientsClaim() {
+function clientsClaim(): void {
   self.addEventListener('activate', () => self.clients.claim());
 }
 

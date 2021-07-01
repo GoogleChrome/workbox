@@ -84,6 +84,8 @@ export async function bundle({
   // Rollup will inline the runtime by default. If we don't want that, we need
   // to add in some additional config.
   if (!inlineWorkboxRuntime) {
+    // No lint for omt(), library has no types.
+    // eslint-disable-next-line  @typescript-eslint/no-unsafe-call
     rollupConfig.plugins.unshift(omt());
     rollupConfig.manualChunks = (id) => {
       return id.includes('workbox') ? 'workbox' : undefined;

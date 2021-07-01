@@ -52,7 +52,7 @@ class CacheFirst extends Strategy {
 
     let response = await handler.cacheMatch(request);
 
-    let error;
+    let error: Error | undefined = undefined;
     if (!response) {
       if (process.env.NODE_ENV !== 'production') {
         logs.push(
@@ -62,7 +62,9 @@ class CacheFirst extends Strategy {
       try {
         response = await handler.fetchAndCachePut(request);
       } catch (err) {
-        error = err;
+        if (err instanceof Error) {
+          error = err;
+        }
       }
 
       if (process.env.NODE_ENV !== 'production') {

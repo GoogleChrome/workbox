@@ -16,7 +16,7 @@ let precacheController: PrecacheController | undefined;
  * @return {PrecacheController}
  * @private
  */
-export const getOrCreatePrecacheController = () => {
+export const getOrCreatePrecacheController = (): PrecacheController => {
   if (!precacheController) {
     precacheController = new PrecacheController();
   }

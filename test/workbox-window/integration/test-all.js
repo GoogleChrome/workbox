@@ -246,12 +246,14 @@ describe(`[workbox-window] Workbox`, function() {
       expect(installedSpyArgs.length, 'installedSpy').to.eql(2);
       expect(waitingSpyArgs.length, 'waitingSpy').to.eql(0);
       expect(activatedSpyArgs.length, 'activatedSpy').to.eql(2);
-      expect(controllingSpyArgs.length, 'controllingSpy').to.eql(1);
+      expect(controllingSpyArgs.length, 'controllingSpy').to.eql(2);
 
       expect(installedSpyArgs[0][0].isExternal).to.eql(false);
       expect(activatedSpyArgs[0][0].isExternal).to.eql(false);
+      expect(controllingSpyArgs[0][0].isExternal).to.eql(false);
       expect(installedSpyArgs[1][0].isExternal).to.eql(true);
       expect(activatedSpyArgs[1][0].isExternal).to.eql(true);
+      expect(controllingSpyArgs[1][0].isExternal).to.eql(true);
     });
   });
 });

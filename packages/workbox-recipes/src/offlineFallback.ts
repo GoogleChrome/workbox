@@ -22,15 +22,15 @@ declare let self: ServiceWorkerGlobalScope;
 
 /**
  * An implementation of the [comprehensive fallbacks recipe]{@link https://developers.google.com/web/tools/workbox/guides/advanced-recipes#comprehensive_fallbacks}. Be sure to include the fallbacks in your precache injection
- * 
+ *
  * @memberof module:workbox-recipes
- * 
+ *
  * @param {Object} [options]
  * @param {string} [options.pageFallback] Precache name to match for pag fallbacks. Defaults to offline.html
  * @param {string} [options.imageFallback] Precache name to match for image fallbacks.
  * @param {string} [options.fontFallback] Precache name to match for font fallbacks.
  */
-function offlineFallback(options: OfflineFallbackOptions = {}) {
+function offlineFallback(options: OfflineFallbackOptions = {}): void {
   const pageFallback = options.pageFallback || 'offline.html';
   const imageFallback = options.imageFallback || false;
   const fontFallback = options.fontFallback || false;

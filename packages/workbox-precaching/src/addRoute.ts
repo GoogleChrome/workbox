@@ -30,7 +30,7 @@ import './_version.js';
  *
  * @memberof module:workbox-precaching
  */
-function addRoute(options?: PrecacheRouteOptions) {
+function addRoute(options?: PrecacheRouteOptions): void {
   const precacheController = getOrCreatePrecacheController();
 
   const precacheRoute = new PrecacheRoute(precacheController, options);

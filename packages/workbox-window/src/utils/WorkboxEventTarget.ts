@@ -25,7 +25,7 @@ export class WorkboxEventTarget {
    * @param {Function} listener
    * @private
    */
-  addEventListener<K extends keyof WorkboxEventMap>(type: K, listener: (event: WorkboxEventMap[K]) => any) {
+  addEventListener<K extends keyof WorkboxEventMap>(type: K, listener: (event: WorkboxEventMap[K]) => any): void {
     const foo = this._getEventListenersByType(type)
     foo.add(listener as ListenerCallback);
   }
@@ -35,7 +35,7 @@ export class WorkboxEventTarget {
    * @param {Function} listener
    * @private
    */
-  removeEventListener<K extends keyof WorkboxEventMap>(type: K, listener: (event: WorkboxEventMap[K]) => any) {
+  removeEventListener<K extends keyof WorkboxEventMap>(type: K, listener: (event: WorkboxEventMap[K]) => any): void {
     this._getEventListenersByType(type).delete(listener as ListenerCallback);
   }
 
@@ -43,7 +43,7 @@ export class WorkboxEventTarget {
    * @param {Object} event
    * @private
    */
-  dispatchEvent(event: WorkboxEvent<any>) {
+  dispatchEvent(event: WorkboxEvent<any>): void {
     event.target = this;
 
     const listeners = this._getEventListenersByType(event.type)

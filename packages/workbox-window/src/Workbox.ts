@@ -73,7 +73,7 @@ class Workbox extends WorkboxEventTarget {
    * @param {Object} [registerOptions] The service worker options associated
    *     with this instance.
    */
-  constructor(scriptURL: string, registerOptions: {} = {}) {
+  constructor(scriptURL: string, registerOptions: Record<string, unknown> = {}) {
     super();
 
     this._scriptURL = scriptURL;
@@ -95,7 +95,7 @@ class Workbox extends WorkboxEventTarget {
    *     register the service worker immediately, even if the window has
    *     not loaded (not recommended).
    */
-  async register({immediate = false} = {}) {
+  async register({immediate = false} = {}): Promise<ServiceWorkerRegistration | undefined> {
     if (process.env.NODE_ENV !== 'production') {
       if (this._registrationTime) {
         logger.error('Cannot re-register a Workbox instance after it has ' +
@@ -189,7 +189,7 @@ class Workbox extends WorkboxEventTarget {
 
     this._registration.addEventListener('updatefound', this._onUpdateFound);
     navigator.serviceWorker.addEventListener(
-        'controllerchange', this._onControllerChange, {once: true});
+        'controllerchange', this._onControllerChange);
 
     return this._registration;
   }
@@ -197,7 +197,7 @@ class Workbox extends WorkboxEventTarget {
   /**
    * Checks for updates of the registered service worker.
    */
-  async update() {
+  async update(): Promise<void> {
     if (!this._registration) {
       if (process.env.NODE_ENV !== 'production') {
         logger.error('Cannot update a Workbox instance without ' +
@@ -219,7 +219,7 @@ class Workbox extends WorkboxEventTarget {
    *
    * @return {Promise<ServiceWorker>}
    */
-  get active() {
+  get active(): Promise<ServiceWorker> {
     return this._activeDeferred.promise;
   }
 
@@ -235,7 +235,7 @@ class Workbox extends WorkboxEventTarget {
    *
    * @return {Promise<ServiceWorker>}
    */
-  get controlling() {
+  get controlling(): Promise<ServiceWorker> {
     return this._controllingDeferred.promise;
   }
 
@@ -275,7 +275,7 @@ class Workbox extends WorkboxEventTarget {
    * @param {Object} data An object to send to the service worker
    * @return {Promise<Object>}
    */
-  async messageSW(data: object) {
+  async messageSW(data: Record<string, unknown>): Promise<any> {
     const sw = await this.getSW();
     return messageSW(sw, data);
   }
@@ -283,13 +283,13 @@ class Workbox extends WorkboxEventTarget {
   /**
    * Sends a `{type: 'SKIP_WAITING'}` message to the service worker that's
    * currently in the `waiting` state associated with the current registration.
-   * 
+   *
    * If there is no current registration or no service worker is `waiting`,
    * calling this will have no effect.
    */
-  messageSkipWaiting() {
+  messageSkipWaiting(): void {
     if (this._registration && this._registration.waiting) {
-      messageSW(this._registration.waiting, SKIP_WAITING_MESSAGE);
+      void messageSW(this._registration.waiting, SKIP_WAITING_MESSAGE);
     }
   }
 
@@ -528,6 +528,8 @@ class Workbox extends WorkboxEventTarget {
    * @param {Event} originalEvent
    */
   private readonly _onMessage = async (originalEvent: MessageEvent) => {
+    // Can't change type 'any' of data.
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const {data, ports, source} = originalEvent;
 
     // Wait until there's an "own" service worker. This is used to buffer
@@ -542,6 +544,8 @@ class Workbox extends WorkboxEventTarget {
     // update to be found.
     if (this._ownSWs.has(source as ServiceWorker)) {
       this.dispatchEvent(new WorkboxEvent('message', {
+        // Can't change type 'any' of data.
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         data,
         originalEvent,
         ports,

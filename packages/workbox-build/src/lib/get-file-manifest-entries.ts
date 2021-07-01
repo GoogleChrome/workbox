@@ -54,7 +54,9 @@ export async function getFileManifestEntries({
   } catch (error) {
     // If there's an exception thrown while globbing, then report
     // it back as a warning, and don't consider it fatal.
-    warnings.push(error.message);
+    if (error instanceof Error && error.message) {
+      warnings.push(error.message);
+    }
   }
 
   if (templatedURLs) {
@@ -83,12 +85,12 @@ export async function getFileManifestEntries({
             debugObj[url] = dependencies;
             throw new Error(`${errors['bad-template-urls-asset']} ` +
               `'${globPattern}' from '${JSON.stringify(debugObj)}':\n` +
-              error);
+              `${error instanceof Error ? error.toString() : ''}`);
           }
         }, []);
         if (details.length === 0) {
           throw new Error(`${errors['bad-template-urls-asset']} The glob ` +
-            `pattern '${dependencies}' did not match anything.`);
+            `pattern '${dependencies.toString()}' did not match anything.`);
         }
         allFileDetails.set(url, getCompositeDetails(url, details));
       } else if (typeof dependencies === 'string') {
