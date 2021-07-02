@@ -189,7 +189,7 @@ class Workbox extends WorkboxEventTarget {
 
     this._registration.addEventListener('updatefound', this._onUpdateFound);
     navigator.serviceWorker.addEventListener(
-        'controllerchange', this._onControllerChange, {once: true});
+        'controllerchange', this._onControllerChange);
 
     return this._registration;
   }
