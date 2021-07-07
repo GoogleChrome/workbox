@@ -13,7 +13,14 @@ import {askSWDest} from './ask-sw-dest';
 import {askSWSrc} from './ask-sw-src';
 import {askQueryParametersInStartUrl} from './ask-start_url-query-params';
 
-export async function askQuestions(options = {}) {
+interface ConfigWithConfigLocation {
+  config: {
+    [key: string]: any
+  }
+  configLocation: string
+}
+
+export async function askQuestions(options = {}): Promise<ConfigWithConfigLocation> {
   const globDirectory = await askRootOfWebApp();
   const globPatterns = await askExtensionsToCache(globDirectory);
   const swSrc = ("injectManifest" in options) ? await askSWSrc() : undefined;

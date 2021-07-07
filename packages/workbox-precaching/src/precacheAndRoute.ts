@@ -26,7 +26,7 @@ import './_version.js';
  *
  * @memberof module:workbox-precaching
  */
-function precacheAndRoute(entries: Array<PrecacheEntry|string>, options?: PrecacheRouteOptions) {
+function precacheAndRoute(entries: Array<PrecacheEntry | string>, options?: PrecacheRouteOptions): void {
   precache(entries);
   addRoute(options);
 }

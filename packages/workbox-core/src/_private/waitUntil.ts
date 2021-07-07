@@ -17,7 +17,7 @@ import '../_version.js';
  * @return {Function}
  * @private
  */
-function waitUntil(event: ExtendableEvent, asyncFn: () => Promise<any>) {
+function waitUntil(event: ExtendableEvent, asyncFn: () => Promise<any>): Promise<any> {
   const returnPromise = asyncFn();
   event.waitUntil(returnPromise);
   return returnPromise;

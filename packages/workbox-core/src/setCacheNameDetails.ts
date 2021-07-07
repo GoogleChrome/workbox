@@ -29,7 +29,7 @@ import './_version.js';
  *
  * @memberof module:workbox-core
  */
-function setCacheNameDetails(details: PartialCacheNameDetails) {
+function setCacheNameDetails(details: PartialCacheNameDetails): void {
   if (process.env.NODE_ENV !== 'production') {
     Object.keys(details).forEach((key) => {
       assert!.isType(details[key], 'string', {

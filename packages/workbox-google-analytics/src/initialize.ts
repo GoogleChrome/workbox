@@ -206,7 +206,7 @@ const createGtmJsRoute = (cacheName: string) => {
  *
  * @memberof module:workbox-google-analytics
  */
-const initialize = (options: GoogleAnalyticsInitializeOptions = {}) => {
+const initialize = (options: GoogleAnalyticsInitializeOptions = {}): void => {
   const cacheName = cacheNames.getGoogleAnalyticsName(options.cacheName);
 
   const bgSyncPlugin = new BackgroundSyncPlugin(QUEUE_NAME, {

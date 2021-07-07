@@ -7,7 +7,7 @@
 */
 
 import assert from 'assert';
-import {prompt} from 'inquirer';
+import {Answers, prompt} from 'inquirer';
 import glob from 'glob';
 import ora from 'ora';
 import upath from 'upath';
@@ -57,9 +57,9 @@ async function getAllFileExtensions(globDirectory: string) {
 
 /**
  * @param {string} globDirectory The directory used for the root of globbing.
- * @return {Promise<Object>} The answers from inquirer.
+ * @return {Promise<Answers>} The answers from inquirer.
  */
-async function askQuestion(globDirectory: string) {
+async function askQuestion(globDirectory: string): Promise<Answers> {
   // We need to get a list of extensions corresponding to files in the directory
   // to use when asking the next question. That could potentially take some
   // time, so we show a spinner and explanatory text.
@@ -81,14 +81,16 @@ async function askQuestion(globDirectory: string) {
   }]);
 }
 
-export async function askExtensionsToCache(globDirectory: string){
+export async function askExtensionsToCache(globDirectory: string): Promise<string[]> {
   const answers = await askQuestion(globDirectory);
-  const extensions = answers[name];
+  // The return value is an array of strings with the selected values
+  // and there is a default, the casting is safe.
+  const extensions: string[] = answers[name] as string[];
   assert(extensions.length > 0, errors['no-file-extensions-selected']);
 
   // glob isn't happy with a single option inside of a {} group, so use a
   // pattern without a {} group when there's only one extension.
-  const extensionsPattern = extensions.length === 1 ?
+  const extensionsPattern: string = extensions.length === 1 ?
     extensions[0] :
     `{${extensions.join(',')}}`;
   return [`**/*.${extensionsPattern}`];

@@ -26,7 +26,7 @@ const responsesAreSame = (
   firstResponse: Response,
   secondResponse: Response,
   headersToCheck: string[],
-) => {
+): boolean => {
   if (process.env.NODE_ENV !== 'production') {
     if (!(firstResponse instanceof Response &&
       secondResponse instanceof Response)) {

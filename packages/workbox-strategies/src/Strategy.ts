@@ -170,7 +170,7 @@ abstract class Strategy implements RouteHandlerObject {
     return [responseDone, handlerDone];
   }
 
-  async _getResponse(handler: StrategyHandler, request: Request, event: ExtendableEvent) {
+  async _getResponse(handler: StrategyHandler, request: Request, event: ExtendableEvent): Promise<Response> {
     await handler.runCallbacks('handlerWillStart', {event, request});
 
     let response: Response | undefined = undefined;
@@ -183,10 +183,12 @@ abstract class Strategy implements RouteHandlerObject {
         throw new WorkboxError('no-response', {url: request.url});
       }
     } catch (error) {
-      for (const callback of handler.iterateCallbacks('handlerDidError')) {
-        response = await callback({error, event, request});
-        if (response) {
-          break;
+      if (error instanceof Error) {
+        for (const callback of handler.iterateCallbacks('handlerDidError')) {
+          response = await callback({error, event, request});
+          if (response) {
+            break;
+          }
         }
       }
 
@@ -194,7 +196,7 @@ abstract class Strategy implements RouteHandlerObject {
         throw error;
       } else if (process.env.NODE_ENV !== 'production') {
         logger.log(`While responding to '${getFriendlyURL(request.url)}', ` +
-          `an ${error} error occurred. Using a fallback response provided by `+
+          `an ${error instanceof Error ? error.toString() : ''} error occurred. Using a fallback response provided by ` +
           `a handlerDidError plugin.`);
       }
     }
@@ -206,7 +208,7 @@ abstract class Strategy implements RouteHandlerObject {
     return response;
   }
 
-  async _awaitComplete(responseDone: Promise<Response>, handler: StrategyHandler, request: Request, event: ExtendableEvent) {
+  async _awaitComplete(responseDone: Promise<Response>, handler: StrategyHandler, request: Request, event: ExtendableEvent): Promise<void> {
     let response;
     let error;
 
@@ -226,14 +228,17 @@ abstract class Strategy implements RouteHandlerObject {
       });
       await handler.doneWaiting();
     } catch (waitUntilError) {
-      error = waitUntilError;
+      if (waitUntilError instanceof Error) {
+        error = waitUntilError;
+      }
+
     }
 
     await handler.runCallbacks('handlerDidComplete', {
       event,
       request,
       response,
-      error,
+      error: error as Error,
     });
     handler.destroy();
 

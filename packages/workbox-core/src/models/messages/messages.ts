@@ -6,12 +6,14 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {MapLikeObject} from '../../types.js';
 import '../../_version.js';
 
 
+interface LoggableObject {
+  [key: string]: string | number;
+}
 interface MessageMap {
-  [messageID: string]: (param: MapLikeObject) => string;
+  [messageID: string]: (param: LoggableObject) => string;
 }
 
 export const messages: MessageMap = {
@@ -37,26 +39,27 @@ export const messages: MessageMap = {
     if (!expectedType || !paramName || !moduleName || !funcName) {
       throw new Error(`Unexpected input to 'incorrect-type' error.`);
     }
+    const classNameStr = className ? `${className}.` : '';
     return `The parameter '${paramName}' passed into ` +
-      `'${moduleName}.${className ? (className + '.') : ''}` +
+      `'${moduleName}.${classNameStr}` +
       `${funcName}()' must be of type ${expectedType}.`;
   },
 
-  'incorrect-class': ({expectedClass, paramName, moduleName, className,
+  'incorrect-class': ({expectedClassName, paramName, moduleName, className,
     funcName, isReturnValueProblem}) => {
-    if (!expectedClass || !moduleName || !funcName) {
+    if (!expectedClassName || !moduleName || !funcName) {
       throw new Error(`Unexpected input to 'incorrect-class' error.`);
     }
-
+    const classNameStr = className ? `${className}.` : '';
     if (isReturnValueProblem) {
       return `The return value from ` +
-        `'${moduleName}.${className ? (className + '.') : ''}${funcName}()' ` +
-        `must be an instance of class ${expectedClass.name}.`;
+        `'${moduleName}.${classNameStr}${funcName}()' ` +
+        `must be an instance of class ${expectedClassName}.`;
     }
 
     return `The parameter '${paramName}' passed into ` +
-      `'${moduleName}.${className ? (className + '.') : ''}${funcName}()' ` +
-      `must be an instance of class ${expectedClass.name}.`;
+      `'${moduleName}.${classNameStr}${funcName}()' ` +
+      `must be an instance of class ${expectedClassName}.`;
   },
 
   'missing-a-method': ({expectedMethod, paramName, moduleName, className,
@@ -85,19 +88,19 @@ export const messages: MessageMap = {
 
     return `Two of the entries passed to ` +
       `'workbox-precaching.PrecacheController.addToCacheList()' had the URL ` +
-      `${firstEntry._entryId} but different revision details. Workbox is ` +
+      `${firstEntry} but different revision details. Workbox is ` +
       `unable to cache and version the asset correctly. Please remove one ` +
       `of the entries.`;
   },
 
-  'plugin-error-request-will-fetch': ({thrownError}) => {
-    if (!thrownError) {
+  'plugin-error-request-will-fetch': ({thrownErrorMessage}) => {
+    if (!thrownErrorMessage) {
       throw new Error(`Unexpected input to ` +
         `'plugin-error-request-will-fetch', error.`);
     }
 
     return `An error was thrown by a plugins 'requestWillFetch()' method. ` +
-      `The thrown error message was: '${thrownError.message}'.`;
+      `The thrown error message was: '${thrownErrorMessage}'.`;
   },
 
   'invalid-cache-name': ({cacheNameId, value}) => {

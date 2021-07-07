@@ -38,12 +38,13 @@ const BUILD_DIR = 'build';
  * @alias module:workbox-build.copyWorkboxLibraries
  */
 export async function copyWorkboxLibraries(destDirectory: string): Promise<string> {
+  // eslint-disable-next-line  @typescript-eslint/no-unsafe-assignment
   const thisPkg: WorkboxPackageJSON = require('../../package.json');
   // Use the version string from workbox-build in the name of the parent
   // directory. This should be safe, because lerna will bump workbox-build's
   // pkg.version whenever one of the dependent libraries gets bumped, and we
   // care about versioning the dependent libraries.
-  const workboxDirectoryName = `workbox-v${thisPkg.version}`;
+  const workboxDirectoryName = `workbox-v${thisPkg.version ? thisPkg.version : ''}`;
   const workboxDirectoryPath = upath.join(destDirectory, workboxDirectoryName);
   await fse.ensureDir(workboxDirectoryPath);
 
@@ -68,6 +69,6 @@ export async function copyWorkboxLibraries(destDirectory: string): Promise<strin
     await Promise.all(copyPromises);
     return workboxDirectoryName;
   } catch (error) {
-    throw Error(`${errors['unable-to-copy-workbox-libraries']} ${error}`);
+    throw Error(`${errors['unable-to-copy-workbox-libraries']} ${error instanceof Error ? error.toString() : ''}`);
   }
 }

@@ -41,7 +41,7 @@ class PrecacheStrategy extends Strategy {
       if (!response || response.status >= 400) {
         return null;
       }
-  
+
       return response;
     }
   };
@@ -89,7 +89,7 @@ class PrecacheStrategy extends Strategy {
    *     triggered the request.
    * @return {Promise<Response>}
    */
-  async _handle(request: Request, handler: StrategyHandler) {
+  async _handle(request: Request, handler: StrategyHandler): Promise<Response> {
     const response = await handler.cacheMatch(request);
     if (!response) {
       // If this is an `install` event then populate the cache. If this is a
@@ -104,7 +104,7 @@ class PrecacheStrategy extends Strategy {
     return response;
   }
 
-  async _handleFetch(request: Request, handler: StrategyHandler) {
+  async _handleFetch(request: Request, handler: StrategyHandler): Promise<Response> {
     let response;
 
     // Fall back to the network if we don't have a cached response
@@ -126,6 +126,8 @@ class PrecacheStrategy extends Strategy {
     }
 
     if (process.env.NODE_ENV !== 'production') {
+      // Params in handlers is type any, can't change right now.
+      // eslint-disable-next-line
       const cacheKey = handler.params && handler.params.cacheKey ||
           await handler.getCacheKey(request, 'read');
 
@@ -133,6 +135,8 @@ class PrecacheStrategy extends Strategy {
       // print the routing details to the console.
       logger.groupCollapsed(`Precaching is responding to: ` +
           getFriendlyURL(request.url));
+      // cacheKey is type any, can't change right now.
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       logger.log(`Serving the precached url: ${getFriendlyURL(cacheKey.url)}`);
 
       logger.groupCollapsed(`View request details here.`);
@@ -148,7 +152,7 @@ class PrecacheStrategy extends Strategy {
     return response;
   }
 
-  async _handleInstall(request: Request, handler: StrategyHandler) {
+  async _handleInstall(request: Request, handler: StrategyHandler): Promise<Response> {
     this._useDefaultCacheabilityPluginIfNeeded();
 
     const response = await handler.fetch(request);
@@ -170,27 +174,27 @@ class PrecacheStrategy extends Strategy {
 
   /**
    * This method is complex, as there a number of things to account for:
-   * 
+   *
    * The `plugins` array can be set at construction, and/or it might be added to
    * to at any time before the strategy is used.
-   * 
+   *
    * At the time the strategy is used (i.e. during an `install` event), there
    * needs to be at least one plugin that implements `cacheWillUpdate` in the
    * array, other than `copyRedirectedCacheableResponsesPlugin`.
-   * 
+   *
    * - If this method is called and there are no suitable `cacheWillUpdate`
    * plugins, we need to add `defaultPrecacheCacheabilityPlugin`.
-   * 
+   *
    * - If this method is called and there is exactly one `cacheWillUpdate`, then
    * we don't have to do anything (this might be a previously added
-   * `defaultPrecacheCacheabilityPlugin`, or it might be a custom plugin). 
-   * 
+   * `defaultPrecacheCacheabilityPlugin`, or it might be a custom plugin).
+   *
    * - If this method is called and there is more than one `cacheWillUpdate`,
    * then we need to check if one is `defaultPrecacheCacheabilityPlugin`. If so,
    * we need to remove it. (This situation is unlikely, but it could happen if
    * the strategy is used multiple times, the first without a `cacheWillUpdate`,
    * and then later on after manually adding a custom `cacheWillUpdate`.)
-   * 
+   *
    * See https://github.com/GoogleChrome/workbox/issues/2737 for more context.
    *
    * @private

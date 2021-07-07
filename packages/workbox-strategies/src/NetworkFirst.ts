@@ -197,7 +197,9 @@ class NetworkFirst extends Strategy {
     try {
       response = await handler.fetchAndCachePut(request);
     } catch (fetchError) {
-      error = fetchError;
+      if (fetchError instanceof Error) {
+        error = fetchError;
+      }
     }
 
     if (timeoutId) {

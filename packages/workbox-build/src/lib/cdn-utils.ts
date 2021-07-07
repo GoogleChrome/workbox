@@ -20,10 +20,11 @@ function getCDNPrefix() {
   return `${cdn.origin}/${cdn.bucketName}/${cdn.releasesDir}`;
 }
 
-export function getModuleURL(moduleName: string, buildType: BuildType) {
+export function getModuleURL(moduleName: string, buildType: BuildType): string {
   ok(moduleName, errors['no-module-name']);
 
   if (buildType) {
+    // eslint-disable-next-line  @typescript-eslint/no-unsafe-assignment
     const pkgJson: WorkboxPackageJSON = require(`${moduleName}/package.json`);
     if (buildType === 'dev' && pkgJson.workbox && pkgJson.workbox.prodOnly) {
       // This is not due to a public-facing exception, so just throw an Error(),

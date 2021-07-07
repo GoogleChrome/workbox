@@ -22,7 +22,7 @@ import './_version.js';
  * be used as the `ResponseInit` for the new `Response`. To change the values
  * either modify the passed parameter(s) and return it, or return a totally
  * new object.
- * 
+ *
  * This method is intentionally limited to same-origin responses, regardless of
  * whether CORS was used or not.
  *
@@ -33,7 +33,7 @@ import './_version.js';
 async function copyResponse(
   response: Response,
   modifier?: (responseInit: ResponseInit) => ResponseInit
-) {
+): Promise<Response> {
   let origin = null;
   // If response.url isn't set, assume it's cross-origin and keep origin null.
   if (response.url) {

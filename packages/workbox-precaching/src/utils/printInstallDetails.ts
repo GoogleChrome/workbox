@@ -16,7 +16,7 @@ import '../_version.js';
  *
  * @private
  */
-function _nestedGroup(groupTitle: string, urls: string[]) {
+function _nestedGroup(groupTitle: string, urls: string[]): void {
   if (urls.length === 0) {
     return;
   }
@@ -37,7 +37,7 @@ function _nestedGroup(groupTitle: string, urls: string[]) {
  * @private
  * @memberof module:workbox-precaching
  */
-export function printInstallDetails(urlsToPrecache: string[], urlsAlreadyPrecached: string[]) {
+export function printInstallDetails(urlsToPrecache: string[], urlsAlreadyPrecached: string[]): void {
   const precachedCount = urlsToPrecache.length;
   const alreadyPrecachedCount = urlsAlreadyPrecached.length;
 

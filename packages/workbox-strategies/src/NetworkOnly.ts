@@ -88,7 +88,9 @@ class NetworkOnly extends Strategy {
             `${this._networkTimeoutSeconds} seconds.`);
       }
     } catch (err) {
-      error = err;
+      if (err instanceof Error) {
+        error = err;
+      }
     }
 
     if (process.env.NODE_ENV !== 'production') {

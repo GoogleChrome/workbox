@@ -23,9 +23,9 @@ export interface ImageCacheOptions {
 
 /**
  * An implementation of a page caching recipe with a network timeout
- * 
+ *
  * @memberof module:workbox-recipes
- * 
+ *
  * @param {Object} [options]
  * @param {string} [options.cacheName] Name for cache. Defaults to pages
  * @param {RouteMatchCallback} [options.matchCallback] Workbox callback function to call to match to. Defaults to request.mode === 'navigate';
@@ -33,7 +33,7 @@ export interface ImageCacheOptions {
  * @param {WorkboxPlugin[]} [options.plugins] Additional plugins to use for this recipe
  * @param {string[]} [options.warmCache] Paths to call to use to warm this cache
  */
-function pageCache(options: ImageCacheOptions = {}) {
+function pageCache(options: ImageCacheOptions = {}): void {
   const defaultMatchCallback = ({request}: RouteMatchCallbackOptions) => request.mode === 'navigate';
 
   const cacheName = options.cacheName || 'pages';
@@ -49,7 +49,7 @@ function pageCache(options: ImageCacheOptions = {}) {
     cacheName,
     plugins,
   });
-  
+
 
   // Registers the route
   registerRoute(

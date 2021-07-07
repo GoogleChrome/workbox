@@ -88,7 +88,7 @@ class CacheTimestampsModel {
   private _upgradeDbAndDeleteOldDbs(db: IDBPDatabase<CacheDbSchema>) {
     this._upgradeDb(db);
     if (this._cacheName) {
-      deleteDB(this._cacheName);
+      void deleteDB(this._cacheName);
     }
   }
 
@@ -98,7 +98,7 @@ class CacheTimestampsModel {
    *
    * @private
    */
-  async setTimestamp(url: string, timestamp: number) {
+  async setTimestamp(url: string, timestamp: number): Promise<void> {
     url = normalizeURL(url);
 
     const entry: CacheTimestampsModelEntry = {
