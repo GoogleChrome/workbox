@@ -101,6 +101,15 @@ function getOptionsString(moduleRegistry: ModuleRegistry, options: RuntimeCachin
         break;
       }
 
+      case 'rangeRequests': {
+        const plugin = moduleRegistry.use(
+            'workbox-range-requests', 'RangeRequestsPlugin');
+
+        // There are no configuration options for the constructor.
+        plugins.push(`new ${plugin}()`);
+        break;
+      }
+
       default: {
         // In the default case optionName is typed as 'never'.
         //eslint-disable-next-line @typescript-eslint/restrict-template-expressions

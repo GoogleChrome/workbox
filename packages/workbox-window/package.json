@@ -25,5 +25,8 @@
   "types": "index.d.ts",
   "dependencies": {
     "workbox-core": "^6.1.5"
+  },
+  "devDependencies": {
+    "@types/trusted-types": "^2.0.1"
   }
 }

@@ -99,6 +99,10 @@ import './_version.mjs';
  * property to use when creating the
  * [`PrecacheFallbackPlugin`]{@link module:workbox-precaching.PrecacheFallbackPlugin}.
  *
+ * @property {boolean} [options.rangeRequests] Set to `true` to add the
+ * [`RangeRequestsPlugin`]{@link module:workbox-range-requests.RangeRequestsPlugin}
+ * for the strategy being configured.
+ *
  * @property {Object} [options.matchOptions] The `matchOptions` property value
  * to use when constructing one of the
  * [Workbox strategy classes]{@link module:workbox-strategies}.
