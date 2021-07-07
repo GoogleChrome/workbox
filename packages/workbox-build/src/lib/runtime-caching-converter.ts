@@ -101,6 +101,15 @@ function getOptionsString(moduleRegistry: ModuleRegistry, options: RuntimeCachin
         break;
       }
 
+      case 'rangeRequests': {
+        const plugin = moduleRegistry.use(
+            'workbox-range-requests', 'RangeRequestsPlugin');
+
+        // There are no configuration options for the constructor.
+        plugins.push(`new ${plugin}()`);
+        break;
+      }
+
       default: {
         throw new Error(errors['bad-runtime-caching-config'] + optionName);
       }

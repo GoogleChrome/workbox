@@ -1,1 +1,774 @@
-{"additionalProperties":false,"type":"object","properties":{"additionalManifestEntries":{"type":"array","items":{"anyOf":[{"$ref":"#/definitions/ManifestEntry"},{"type":"string"}]}},"dontCacheBustURLsMatching":{"$ref":"#/definitions/RegExp"},"manifestTransforms":{"type":"array","items":{"typeof":"function"}},"maximumFileSizeToCacheInBytes":{"default":2097152,"type":"number"},"modifyURLPrefix":{"type":"object","additionalProperties":{"type":"string"}},"globFollow":{"default":true,"type":"boolean"},"globIgnores":{"default":["**/node_modules/**/*"],"type":"array","items":{"type":"string"}},"globPatterns":{"default":["**/*.{js,css,html}"],"type":"array","items":{"type":"string"}},"globStrict":{"default":true,"type":"boolean"},"templatedURLs":{"type":"object","additionalProperties":{"anyOf":[{"type":"array","items":{"type":"string"}},{"type":"string"}]}},"injectionPoint":{"default":"self.__WB_MANIFEST","type":"string"},"swSrc":{"type":"string"},"swDest":{"type":"string"},"globDirectory":{"type":"string"}},"required":["globDirectory","swDest","swSrc"],"definitions":{"ManifestEntry":{"type":"object","properties":{"integrity":{"type":"string"},"revision":{"type":["null","string"]},"url":{"type":"string"}},"additionalProperties":false,"required":["revision","url"]},"RegExp":{"type":"object","properties":{"source":{"type":"string"},"global":{"type":"boolean"},"ignoreCase":{"type":"boolean"},"multiline":{"type":"boolean"},"lastIndex":{"type":"number"},"flags":{"type":"string"},"sticky":{"type":"boolean"},"unicode":{"type":"boolean"},"dotAll":{"type":"boolean"}},"additionalProperties":false,"required":["dotAll","flags","global","ignoreCase","lastIndex","multiline","source","sticky","unicode"]},"GoogleAnalyticsInitializeOptions":{"type":"object","properties":{"cacheName":{"type":"string"},"parameterOverrides":{"type":"object","additionalProperties":{"type":"string"}},"hitFilter":{"type":"object","additionalProperties":false}},"additionalProperties":false},"RuntimeCaching":{"type":"object","properties":{"handler":{"anyOf":[{"$ref":"#/definitions/RouteHandlerCallback"},{"$ref":"#/definitions/RouteHandlerObject"},{"enum":["CacheFirst","CacheOnly","NetworkFirst","NetworkOnly","StaleWhileRevalidate"],"type":"string"}]},"method":{"enum":["DELETE","GET","HEAD","PATCH","POST","PUT"],"type":"string"},"options":{"type":"object","properties":{"backgroundSync":{"type":"object","properties":{"name":{"type":"string"},"options":{"$ref":"#/definitions/QueueOptions"}},"additionalProperties":false,"required":["name"]},"broadcastUpdate":{"type":"object","properties":{"channelName":{"type":"string"},"options":{"$ref":"#/definitions/BroadcastCacheUpdateOptions"}},"additionalProperties":false,"required":["options"]},"cacheableResponse":{"$ref":"#/definitions/CacheableResponseOptions"},"cacheName":{"type":["null","string"]},"expiration":{"$ref":"#/definitions/ExpirationPluginOptions"},"networkTimeoutSeconds":{"type":"number"},"plugins":{"type":"array","items":{"$ref":"#/definitions/WorkboxPlugin"}},"precacheFallback":{"type":"object","properties":{"fallbackURL":{"type":"string"}},"additionalProperties":false,"required":["fallbackURL"]},"fetchOptions":{"$ref":"#/definitions/RequestInit"},"matchOptions":{"$ref":"#/definitions/CacheQueryOptions"}},"additionalProperties":false},"urlPattern":{"anyOf":[{"$ref":"#/definitions/RegExp"},{"$ref":"#/definitions/RouteMatchCallback"},{"type":"string"}]}},"additionalProperties":false,"required":["handler","urlPattern"]},"RouteHandlerCallback":{"description":"The \"handler\" callback is invoked whenever a `Router` matches a URL/Request\nto a `Route` via its `RouteMatchCallback`. This handler callback should\nreturn a `Promise` that resolves with a `Response`.\n\nIf a non-empty array or object is returned by the `RouteMatchCallback` it\nwill be passed in as this handler's `options.params` argument.","type":"object","additionalProperties":false},"RouteHandlerObject":{"description":"An object with a `handle` method of type `RouteHandlerCallback`.\n\nA `Route` object can be created with either an `RouteHandlerCallback`\nfunction or this `RouteHandler` object. The benefit of the `RouteHandler`\nis it can be extended (as is done by the `workbox-strategies` package).","type":"object","properties":{"handle":{"$ref":"#/definitions/RouteHandlerCallback"}},"additionalProperties":false,"required":["handle"]},"QueueOptions":{"type":"object","properties":{"onSync":{"$ref":"#/definitions/OnSyncCallback"},"maxRetentionTime":{"type":"number"}},"additionalProperties":false},"OnSyncCallback":{"type":"object","additionalProperties":false},"BroadcastCacheUpdateOptions":{"type":"object","properties":{"headersToCheck":{"type":"array","items":{"type":"string"}},"generatePayload":{"type":"object","additionalProperties":false}},"additionalProperties":false},"CacheableResponseOptions":{"type":"object","properties":{"statuses":{"type":"array","items":{"type":"number"}},"headers":{"type":"object","additionalProperties":{"type":"string"}}},"additionalProperties":false},"ExpirationPluginOptions":{"type":"object","properties":{"maxEntries":{"type":"number"},"maxAgeSeconds":{"type":"number"},"matchOptions":{"$ref":"#/definitions/CacheQueryOptions"},"purgeOnQuotaError":{"type":"boolean"}},"additionalProperties":false},"CacheQueryOptions":{"type":"object","properties":{"ignoreMethod":{"type":"boolean"},"ignoreSearch":{"type":"boolean"},"ignoreVary":{"type":"boolean"}},"additionalProperties":false},"WorkboxPlugin":{"description":"An object with optional lifecycle callback properties for the fetch and\ncache operations.","type":"object","properties":{"cacheDidUpdate":{"$ref":"#/definitions/CacheDidUpdateCallback"},"cachedResponseWillBeUsed":{"$ref":"#/definitions/CachedResponseWillBeUsedCallback"},"cacheKeyWillBeUsed":{"$ref":"#/definitions/CacheKeyWillBeUsedCallback"},"cacheWillUpdate":{"$ref":"#/definitions/CacheWillUpdateCallback"},"fetchDidFail":{"$ref":"#/definitions/FetchDidFailCallback"},"fetchDidSucceed":{"$ref":"#/definitions/FetchDidSucceedCallback"},"handlerDidComplete":{"$ref":"#/definitions/HandlerDidCompleteCallback"},"handlerDidError":{"$ref":"#/definitions/HandlerDidErrorCallback"},"handlerDidRespond":{"$ref":"#/definitions/HandlerDidRespondCallback"},"handlerWillRespond":{"$ref":"#/definitions/HandlerWillRespondCallback"},"handlerWillStart":{"$ref":"#/definitions/HandlerWillStartCallback"},"requestWillFetch":{"$ref":"#/definitions/RequestWillFetchCallback"}},"additionalProperties":false},"CacheDidUpdateCallback":{"type":"object","additionalProperties":false},"CachedResponseWillBeUsedCallback":{"type":"object","additionalProperties":false},"CacheKeyWillBeUsedCallback":{"type":"object","additionalProperties":false},"CacheWillUpdateCallback":{"type":"object","additionalProperties":false},"FetchDidFailCallback":{"type":"object","additionalProperties":false},"FetchDidSucceedCallback":{"type":"object","additionalProperties":false},"HandlerDidCompleteCallback":{"type":"object","additionalProperties":false},"HandlerDidErrorCallback":{"type":"object","additionalProperties":false},"HandlerDidRespondCallback":{"type":"object","additionalProperties":false},"HandlerWillRespondCallback":{"type":"object","additionalProperties":false},"HandlerWillStartCallback":{"type":"object","additionalProperties":false},"RequestWillFetchCallback":{"type":"object","additionalProperties":false},"RequestInit":{"type":"object","properties":{"body":{"anyOf":[{"$ref":"#/definitions/ArrayBuffer"},{"$ref":"#/definitions/ArrayBufferView"},{"$ref":"#/definitions/Blob"},{"$ref":"#/definitions/FormData"},{"$ref":"#/definitions/URLSearchParams"},{"$ref":"#/definitions/ReadableStream<Uint8Array>"},{"type":["null","string"]}]},"cache":{"enum":["default","force-cache","no-cache","no-store","only-if-cached","reload"],"type":"string"},"credentials":{"enum":["include","omit","same-origin"],"type":"string"},"headers":{"anyOf":[{"$ref":"#/definitions/Headers"},{"type":"array","items":{"type":"array","items":{"type":"string"}}},{"$ref":"#/definitions/Record<string,string>"}]},"integrity":{"type":"string"},"keepalive":{"type":"boolean"},"method":{"type":"string"},"mode":{"enum":["cors","navigate","no-cors","same-origin"],"type":"string"},"redirect":{"enum":["error","follow","manual"],"type":"string"},"referrer":{"type":"string"},"referrerPolicy":{"enum":["","no-referrer","no-referrer-when-downgrade","origin","origin-when-cross-origin","same-origin","strict-origin","strict-origin-when-cross-origin","unsafe-url"],"type":"string"},"signal":{"anyOf":[{"$ref":"#/definitions/AbortSignal"},{"type":"null"}]},"window":{}},"additionalProperties":false},"ArrayBuffer":{"type":"object","properties":{"byteLength":{"type":"number"},"__@toStringTag":{"type":"string"}},"additionalProperties":false,"required":["__@toStringTag","byteLength"]},"ArrayBufferView":{"type":"object","properties":{"buffer":{"anyOf":[{"$ref":"#/definitions/ArrayBuffer"},{"$ref":"#/definitions/SharedArrayBuffer"}]},"byteLength":{"type":"number"},"byteOffset":{"type":"number"}},"additionalProperties":false,"required":["buffer","byteLength","byteOffset"]},"SharedArrayBuffer":{"type":"object","properties":{"byteLength":{"type":"number"},"__@species":{"$ref":"#/definitions/SharedArrayBuffer"},"__@toStringTag":{"type":"string","enum":["SharedArrayBuffer"]}},"additionalProperties":false,"required":["__@species","__@toStringTag","byteLength"]},"Blob":{"type":"object","properties":{"size":{"type":"number"},"type":{"type":"string"}},"additionalProperties":false,"required":["size","type"]},"FormData":{"type":"object","additionalProperties":false},"URLSearchParams":{"type":"object","additionalProperties":false},"ReadableStream<Uint8Array>":{"type":"object","properties":{"locked":{"type":"boolean"}},"additionalProperties":false,"required":["locked"]},"Headers":{"type":"object","additionalProperties":false},"Record<string,string>":{"type":"object","additionalProperties":false},"AbortSignal":{"type":"object","properties":{"aborted":{"type":"boolean"},"onabort":{"anyOf":[{"type":"object","additionalProperties":false},{"type":"null"}]}},"additionalProperties":false,"required":["aborted","onabort"]},"RouteMatchCallback":{"description":"The \"match\" callback is used to determine if a `Route` should apply for a\nparticular URL and request. When matching occurs in response to a fetch\nevent from the client, the `event` object is also supplied. However, since\nthe match callback can be invoked outside of a fetch event, matching logic\nshould not assume the `event` object will always be available.\nIf the match callback returns a truthy value, the matching route's\n`RouteHandlerCallback` will be invoked immediately. If the value returned\nis a non-empty array or object, that value will be set on the handler's\n`options.params` argument.","typeof":"function"}},"$schema":"http://json-schema.org/draft-07/schema#"}
+{
+  "additionalProperties": false,
+  "type": "object",
+  "properties": {
+    "additionalManifestEntries": {
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/ManifestEntry"
+          },
+          {
+            "type": "string"
+          }
+        ]
+      }
+    },
+    "dontCacheBustURLsMatching": {
+      "$ref": "#/definitions/RegExp"
+    },
+    "manifestTransforms": {
+      "type": "array",
+      "items": {
+        "typeof": "function"
+      }
+    },
+    "maximumFileSizeToCacheInBytes": {
+      "default": 2097152,
+      "type": "number"
+    },
+    "modifyURLPrefix": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "globFollow": {
+      "default": true,
+      "type": "boolean"
+    },
+    "globIgnores": {
+      "default": [
+        "**/node_modules/**/*"
+      ],
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "globPatterns": {
+      "default": [
+        "**/*.{js,css,html}"
+      ],
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "globStrict": {
+      "default": true,
+      "type": "boolean"
+    },
+    "templatedURLs": {
+      "type": "object",
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "type": "string"
+          }
+        ]
+      }
+    },
+    "injectionPoint": {
+      "default": "self.__WB_MANIFEST",
+      "type": "string"
+    },
+    "swSrc": {
+      "type": "string"
+    },
+    "swDest": {
+      "type": "string"
+    },
+    "globDirectory": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "globDirectory",
+    "swDest",
+    "swSrc"
+  ],
+  "definitions": {
+    "ManifestEntry": {
+      "type": "object",
+      "properties": {
+        "integrity": {
+          "type": "string"
+        },
+        "revision": {
+          "type": [
+            "null",
+            "string"
+          ]
+        },
+        "url": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "url"
+      ]
+    },
+    "RegExp": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "global": {
+          "type": "boolean"
+        },
+        "ignoreCase": {
+          "type": "boolean"
+        },
+        "multiline": {
+          "type": "boolean"
+        },
+        "lastIndex": {
+          "type": "number"
+        },
+        "flags": {
+          "type": "string"
+        },
+        "sticky": {
+          "type": "boolean"
+        },
+        "unicode": {
+          "type": "boolean"
+        },
+        "dotAll": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "dotAll",
+        "flags",
+        "global",
+        "ignoreCase",
+        "lastIndex",
+        "multiline",
+        "source",
+        "sticky",
+        "unicode"
+      ]
+    },
+    "GoogleAnalyticsInitializeOptions": {
+      "type": "object",
+      "properties": {
+        "cacheName": {
+          "type": "string"
+        },
+        "parameterOverrides": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "hitFilter": {
+          "type": "object",
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "RuntimeCaching": {
+      "type": "object",
+      "properties": {
+        "handler": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/RouteHandlerCallback"
+            },
+            {
+              "$ref": "#/definitions/RouteHandlerObject"
+            },
+            {
+              "enum": [
+                "CacheFirst",
+                "CacheOnly",
+                "NetworkFirst",
+                "NetworkOnly",
+                "StaleWhileRevalidate"
+              ],
+              "type": "string"
+            }
+          ]
+        },
+        "method": {
+          "enum": [
+            "DELETE",
+            "GET",
+            "HEAD",
+            "PATCH",
+            "POST",
+            "PUT"
+          ],
+          "type": "string"
+        },
+        "options": {
+          "type": "object",
+          "properties": {
+            "backgroundSync": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "options": {
+                  "$ref": "#/definitions/QueueOptions"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "name"
+              ]
+            },
+            "broadcastUpdate": {
+              "type": "object",
+              "properties": {
+                "channelName": {
+                  "type": "string"
+                },
+                "options": {
+                  "$ref": "#/definitions/BroadcastCacheUpdateOptions"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "options"
+              ]
+            },
+            "cacheableResponse": {
+              "$ref": "#/definitions/CacheableResponseOptions"
+            },
+            "cacheName": {
+              "type": [
+                "null",
+                "string"
+              ]
+            },
+            "expiration": {
+              "$ref": "#/definitions/ExpirationPluginOptions"
+            },
+            "networkTimeoutSeconds": {
+              "type": "number"
+            },
+            "plugins": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/WorkboxPlugin"
+              }
+            },
+            "precacheFallback": {
+              "type": "object",
+              "properties": {
+                "fallbackURL": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false,
+              "required": [
+                "fallbackURL"
+              ]
+            },
+            "rangeRequests": {
+              "type": "boolean"
+            },
+            "fetchOptions": {
+              "$ref": "#/definitions/RequestInit"
+            },
+            "matchOptions": {
+              "$ref": "#/definitions/CacheQueryOptions"
+            }
+          },
+          "additionalProperties": false
+        },
+        "urlPattern": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/RegExp"
+            },
+            {
+              "$ref": "#/definitions/RouteMatchCallback"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "handler",
+        "urlPattern"
+      ]
+    },
+    "RouteHandlerCallback": {
+      "description": "The \"handler\" callback is invoked whenever a `Router` matches a URL/Request\nto a `Route` via its `RouteMatchCallback`. This handler callback should\nreturn a `Promise` that resolves with a `Response`.\n\nIf a non-empty array or object is returned by the `RouteMatchCallback` it\nwill be passed in as this handler's `options.params` argument.",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "RouteHandlerObject": {
+      "description": "An object with a `handle` method of type `RouteHandlerCallback`.\n\nA `Route` object can be created with either an `RouteHandlerCallback`\nfunction or this `RouteHandler` object. The benefit of the `RouteHandler`\nis it can be extended (as is done by the `workbox-strategies` package).",
+      "type": "object",
+      "properties": {
+        "handle": {
+          "$ref": "#/definitions/RouteHandlerCallback"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "handle"
+      ]
+    },
+    "QueueOptions": {
+      "type": "object",
+      "properties": {
+        "onSync": {
+          "$ref": "#/definitions/OnSyncCallback"
+        },
+        "maxRetentionTime": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": false
+    },
+    "OnSyncCallback": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "BroadcastCacheUpdateOptions": {
+      "type": "object",
+      "properties": {
+        "headersToCheck": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "generatePayload": {
+          "type": "object",
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "CacheableResponseOptions": {
+      "type": "object",
+      "properties": {
+        "statuses": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          }
+        },
+        "headers": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "ExpirationPluginOptions": {
+      "type": "object",
+      "properties": {
+        "maxEntries": {
+          "type": "number"
+        },
+        "maxAgeSeconds": {
+          "type": "number"
+        },
+        "matchOptions": {
+          "$ref": "#/definitions/CacheQueryOptions"
+        },
+        "purgeOnQuotaError": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "CacheQueryOptions": {
+      "type": "object",
+      "properties": {
+        "ignoreMethod": {
+          "type": "boolean"
+        },
+        "ignoreSearch": {
+          "type": "boolean"
+        },
+        "ignoreVary": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
+    "WorkboxPlugin": {
+      "description": "An object with optional lifecycle callback properties for the fetch and\ncache operations.",
+      "type": "object",
+      "properties": {
+        "cacheDidUpdate": {
+          "$ref": "#/definitions/CacheDidUpdateCallback"
+        },
+        "cachedResponseWillBeUsed": {
+          "$ref": "#/definitions/CachedResponseWillBeUsedCallback"
+        },
+        "cacheKeyWillBeUsed": {
+          "$ref": "#/definitions/CacheKeyWillBeUsedCallback"
+        },
+        "cacheWillUpdate": {
+          "$ref": "#/definitions/CacheWillUpdateCallback"
+        },
+        "fetchDidFail": {
+          "$ref": "#/definitions/FetchDidFailCallback"
+        },
+        "fetchDidSucceed": {
+          "$ref": "#/definitions/FetchDidSucceedCallback"
+        },
+        "handlerDidComplete": {
+          "$ref": "#/definitions/HandlerDidCompleteCallback"
+        },
+        "handlerDidError": {
+          "$ref": "#/definitions/HandlerDidErrorCallback"
+        },
+        "handlerDidRespond": {
+          "$ref": "#/definitions/HandlerDidRespondCallback"
+        },
+        "handlerWillRespond": {
+          "$ref": "#/definitions/HandlerWillRespondCallback"
+        },
+        "handlerWillStart": {
+          "$ref": "#/definitions/HandlerWillStartCallback"
+        },
+        "requestWillFetch": {
+          "$ref": "#/definitions/RequestWillFetchCallback"
+        }
+      },
+      "additionalProperties": false
+    },
+    "CacheDidUpdateCallback": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "CachedResponseWillBeUsedCallback": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "CacheKeyWillBeUsedCallback": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "CacheWillUpdateCallback": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "FetchDidFailCallback": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "FetchDidSucceedCallback": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "HandlerDidCompleteCallback": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "HandlerDidErrorCallback": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "HandlerDidRespondCallback": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "HandlerWillRespondCallback": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "HandlerWillStartCallback": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "RequestWillFetchCallback": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "RequestInit": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ArrayBuffer"
+            },
+            {
+              "$ref": "#/definitions/ArrayBufferView"
+            },
+            {
+              "$ref": "#/definitions/Blob"
+            },
+            {
+              "$ref": "#/definitions/FormData"
+            },
+            {
+              "$ref": "#/definitions/URLSearchParams"
+            },
+            {
+              "$ref": "#/definitions/ReadableStream<Uint8Array>"
+            },
+            {
+              "type": [
+                "null",
+                "string"
+              ]
+            }
+          ]
+        },
+        "cache": {
+          "enum": [
+            "default",
+            "force-cache",
+            "no-cache",
+            "no-store",
+            "only-if-cached",
+            "reload"
+          ],
+          "type": "string"
+        },
+        "credentials": {
+          "enum": [
+            "include",
+            "omit",
+            "same-origin"
+          ],
+          "type": "string"
+        },
+        "headers": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Headers"
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            {
+              "$ref": "#/definitions/Record<string,string>"
+            }
+          ]
+        },
+        "integrity": {
+          "type": "string"
+        },
+        "keepalive": {
+          "type": "boolean"
+        },
+        "method": {
+          "type": "string"
+        },
+        "mode": {
+          "enum": [
+            "cors",
+            "navigate",
+            "no-cors",
+            "same-origin"
+          ],
+          "type": "string"
+        },
+        "redirect": {
+          "enum": [
+            "error",
+            "follow",
+            "manual"
+          ],
+          "type": "string"
+        },
+        "referrer": {
+          "type": "string"
+        },
+        "referrerPolicy": {
+          "enum": [
+            "",
+            "no-referrer",
+            "no-referrer-when-downgrade",
+            "origin",
+            "origin-when-cross-origin",
+            "same-origin",
+            "strict-origin",
+            "strict-origin-when-cross-origin",
+            "unsafe-url"
+          ],
+          "type": "string"
+        },
+        "signal": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/AbortSignal"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "window": {}
+      },
+      "additionalProperties": false
+    },
+    "ArrayBuffer": {
+      "type": "object",
+      "properties": {
+        "byteLength": {
+          "type": "number"
+        },
+        "__@toStringTag": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "__@toStringTag",
+        "byteLength"
+      ]
+    },
+    "ArrayBufferView": {
+      "type": "object",
+      "properties": {
+        "buffer": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ArrayBuffer"
+            },
+            {
+              "$ref": "#/definitions/SharedArrayBuffer"
+            }
+          ]
+        },
+        "byteLength": {
+          "type": "number"
+        },
+        "byteOffset": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "buffer",
+        "byteLength",
+        "byteOffset"
+      ]
+    },
+    "SharedArrayBuffer": {
+      "type": "object",
+      "properties": {
+        "byteLength": {
+          "type": "number"
+        },
+        "__@species": {
+          "$ref": "#/definitions/SharedArrayBuffer"
+        },
+        "__@toStringTag": {
+          "type": "string",
+          "enum": [
+            "SharedArrayBuffer"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "__@species",
+        "__@toStringTag",
+        "byteLength"
+      ]
+    },
+    "Blob": {
+      "type": "object",
+      "properties": {
+        "size": {
+          "type": "number"
+        },
+        "type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "size",
+        "type"
+      ]
+    },
+    "FormData": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "URLSearchParams": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "ReadableStream<Uint8Array>": {
+      "type": "object",
+      "properties": {
+        "locked": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "locked"
+      ]
+    },
+    "Headers": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "Record<string,string>": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "AbortSignal": {
+      "type": "object",
+      "properties": {
+        "aborted": {
+          "type": "boolean"
+        },
+        "onabort": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "aborted",
+        "onabort"
+      ]
+    },
+    "RouteMatchCallback": {
+      "description": "The \"match\" callback is used to determine if a `Route` should apply for a\nparticular URL and request. When matching occurs in response to a fetch\nevent from the client, the `event` object is also supplied. However, since\nthe match callback can be invoked outside of a fetch event, matching logic\nshould not assume the `event` object will always be available.\nIf the match callback returns a truthy value, the matching route's\n`RouteHandlerCallback` will be invoked immediately. If the value returned\nis a non-empty array or object, that value will be set on the handler's\n`options.params` argument.",
+      "typeof": "function"
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
