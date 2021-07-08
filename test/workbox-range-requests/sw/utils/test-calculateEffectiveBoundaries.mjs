@@ -31,7 +31,7 @@ describe(`calculateEffectiveBoundaries()`, function() {
           expect(error.details).to.have.property('moduleName', 'workbox-range-requests');
           expect(error.details).to.have.property('funcName', 'calculateEffectiveBoundaries');
           expect(error.details).to.have.property('paramName', 'blob');
-          expect(error.details).to.have.property('expectedClass', Blob);
+          expect(error.details).to.have.property('expectedClassName', 'Blob');
         },
     );
   });
