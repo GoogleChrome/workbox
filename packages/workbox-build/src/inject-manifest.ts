@@ -139,17 +139,16 @@ export async function injectManifest(config: unknown): Promise<BuildResult> {
   }
 
   const injectionResults = swFileContents.match(globalRegexp);
+  // See https://github.com/GoogleChrome/workbox/issues/2230
+  const injectionPoint = options.injectionPoint ? options.injectionPoint : '';
   if (!injectionResults) {
-    // See https://github.com/GoogleChrome/workbox/issues/2230
-    const injectionPoint = options.injectionPoint ? options.injectionPoint : '';
     if (upath.resolve(options.swSrc) === upath.resolve(options.swDest)) {
       throw new Error(`${errors['same-src-and-dest']} ${injectionPoint}`);
     }
     throw new Error(`${errors['injection-point-not-found']} ${injectionPoint}`);
   }
 
-  assert(injectionResults.length === 1, `${errors['multiple-injection-points']}
-  ${options.injectionPoint ? options.injectionPoint : ''}`);
+  assert(injectionResults.length === 1, `${errors['multiple-injection-points']} ${injectionPoint}`);
 
   const manifestString = stringify(manifestEntries);
   const filesToWrite: {[key: string]: string} = {};

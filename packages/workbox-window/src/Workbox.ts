@@ -282,7 +282,9 @@ class Workbox extends WorkboxEventTarget {
    * @param {Object} data An object to send to the service worker
    * @return {Promise<Object>}
    */
-  async messageSW(data: Record<string, unknown>): Promise<any> {
+  // We might be able to change the 'data' type to Record<string, unknown> in the future.
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  async messageSW(data: object): Promise<any> {
     const sw = await this.getSW();
     return messageSW(sw, data);
   }

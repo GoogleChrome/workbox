@@ -176,9 +176,8 @@ class StrategyHandler {
       }
     } catch (err) {
       if (err instanceof Error) {
-      throw new WorkboxError('plugin-error-request-will-fetch', {
-        thrownErrorMessage: err.message,
-      });
+        throw new WorkboxError('plugin-error-request-will-fetch',
+          {thrownErrorMessage: err.message});
       }
     }
 
