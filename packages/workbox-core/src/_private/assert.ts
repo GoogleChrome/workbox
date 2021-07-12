@@ -38,7 +38,7 @@ const hasMethod = (
 };
 
 const isType = (
-  object: {},
+  object: unknown,
   expectedType: string,
   details: MapLikeObject,
 ) => {
@@ -49,12 +49,14 @@ const isType = (
 };
 
 const isInstance = (
-  object: {},
+  object: unknown,
+  // Need the general type to do the check later.
+  // eslint-disable-next-line @typescript-eslint/ban-types
   expectedClass: Function,
   details: MapLikeObject,
 ) => {
   if (!(object instanceof expectedClass)) {
-    details['expectedClass'] = expectedClass;
+    details['expectedClassName'] = expectedClass.name;
     throw new WorkboxError('incorrect-class', details);
   }
 };
@@ -72,7 +74,8 @@ const isOneOf = (
 
 const isArrayOfClass = (
   value: any,
-  expectedClass: Function,
+  // Need general type to do check later.
+  expectedClass: Function, // eslint-disable-line
   details: MapLikeObject,
 ) => {
   const error = new WorkboxError('not-array-of-class', details);

@@ -97,7 +97,7 @@ class CacheExpiration {
   /**
    * Expires entries for the given cache and given criteria.
    */
-  async expireEntries() {
+  async expireEntries(): Promise<void> {
     if (this._isRunning) {
       this._rerunRequested = true;
       return;
@@ -146,7 +146,7 @@ class CacheExpiration {
    *
    * @param {string} url
    */
-  async updateTimestamp(url: string) {
+  async updateTimestamp(url: string): Promise<void> {
     if (process.env.NODE_ENV !== 'production') {
       assert!.isType(url, 'string', {
         moduleName: 'workbox-expiration',
@@ -190,7 +190,7 @@ class CacheExpiration {
    * Removes the IndexedDB object store used to keep track of cache expiration
    * metadata.
    */
-  async delete() {
+  async delete(): Promise<void> {
     // Make sure we don't attempt another rerun if we're called in the middle of
     // a cache expiration.
     this._rerunRequested = false;

@@ -20,7 +20,7 @@ import {PrecacheCacheKeyPlugin} from './utils/PrecacheCacheKeyPlugin.js';
 import {printCleanupDetails} from './utils/printCleanupDetails.js';
 import {printInstallDetails} from './utils/printInstallDetails.js';
 import {PrecacheStrategy} from './PrecacheStrategy.js';
-import {PrecacheEntry} from './_types.js';
+import {PrecacheEntry, InstallResult, CleanupResult} from './_types.js';
 import './_version.js';
 
 
@@ -80,7 +80,7 @@ class PrecacheController {
    * @type {module:workbox-precaching.PrecacheStrategy} The strategy created by this controller and
    * used to cache assets and respond to fetch events.
    */
-  get strategy() {
+  get strategy(): Strategy {
     return this._strategy;
   }
 
@@ -94,7 +94,7 @@ class PrecacheController {
    *
    * @param {Array<Object|string>} [entries=[]] Array of entries to precache.
    */
-  precache(entries: Array<PrecacheEntry | string>) {
+  precache(entries: Array<PrecacheEntry | string>): void {
     this.addToCacheList(entries);
 
     if (!this._installAndActiveListenersAdded) {
@@ -111,7 +111,7 @@ class PrecacheController {
    * @param {Array<module:workbox-precaching.PrecacheController.PrecacheEntry|string>} entries
    *     Array of entries to precache.
    */
-  addToCacheList(entries: Array<PrecacheEntry|string>) {
+  addToCacheList(entries: Array<PrecacheEntry | string>): void {
     if (process.env.NODE_ENV !== 'production') {
       assert!.isArray(entries, {
         moduleName: 'workbox-precaching',
@@ -180,7 +180,9 @@ class PrecacheController {
    * @param {ExtendableEvent} event
    * @return {Promise<module:workbox-precaching.InstallResult>}
    */
-  install(event: ExtendableEvent) {
+  install(event: ExtendableEvent): Promise<InstallResult> {
+    // waitUntil returns Promise<any>
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return waitUntil(event, async () => {
       const installReportPlugin = new PrecacheInstallReportPlugin();
       this.strategy.plugins.push(installReportPlugin);
@@ -224,7 +226,9 @@ class PrecacheController {
    * @param {ExtendableEvent} event
    * @return {Promise<module:workbox-precaching.CleanupResult>}
    */
-  activate(event: ExtendableEvent) {
+  activate(event: ExtendableEvent): Promise<CleanupResult> {
+    // waitUntil returns Promise<any>
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return waitUntil(event, async () => {
       const cache = await self.caches.open(this.strategy.cacheName);
       const currentlyCachedRequests = await cache.keys();
@@ -252,7 +256,7 @@ class PrecacheController {
    *
    * @return {Map<string, string>} A URL to cache key mapping.
    */
-  getURLsToCacheKeys() {
+  getURLsToCacheKeys(): Map<string, string> {
     return this._urlsToCacheKeys;
   }
 
@@ -262,7 +266,7 @@ class PrecacheController {
    *
    * @return {Array<string>} The precached URLs.
    */
-  getCachedURLs() {
+  getCachedURLs(): Array<string> {
     return [...this._urlsToCacheKeys.keys()];
   }
 
@@ -275,7 +279,7 @@ class PrecacheController {
    * @return {string} The versioned URL that corresponds to a cache key
    * for the original URL, or undefined if that URL isn't precached.
    */
-  getCacheKeyForURL(url: string) {
+  getCacheKeyForURL(url: string): string | undefined {
     const urlObject = new URL(url, location.href);
     return this._urlsToCacheKeys.get(urlObject.href);
   }

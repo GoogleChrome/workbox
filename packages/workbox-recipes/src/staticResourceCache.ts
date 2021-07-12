@@ -22,16 +22,16 @@ export interface StaticResourceOptions {
 
 /**
  * An implementation of the [CSS and JavaScript files recipe]{@link https://developers.google.com/web/tools/workbox/guides/common-recipes#cache_css_and_javascript_files}
- * 
+ *
  * @memberof module:workbox-recipes
- * 
+ *
  * @param {Object} [options]
  * @param {string} [options.cacheName] Name for cache. Defaults to static-resources
  * @param {RouteMatchCallback} [options.matchCallback] Workbox callback function to call to match to. Defaults to request.destination === 'style' || request.destination === 'script' || request.destination === 'worker';
  * @param {WorkboxPlugin[]} [options.plugins] Additional plugins to use for this recipe
  * @param {string[]} [options.warmCache] Paths to call to use to warm this cache
  */
-function staticResourceCache(options: StaticResourceOptions = {}) {
+function staticResourceCache(options: StaticResourceOptions = {}): void {
   const defaultMatchCallback = ({request}: RouteMatchCallbackOptions) => request.destination === 'style' || request.destination === 'script' || request.destination === 'worker';
 
   const cacheName = options.cacheName || 'static-resources';

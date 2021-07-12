@@ -9,8 +9,8 @@
 import chalk from 'chalk';
 
 export const logger = {
-  debug: (...args: string[]) => console.log(chalk.gray(...args)),
-  log: (...args: string[]) => console.log(...args),
-  warn: (...args: string[]) => console.warn(chalk.yellow(...args)),
-  error: (...args: string[]) => console.error(chalk.red.bold(...args)),
+  debug: (...args: string[]): void => console.log(chalk.gray(...args)),
+  log: (...args: string[]): void => console.log(...args),
+  warn: (...args: string[]): void => console.warn(chalk.yellow(...args)),
+  error: (...args: string[]): void => console.error(chalk.red.bold(...args)),
 };

@@ -29,7 +29,7 @@ export interface ExpirationPluginOptions {
 /**
  * This plugin can be used in a `workbox-strategy` to regularly enforce a
  * limit on the age and / or the number of cached requests.
- * 
+ *
  * It can only be used with `workbox-strategy` instances that have a
  * [custom `cacheName` property set](/web/tools/workbox/guides/configure-workbox#custom_cache_names_in_strategies).
  * In other words, it can't be used to expire entries in strategy that uses the
@@ -50,12 +50,12 @@ export interface ExpirationPluginOptions {
  * @memberof module:workbox-expiration
  */
 class ExpirationPlugin implements WorkboxPlugin {
-  private readonly _config: object;
+  private readonly _config: ExpirationPluginOptions;
   private readonly _maxAgeSeconds?: number;
   private _cacheExpirations: Map<string, CacheExpiration>;
 
   /**
-   * @param {Object} config
+   * @param {ExpirationPluginOptions} config
    * @param {number} [config.maxEntries] The maximum number of entries to cache.
    * Entries used the least will be removed as the maximum is reached.
    * @param {number} [config.maxAgeSeconds] The maximum age of an entry before
@@ -285,7 +285,7 @@ class ExpirationPlugin implements WorkboxPlugin {
    * `caches.delete()` and passing in the cache's name should be sufficient.
    * There is no Workbox-specific method needed for cleanup in that case.
    */
-  async deleteCacheAndMetadata() {
+  async deleteCacheAndMetadata(): Promise<void> {
     // Do this one at a time instead of all at once via `Promise.all()` to
     // reduce the chance of inconsistency if a promise rejects.
     for (const [cacheName, cacheExpiration] of this._cacheExpirations) {

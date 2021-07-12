@@ -14,7 +14,7 @@ import '../_version.js';
 /**
  * A plugin, designed to be used with PrecacheController, to determine the
  * of assets that were updated (or not updated) during the install event.
- * 
+ *
  * @private
  */
 class PrecacheInstallReportPlugin implements WorkboxPlugin {
@@ -37,13 +37,16 @@ class PrecacheInstallReportPlugin implements WorkboxPlugin {
     cachedResponse,
   }: WorkboxPluginCallbackParam['cachedResponseWillBeUsed']) => {
     if (event.type === 'install') {
+      if (state && state.originalRequest
+        && state.originalRequest instanceof Request) {
       // TODO: `state` should never be undefined...
-      const url = state!.originalRequest.url;
+        const url = state.originalRequest.url;
 
-      if (cachedResponse) {
-        this.notUpdatedURLs.push(url);
-      } else {
-        this.updatedURLs.push(url);
+        if (cachedResponse) {
+          this.notUpdatedURLs.push(url);
+        } else {
+          this.updatedURLs.push(url);
+        }
       }
     }
     return cachedResponse;

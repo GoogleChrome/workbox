@@ -106,7 +106,9 @@ class StaleWhileRevalidate extends Strategy {
         // https://github.com/microsoft/TypeScript/issues/20006
         response = (await fetchAndCachePromise as Response | undefined);
       } catch (err) {
-        error = err;
+        if (err instanceof Error) {
+          error = err;
+        }
       }
     }
 

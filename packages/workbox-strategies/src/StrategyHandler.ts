@@ -153,8 +153,8 @@ class StrategyHandler {
 
     if (request.mode === 'navigate' &&
         event instanceof FetchEvent &&
-        event.preloadResponse) {
-      const possiblePreloadResponse = await event.preloadResponse;
+      event.preloadResponse) {
+      const possiblePreloadResponse = await event.preloadResponse as Response | undefined;
       if (possiblePreloadResponse) {
         if (process.env.NODE_ENV !== 'production') {
           logger.log(`Using a preloaded navigation response for ` +
@@ -175,9 +175,10 @@ class StrategyHandler {
         request = await cb({request: request.clone(), event});
       }
     } catch (err) {
-      throw new WorkboxError('plugin-error-request-will-fetch', {
-        thrownError: err,
-      });
+      if (err instanceof Error) {
+        throw new WorkboxError('plugin-error-request-will-fetch',
+          {thrownErrorMessage: err.message});
+      }
     }
 
     // The request can be altered by plugins with `requestWillFetch` making
@@ -216,7 +217,7 @@ class StrategyHandler {
       // is being used (see above).
       if (originalRequest) {
         await this.runCallbacks('fetchDidFail', {
-          error,
+          error: error as Error,
           event,
           originalRequest: originalRequest.clone(),
           request: pluginFilteredRequest.clone(),
@@ -240,7 +241,7 @@ class StrategyHandler {
     const response = await this.fetch(input);
     const responseClone = response.clone();
 
-    this.waitUntil(this.cachePut(input, responseClone));
+    void this.waitUntil(this.cachePut(input, responseClone));
 
     return response;
   }
@@ -361,11 +362,13 @@ class StrategyHandler {
       await cache.put(effectiveRequest, hasCacheUpdateCallback ?
           responseToCache.clone() : responseToCache);
     } catch (error) {
+      if (error instanceof Error) {
       // See https://developer.mozilla.org/en-US/docs/Web/API/DOMException#exception-QuotaExceededError
-      if (error.name === 'QuotaExceededError') {
-        await executeQuotaErrorCallbacks();
+        if (error.name === 'QuotaExceededError') {
+          await executeQuotaErrorCallbacks();
+        }
+        throw error;
       }
-      throw error;
     }
 
     for (const callback of this.iterateCallbacks('cacheDidUpdate')) {
@@ -401,7 +404,8 @@ class StrategyHandler {
           mode,
           request: effectiveRequest,
           event: this.event,
-          params: this.params,
+          // params has a type any can't change right now.
+          params: this.params, // eslint-disable-line
         }));
       }
 
@@ -519,7 +523,7 @@ class StrategyHandler {
    * Stops running the strategy and immediately resolves any pending
    * `waitUntil()` promises.
    */
-  destroy() {
+  destroy(): void {
     this._handlerDeferred.resolve(null);
   }
 

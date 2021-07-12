@@ -65,11 +65,11 @@ class Route {
   }
 
   /**
-   * 
+   *
    * @param {module:workbox-routing-handlerCallback} handler A callback
    * function that returns a Promise resolving to a Response
    */
-  setCatchHandler(handler: RouteHandler) {
+  setCatchHandler(handler: RouteHandler): void {
     this.catchHandler = normalizeHandler(handler)
   }
 }

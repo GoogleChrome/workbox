@@ -24,14 +24,14 @@ declare let self: ServiceWorkerGlobalScope;
  *
  * @memberof module:workbox-navigation-preload
  */
-function enable(headerValue?: string) {
+function enable(headerValue?: string): void {
   if (isSupported()) {
     self.addEventListener('activate', (event: ExtendableEvent) => {
       event.waitUntil(
           self.registration.navigationPreload.enable().then(() => {
           // Defaults to Service-Worker-Navigation-Preload: true if not set.
             if (headerValue) {
-              self.registration.navigationPreload.setHeaderValue(headerValue);
+              void self.registration.navigationPreload.setHeaderValue(headerValue);
             }
 
             if (process.env.NODE_ENV !== 'production') {

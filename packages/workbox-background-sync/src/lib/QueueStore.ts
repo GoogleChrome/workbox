@@ -41,7 +41,7 @@ export class QueueStore {
    * @param {Object} [entry.metadata]
    * @private
    */
-  async pushEntry(entry: UnidentifiedQueueStoreEntry) {
+  async pushEntry(entry: UnidentifiedQueueStoreEntry): Promise<void> {
     if (process.env.NODE_ENV !== 'production') {
       assert!.isType(entry, 'object', {
         moduleName: 'workbox-background-sync',
@@ -73,7 +73,7 @@ export class QueueStore {
    * @param {Object} [entry.metadata]
    * @private
    */
-  async unshiftEntry(entry: UnidentifiedQueueStoreEntry) {
+  async unshiftEntry(entry: UnidentifiedQueueStoreEntry): Promise<void> {
     if (process.env.NODE_ENV !== 'production') {
       assert!.isType(entry, 'object', {
         moduleName: 'workbox-background-sync',
@@ -145,14 +145,14 @@ export class QueueStore {
    * @private
    * @param {number} id
    */
-  async deleteEntry(id: number) {
+  async deleteEntry(id: number): Promise<void> {
     await this._queueDb.deleteEntry(id);
   }
 
   /**
    * Removes and returns the first or last entry in the queue (based on the
    * `direction` argument) matching the `queueName`.
-   * 
+   *
    * @return {Promise<QueueStoreEntry|undefined>}
    * @private
    */

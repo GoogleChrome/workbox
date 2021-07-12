@@ -71,7 +71,7 @@ async function askQuestion(): Promise<{ globDirectory: string; manualDirectoryIn
   }]);
 }
 
-export async function askRootOfWebApp() {
+export async function askRootOfWebApp(): Promise<string> {
   const { manualDirectoryInput, globDirectory } = await askQuestion();
 
   try {

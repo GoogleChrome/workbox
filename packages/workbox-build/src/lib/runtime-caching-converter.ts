@@ -111,7 +111,9 @@ function getOptionsString(moduleRegistry: ModuleRegistry, options: RuntimeCachin
       }
 
       default: {
-        throw new Error(errors['bad-runtime-caching-config'] + optionName);
+        // In the default case optionName is typed as 'never'.
+        //eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        throw new Error(`${errors['bad-runtime-caching-config']}  ${optionName}`);
       }
     }
   }
@@ -157,9 +159,9 @@ export function runtimeCachingConverter(moduleRegistry: ModuleRegistry, runtimeC
       const handler = moduleRegistry.use('workbox-strategies', entry.handler);
       const strategyString = `new ${handler}(${optionsString})`;
 
-      return `${registerRoute}(${matcher}, ${strategyString}, '${method}');\n`;
+      return `${registerRoute}(${matcher.toString()}, ${strategyString}, '${method}');\n`;
     } else if (typeof entry.handler === 'function') {
-      return `${registerRoute}(${matcher}, ${entry.handler}, '${method}');\n`;
+      return `${registerRoute}(${matcher.toString()}, ${entry.handler.toString()}, '${method}');\n`;
     }
 
     // '' will be filtered out.

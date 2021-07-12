@@ -13,7 +13,7 @@ import stringifyObject from 'stringify-object';
 import {askQuestions} from './questions/ask-questions';
 import {logger} from './logger';
 
-export async function runWizard(options = {}) {
+export async function runWizard(options = {}): Promise<void> {
   const {configLocation, config} = await askQuestions(options);
 
   // See https://github.com/GoogleChrome/workbox/issues/2796

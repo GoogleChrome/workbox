@@ -25,9 +25,9 @@ export interface ImageCacheOptions {
 
 /**
  * An implementation of the [image caching recipe]{@link https://developers.google.com/web/tools/workbox/guides/common-recipes#caching_images}
- * 
+ *
  * @memberof module:workbox-recipes
- * 
+ *
  * @param {Object} [options]
  * @param {string} [options.cacheName] Name for cache. Defaults to images
 * @param {RouteMatchCallback} [options.matchCallback] Workbox callback function to call to match to. Defaults to request.destination === 'image';
@@ -36,7 +36,7 @@ export interface ImageCacheOptions {
  * @param {WorkboxPlugin[]} [options.plugins] Additional plugins to use for this recipe
  * @param {string[]} [options.warmCache] Paths to call to use to warm this cache
  */
-function imageCache(options: ImageCacheOptions = {}) {
+function imageCache(options: ImageCacheOptions = {}): void {
   const defaultMatchCallback = ({request}: RouteMatchCallbackOptions) => request.destination === 'image';
 
   const cacheName = options.cacheName || 'images';

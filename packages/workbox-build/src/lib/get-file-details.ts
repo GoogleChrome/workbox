@@ -46,7 +46,7 @@ export function getFileDetails({
       strict: globStrict,
     });
   } catch (err) {
-    throw new Error(errors['unable-to-glob-files'] + ` '${err.message}'`);
+    throw new Error(errors['unable-to-glob-files'] + ` '${err instanceof Error && err.message ? err.message : ''}'`);
   }
 
   if (globbedFiles.length === 0) {

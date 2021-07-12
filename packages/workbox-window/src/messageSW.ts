@@ -23,6 +23,8 @@ import './_version.js';
  * @return {Promise<Object|undefined>}
  * @memberof module:workbox-window
  */
+// Better not change type of data.
+// eslint-disable-next-line @typescript-eslint/ban-types
 function messageSW(sw: ServiceWorker, data: {}): Promise<any> {
   return new Promise((resolve) => {
     const messageChannel = new MessageChannel();

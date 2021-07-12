@@ -77,7 +77,7 @@ function registerRoute(
             (url.origin !== captureUrl.origin)) {
           logger.debug(
               `${capture} only partially matches the cross-origin URL ` +
-              `${url}. This route will only handle cross-origin requests ` +
+            `${url.toString()}. This route will only handle cross-origin requests ` +
               `if they match the entire URL.`);
         }
       }

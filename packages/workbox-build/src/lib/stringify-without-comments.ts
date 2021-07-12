@@ -14,7 +14,8 @@ export function stringifyWithoutComments(obj: {[key: string]: any}): string {
     // See https://github.com/yeoman/stringify-object#transformobject-property-originalresult
     transform: (_obj: {[key: string]: any}, _prop, str) => {
       if (typeof _prop !== 'symbol' && typeof _obj[_prop] === 'function') {
-        return stripComments(str);
+        // Can't typify correctly stripComments
+        return stripComments(str); // eslint-disable-line
       }
       return str;
     },

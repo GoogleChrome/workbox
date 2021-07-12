@@ -41,7 +41,7 @@ export async function writeSWUsingDefaultTemplate({
     await fse.mkdirp(outputDir);
   } catch (error) {
     throw new Error(`${errors['unable-to-make-sw-directory']}. ` +
-      `'${error.message}'`);
+      `'${error instanceof Error && error.message ? error.message : ''}'`);
   }
 
   const unbundledCode = populateSWTemplate({
@@ -82,10 +82,12 @@ export async function writeSWUsingDefaultTemplate({
 
     return filePaths;
   } catch (error) {
+    // error.code is typed any
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (error.code === 'EISDIR') {
       // See https://github.com/GoogleChrome/workbox/issues/612
       throw new Error(errors['sw-write-failure-directory']);
     }
-    throw new Error(`${errors['sw-write-failure']} '${error.message}'`);
+    throw new Error(`${errors['sw-write-failure']} '${error instanceof Error && error.message ? error.message : ''}'`);
   }
 }

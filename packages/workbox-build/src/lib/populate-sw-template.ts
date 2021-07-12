@@ -96,6 +96,6 @@ export function populateSWTemplate({
     return workboxImportStatements.join('\n') + populatedTemplate;
   } catch (error) {
     throw new Error(
-        `${errors['populating-sw-tmpl-failed']} '${error.message}'`);
+      `${errors['populating-sw-tmpl-failed']} '${error instanceof Error && error.message ? error.message : ''}'`);
   }
 }

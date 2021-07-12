@@ -19,7 +19,7 @@ declare let self: ServiceWorkerGlobalScope;
  *
  * @memberof module:workbox-navigation-preload
  */
-function disable() {
+function disable(): void {
   if (isSupported()) {
     self.addEventListener('activate', (event: ExtendableEvent) => {
       event.waitUntil(
