@@ -209,7 +209,7 @@ export interface HandlerWillRespondCallback {
   (param: HandlerWillRespondCallbackParam): Promise<Response>;
 }
 
-interface HandlerDidErrorCallbackParam {
+export interface HandlerDidErrorCallbackParam {
   request: Request;
   event: ExtendableEvent;
   error: Error;
