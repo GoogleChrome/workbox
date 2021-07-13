@@ -1,6 +1,6 @@
 {
   "name": "workbox-expiration",
-  "version": "6.1.5",
+  "version": "6.2.0-alpha.0",
   "license": "MIT",
   "author": "Google's Web DevRel Team",
   "description": "A service worker helper library that expires cached responses based on age or maximum number of entries.",
@@ -22,7 +22,7 @@
   "module": "index.mjs",
   "types": "index.d.ts",
   "dependencies": {
-    "workbox-core": "^6.1.5",
-    "idb": "^6.0.0"
+    "idb": "^6.0.0",
+    "workbox-core": "^6.2.0-alpha.0"
   }
 }
