@@ -26,5 +26,8 @@
   "dependencies": {
     "idb": "^6.0.0",
     "workbox-core": "^6.2.0-alpha.0"
+  },
+  "devDependencies": {
+    "@types/node": "^16.3.2"
   }
 }
