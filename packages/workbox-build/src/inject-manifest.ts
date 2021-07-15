@@ -6,20 +6,15 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {RawSourceMap} from 'source-map';
+import { RawSourceMap } from 'source-map';
 import assert from 'assert';
 import fse from 'fs-extra';
 import sourceMapURL from 'source-map-url';
 import stringify from 'fast-json-stable-stringify';
 import upath from 'upath';
 
-import {BuildResult} from './types';
-import {errors} from './lib/errors';
-import {escapeRegExp} from './lib/escape-regexp';
-import {getFileManifestEntries} from './lib/get-file-manifest-entries';
-import {rebasePath} from './lib/rebase-path';
-import {replaceAndUpdateSourceMap} from './lib/replace-and-update-source-map';
-import {validateInjectManifestOptions} from './lib/validate-options';
+import { BuildResult } from './types';
+import { errors, escapeRegExp, getFileManifestEntries, rebasePath, replaceAndUpdateSourceMap, validateInjectManifestOptions } from './lib';
 
 // eslint-disable-next-line jsdoc/newline-after-description
 /**
@@ -129,7 +124,7 @@ export async function injectManifest(config: unknown): Promise<BuildResult> {
 
   const globalRegexp = new RegExp(escapeRegExp(options.injectionPoint!), 'g');
 
-  const {count, size, manifestEntries, warnings} =
+  const { count, size, manifestEntries, warnings } =
     await getFileManifestEntries(options);
   let swFileContents: string;
   try {
@@ -151,7 +146,7 @@ export async function injectManifest(config: unknown): Promise<BuildResult> {
   assert(injectionResults.length === 1, `${errors['multiple-injection-points']} ${injectionPoint}`);
 
   const manifestString = stringify(manifestEntries);
-  const filesToWrite: {[key: string]: string} = {};
+  const filesToWrite: { [key: string]: string } = {};
   // sourceMapURL returns value type any and could be null.
   // url is checked before it is used later.
   const url: string = sourceMapURL.getFrom(swFileContents); // eslint-disable-line
@@ -169,12 +164,12 @@ export async function injectManifest(config: unknown): Promise<BuildResult> {
     try {
       // readJSON returns Promise<any>.
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      originalMap = await fse.readJSON(sourcemapSrcPath, {encoding: 'utf8'});
+      originalMap = await fse.readJSON(sourcemapSrcPath, { encoding: 'utf8' });
     } catch (error) {
       throw new Error(`${errors['cant-find-sourcemap']} ${error instanceof Error && error.message ? error.message : ''}`);
     }
 
-    const {map, source} = await replaceAndUpdateSourceMap({
+    const { map, source } = await replaceAndUpdateSourceMap({
       originalMap,
       jsFilename: upath.basename(options.swDest),
       originalSource: swFileContents,
@@ -188,7 +183,7 @@ export async function injectManifest(config: unknown): Promise<BuildResult> {
     // If there's no sourcemap associated with swSrc, a simple string
     // replacement will suffice.
     filesToWrite[options.swDest] = swFileContents.replace(
-        globalRegexp, manifestString);
+      globalRegexp, manifestString);
   }
 
   for (const [file, contents] of Object.entries(filesToWrite)) {
@@ -196,7 +191,7 @@ export async function injectManifest(config: unknown): Promise<BuildResult> {
       await fse.mkdirp(upath.dirname(file));
     } catch (error) {
       throw new Error(errors['unable-to-make-sw-directory'] +
-          ` '${error instanceof Error && error.message ? error.message : ''}'`);
+        ` '${error instanceof Error && error.message ? error.message : ''}'`);
     }
 
     await fse.writeFile(file, contents);

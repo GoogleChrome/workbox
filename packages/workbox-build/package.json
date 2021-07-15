@@ -63,5 +63,8 @@
   "main": "build/index.js",
   "workbox": {
     "packageType": "node_ts"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^9.0.12"
   }
 }

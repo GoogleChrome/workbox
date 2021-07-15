@@ -9,10 +9,7 @@
 import upath from 'upath';
 
 import {BuildResult, GetManifestOptions} from './types';
-import {getFileManifestEntries} from './lib/get-file-manifest-entries';
-import {rebasePath} from './lib/rebase-path';
-import {validateGenerateSWOptions} from './lib/validate-options';
-import {writeSWUsingDefaultTemplate} from './lib/write-sw-using-default-template';
+import {getFileManifestEntries, rebasePath, validateGenerateSWOptions, writeSWUsingDefaultTemplate} from './lib'
 
 // eslint-disable-next-line jsdoc/newline-after-description
 /**

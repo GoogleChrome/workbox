@@ -6,15 +6,15 @@
   https://opensource.org/licenses/MIT.
 */
 
-import { oneLine as ol } from "common-tags";
-import assert from "assert";
-import GlobWatcher from "glob-watcher";
-import meow from "meow";
-import prettyBytes from "pretty-bytes";
+import { oneLine as ol } from 'common-tags';
+import assert from 'assert';
+import GlobWatcher from 'glob-watcher';
+import meow from 'meow';
+import prettyBytes from 'pretty-bytes';
 import upath from "upath";
-import * as workboxBuild from "workbox-build";
-import { constants, errors, logger, readConfig, runWizard } from "./lib";
-import { SupportedFlags } from "./bin.js";
+import * as workboxBuild from 'workbox-build';
+import { constants, errors, logger, readConfig, runWizard } from './lib';
+import { SupportedFlags } from './bin.js';
 
 interface BuildCommand {
   command: "generateSW" | "injectManifest";
@@ -50,7 +50,7 @@ async function runBuildCommand({ command, config, watch }: BuildCommand) {
 
   logger.log(
     `The service worker will precache ${count} URLs, ` +
-      `totaling ${prettyBytes(size)}.`
+    `totaling ${prettyBytes(size)}.`
   );
 
   if (watch) {
