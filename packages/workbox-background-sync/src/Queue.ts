@@ -6,13 +6,13 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
-import {logger} from 'workbox-core/_private/logger.js';
-import {assert} from 'workbox-core/_private/assert.js';
-import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
-import {QueueStore} from './lib/QueueStore.js';
-import {UnidentifiedQueueStoreEntry} from './lib/QueueDb.js';
-import {StorableRequest} from './lib/StorableRequest.js';
+import { WorkboxError } from 'workbox-core/_private/WorkboxError.js';
+import { logger } from 'workbox-core/_private/logger.js';
+import { assert } from 'workbox-core/_private/assert.js';
+import { getFriendlyURL } from 'workbox-core/_private/getFriendlyURL.js';
+import { QueueStore } from './lib/QueueStore.js';
+import { UnidentifiedQueueStoreEntry } from './lib/QueueDb.js';
+import { StorableRequest } from './lib/StorableRequest.js';
 import './_version.js';
 
 // Give TypeScript the correct global.
@@ -23,7 +23,7 @@ interface OnSyncCallbackOptions {
 }
 
 interface OnSyncCallback {
-  (options: OnSyncCallbackOptions): void|Promise<void>;
+  (options: OnSyncCallbackOptions): void | Promise<void>;
 }
 
 export interface QueueOptions {
@@ -105,7 +105,7 @@ class Queue {
   }: QueueOptions = {}) {
     // Ensure the store name is not already being used
     if (queueNames.has(name)) {
-      throw new WorkboxError('duplicate-queue-name', {name});
+      throw new WorkboxError('duplicate-queue-name', { name });
     } else {
       queueNames.add(name);
     }
@@ -269,11 +269,11 @@ class Queue {
     }
 
     await this._queueStore[
-        `${operation}Entry` as 'pushEntry' | 'unshiftEntry'](entry);
+      `${operation}Entry` as 'pushEntry' | 'unshiftEntry'](entry);
 
     if (process.env.NODE_ENV !== 'production') {
       logger.log(`Request for '${getFriendlyURL(request.url)}' has ` +
-          `been added to background sync queue '${this._name}'.`);
+        `been added to background sync queue '${this._name}'.`);
     }
 
     // Don't register for a sync if we're in the middle of a sync. Instead,
@@ -297,7 +297,7 @@ class Queue {
   async _removeRequest(operation: 'pop' | 'shift'): Promise<QueueEntry | undefined> {
     const now = Date.now();
     const entry = await this._queueStore[
-        `${operation}Entry` as 'popEntry' | 'shiftEntry']();
+      `${operation}Entry` as 'popEntry' | 'shiftEntry']();
 
     if (entry) {
       // Ignore requests older than maxRetentionTime. Call this function
@@ -326,21 +326,21 @@ class Queue {
 
         if (process.env.NODE_ENV !== 'production') {
           logger.log(`Request for '${getFriendlyURL(entry.request.url)}' ` +
-             `has been replayed in queue '${this._name}'`);
+            `has been replayed in queue '${this._name}'`);
         }
       } catch (error) {
         await this.unshiftRequest(entry);
 
         if (process.env.NODE_ENV !== 'production') {
           logger.log(`Request for '${getFriendlyURL(entry.request.url)}' ` +
-             `failed to replay, putting it back in queue '${this._name}'`);
+            `failed to replay, putting it back in queue '${this._name}'`);
         }
-        throw new WorkboxError('queue-replay-failed', {name: this._name});
+        throw new WorkboxError('queue-replay-failed', { name: this._name });
       }
     }
     if (process.env.NODE_ENV !== 'production') {
       logger.log(`All requests in queue '${this.name}' have successfully ` +
-          `replayed; the queue is now empty!`);
+        `replayed; the queue is now empty!`);
     }
   }
 
@@ -356,7 +356,7 @@ class Queue {
         // the user disabling it.
         if (process.env.NODE_ENV !== 'production') {
           logger.warn(
-              `Unable to register sync event for '${this._name}'.`, err);
+            `Unable to register sync event for '${this._name}'.`, err);
         }
       }
     }
@@ -375,7 +375,7 @@ class Queue {
         if (event.tag === `${TAG_PREFIX}:${this._name}`) {
           if (process.env.NODE_ENV !== 'production') {
             logger.log(`Background sync for tag '${event.tag}' ` +
-                `has been received`);
+              `has been received`);
           }
 
           const syncComplete = async () => {
@@ -383,7 +383,7 @@ class Queue {
 
             let syncError;
             try {
-              await this._onSync({queue: this});
+              await this._onSync({ queue: this });
             } catch (error) {
               if (error instanceof Error) {
                 syncError = error;
@@ -399,7 +399,7 @@ class Queue {
               // case the browser will automatically retry later, as long
               // as `event.lastChance` is not true.
               if (this._requestsAddedDuringSync &&
-                  !(syncError && !event.lastChance)) {
+                !(syncError && !event.lastChance)) {
                 await this.registerSync();
               }
 
@@ -416,7 +416,7 @@ class Queue {
       }
       // If the browser doesn't support background sync, retry
       // every time the service worker starts up as a fallback.
-      void this._onSync({queue: this});
+      void this._onSync({ queue: this });
     }
   }
 
@@ -433,4 +433,4 @@ class Queue {
   }
 }
 
-export {Queue};
+export { Queue };
