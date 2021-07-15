@@ -6,23 +6,18 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {oneLine as ol} from 'common-tags';
-import assert from 'assert';
-import GlobWatcher from 'glob-watcher';
-import meow from 'meow';
-import prettyBytes from 'pretty-bytes';
-import upath from 'upath';
-import * as workboxBuild from 'workbox-build';
-
-import {constants} from './lib/constants.js';
-import {errors} from './lib/errors.js';
-import {logger} from './lib/logger.js';
-import {readConfig} from './lib/read-config.js';
-import {runWizard} from './lib/run-wizard.js';
-import {SupportedFlags} from './bin.js'
+import { oneLine as ol } from "common-tags";
+import assert from "assert";
+import GlobWatcher from "glob-watcher";
+import meow from "meow";
+import prettyBytes from "pretty-bytes";
+import upath from "upath";
+import * as workboxBuild from "workbox-build";
+import { constants, errors, logger, readConfig, runWizard } from "./lib";
+import { SupportedFlags } from "./bin.js";
 
 interface BuildCommand {
-  command: 'generateSW' | 'injectManifest';
+  command: "generateSW" | "injectManifest";
   config: any;
   watch: boolean;
 }
@@ -32,8 +27,10 @@ interface BuildCommand {
  *
  * @param {Object} options
  */
-async function runBuildCommand({command, config, watch}: BuildCommand) {
-  const {count, filePaths, size, warnings} = await workboxBuild[command](config);
+async function runBuildCommand({ command, config, watch }: BuildCommand) {
+  const { count, filePaths, size, warnings } = await workboxBuild[command](
+    config
+  );
 
   for (const warning of warnings) {
     logger.warn(warning);
@@ -45,35 +42,39 @@ async function runBuildCommand({command, config, watch}: BuildCommand) {
     logger.log(`The service worker file was written to ${config.swDest}`);
   } else {
     const message = filePaths
-        .sort()
-        .map((filePath) => `  • ${filePath}`)
-        .join(`\n`);
+      .sort()
+      .map((filePath) => `  • ${filePath}`)
+      .join(`\n`);
     logger.log(`The service worker files were written to:\n${message}`);
   }
 
-  logger.log(`The service worker will precache ${count} URLs, ` +
-      `totaling ${prettyBytes(size)}.`);
+  logger.log(
+    `The service worker will precache ${count} URLs, ` +
+      `totaling ${prettyBytes(size)}.`
+  );
 
   if (watch) {
     logger.log(`\nWatching for changes...`);
   }
 }
 
-export const app = async (params: meow.Result<SupportedFlags>): Promise<void> => {
+export const app = async (
+  params: meow.Result<SupportedFlags>
+): Promise<void> => {
   // This should not be a user-visible error, unless meow() messes something up.
-  assert(params && Array.isArray(params.input), errors['missing-input']);
+  assert(params && Array.isArray(params.input), errors["missing-input"]);
 
   // Default to showing the help message if there's no command provided.
-  const [command = 'help', option] = params.input;
+  const [command = "help", option] = params.input;
 
   switch (command) {
-    case 'wizard': {
+    case "wizard": {
       await runWizard(params.flags);
       break;
     }
 
-    case 'copyLibraries': {
-      assert(option, errors['missing-dest-dir-param']);
+    case "copyLibraries": {
+      assert(option, errors["missing-dest-dir-param"]);
       const parentDirectory = upath.resolve(process.cwd(), option);
 
       const dirName = await workboxBuild.copyWorkboxLibraries(parentDirectory);
@@ -86,10 +87,12 @@ export const app = async (params: meow.Result<SupportedFlags>): Promise<void> =>
       break;
     }
 
-    case 'generateSW':
-    case 'injectManifest': {
-      const configPath = upath.resolve(process.cwd(),
-          option || constants.defaultConfigFile);
+    case "generateSW":
+    case "injectManifest": {
+      const configPath = upath.resolve(
+        process.cwd(),
+        option || constants.defaultConfigFile
+      );
 
       let config: any;
       try {
@@ -98,7 +101,7 @@ export const app = async (params: meow.Result<SupportedFlags>): Promise<void> =>
         config = readConfig(configPath);
       } catch (error) {
         if (error instanceof Error) {
-          logger.error(errors['invalid-common-js-module']);
+          logger.error(errors["invalid-common-js-module"]);
           throw error;
         }
       }
@@ -109,7 +112,7 @@ export const app = async (params: meow.Result<SupportedFlags>): Promise<void> =>
       // Can't change the type of config, we'll consider in next major release.
       /* eslint-disable */
       if (params.flags && params.flags.watch) {
-        const options: GlobWatcher.WatchOptions = {ignoreInitial: false};
+        const options: GlobWatcher.WatchOptions = { ignoreInitial: false };
         if (config.globIgnores) {
           options.ignored = config.globIgnores;
         }
@@ -118,24 +121,24 @@ export const app = async (params: meow.Result<SupportedFlags>): Promise<void> =>
         }
 
         if (config.globPatterns) {
-          GlobWatcher(config.globPatterns, options,
-            () => runBuildCommand({command, config, watch: true}));
+          GlobWatcher(config.globPatterns, options, () =>
+            runBuildCommand({ command, config, watch: true })
+          );
         }
-
       } else {
-        await runBuildCommand({command, config, watch: false});
+        await runBuildCommand({ command, config, watch: false });
       }
       /* eslint-disable */
       break;
     }
 
-    case 'help': {
+    case "help": {
       params.showHelp();
       break;
     }
 
     default: {
-      throw new Error(errors['unknown-command'] + ` ` + command);
+      throw new Error(errors["unknown-command"] + ` ` + command);
     }
   }
 };
