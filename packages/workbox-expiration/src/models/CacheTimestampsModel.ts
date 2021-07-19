@@ -207,7 +207,7 @@ class CacheTimestampsModel {
   private async getDb() {
     if (!this._db) {
       this._db = await openDB(DB_NAME, 1, {
-        upgrade: this._upgradeDbAndDeleteOldDbs,
+        upgrade: this._upgradeDbAndDeleteOldDbs.bind(this),
       });
     }
     return this._db;
