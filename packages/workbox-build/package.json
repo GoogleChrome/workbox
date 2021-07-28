@@ -29,7 +29,6 @@
     "@rollup/plugin-replace": "^2.4.1",
     "@surma/rollup-plugin-off-main-thread": "^1.4.1",
     "ajv": "^8.6.0",
-    "ajv-keywords": "^5.0.0",
     "common-tags": "^1.8.0",
     "fast-json-stable-stringify": "^2.1.0",
     "fs-extra": "^9.0.1",

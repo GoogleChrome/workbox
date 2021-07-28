@@ -20,9 +20,7 @@
     },
     "manifestTransforms": {
       "type": "array",
-      "items": {
-        "typeof": "function"
-      }
+      "items": {}
     },
     "maximumFileSizeToCacheInBytes": {
       "default": 2097152,
@@ -753,10 +751,7 @@
         "onabort"
       ]
     },
-    "RouteMatchCallback": {
-      "description": "The \"match\" callback is used to determine if a `Route` should apply for a\nparticular URL and request. When matching occurs in response to a fetch\nevent from the client, the `event` object is also supplied. However, since\nthe match callback can be invoked outside of a fetch event, matching logic\nshould not assume the `event` object will always be available.\nIf the match callback returns a truthy value, the matching route's\n`RouteHandlerCallback` will be invoked immediately. If the value returned\nis a non-empty array or object, that value will be set on the handler's\n`options.params` argument.",
-      "typeof": "function"
-    }
+    "RouteMatchCallback": {}
   },
   "$schema": "http://json-schema.org/draft-07/schema#"
 }

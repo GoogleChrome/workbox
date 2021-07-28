@@ -46,31 +46,23 @@ async function generateWorkboxBuildJSONSchema(packagePath) {
   ];
   for (const optionType of optionTypes) {
     const schema = generator.getSchemaForSymbol(optionType);
-    // Ideally, we'd set typeOfKeyword so that functions could be represented.
-    // Instead, we need to hardcode a few overrides to deal with functions.
-    // See https://github.com/YousefED/typescript-json-schema/issues/424
+
     if (schema.properties.manifestTransforms) {
-      schema.properties.manifestTransforms.items = {typeof: 'function'};
+      schema.properties.manifestTransforms.items = {};
     }
+
     if (schema.properties.exclude) {
-      schema.properties.exclude.items.anyOf = [
-        {'$ref': '#/definitions/RegExp'},
-        {type: 'string'},
-        {typeof: 'function'},
-      ];
+      schema.properties.exclude.items = {};
     }
+
     if (schema.properties.include) {
-      schema.properties.include.items.anyOf = [
-        {'$ref': '#/definitions/RegExp'},
-        {type: 'string'},
-        {typeof: 'function'},
-      ];
+      schema.properties.include.items = {};
     }
+
     if (schema.definitions.RouteMatchCallback) {
-      delete schema.definitions.RouteMatchCallback.type;
-      delete schema.definitions.RouteMatchCallback.additionalProperties;
-      schema.definitions.RouteMatchCallback.typeof = 'function';
+      schema.definitions.RouteMatchCallback = {};
     }
+
     await fse.writeJSON(upath.join(packagePath, 'src', 'schema',
         `${optionType}.json`), schema, {spaces: 2});
   }
