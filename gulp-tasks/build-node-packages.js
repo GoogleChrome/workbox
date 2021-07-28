@@ -50,7 +50,7 @@ async function generateWorkboxBuildJSONSchema(packagePath) {
     if (schema.properties.manifestTransforms) {
       schema.properties.manifestTransforms.items = {};
     }
-  
+
     if (schema.properties.exclude) {
       schema.properties.exclude.items = {};
     }
