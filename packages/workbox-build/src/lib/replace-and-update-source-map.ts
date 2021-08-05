@@ -97,7 +97,8 @@ export async function replaceAndUpdateSourceMap({
   });
 
   consumer.destroy();
-
+  // JSON.parse returns any.
+  // eslint-disable-next-line  @typescript-eslint/no-unsafe-assignment
   const updatedSourceMap: RawSourceMap = Object.assign(JSON.parse(generator.toString()), {
     names: originalMap.names,
     sourceRoot: originalMap.sourceRoot,

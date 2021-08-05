@@ -258,8 +258,8 @@ describe(`StrategyHandler`, function() {
       await expectError(() => {
         return handler.fetch('/test/requestWillFetch/0');
       }, 'plugin-error-request-will-fetch', (err) => {
-        expect(err.details.thrownError).to.exist;
-        expect(err.details.thrownError.message).to.equal('Injected Error from Test.');
+        expect(err.details.thrownErrorMessage).to.exist;
+        expect(err.details.thrownErrorMessage).to.equal('Injected Error from Test.');
       });
 
       expect(errorPluginSpy.callCount).equal(1);

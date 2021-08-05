@@ -34,21 +34,24 @@ export interface QueueOptions {
 interface QueueEntry {
   request: Request;
   timestamp?: number;
+  // We could use Record<string, unknown> as a type but that would be a breaking
+  // change, better do it in next major release.
+  // eslint-disable-next-line  @typescript-eslint/ban-types
   metadata?: object;
 }
 
 const TAG_PREFIX = 'workbox-background-sync';
 const MAX_RETENTION_TIME = 60 * 24 * 7; // 7 days in minutes
 
-const queueNames = new Set();
+const queueNames = new Set<string>();
 
 /**
  * Converts a QueueStore entry into the format exposed by Queue. This entails
  * converting the request data into a real request and omitting the `id` and
  * `queueName` properties.
  *
- * @param {Object} queueStoreEntry
- * @return {Object}
+ * @param {UnidentifiedQueueStoreEntry} queueStoreEntry
+ * @return {Queue}
  * @private
  */
 const convertEntry = (queueStoreEntry: UnidentifiedQueueStoreEntry): QueueEntry => {
@@ -118,7 +121,7 @@ class Queue {
   /**
    * @return {string}
    */
-  get name() {
+  get name(): string {
     return this._name;
   }
 
@@ -126,7 +129,7 @@ class Queue {
    * Stores the passed request in IndexedDB (with its timestamp and any
    * metadata) at the end of the queue.
    *
-   * @param {Object} entry
+   * @param {QueueEntry} entry
    * @param {Request} entry.request The request to store in the queue.
    * @param {Object} [entry.metadata] Any metadata you want associated with the
    *     stored request. When requests are replayed you'll have access to this
@@ -138,7 +141,7 @@ class Queue {
    *     for you (defaulting to `Date.now()`), but you can update it if you
    *     don't want particular requests to expire.
    */
-  async pushRequest(entry: QueueEntry) {
+  async pushRequest(entry: QueueEntry): Promise<void> {
     if (process.env.NODE_ENV !== 'production') {
       assert!.isType(entry, 'object', {
         moduleName: 'workbox-background-sync',
@@ -161,7 +164,7 @@ class Queue {
    * Stores the passed request in IndexedDB (with its timestamp and any
    * metadata) at the beginning of the queue.
    *
-   * @param {Object} entry
+   * @param {QueueEntry} entry
    * @param {Request} entry.request The request to store in the queue.
    * @param {Object} [entry.metadata] Any metadata you want associated with the
    *     stored request. When requests are replayed you'll have access to this
@@ -173,7 +176,7 @@ class Queue {
    *     for you (defaulting to `Date.now()`), but you can update it if you
    *     don't want particular requests to expire.
    */
-  async unshiftRequest(entry: QueueEntry) {
+  async unshiftRequest(entry: QueueEntry): Promise<void> {
     if (process.env.NODE_ENV !== 'production') {
       assert!.isType(entry, 'object', {
         moduleName: 'workbox-background-sync',
@@ -197,9 +200,9 @@ class Queue {
    * timestamp and any metadata). The returned object takes the form:
    * `{request, timestamp, metadata}`.
    *
-   * @return {Promise<Object>}
+   * @return {Promise<QueueEntry | undefined>}
    */
-  async popRequest() {
+  async popRequest(): Promise<QueueEntry | undefined> {
     return this._removeRequest('pop');
   }
 
@@ -208,9 +211,9 @@ class Queue {
    * timestamp and any metadata). The returned object takes the form:
    * `{request, timestamp, metadata}`.
    *
-   * @return {Promise<Object>}
+   * @return {Promise<QueueEntry | undefined>}
    */
-  async shiftRequest() {
+  async shiftRequest(): Promise<QueueEntry | undefined> {
     return this._removeRequest('shift');
   }
 
@@ -218,9 +221,9 @@ class Queue {
    * Returns all the entries that have not expired (per `maxRetentionTime`).
    * Any expired entries are removed from the queue.
    *
-   * @return {Promise<Array<Object>>}
+   * @return {Promise<Array<QueueEntry>>}
    */
-  async getAll() {
+  async getAll(): Promise<Array<QueueEntry>> {
     const allEntries = await this._queueStore.getAll();
     const now = Date.now();
 
@@ -253,7 +256,7 @@ class Queue {
     request,
     metadata,
     timestamp = Date.now(),
-  }: QueueEntry, operation: 'push' | 'unshift') {
+  }: QueueEntry, operation: 'push' | 'unshift'): Promise<void> {
     const storableRequest = await StorableRequest.fromRequest(request.clone());
     const entry: UnidentifiedQueueStoreEntry = {
       requestData: storableRequest.toObject(),
@@ -315,7 +318,7 @@ class Queue {
    * If any request fails to re-fetch, it's put back in the same position in
    * the queue (which registers a retry for the next sync event).
    */
-  async replayRequests() {
+  async replayRequests(): Promise<void> {
     let entry;
     while ((entry = await this.shiftRequest())) {
       try {
@@ -344,7 +347,7 @@ class Queue {
   /**
    * Registers a sync event with a tag unique to this instance.
    */
-  async registerSync() {
+  async registerSync(): Promise<void> {
     if ('sync' in self.registration) {
       try {
         await self.registration.sync.register(`${TAG_PREFIX}:${this._name}`);
@@ -382,11 +385,13 @@ class Queue {
             try {
               await this._onSync({queue: this});
             } catch (error) {
-              syncError = error;
+              if (error instanceof Error) {
+                syncError = error;
 
-              // Rethrow the error. Note: the logic in the finally clause
-              // will run before this gets rethrown.
-              throw syncError;
+                // Rethrow the error. Note: the logic in the finally clause
+                // will run before this gets rethrown.
+                throw syncError;
+              }
             } finally {
               // New items may have been added to the queue during the sync,
               // so we need to register for a new sync if that's happened...
@@ -411,7 +416,7 @@ class Queue {
       }
       // If the browser doesn't support background sync, retry
       // every time the service worker starts up as a fallback.
-      this._onSync({queue: this});
+      void this._onSync({queue: this});
     }
   }
 
@@ -419,11 +424,11 @@ class Queue {
    * Returns the set of queue names. This is primarily used to reset the list
    * of queue names in tests.
    *
-   * @return {Set}
+   * @return {Set<string>}
    *
    * @private
    */
-  static get _queueNames() {
+  static get _queueNames(): Set<string> {
     return queueNames;
   }
 }

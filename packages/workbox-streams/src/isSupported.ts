@@ -21,7 +21,7 @@ import './_version.js';
  *
  * @memberof module:workbox-streams
  */
-function isSupported() {
+function isSupported(): boolean {
   return canConstructReadableStream();
 }
 

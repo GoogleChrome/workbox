@@ -40,6 +40,8 @@ async function runBuildCommand({command, config, watch}: BuildCommand) {
   }
 
   if (filePaths.length === 1) {
+    // Can't change the type of config, we'll consider in next major release.
+    // eslint-disable-next-line
     logger.log(`The service worker file was written to ${config.swDest}`);
   } else {
     const message = filePaths
@@ -57,7 +59,7 @@ async function runBuildCommand({command, config, watch}: BuildCommand) {
   }
 }
 
-export const app = async (params: meow.Result<SupportedFlags>) => {
+export const app = async (params: meow.Result<SupportedFlags>): Promise<void> => {
   // This should not be a user-visible error, unless meow() messes something up.
   assert(params && Array.isArray(params.input), errors['missing-input']);
 
@@ -91,15 +93,21 @@ export const app = async (params: meow.Result<SupportedFlags>) => {
 
       let config: any;
       try {
+        // Can't change the type of config, we'll consider in next major release.
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         config = readConfig(configPath);
       } catch (error) {
-        logger.error(errors['invalid-common-js-module']);
-        throw error;
+        if (error instanceof Error) {
+          logger.error(errors['invalid-common-js-module']);
+          throw error;
+        }
       }
 
       logger.log(`Using configuration from ${configPath}.`);
 
       // Determine whether we're in --watch mode, or one-off mode.
+      // Can't change the type of config, we'll consider in next major release.
+      /* eslint-disable */
       if (params.flags && params.flags.watch) {
         const options: GlobWatcher.WatchOptions = {ignoreInitial: false};
         if (config.globIgnores) {
@@ -108,15 +116,16 @@ export const app = async (params: meow.Result<SupportedFlags>) => {
         if (config.globDirectory) {
           options.cwd = config.globDirectory;
         }
-        
+
         if (config.globPatterns) {
           GlobWatcher(config.globPatterns, options,
             () => runBuildCommand({command, config, watch: true}));
         }
-        
+
       } else {
         await runBuildCommand({command, config, watch: false});
       }
+      /* eslint-disable */
       break;
     }
 

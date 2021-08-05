@@ -30,7 +30,7 @@ import './_version.js';
  *
  * @memberof module:workbox-precaching
  */
-function precache(entries: Array<PrecacheEntry|string>) {
+function precache(entries: Array<PrecacheEntry | string>): void {
   const precacheController = getOrCreatePrecacheController();
   precacheController.precache(entries);
 }

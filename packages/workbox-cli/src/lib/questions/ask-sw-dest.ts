@@ -7,7 +7,7 @@
 */
 
 import assert from 'assert';
-import {prompt} from 'inquirer';
+import {Answers, prompt} from 'inquirer';
 import upath from 'upath';
 
 import {errors} from '../errors';
@@ -17,9 +17,9 @@ const name = 'swDest';
 
 /**
  * @param {string} defaultDir
- * @return {Promise<Object>} The answers from inquirer.
+ * @return {Promise<Answers>} The answers from inquirer.
  */
-function askQuestion(defaultDir: string) {
+function askQuestion(defaultDir: string): Promise<Answers> {
   return prompt([{
     name,
     message: `Where would you like your service worker file to be saved?`,
@@ -28,9 +28,11 @@ function askQuestion(defaultDir: string) {
   }]);
 }
 
-export async function askSWDest(defaultDir = '.') {
+export async function askSWDest(defaultDir = '.'): Promise<string> {
   const answers = await askQuestion(defaultDir);
-  const swDest = answers[name].trim();
+  // When prompt type is input the return type is string
+  // casting is safe
+  const swDest: string = (answers[name] as string).trim();
 
   assert(swDest, errors['invalid-sw-dest']);
 

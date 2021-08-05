@@ -21,7 +21,7 @@ import './_version.js';
  *
  * @memberof module:workbox-routing
  */
-function setCatchHandler(handler: RouteHandler) {
+function setCatchHandler(handler: RouteHandler): void {
   const defaultRouter = getOrCreateDefaultRouter();
   defaultRouter.setCatchHandler(handler);
 }

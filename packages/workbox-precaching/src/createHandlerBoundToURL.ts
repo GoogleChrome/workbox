@@ -7,7 +7,7 @@
 */
 
 import {getOrCreatePrecacheController} from './utils/getOrCreatePrecacheController.js';
-
+import {RouteHandlerCallback} from 'workbox-core/types.js';
 import './_version.js';
 
 /**
@@ -27,7 +27,7 @@ import './_version.js';
  *
  * @memberof module:workbox-precaching
  */
-function createHandlerBoundToURL(url: string) {
+function createHandlerBoundToURL(url: string): RouteHandlerCallback {
   const precacheController = getOrCreatePrecacheController();
   return precacheController.createHandlerBoundToURL(url);
 }

@@ -65,6 +65,12 @@ import {noRevisionForURLsMatchingTransform} from './no-revision-for-urls-matchin
  * @memberof module:workbox-build
  */
 
+interface ManifestTransformResultWithWarnings {
+  count: number;
+  size: number;
+  manifestEntries: ManifestEntry[];
+  warnings: string[];
+}
 export async function transformManifest({
   additionalManifestEntries,
   dontCacheBustURLsMatching,
@@ -78,7 +84,7 @@ export async function transformManifest({
   // When this is called by the webpack plugin, transformParam will be the
   // current webpack compilation.
   transformParam?: unknown;
-}) {
+  }): Promise<ManifestTransformResultWithWarnings> {
   const allWarnings: Array<string> = [];
 
   // Take the array of fileDetail objects and convert it into an array of

@@ -8,7 +8,7 @@
 
 import '../_version.js';
 
-const getFriendlyURL = (url: URL | string) => {
+const getFriendlyURL = (url: URL | string): string => {
   const urlObj = new URL(String(url), location.href);
   // See https://github.com/GoogleChrome/workbox/issues/2323
   // We want to include everything, except for the origin if it's same-origin.

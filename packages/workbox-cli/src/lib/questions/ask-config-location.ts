@@ -7,7 +7,7 @@
 */
 
 import assert from 'assert';
-import {prompt} from 'inquirer';
+import {Answers, Question, prompt} from 'inquirer';
 import {oneLine as ol} from 'common-tags';
 
 import {constants} from '../constants';
@@ -16,21 +16,24 @@ import {errors} from '../errors';
 // The key used for the question/answer.
 const name = 'configLocation';
 
+const configLocationQuestion: Question<Answers> = {
+  name,
+  message: ol`Where would you like to save these configuration options?`,
+  type: 'input',
+  default: constants.defaultConfigFile,
+};
 /**
- * @return {Promise<Object>} The answers from inquirer.
+ * @return {Promise<Answers>} The answers from inquirer.
  */
-function askQuestion() {
-  return prompt([{
-    name,
-    message: ol`Where would you like to save these configuration options?`,
-    type: 'input',
-    default: constants.defaultConfigFile,
-  }]);
+function askQuestion(): Promise<Answers> {
+  return prompt([configLocationQuestion]);
 }
 
-export async function askConfigLocation() {
+export async function askConfigLocation(): Promise<string> {
   const answers = await askQuestion();
-  const configLocation: string = answers[name].trim();
+  // The value of the answer when the question type is 'input' is String
+  // and it has a default value, the casting is safe.
+  const configLocation: string = (answers[name] as string).trim();
 
   assert(configLocation, errors['invalid-config-location']);
 
