@@ -11,7 +11,7 @@
     "noUnusedParameters": true,
     "preserveConstEnums": true,
     "strict": true,
-    "target": "esnext",
+    "target": "es2017",
     "tsBuildInfoFile": "./tsconfig.tsbuildinfo"
   },
   "files": [
