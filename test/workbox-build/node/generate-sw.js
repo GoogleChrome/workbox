@@ -921,6 +921,58 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
           errors['invalid-network-timeout-seconds']);
     });
 
+    it(`should support passing in a function for cachedResponseWillBeUsed`, async function() {
+      const swDest = tempy.file({extension: 'js'});
+      const handler = 'CacheFirst';
+
+      const runtimeCachingOptions = {
+        plugins: [{
+          cachedResponseWillBeUsed: async () => {},
+        }],
+      };
+      const runtimeCaching = [{
+        urlPattern: REGEXP_URL_PATTERN,
+        handler,
+        options: runtimeCachingOptions,
+      }];
+      const options = Object.assign({}, BASE_OPTIONS, {
+        runtimeCaching,
+        swDest,
+      });
+
+      const {count, size, warnings} = await generateSW(options);
+      expect(warnings).to.be.empty;
+      expect(count).to.eql(6);
+      // Line ending differences lead to different sizes on Windows.
+      expect(size).to.be.oneOf([2604, 2686]);
+      await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
+        [handler]: [[runtimeCachingOptions]],
+        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
+        precacheAndRoute: [[[{
+          url: 'index.html',
+          revision: /^[0-9a-f]{32}$/,
+        }, {
+          url: 'page-1.html',
+          revision: /^[0-9a-f]{32}$/,
+        }, {
+          url: 'page-2.html',
+          revision: /^[0-9a-f]{32}$/,
+        }, {
+          url: 'styles/stylesheet-1.css',
+          revision: /^[0-9a-f]{32}$/,
+        }, {
+          url: 'styles/stylesheet-2.css',
+          revision: /^[0-9a-f]{32}$/,
+        }, {
+          url: 'webpackEntry.js',
+          revision: /^[0-9a-f]{32}$/,
+        }], {}]],
+        registerRoute: [
+          [REGEXP_URL_PATTERN, {name: handler}, DEFAULT_METHOD],
+        ],
+      }});
+    });
+
     it(`should support 'networkTimeoutSeconds' when handler is 'NetworkFirst'`, async function() {
       const swDest = tempy.file({extension: 'js'});
       const networkTimeoutSeconds = 1;

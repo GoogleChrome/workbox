@@ -16,23 +16,35 @@ const constants = require('./utils/constants');
 const packageRunner = require('./utils/package-runner');
 
 async function buildNodePackage(packagePath) {
-  const outputDirectory = upath.join(packagePath,
-      constants.PACKAGE_BUILD_DIRNAME);
+  const outputDirectory = upath.join(
+      packagePath,
+      constants.PACKAGE_BUILD_DIRNAME,
+  );
 
-  const configFile = upath.join(__dirname, 'utils',
-      'node-projects-babel.config.json');
+  const configFile = upath.join(
+      __dirname,
+      'utils',
+      'node-projects-babel.config.json',
+  );
 
-  await execa('babel', [
-    '--config-file', configFile,
-    `${packagePath}/src`,
-    '--out-dir', outputDirectory,
-    '--copy-files',
-  ], {preferLocal: true});
+  await execa(
+      'babel',
+      [
+        '--config-file',
+        configFile,
+        `${packagePath}/src`,
+        '--out-dir',
+        outputDirectory,
+        '--copy-files',
+      ],
+      {preferLocal: true},
+  );
 }
 
 async function generateWorkboxBuildJSONSchema(packagePath) {
-  const program = TJS.programFromConfig(upath.join(packagePath,
-      'tsconfig.json'));
+  const program = TJS.programFromConfig(
+      upath.join(packagePath, 'tsconfig.json'),
+  );
   const generator = TJS.buildGenerator(program, {
     noExtraProps: true,
     required: true,
@@ -63,8 +75,20 @@ async function generateWorkboxBuildJSONSchema(packagePath) {
       schema.definitions.RouteMatchCallback = {};
     }
 
-    await fse.writeJSON(upath.join(packagePath, 'src', 'schema',
-        `${optionType}.json`), schema, {spaces: 2});
+    // See https://github.com/GoogleChrome/workbox/issues/2901
+    if (schema.definitions.WorkboxPlugin) {
+      for (const plugin of Object.keys(
+          schema.definitions.WorkboxPlugin.properties,
+      )) {
+        schema.definitions.WorkboxPlugin.properties[plugin] = {};
+      }
+    }
+
+    await fse.writeJSON(
+        upath.join(packagePath, 'src', 'schema', `${optionType}.json`),
+        schema,
+        {spaces: 2},
+    );
   }
 }
 
@@ -79,8 +103,10 @@ async function buildNodeTSPackage(packagePath) {
 }
 
 module.exports = {
-  build_node_packages: parallel(packageRunner('build_node_packages', 'node',
-      buildNodePackage)),
-  build_node_ts_packages: parallel(packageRunner('build_node_ts_packages',
-      'node_ts', buildNodeTSPackage)),
+  build_node_packages: parallel(
+      packageRunner('build_node_packages', 'node', buildNodePackage),
+  ),
+  build_node_ts_packages: parallel(
+      packageRunner('build_node_ts_packages', 'node_ts', buildNodeTSPackage),
+  ),
 };
