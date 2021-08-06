@@ -491,42 +491,18 @@
       "description": "An object with optional lifecycle callback properties for the fetch and\ncache operations.",
       "type": "object",
       "properties": {
-        "cacheDidUpdate": {
-          "$ref": "#/definitions/CacheDidUpdateCallback"
-        },
-        "cachedResponseWillBeUsed": {
-          "$ref": "#/definitions/CachedResponseWillBeUsedCallback"
-        },
-        "cacheKeyWillBeUsed": {
-          "$ref": "#/definitions/CacheKeyWillBeUsedCallback"
-        },
-        "cacheWillUpdate": {
-          "$ref": "#/definitions/CacheWillUpdateCallback"
-        },
-        "fetchDidFail": {
-          "$ref": "#/definitions/FetchDidFailCallback"
-        },
-        "fetchDidSucceed": {
-          "$ref": "#/definitions/FetchDidSucceedCallback"
-        },
-        "handlerDidComplete": {
-          "$ref": "#/definitions/HandlerDidCompleteCallback"
-        },
-        "handlerDidError": {
-          "$ref": "#/definitions/HandlerDidErrorCallback"
-        },
-        "handlerDidRespond": {
-          "$ref": "#/definitions/HandlerDidRespondCallback"
-        },
-        "handlerWillRespond": {
-          "$ref": "#/definitions/HandlerWillRespondCallback"
-        },
-        "handlerWillStart": {
-          "$ref": "#/definitions/HandlerWillStartCallback"
-        },
-        "requestWillFetch": {
-          "$ref": "#/definitions/RequestWillFetchCallback"
-        }
+        "cacheDidUpdate": {},
+        "cachedResponseWillBeUsed": {},
+        "cacheKeyWillBeUsed": {},
+        "cacheWillUpdate": {},
+        "fetchDidFail": {},
+        "fetchDidSucceed": {},
+        "handlerDidComplete": {},
+        "handlerDidError": {},
+        "handlerDidRespond": {},
+        "handlerWillRespond": {},
+        "handlerWillStart": {},
+        "requestWillFetch": {}
       },
       "additionalProperties": false
     },
