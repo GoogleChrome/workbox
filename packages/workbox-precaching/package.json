@@ -1,6 +1,6 @@
 {
   "name": "workbox-precaching",
-  "version": "6.2.1",
+  "version": "6.2.2",
   "license": "MIT",
   "author": "Google's Web DevRel Team",
   "description": "This module efficiently precaches assets.",
@@ -21,8 +21,8 @@
   "module": "index.mjs",
   "types": "index.d.ts",
   "dependencies": {
-    "workbox-core": "^6.2.1",
-    "workbox-routing": "^6.2.1",
-    "workbox-strategies": "^6.2.1"
+    "workbox-core": "6.2.2",
+    "workbox-routing": "6.2.2",
+    "workbox-strategies": "6.2.2"
   }
 }
