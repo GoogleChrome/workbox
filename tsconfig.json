@@ -14,9 +14,7 @@
     "target": "es2017",
     "tsBuildInfoFile": "./tsconfig.tsbuildinfo"
   },
-  "files": [
-    "./infra/type-overrides.d.ts"
-  ],
+  "files": ["./infra/type-overrides.d.ts"],
   "exclude": [],
   "references": [
     { "path": "./packages/workbox-broadcast-update/" },
