@@ -311,11 +311,7 @@
         "urlPattern"
       ]
     },
-    "RouteHandlerCallback": {
-      "description": "The \"handler\" callback is invoked whenever a `Router` matches a URL/Request\nto a `Route` via its `RouteMatchCallback`. This handler callback should\nreturn a `Promise` that resolves with a `Response`.\n\nIf a non-empty array or object is returned by the `RouteMatchCallback` it\nwill be passed in as this handler's `options.params` argument.",
-      "type": "object",
-      "additionalProperties": false
-    },
+    "RouteHandlerCallback": {},
     "RouteHandlerObject": {
       "description": "An object with a `handle` method of type `RouteHandlerCallback`.\n\nA `Route` object can be created with either an `RouteHandlerCallback`\nfunction or this `RouteHandler` object. The benefit of the `RouteHandler`\nis it can be extended (as is done by the `workbox-strategies` package).",
       "type": "object",
@@ -341,10 +337,7 @@
       },
       "additionalProperties": false
     },
-    "OnSyncCallback": {
-      "type": "object",
-      "additionalProperties": false
-    },
+    "OnSyncCallback": {},
     "BroadcastCacheUpdateOptions": {
       "type": "object",
       "properties": {

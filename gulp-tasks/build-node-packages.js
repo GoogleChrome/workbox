@@ -71,8 +71,17 @@ async function generateWorkboxBuildJSONSchema(packagePath) {
       schema.properties.include.items = {};
     }
 
+    // See https://github.com/GoogleChrome/workbox/issues/2910
+    if (schema.definitions.OnSyncCallback) {
+      schema.definitions.OnSyncCallback = {};
+    }
+
     if (schema.definitions.RouteMatchCallback) {
       schema.definitions.RouteMatchCallback = {};
+    }
+
+    if (schema.definitions.RouteHandlerCallback) {
+      schema.definitions.RouteHandlerCallback = {};
     }
 
     // See https://github.com/GoogleChrome/workbox/issues/2901
