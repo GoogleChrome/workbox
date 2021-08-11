@@ -140,6 +140,7 @@ function ensureValidStringHandler(
   jsonSchema: JSONSchemaType<GenerateSWOptions | WebpackGenerateSWOptions>,
 ): void {
   let validHandlers: Array<string> = [];
+  /* eslint-disable */
   for (const handler of jsonSchema.definitions?.RuntimeCaching?.properties
     ?.handler?.anyOf || []) {
     if ('enum' in handler) {
@@ -147,6 +148,7 @@ function ensureValidStringHandler(
       break;
     }
   }
+  /* eslint-enable */
 
   for (const runtimeCaching of options.runtimeCaching || []) {
     if (
