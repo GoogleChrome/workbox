@@ -921,18 +921,25 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
           errors['invalid-network-timeout-seconds']);
     });
 
-    it(`should support passing in a function for cachedResponseWillBeUsed`, async function() {
+    it(`should support passing in a function when allowed`, async function() {
       const swDest = tempy.file({extension: 'js'});
-      const handler = 'CacheFirst';
+      const handler = () => {};
+      const urlPattern = () => {};
 
       const runtimeCachingOptions = {
+        backgroundSync: {
+          name: 'test',
+          options: {
+            onSync: () => {},
+          },
+        },
         plugins: [{
-          cachedResponseWillBeUsed: async () => {},
+          cachedResponseWillBeUsed: () => {},
         }],
       };
       const runtimeCaching = [{
-        urlPattern: REGEXP_URL_PATTERN,
         handler,
+        urlPattern,
         options: runtimeCachingOptions,
       }];
       const options = Object.assign({}, BASE_OPTIONS, {
@@ -968,7 +975,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
           revision: /^[0-9a-f]{32}$/,
         }], {}]],
         registerRoute: [
-          [REGEXP_URL_PATTERN, {name: handler}, DEFAULT_METHOD],
+          [urlPattern.toString(), handler.toString(), DEFAULT_METHOD],
         ],
       }});
     });

@@ -40,7 +40,12 @@ export class WorkboxConfigError extends Error {
   }
 }
 
-function validate<T>(input: unknown, methodName: MethodNames): T {
+// Some methods need to do follow-up validation using the JSON schema,
+// so return both the validated options and then schema.
+function validate<T>(
+  input: unknown,
+  methodName: MethodNames,
+): [T, JSONSchemaType<T>] {
   // Don't mutate input: https://github.com/GoogleChrome/workbox/issues/2158
   const inputCopy = Object.assign({}, input);
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
@@ -49,7 +54,7 @@ function validate<T>(input: unknown, methodName: MethodNames): T {
   if (validate(inputCopy)) {
     // All methods support manifestTransforms, so validate it here.
     ensureValidManifestTransforms(inputCopy);
-    return inputCopy;
+    return [inputCopy, jsonSchema];
   }
 
   const betterErrors = betterAjvErrors({
@@ -126,23 +131,65 @@ function ensureValidRuntimeCachingOrGlobDirectory(
   }
 }
 
+// This is... messy, because we can't rely on the built-in ajv validation for
+// runtimeCaching.handler, as it needs to accept {} (i.e. any) due to
+// https://github.com/GoogleChrome/workbox/pull/2899
+// So we need to perform validation when a string (not a function) is used.
+function ensureValidStringHandler(
+  options: GenerateSWOptions | WebpackGenerateSWOptions,
+  jsonSchema: JSONSchemaType<GenerateSWOptions | WebpackGenerateSWOptions>,
+): void {
+  let validHandlers: Array<string> = [];
+  /* eslint-disable */
+  for (const handler of jsonSchema.definitions?.RuntimeCaching?.properties
+    ?.handler?.anyOf || []) {
+    if ('enum' in handler) {
+      validHandlers = handler.enum;
+      break;
+    }
+  }
+  /* eslint-enable */
+
+  for (const runtimeCaching of options.runtimeCaching || []) {
+    if (
+      typeof runtimeCaching.handler === 'string' &&
+      !validHandlers.includes(runtimeCaching.handler)
+    ) {
+      throw new WorkboxConfigError(
+        errors['invalid-handler-string'] + runtimeCaching.handler,
+      );
+    }
+  }
+}
+
 export function validateGenerateSWOptions(input: unknown): GenerateSWOptions {
-  const validatedOptions = validate<GenerateSWOptions>(input, 'GenerateSW');
+  const [validatedOptions, jsonSchema] = validate<GenerateSWOptions>(
+    input,
+    'GenerateSW',
+  );
   ensureValidNavigationPreloadConfig(validatedOptions);
   ensureValidCacheExpiration(validatedOptions);
   ensureValidRuntimeCachingOrGlobDirectory(validatedOptions);
+  ensureValidStringHandler(validatedOptions, jsonSchema);
 
   return validatedOptions;
 }
 
 export function validateGetManifestOptions(input: unknown): GetManifestOptions {
-  return validate<GetManifestOptions>(input, 'GetManifest');
+  const [validatedOptions] = validate<GetManifestOptions>(input, 'GetManifest');
+
+  return validatedOptions;
 }
 
 export function validateInjectManifestOptions(
   input: unknown,
 ): InjectManifestOptions {
-  return validate<InjectManifestOptions>(input, 'InjectManifest');
+  const [validatedOptions] = validate<InjectManifestOptions>(
+    input,
+    'InjectManifest',
+  );
+
+  return validatedOptions;
 }
 
 // The default `exclude: [/\.map$/, /^manifest.*\.js$/]` value can't be
@@ -157,13 +204,14 @@ export function validateWebpackGenerateSWOptions(
     },
     input,
   );
-  const validatedOptions = validate<WebpackGenerateSWOptions>(
+  const [validatedOptions, jsonSchema] = validate<WebpackGenerateSWOptions>(
     inputWithExcludeDefault,
     'WebpackGenerateSW',
   );
 
   ensureValidNavigationPreloadConfig(validatedOptions);
   ensureValidCacheExpiration(validatedOptions);
+  ensureValidStringHandler(validatedOptions, jsonSchema);
 
   return validatedOptions;
 }
@@ -178,8 +226,10 @@ export function validateWebpackInjectManifestOptions(
     },
     input,
   );
-  return validate<WebpackInjectManifestOptions>(
+  const [validatedOptions] = validate<WebpackInjectManifestOptions>(
     inputWithExcludeDefault,
     'WebpackInjectManifest',
   );
+
+  return validatedOptions;
 }
