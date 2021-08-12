@@ -113,7 +113,7 @@ export const app = async (
 
       const config = configFromDisk!;
       // Determine whether we're in --watch mode, or one-off mode.
-      if (params?.flags.watch) {
+      if (params?.flags?.watch) {
         const options: WatchOptions = {
           ignoreInitial: true,
         };
