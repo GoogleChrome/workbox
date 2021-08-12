@@ -27,10 +27,10 @@
   "homepage": "https://github.com/GoogleChrome/workbox/tree/master/packages/workbox-cli",
   "dependencies": {
     "chalk": "^4.1.0",
+    "chokidar": "^3.5.2",
     "common-tags": "^1.8.0",
     "fs-extra": "^9.0.1",
     "glob": "^7.1.6",
-    "glob-watcher": "^5.0.5",
     "inquirer": "^7.3.3",
     "meow": "^7.1.0",
     "ora": "^5.0.0",
