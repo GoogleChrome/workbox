@@ -30,10 +30,11 @@ class PrecacheCacheKeyPlugin implements WorkboxPlugin {
     params,
   }: WorkboxPluginCallbackParam['cacheKeyWillBeUsed']) => {
     // Params is type any, can't change right now.
-    // eslint-disable-next-line
+    /* eslint-disable */
     const cacheKey =
       params?.cacheKey ||
       this._precacheController.getCacheKeyForURL(request.url);
+    /* eslint-enable */
 
     return cacheKey
       ? new Request(cacheKey, {headers: request.headers})
