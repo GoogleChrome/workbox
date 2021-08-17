@@ -14,6 +14,18 @@ importScripts('/__WORKBOX/buildFile/workbox-strategies');
 const cacheName = 'bcu-integration-test';
 
 workbox.routing.registerRoute(
+    ({url}) => url.searchParams.has('notifyAllClientsTest'),
+    new workbox.strategies.NetworkFirst({
+      cacheName,
+      plugins: [
+        new workbox.broadcastUpdate.BroadcastUpdatePlugin({
+          notifyAllClients: false,
+        }),
+      ],
+    }),
+);
+
+workbox.routing.registerRoute(
     new RegExp('/__WORKBOX/uniqueETag$'),
     new workbox.strategies.StaleWhileRevalidate({
       cacheName,
