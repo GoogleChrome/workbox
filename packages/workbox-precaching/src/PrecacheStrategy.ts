@@ -123,6 +123,7 @@ class PrecacheStrategy extends Strategy {
       // that the response matches the precache manifest's expectations.
       // See https://github.com/GoogleChrome/workbox/issues/2858
       if (request.integrity) {
+        this._useDefaultCacheabilityPluginIfNeeded();
         const wasCached = await handler.cachePut(request, response.clone());
         if (process.env.NODE_ENV !== 'production') {
           if (wasCached) {
