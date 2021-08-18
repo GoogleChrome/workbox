@@ -11,9 +11,9 @@ import {PrecacheStrategy} from 'workbox-precaching/PrecacheStrategy.mjs';
 import {eventDoneWaiting, spyOnEvent} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
 
 
-function createFetchEvent(url) {
+function createFetchEvent(url, requestInit) {
   const event = new FetchEvent('fetch', {
-    request: new Request(url),
+    request: new Request(url, requestInit),
   });
   spyOnEvent(event);
   return event;
@@ -54,6 +54,44 @@ describe(`PrecacheStrategy()`, function() {
       const response2 = await ps.handle(createFetchEvent('/two'));
       expect(await response2.text()).to.equal('Fetched Response');
       expect(self.fetch.callCount).to.equal(1);
+
+      // /two should not be there, since integrity isn't used.
+      const cachedUrls = (await cache.keys()).map((request) => request.url);
+      expect(cachedUrls).to.eql([`${location.origin}/one`]);
+    });
+
+    it(`falls back to network by default on fetch, and populates the cache if integrity is used`, async function() {
+      sandbox.stub(self, 'fetch').callsFake((request) => {
+        const response = new Response('Fetched Response');
+        sandbox.replaceGetter(response, 'url', () => request.url);
+        return response;
+      });
+
+      const cache = await caches.open(cacheNames.getPrecacheName());
+      await cache.put(new Request('/one'), new Response('Cached Response'));
+
+      const ps = new PrecacheStrategy();
+
+      const response1 = await ps.handle(createFetchEvent('/one'));
+      expect(await response1.text()).to.equal('Cached Response');
+      expect(self.fetch.callCount).to.equal(0);
+
+      const response2 = await ps.handle(createFetchEvent('/two', {
+        integrity: 'some-hash',
+      }));
+      expect(await response2.text()).to.equal('Fetched Response');
+      expect(self.fetch.callCount).to.equal(1);
+
+      const response3 = await ps.handle(createFetchEvent('/three'));
+      expect(await response3.text()).to.equal('Fetched Response');
+      expect(self.fetch.callCount).to.equal(2);
+
+      // /two should be there, since integrity is used. /three shouldn't.
+      const cachedUrls = (await cache.keys()).map((request) => request.url);
+      expect(cachedUrls).to.eql([
+        `${location.origin}/one`,
+        `${location.origin}/two`,
+      ]);
     });
 
     it(`just checks cache if fallbackToNetwork is false`, async function() {

@@ -91,31 +91,46 @@ class PrecacheStrategy extends Strategy {
    */
   async _handle(request: Request, handler: StrategyHandler): Promise<Response> {
     const response = await handler.cacheMatch(request);
-    if (!response) {
-      // If this is an `install` event then populate the cache. If this is a
-      // `fetch` event (or any other event) then respond with the cached
-      // response.
-      if (handler.event && handler.event.type === 'install') {
-        return await this._handleInstall(request, handler);
-      }
-      return await this._handleFetch(request, handler);
+    if (response) {
+      return response;
     }
 
-    return response;
+    // If this is an `install` event for an entry that isn't already cached,
+    // then populate the cache.
+    if (handler.event && handler.event.type === 'install') {
+      return await this._handleInstall(request, handler);
+    }
+
+    // Getting here means something went wrong. An entry that should have been
+    // precached wasn't found in the cache.
+    return await this._handleFetch(request, handler);
   }
 
   async _handleFetch(request: Request, handler: StrategyHandler): Promise<Response> {
     let response;
 
-    // Fall back to the network if we don't have a cached response
-    // (perhaps due to manual cache cleanup).
+    // Fall back to the network if we're configured to do so.
     if (this._fallbackToNetwork) {
       if (process.env.NODE_ENV !== 'production') {
         logger.warn(`The precached response for ` +
             `${getFriendlyURL(request.url)} in ${this.cacheName} was not ` +
-            `found. Falling back to the network instead.`);
+            `found.`);
       }
+
       response = await handler.fetch(request);
+
+      // It's only "safe" to repair the cache if we're using SRI to guarantee
+      // that the response matches the precache manifest's expectations.
+      // See https://github.com/GoogleChrome/workbox/issues/2858
+      if (request.integrity) {
+        const wasCached = await handler.cachePut(request, response.clone());
+        if (process.env.NODE_ENV !== 'production') {
+          if (wasCached) {
+            logger.log(`A response for ${getFriendlyURL(request.url)}` +
+                `was used to "repair" the precache.`);
+          }
+        }
+      }
     } else {
       // This shouldn't normally happen, but there are edge cases:
       // https://github.com/GoogleChrome/workbox/issues/1441
@@ -149,6 +164,7 @@ class PrecacheStrategy extends Strategy {
 
       logger.groupEnd();
     }
+
     return response;
   }
 
