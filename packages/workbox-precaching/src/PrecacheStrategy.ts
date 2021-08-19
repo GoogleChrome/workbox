@@ -117,6 +117,7 @@ class PrecacheStrategy extends Strategy {
             `found.`);
       }
 
+      // eslint-disable-next-line
       const integrity = handler.params?.integrity as (string | undefined);
       response = await handler.fetch(new Request(request, {integrity}));
 
