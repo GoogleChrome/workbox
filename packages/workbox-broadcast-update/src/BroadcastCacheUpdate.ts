@@ -12,23 +12,29 @@ import {resultingClientExists} from 'workbox-core/_private/resultingClientExists
 import {CacheDidUpdateCallbackParam} from 'workbox-core/types.js';
 import {logger} from 'workbox-core/_private/logger.js';
 import {responsesAreSame} from './responsesAreSame.js';
-import {CACHE_UPDATED_MESSAGE_TYPE, CACHE_UPDATED_MESSAGE_META, DEFAULT_HEADERS_TO_CHECK} from './utils/constants.js';
+import {
+  CACHE_UPDATED_MESSAGE_META,
+  CACHE_UPDATED_MESSAGE_TYPE,
+  DEFAULT_HEADERS_TO_CHECK,
+  NOTIFY_ALL_CLIENTS,
+} from './utils/constants.js';
 
 import './_version.js';
-
 
 // UA-sniff Safari: https://stackoverflow.com/questions/7944460/detect-safari-browser
 // TODO(philipwalton): remove once this Safari bug fix has been released.
 // https://bugs.webkit.org/show_bug.cgi?id=201169
 const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
-
 // Give TypeScript the correct global.
 declare let self: ServiceWorkerGlobalScope;
 
 export interface BroadcastCacheUpdateOptions {
   headersToCheck?: string[];
-  generatePayload?: (options: CacheDidUpdateCallbackParam) => Record<string, any>;
+  generatePayload?: (
+    options: CacheDidUpdateCallbackParam,
+  ) => Record<string, any>;
+  notifyAllClients?: boolean;
 }
 
 /**
@@ -38,7 +44,9 @@ export interface BroadcastCacheUpdateOptions {
  * @return Object
  * @private
  */
-function defaultPayloadGenerator(data: CacheDidUpdateCallbackParam): Record<string, any> {
+function defaultPayloadGenerator(
+  data: CacheDidUpdateCallbackParam,
+): Record<string, any> {
   return {
     cacheName: data.cacheName,
     updatedURL: data.request.url,
@@ -56,7 +64,10 @@ function defaultPayloadGenerator(data: CacheDidUpdateCallbackParam): Record<stri
  */
 class BroadcastCacheUpdate {
   private readonly _headersToCheck: string[];
-  private readonly _generatePayload: (options: CacheDidUpdateCallbackParam) => Record<string, any>;
+  private readonly _generatePayload: (
+    options: CacheDidUpdateCallbackParam,
+  ) => Record<string, any>;
+  private readonly _notifyAllClients: boolean;
 
   /**
    * Construct a BroadcastCacheUpdate instance with a specific `channelName` to
@@ -69,13 +80,18 @@ class BroadcastCacheUpdate {
    * @param {string} [options.generatePayload] A function whose return value
    *     will be used as the `payload` field in any cache update messages sent
    *     to the window clients.
+   * @param {boolean} [options.notifyAllClients=true] If true (the default) then
+   *     all open clients will receive a message. If false, then only the client
+   *     that make the original request will be notified of the update.
    */
   constructor({
-    headersToCheck,
     generatePayload,
+    headersToCheck,
+    notifyAllClients,
   }: BroadcastCacheUpdateOptions = {}) {
     this._headersToCheck = headersToCheck || DEFAULT_HEADERS_TO_CHECK;
     this._generatePayload = generatePayload || defaultPayloadGenerator;
+    this._notifyAllClients = notifyAllClients ?? NOTIFY_ALL_CLIENTS;
   }
 
   /**
@@ -136,10 +152,18 @@ class BroadcastCacheUpdate {
       return;
     }
 
-    if (!responsesAreSame(options.oldResponse, options.newResponse, this._headersToCheck)) {
+    if (
+      !responsesAreSame(
+        options.oldResponse,
+        options.newResponse,
+        this._headersToCheck,
+      )
+    ) {
       if (process.env.NODE_ENV !== 'production') {
         logger.log(
-            `Newer response found (and cached) for:`, options.request.url);
+          `Newer response found (and cached) for:`,
+          options.request.url,
+        );
       }
 
       const messageData = {
@@ -172,9 +196,17 @@ class BroadcastCacheUpdate {
         }
       }
 
-      const windows = await self.clients.matchAll({type: 'window'});
-      for (const win of windows) {
-        win.postMessage(messageData);
+      if (this._notifyAllClients) {
+        const windows = await self.clients.matchAll({type: 'window'});
+        for (const win of windows) {
+          win.postMessage(messageData);
+        }
+      } else {
+        // See https://github.com/GoogleChrome/workbox/issues/2895
+        if (options.event instanceof FetchEvent) {
+          const client = await self.clients.get(options.event.clientId);
+          client?.postMessage(messageData);
+        }
       }
     }
   }
