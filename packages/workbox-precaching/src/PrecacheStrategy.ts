@@ -43,13 +43,13 @@ class PrecacheStrategy extends Strategy {
       }
 
       return response;
-    }
+    },
   };
 
   static readonly copyRedirectedCacheableResponsesPlugin: WorkboxPlugin = {
     async cacheWillUpdate({response}) {
       return response.redirected ? await copyResponse(response) : response;
-    }
+    },
   };
 
   /**
@@ -73,7 +73,8 @@ class PrecacheStrategy extends Strategy {
     options.cacheName = cacheNames.getPrecacheName(options.cacheName);
     super(options);
 
-    this._fallbackToNetwork = options.fallbackToNetwork === false ? false: true;
+    this._fallbackToNetwork =
+      options.fallbackToNetwork === false ? false : true;
 
     // Redirected responses cannot be used to satisfy a navigation request, so
     // any redirected response must be "copied" rather than cloned, so the new
@@ -106,31 +107,50 @@ class PrecacheStrategy extends Strategy {
     return await this._handleFetch(request, handler);
   }
 
-  async _handleFetch(request: Request, handler: StrategyHandler): Promise<Response> {
+  async _handleFetch(
+    request: Request,
+    handler: StrategyHandler,
+  ): Promise<Response> {
     let response;
+    const params = (handler.params || {}) as {
+      cacheKey?: string;
+      integrity?: string;
+    };
 
     // Fall back to the network if we're configured to do so.
     if (this._fallbackToNetwork) {
       if (process.env.NODE_ENV !== 'production') {
-        logger.warn(`The precached response for ` +
+        logger.warn(
+          `The precached response for ` +
             `${getFriendlyURL(request.url)} in ${this.cacheName} was not ` +
-            `found.`);
+            `found. Falling back to the network.`,
+        );
       }
 
-      // eslint-disable-next-line
-      const integrity = handler.params?.integrity as (string | undefined);
-      response = await handler.fetch(new Request(request, {integrity}));
+      const integrityInManifest = params.integrity;
+      const integrityInRequest = request.integrity;
+      const noIntegrityConflict =
+        !integrityInRequest || integrityInRequest === integrityInManifest;
+      response = await handler.fetch(
+        new Request(request, {
+          integrity: integrityInRequest || integrityInManifest,
+        }),
+      );
 
       // It's only "safe" to repair the cache if we're using SRI to guarantee
-      // that the response matches the precache manifest's expectations.
+      // that the response matches the precache manifest's expectations,
+      // and there's either a) no integrity property in the incoming request
+      // or b) there is an integrity, and it matches the precache manifest.
       // See https://github.com/GoogleChrome/workbox/issues/2858
-      if (integrity) {
+      if (integrityInManifest && noIntegrityConflict) {
         this._useDefaultCacheabilityPluginIfNeeded();
         const wasCached = await handler.cachePut(request, response.clone());
         if (process.env.NODE_ENV !== 'production') {
           if (wasCached) {
-            logger.log(`A response for ${getFriendlyURL(request.url)}` +
-                `was used to "repair" the precache.`);
+            logger.log(
+              `A response for ${getFriendlyURL(request.url)} ` +
+                `was used to "repair" the precache.`,
+            );
           }
         }
       }
@@ -144,18 +164,19 @@ class PrecacheStrategy extends Strategy {
     }
 
     if (process.env.NODE_ENV !== 'production') {
-      // Params in handlers is type any, can't change right now.
-      // eslint-disable-next-line
-      const cacheKey = handler.params && handler.params.cacheKey ||
-          await handler.getCacheKey(request, 'read');
+      const cacheKey =
+        params.cacheKey || (await handler.getCacheKey(request, 'read'));
 
       // Workbox is going to handle the route.
       // print the routing details to the console.
-      logger.groupCollapsed(`Precaching is responding to: ` +
-          getFriendlyURL(request.url));
-      // cacheKey is type any, can't change right now.
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      logger.log(`Serving the precached url: ${getFriendlyURL(cacheKey.url)}`);
+      logger.groupCollapsed(
+        `Precaching is responding to: ` + getFriendlyURL(request.url),
+      );
+      logger.log(
+        `Serving the precached url: ${getFriendlyURL(
+          cacheKey instanceof Request ? cacheKey.url : cacheKey,
+        )}`,
+      );
 
       logger.groupCollapsed(`View request details here.`);
       logger.log(request);
@@ -171,7 +192,10 @@ class PrecacheStrategy extends Strategy {
     return response;
   }
 
-  async _handleInstall(request: Request, handler: StrategyHandler): Promise<Response> {
+  async _handleInstall(
+    request: Request,
+    handler: StrategyHandler,
+  ): Promise<Response> {
     this._useDefaultCacheabilityPluginIfNeeded();
 
     const response = await handler.fetch(request);
