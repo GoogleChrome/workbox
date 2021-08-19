@@ -117,12 +117,13 @@ class PrecacheStrategy extends Strategy {
             `found.`);
       }
 
-      response = await handler.fetch(request);
+      const integrity = handler.params?.integrity as (string | undefined);
+      response = await handler.fetch(new Request(request, {integrity}));
 
       // It's only "safe" to repair the cache if we're using SRI to guarantee
       // that the response matches the precache manifest's expectations.
       // See https://github.com/GoogleChrome/workbox/issues/2858
-      if (request.integrity) {
+      if (integrity) {
         this._useDefaultCacheabilityPluginIfNeeded();
         const wasCached = await handler.cachePut(request, response.clone());
         if (process.env.NODE_ENV !== 'production') {
