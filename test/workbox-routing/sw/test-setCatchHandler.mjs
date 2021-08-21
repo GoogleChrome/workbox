@@ -9,11 +9,11 @@
 import {setCatchHandler} from 'workbox-routing/setCatchHandler.mjs';
 import {getOrCreateDefaultRouter} from 'workbox-routing/utils/getOrCreateDefaultRouter.mjs';
 
-describe(`setCatchHandler()`, function() {
+describe(`setCatchHandler()`, function () {
   const sandbox = sinon.createSandbox();
   let defaultRouter;
 
-  beforeEach(async function() {
+  beforeEach(async function () {
     sandbox.restore();
 
     // Spy on all added event listeners so they can be removed.
@@ -22,14 +22,14 @@ describe(`setCatchHandler()`, function() {
     defaultRouter = getOrCreateDefaultRouter();
   });
 
-  afterEach(function() {
+  afterEach(function () {
     for (const args of self.addEventListener.args) {
       self.removeEventListener(...args);
     }
     sandbox.restore();
   });
 
-  it(`should call setCatchHandler() on the default router`, function() {
+  it(`should call setCatchHandler() on the default router`, function () {
     sandbox.stub(defaultRouter, 'setCatchHandler');
 
     const handler = sandbox.spy();

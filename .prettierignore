@@ -1,0 +1,13 @@
+.nyc_output
+.vscode
+*.hbs
+*.log
+build
+coverage
+docs
+generated-release-files
+node_modules
+packages/**
+!packages/*/src/**
+temp
+test/workbox-webpack-plugin/static/injected-manifest.json

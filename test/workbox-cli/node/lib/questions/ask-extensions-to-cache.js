@@ -9,9 +9,12 @@
 const expect = require('chai').expect;
 const proxyquire = require('proxyquire');
 
-const {errors} = require('../../../../../packages/workbox-cli/build/lib/errors');
+const {
+  errors,
+} = require('../../../../../packages/workbox-cli/build/lib/errors');
 
-const MODULE_PATH = '../../../../../packages/workbox-cli/build/lib/questions/ask-extensions-to-cache';
+const MODULE_PATH =
+  '../../../../../packages/workbox-cli/build/lib/questions/ask-extensions-to-cache';
 // This is the hardcoded name of the question that's passed to inquirer.
 // It's used as the key to read the response from the answer.
 const QUESTION_NAME = 'globPatterns';
@@ -19,8 +22,8 @@ const GLOB_DIRECTORY = '/path/to/fake';
 const SINGLE_EXTENSION = 'js';
 const MULTIPLE_EXTENSIONS = ['html', 'js'];
 
-describe(`[workbox-cli] lib/questions/ask-extensions-to-cache.js`, function() {
-  it(`should reject with a 'no-file-extensions-found' error when the globDirectory doesn't contain any matching files`, async function() {
+describe(`[workbox-cli] lib/questions/ask-extensions-to-cache.js`, function () {
+  it(`should reject with a 'no-file-extensions-found' error when the globDirectory doesn't contain any matching files`, async function () {
     const {askExtensionsToCache} = proxyquire(MODULE_PATH, {
       glob: (pattern, config, callback) => {
         callback(null, []);
@@ -42,7 +45,7 @@ describe(`[workbox-cli] lib/questions/ask-extensions-to-cache.js`, function() {
     }
   });
 
-  it(`should reject with a 'no-file-extensions-selected' error when the answer is an empty array`, async function() {
+  it(`should reject with a 'no-file-extensions-selected' error when the answer is an empty array`, async function () {
     const {askExtensionsToCache} = proxyquire(MODULE_PATH, {
       glob: (pattern, config, callback) => {
         callback(null, [`file.${SINGLE_EXTENSION}`]);
@@ -67,7 +70,7 @@ describe(`[workbox-cli] lib/questions/ask-extensions-to-cache.js`, function() {
     }
   });
 
-  it(`should resolve with the expected value when the answer is a single extension`, async function() {
+  it(`should resolve with the expected value when the answer is a single extension`, async function () {
     const {askExtensionsToCache} = proxyquire(MODULE_PATH, {
       glob: (pattern, config, callback) => {
         callback(null, [`file.${SINGLE_EXTENSION}`]);
@@ -88,10 +91,13 @@ describe(`[workbox-cli] lib/questions/ask-extensions-to-cache.js`, function() {
     expect(answer).to.eql([`**/*.${SINGLE_EXTENSION}`]);
   });
 
-  it(`should resolve with the expected value when the answer is multiple extensions`, async function() {
+  it(`should resolve with the expected value when the answer is multiple extensions`, async function () {
     const {askExtensionsToCache} = proxyquire(MODULE_PATH, {
       glob: (pattern, config, callback) => {
-        callback(null, MULTIPLE_EXTENSIONS.map((extension) => `file.${extension}`));
+        callback(
+          null,
+          MULTIPLE_EXTENSIONS.map((extension) => `file.${extension}`),
+        );
       },
       inquirer: {
         prompt: () => Promise.resolve({[QUESTION_NAME]: MULTIPLE_EXTENSIONS}),
@@ -109,11 +115,14 @@ describe(`[workbox-cli] lib/questions/ask-extensions-to-cache.js`, function() {
     expect(answer).to.eql([`**/*.{${MULTIPLE_EXTENSIONS.join(',')}}`]);
   });
 
-  it(`should ignore the expected directories and extensions`, async function() {
+  it(`should ignore the expected directories and extensions`, async function () {
     const {askExtensionsToCache} = proxyquire(MODULE_PATH, {
       glob: (pattern, config, callback) => {
         expect(config.ignore).to.eql(['**/node_modules/**', '**/*.map']);
-        callback(null, MULTIPLE_EXTENSIONS.map((extension) => `file.${extension}`));
+        callback(
+          null,
+          MULTIPLE_EXTENSIONS.map((extension) => `file.${extension}`),
+        );
       },
       inquirer: {
         prompt: () => Promise.resolve({[QUESTION_NAME]: MULTIPLE_EXTENSIONS}),
@@ -130,4 +139,3 @@ describe(`[workbox-cli] lib/questions/ask-extensions-to-cache.js`, function() {
     await askExtensionsToCache(GLOB_DIRECTORY);
   });
 });
-

@@ -13,19 +13,22 @@ importScripts('/__WORKBOX/buildFile/workbox-strategies');
 
 const cacheName = 'range-requests-integration-test';
 workbox.routing.registerRoute(
-    new RegExp('this-file-doesnt-exist\\.txt$'),
-    new workbox.strategies.CacheOnly({
-      cacheName,
-      plugins: [
-        new workbox.rangeRequests.RangeRequestsPlugin(),
-      ],
-    }),
+  new RegExp('this-file-doesnt-exist\\.txt$'),
+  new workbox.strategies.CacheOnly({
+    cacheName,
+    plugins: [new workbox.rangeRequests.RangeRequestsPlugin()],
+  }),
 );
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
-  event.waitUntil(caches.open(cacheName).then((cache) => {
-    return cache.put('this-file-doesnt-exist.txt', new Response('0123456789'));
-  }));
+  event.waitUntil(
+    caches.open(cacheName).then((cache) => {
+      return cache.put(
+        'this-file-doesnt-exist.txt',
+        new Response('0123456789'),
+      );
+    }),
+  );
 });
 self.addEventListener('activate', () => self.clients.claim());

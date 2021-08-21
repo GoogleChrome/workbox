@@ -115,8 +115,12 @@ async function transpilePackage(packageName, {failOnError = true} = {}) {
 
     for (const tsFile of tsFiles) {
       const assetBasename = upath.basename(tsFile, '.ts');
-      const mjsFile = upath.join('packages',
-          packageName, upath.dirname(tsFile), `${assetBasename}.mjs`);
+      const mjsFile = upath.join(
+        'packages',
+        packageName,
+        upath.dirname(tsFile),
+        `${assetBasename}.mjs`,
+      );
 
       if (!(await fse.pathExists(mjsFile))) {
         const mjsSource = `export * from './${assetBasename}.js';`;
@@ -152,6 +156,7 @@ module.exports = {
     transpilePackageOrSkip,
   },
   transpile_typescript_watch,
-  transpile_typescript: parallel(packageRunner('transpile_typescript', 'all',
-      transpilePackageOrSkip)),
+  transpile_typescript: parallel(
+    packageRunner('transpile_typescript', 'all', transpilePackageOrSkip),
+  ),
 };

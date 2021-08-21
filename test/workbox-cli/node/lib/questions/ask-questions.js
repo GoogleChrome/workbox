@@ -10,10 +10,11 @@ const expect = require('chai').expect;
 const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 
-const MODULE_PATH = '../../../../../packages/workbox-cli/build/lib/questions/ask-questions';
+const MODULE_PATH =
+  '../../../../../packages/workbox-cli/build/lib/questions/ask-questions';
 
-describe(`[workbox-cli] lib/questions/ask-questions.js`, function() {
-  it(`should ask all the expected questions in the correct order, and return the expected result in generateSW mode`, async function() {
+describe(`[workbox-cli] lib/questions/ask-questions.js`, function () {
+  it(`should ask all the expected questions in the correct order, and return the expected result in generateSW mode`, async function () {
     // Using a stub that returns an increasing value for each call makes it
     // easy to verify that all the stubs are called in the expected order,
     // and to verify that the stub's responses are used to create the overall
@@ -35,19 +36,26 @@ describe(`[workbox-cli] lib/questions/ask-questions.js`, function() {
         askConfigLocation: stub.callsFake(() => Promise.resolve(count++)),
       },
       './ask-start_url-query-params': {
-        askQueryParametersInStartUrl: stub.callsFake(() => Promise.resolve(count++)),
+        askQueryParametersInStartUrl: stub.callsFake(() =>
+          Promise.resolve(count++),
+        ),
       },
     });
 
     const answer = await askQuestions();
     expect(answer).to.eql({
-      config: {globDirectory: 0, globPatterns: 1, swDest: 2, ignoreURLParametersMatching: 4},
+      config: {
+        globDirectory: 0,
+        globPatterns: 1,
+        swDest: 2,
+        ignoreURLParametersMatching: 4,
+      },
       configLocation: 3,
     });
     expect(stub.callCount).to.eql(5);
   });
 
-  it(`should ask all the expected questions in the correct order, and return the expected result in injectManifest mode`, async function() {
+  it(`should ask all the expected questions in the correct order, and return the expected result in injectManifest mode`, async function () {
     // Using a stub that returns an increasing value for each call makes it
     // easy to verify that all the stubs are called in the expected order,
     // and to verify that the stub's responses are used to create the overall
@@ -72,16 +80,23 @@ describe(`[workbox-cli] lib/questions/ask-questions.js`, function() {
         askConfigLocation: stub.callsFake(() => Promise.resolve(count++)),
       },
       './ask-start_url-query-params': {
-        askQueryParametersInStartUrl: stub.callsFake(() => Promise.resolve(count++)),
+        askQueryParametersInStartUrl: stub.callsFake(() =>
+          Promise.resolve(count++),
+        ),
       },
     });
 
     const answer = await askQuestions({injectManifest: true});
     expect(answer).to.eql({
-      config: {globDirectory: 0, globPatterns: 1, swSrc: 2, swDest: 3, ignoreURLParametersMatching: 5},
+      config: {
+        globDirectory: 0,
+        globPatterns: 1,
+        swSrc: 2,
+        swDest: 3,
+        ignoreURLParametersMatching: 5,
+      },
       configLocation: 4,
     });
     expect(stub.callCount).to.eql(6);
   });
 });
-

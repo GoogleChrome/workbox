@@ -20,7 +20,7 @@ class PublishJob extends BaselinePublishJob {
   }
 
   generateTocYaml(symbols, basepath) {
-    symbols.sort(function(a, b) {
+    symbols.sort(function (a, b) {
       let aName = a.kind === 'namespace' ? a.longname : a.name;
       let bName = b.kind === 'namespace' ? b.longname : b.name;
 
@@ -40,8 +40,8 @@ class PublishJob extends BaselinePublishJob {
 
     // check for duplicated names
     symbols.forEach((symbol) => {
-      const symbolName = symbol.kind === 'namespace' ?
-        symbol.longname : symbol.name;
+      const symbolName =
+        symbol.kind === 'namespace' ? symbol.longname : symbol.name;
       if ({}.hasOwnProperty.call(this._symbolNames, symbolName)) {
         this._symbolNames[symbolName] = true;
       } else {
@@ -54,8 +54,8 @@ class PublishJob extends BaselinePublishJob {
     // disambiguated names are bar.Quxand baz.Qux.
     symbols.forEach((symbol) => {
       let mappedName = null;
-      const symbolName = symbol.kind === 'namespace' ?
-        symbol.longname : symbol.name;
+      const symbolName =
+        symbol.kind === 'namespace' ? symbol.longname : symbol.name;
 
       if (this._symbolNames[symbolName] === true) {
         if (symbol.kind !== 'namespace') {
@@ -69,8 +69,9 @@ class PublishJob extends BaselinePublishJob {
         }
       }
 
-      symbol.tocYamlName = mappedName || (symbol.kind === 'namespace' ?
-        symbol.longname : symbol.name);
+      symbol.tocYamlName =
+        mappedName ||
+        (symbol.kind === 'namespace' ? symbol.longname : symbol.name);
     });
 
     const data = {
@@ -98,8 +99,7 @@ class PublishJob extends BaselinePublishJob {
     longnames.sort();
     const data = {
       longnames: longnames,
-      pageTitle: global.env.opts.query ?
-        global.env.opts.query.productName : '',
+      pageTitle: global.env.opts.query ? global.env.opts.query.productName : '',
     };
 
     this.generate('index-all', data, 'index-all.html');

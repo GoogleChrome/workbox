@@ -9,37 +9,60 @@
 const depcheck = require('depcheck');
 const upath = require('upath');
 
-describe(`[workbox-webpack-plugin] Test Dependencies`, function() {
-  it(`should have required dependencies`, function() {
+describe(`[workbox-webpack-plugin] Test Dependencies`, function () {
+  it(`should have required dependencies`, function () {
     return new Promise((resolve, reject) => {
-      depcheck(upath.join(__dirname, '..', '..', '..', 'packages', 'workbox-webpack-plugin'), {
-        ignoreDirs: [
-          'test',
-          'build',
-          'demo',
-        ],
-        ignoreMatches: [
-          '@babel/runtime',
-        ],
-      }, (unusedDeps) => {
-        if (unusedDeps.dependencies.length > 0) {
-          return reject(new Error(`Unused dependencies defined in package.json: ${JSON.stringify(unusedDeps.dependencies)}`));
-        }
+      depcheck(
+        upath.join(
+          __dirname,
+          '..',
+          '..',
+          '..',
+          'packages',
+          'workbox-webpack-plugin',
+        ),
+        {
+          ignoreDirs: ['test', 'build', 'demo'],
+          ignoreMatches: ['@babel/runtime'],
+        },
+        (unusedDeps) => {
+          if (unusedDeps.dependencies.length > 0) {
+            return reject(
+              new Error(
+                `Unused dependencies defined in package.json: ${JSON.stringify(
+                  unusedDeps.dependencies,
+                )}`,
+              ),
+            );
+          }
 
-        if (unusedDeps.devDependencies.length > 0) {
-          return reject(new Error(`Unused dependencies defined in package.json: ${JSON.stringify(unusedDeps.devDependencies)}`));
-        }
+          if (unusedDeps.devDependencies.length > 0) {
+            return reject(
+              new Error(
+                `Unused dependencies defined in package.json: ${JSON.stringify(
+                  unusedDeps.devDependencies,
+                )}`,
+              ),
+            );
+          }
 
-        if (Object.keys(unusedDeps.missing).length > 0) {
-          return reject(new Error(`Dependencies missing from package.json: ${JSON.stringify(unusedDeps.missing)}`));
-        }
+          if (Object.keys(unusedDeps.missing).length > 0) {
+            return reject(
+              new Error(
+                `Dependencies missing from package.json: ${JSON.stringify(
+                  unusedDeps.missing,
+                )}`,
+              ),
+            );
+          }
 
-        resolve();
-      });
+          resolve();
+        },
+      );
     });
   });
 
-  it(`should have no devDependencies`, function() {
+  it(`should have no devDependencies`, function () {
     // This test exists because there have been a number of situations where
     // dependencies have been used from the top level project and NOT from
     // this module itself. So dependencies are checked above and devDependencies

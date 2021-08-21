@@ -16,8 +16,12 @@ const cdnDetails = require('../../cdn-details.json');
 const logHelper = require('../../infra/utils/log-helper');
 
 const PROJECT_ID = 'workbox-bab1f';
-const SERVICE_ACCOUNT_PATH = path.join(__dirname, '..', '..',
-    `workbox-9d39634504ad.json`);
+const SERVICE_ACCOUNT_PATH = path.join(
+  __dirname,
+  '..',
+  '..',
+  `workbox-9d39634504ad.json`,
+);
 
 class CDNHelper {
   constructor() {
@@ -81,8 +85,9 @@ class CDNHelper {
     const bucket = gcs.bucket(cdnDetails.bucketName);
 
     for (const filePath of filePaths) {
-      const destination =
-        `${this._getReleaseTagPath(tagName)}/${path.basename(filePath)}`;
+      const destination = `${this._getReleaseTagPath(tagName)}/${path.basename(
+        filePath,
+      )}`;
 
       try {
         await bucket.upload(filePath, {
@@ -99,7 +104,7 @@ class CDNHelper {
         throw err;
       }
       publicUrls.push(
-          `${cdnDetails.origin}/${cdnDetails.bucketName}/${destination}`,
+        `${cdnDetails.origin}/${cdnDetails.bucketName}/${destination}`,
       );
     }
 

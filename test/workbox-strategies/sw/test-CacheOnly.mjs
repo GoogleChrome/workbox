@@ -12,39 +12,39 @@ import {compareResponses} from '../../../infra/testing/helpers/compareResponses.
 import {spyOnEvent} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
 import {generateUniqueResponse} from '../../../infra/testing/helpers/generateUniqueResponse.mjs';
 
-
-describe(`CacheOnly`, function() {
+describe(`CacheOnly`, function () {
   const sandbox = sinon.createSandbox();
 
-  beforeEach(async function() {
+  beforeEach(async function () {
     const keys = await caches.keys();
     await Promise.all(keys.map((key) => caches.delete(key)));
     sandbox.restore();
   });
 
-  after(async function() {
+  after(async function () {
     const keys = await caches.keys();
     await Promise.all(keys.map((key) => caches.delete(key)));
     sandbox.restore();
   });
 
-  describe(`handle()`, function() {
-    it(`should not return a response when the cache isn't populated`, async function() {
+  describe(`handle()`, function () {
+    it(`should not return a response when the cache isn't populated`, async function () {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
       spyOnEvent(event);
 
       const cacheOnly = new CacheOnly();
       await expectError(
-          () => cacheOnly.handle({
+        () =>
+          cacheOnly.handle({
             request,
             event,
           }),
-          'no-response',
+        'no-response',
       );
     });
 
-    it(`should return the cached response when the cache is populated`, async function() {
+    it(`should return the cached response when the cache is populated`, async function () {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
       spyOnEvent(event);
@@ -61,7 +61,7 @@ describe(`CacheOnly`, function() {
       await compareResponses(injectedResponse, handleResponse, true);
     });
 
-    it(`should support using a string as the request`, async function() {
+    it(`should support using a string as the request`, async function () {
       const stringRequest = 'http://example.io/test/';
       const request = new Request(stringRequest);
       const event = new FetchEvent('fetch', {request});
@@ -79,7 +79,7 @@ describe(`CacheOnly`, function() {
       await compareResponses(injectedResponse, handleResponse, true);
     });
 
-    it(`should return no cached response from custom cache name`, async function() {
+    it(`should return no cached response from custom cache name`, async function () {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
       spyOnEvent(event);
@@ -90,21 +90,24 @@ describe(`CacheOnly`, function() {
 
       const cacheOnly = new CacheOnly({cacheName: 'test-cache-name'});
       await expectError(
-          () => cacheOnly.handle({
+        () =>
+          cacheOnly.handle({
             request,
             event,
           }),
-          'no-response',
+        'no-response',
       );
     });
 
-    it(`should return cached response from custom cache name`, async function() {
+    it(`should return cached response from custom cache name`, async function () {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
       spyOnEvent(event);
 
       const injectedResponse = generateUniqueResponse();
-      const cache = await caches.open(cacheNames.getRuntimeName('test-cache-name'));
+      const cache = await caches.open(
+        cacheNames.getRuntimeName('test-cache-name'),
+      );
       await cache.put(request, injectedResponse.clone());
 
       const cacheOnly = new CacheOnly({cacheName: 'test-cache-name'});
@@ -115,7 +118,7 @@ describe(`CacheOnly`, function() {
       await compareResponses(injectedResponse, handleResponse, true);
     });
 
-    it(`should return the cached response from plugin.cachedResponseWillBeUsed`, async function() {
+    it(`should return the cached response from plugin.cachedResponseWillBeUsed`, async function () {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
       spyOnEvent(event);
@@ -141,9 +144,10 @@ describe(`CacheOnly`, function() {
       await compareResponses(pluginResponse, handleResponse, true);
     });
 
-    it(`should use the CacheQueryOptions when performing a cache match`, async function() {
-      const matchStub = sandbox.stub(self.caches.constructor.prototype, 'match')
-          .resolves(generateUniqueResponse());
+    it(`should use the CacheQueryOptions when performing a cache match`, async function () {
+      const matchStub = sandbox
+        .stub(self.caches.constructor.prototype, 'match')
+        .resolves(generateUniqueResponse());
 
       const matchOptions = {ignoreSearch: true};
       const cacheOnly = new CacheOnly({matchOptions});

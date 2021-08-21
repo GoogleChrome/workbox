@@ -13,25 +13,33 @@ import {NetworkOnly} from 'workbox-strategies/NetworkOnly.mjs';
 import {StaleWhileRevalidate} from 'workbox-strategies/StaleWhileRevalidate.mjs';
 import {Router} from 'workbox-routing/Router.mjs';
 import {Route} from 'workbox-routing/Route.mjs';
-import {eventDoneWaiting, spyOnEvent} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
+import {
+  eventDoneWaiting,
+  spyOnEvent,
+} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
 import {generateUniqueResponse} from '../../../infra/testing/helpers/generateUniqueResponse.mjs';
 
-
-describe(`Router`, function() {
+describe(`Router`, function () {
   const sandbox = sinon.createSandbox();
 
-  beforeEach(async function() {
+  beforeEach(async function () {
     sandbox.restore();
     sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
     sandbox.stub(Cache.prototype, 'match').resolves(generateUniqueResponse());
   });
 
-  after(async function() {
+  after(async function () {
     sandbox.restore();
   });
 
-  [CacheFirst, CacheOnly, NetworkFirst, NetworkOnly, StaleWhileRevalidate].forEach((StrategyClass) => {
-    it(`should work with the '${StrategyClass.name}' strategy`, async function() {
+  [
+    CacheFirst,
+    CacheOnly,
+    NetworkFirst,
+    NetworkOnly,
+    StaleWhileRevalidate,
+  ].forEach((StrategyClass) => {
+    it(`should work with the '${StrategyClass.name}' strategy`, async function () {
       const router = new Router();
       router.registerRoute(new Route(() => true, new StrategyClass()));
 

@@ -42,12 +42,12 @@ const api = {
       const result = indexedDB.open(dbName);
       result.onsuccess = (event) => {
         const db = event.target.result;
-        db.transaction(objStoreName)
-            .objectStore(objStoreName)
-            .getAll()
-            .onsuccess = (event) => {
-              resolve(event.target.result);
-            };
+        db
+          .transaction(objStoreName)
+          .objectStore(objStoreName)
+          .getAll().onsuccess = (event) => {
+          resolve(event.target.result);
+        };
       };
     });
   },

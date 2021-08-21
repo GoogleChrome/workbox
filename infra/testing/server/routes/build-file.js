@@ -7,8 +7,9 @@
 */
 
 const path = require('path');
-const {outputFilenameToPkgMap} = require('../../../../gulp-tasks/utils/output-filename-to-package-map');
-
+const {
+  outputFilenameToPkgMap,
+} = require('../../../../gulp-tasks/utils/output-filename-to-package-map');
 
 const match = '/__WORKBOX/buildFile/:packageFile';
 
@@ -16,7 +17,6 @@ async function handler(req, res) {
   const {packageFile} = req.params;
   const pkg = outputFilenameToPkgMap[packageFile.split('.')[0]];
   const pkgDir = path.resolve('packages', pkg.name);
-
 
   let file;
   if (packageFile.includes('.')) {

@@ -33,6 +33,13 @@ async function dist_tag_check() {
 }
 
 module.exports = {
-  publish: series(dist_tag_check, publish_sign_in_check, publish_clean, test,
-      publish_lerna, publish_github, publish_cdn),
+  publish: series(
+    dist_tag_check,
+    publish_sign_in_check,
+    publish_clean,
+    test,
+    publish_lerna,
+    publish_github,
+    publish_cdn,
+  ),
 };

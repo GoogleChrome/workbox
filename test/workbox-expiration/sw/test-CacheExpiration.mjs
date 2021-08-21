@@ -10,12 +10,11 @@ import {CacheTimestampsModel} from 'workbox-expiration/models/CacheTimestampsMod
 import {CacheExpiration} from 'workbox-expiration/CacheExpiration.mjs';
 import {openDB} from 'idb';
 
-
-describe(`CacheExpiration`, function() {
+describe(`CacheExpiration`, function () {
   const sandbox = sinon.createSandbox();
   let db = null;
 
-  beforeEach(async function() {
+  beforeEach(async function () {
     db = await openDB('workbox-expiration', 1, {
       upgrade: CacheTimestampsModel.prototype._upgradeDb,
     });
@@ -29,28 +28,35 @@ describe(`CacheExpiration`, function() {
     sandbox.restore();
   });
 
-  after(function() {
+  after(function () {
     sandbox.restore();
   });
 
-  describe(`constructor`, function() {
-    it(`should be able to construct with cacheName and maxEntries`, function() {
-      const expirationManager = new CacheExpiration('test-cache', {maxEntries: 10});
+  describe(`constructor`, function () {
+    it(`should be able to construct with cacheName and maxEntries`, function () {
+      const expirationManager = new CacheExpiration('test-cache', {
+        maxEntries: 10,
+      });
       expect(expirationManager._maxEntries).to.equal(10);
     });
 
-    it(`should be able to construct with cacheName and maxAgeSeconds`, function() {
-      const expirationManager = new CacheExpiration('test-cache', {maxAgeSeconds: 10});
+    it(`should be able to construct with cacheName and maxAgeSeconds`, function () {
+      const expirationManager = new CacheExpiration('test-cache', {
+        maxAgeSeconds: 10,
+      });
       expect(expirationManager._maxAgeSeconds).to.equal(10);
     });
 
-    it(`should be able to construct with cacheName, maxEntries and maxAgeSeconds`, function() {
-      const expirationManager = new CacheExpiration('test-cache', {maxEntries: 1, maxAgeSeconds: 2});
+    it(`should be able to construct with cacheName, maxEntries and maxAgeSeconds`, function () {
+      const expirationManager = new CacheExpiration('test-cache', {
+        maxEntries: 1,
+        maxAgeSeconds: 2,
+      });
       expect(expirationManager._maxEntries).to.equal(1);
       expect(expirationManager._maxAgeSeconds).to.equal(2);
     });
 
-    it(`should be able to construct with cacheName, maxEntries and matchOptions`, function() {
+    it(`should be able to construct with cacheName, maxEntries and matchOptions`, function () {
       const expirationManager = new CacheExpiration('test-cache', {
         maxEntries: 1,
         matchOptions: {
@@ -62,7 +68,7 @@ describe(`CacheExpiration`, function() {
       expect(expirationManager._matchOptions).to.eql({ignoreVary: true});
     });
 
-    it(`should throw with no config`, function() {
+    it(`should throw with no config`, function () {
       if (process.env.NODE_ENV === 'production') this.skip();
 
       return expectError(() => {
@@ -73,8 +79,8 @@ describe(`CacheExpiration`, function() {
     // TODO Bad constructor input
   });
 
-  describe(`expireEntries()`, function() {
-    it(`should expire and delete expired entries`, async function() {
+  describe(`expireEntries()`, function () {
+    it(`should expire and delete expired entries`, async function () {
       const clock = sandbox.useFakeTimers({
         toFake: ['Date'],
       });
@@ -87,13 +93,19 @@ describe(`CacheExpiration`, function() {
 
       const timestampModel = new CacheTimestampsModel(cacheName);
       await timestampModel.setTimestamp('/one', Date.now());
-      await cache.put(`${location.origin}/one`, new Response('Injected request'));
+      await cache.put(
+        `${location.origin}/one`,
+        new Response('Injected request'),
+      );
 
       clock.tick(5000);
 
       // Add another entry after 5 seconds.
       await timestampModel.setTimestamp('/two', Date.now());
-      await cache.put(`${location.origin}/two`, new Response('Injected request'));
+      await cache.put(
+        `${location.origin}/two`,
+        new Response('Injected request'),
+      );
 
       // Ensure both entries are still present after an initial expire.
       await expirationManager.expireEntries();
@@ -134,7 +146,7 @@ describe(`CacheExpiration`, function() {
       expect(cachedRequests).to.deep.equal([]);
     });
 
-    it(`should expire and delete entries beyond maximum entries`, async function() {
+    it(`should expire and delete entries beyond maximum entries`, async function () {
       const cacheName = 'max-and-delete';
       const maxEntries = 1;
       const currentTimestamp = Date.now();
@@ -142,7 +154,10 @@ describe(`CacheExpiration`, function() {
 
       const timestampModel = new CacheTimestampsModel(cacheName);
       await timestampModel.setTimestamp('/first', currentTimestamp);
-      await cache.put(`${location.origin}/first`, new Response('Injected request'));
+      await cache.put(
+        `${location.origin}/first`,
+        new Response('Injected request'),
+      );
 
       const expirationManager = new CacheExpiration(cacheName, {maxEntries});
 
@@ -150,7 +165,10 @@ describe(`CacheExpiration`, function() {
 
       // Add entry and ensure it is removed
       await timestampModel.setTimestamp('/second', currentTimestamp - 1000);
-      await cache.put(`${location.origin}/second`, new Response('Injected request'));
+      await cache.put(
+        `${location.origin}/second`,
+        new Response('Injected request'),
+      );
 
       await expirationManager.expireEntries();
 
@@ -163,10 +181,15 @@ describe(`CacheExpiration`, function() {
 
       // Check cache has /first
       let cachedRequests = await cache.keys();
-      expect(cachedRequests.map((req) => req.url)).to.deep.equal([`${location.origin}/first`]);
+      expect(cachedRequests.map((req) => req.url)).to.deep.equal([
+        `${location.origin}/first`,
+      ]);
 
       await timestampModel.setTimestamp('/third', currentTimestamp + 1000);
-      await cache.put(`${location.origin}/third`, new Response('Injected request'));
+      await cache.put(
+        `${location.origin}/third`,
+        new Response('Injected request'),
+      );
 
       await expirationManager.expireEntries();
 
@@ -179,10 +202,12 @@ describe(`CacheExpiration`, function() {
 
       // Check cache has /third
       cachedRequests = await cache.keys();
-      expect(cachedRequests.map((req) => req.url)).to.deep.equal([`${location.origin}/third`]);
+      expect(cachedRequests.map((req) => req.url)).to.deep.equal([
+        `${location.origin}/third`,
+      ]);
     });
 
-    it(`should pass matchOptions to the underlying cache.delete() call`, async function() {
+    it(`should pass matchOptions to the underlying cache.delete() call`, async function () {
       const cacheName = 'matchOptions-test';
       const maxEntries = 1;
       const currentTimestamp = Date.now();
@@ -193,7 +218,10 @@ describe(`CacheExpiration`, function() {
       sandbox.stub(self.caches, 'open').resolves(cache);
 
       await timestampModel.setTimestamp('/first', currentTimestamp);
-      await cache.put(`${location.origin}/first`, new Response('Injected request'));
+      await cache.put(
+        `${location.origin}/first`,
+        new Response('Injected request'),
+      );
 
       const expirationManager = new CacheExpiration(cacheName, {
         maxEntries,
@@ -205,16 +233,18 @@ describe(`CacheExpiration`, function() {
 
       // Add entry and ensure it is removed
       await timestampModel.setTimestamp('/second', currentTimestamp - 1000);
-      await cache.put(`${location.origin}/second`, new Response('Injected request'));
+      await cache.put(
+        `${location.origin}/second`,
+        new Response('Injected request'),
+      );
 
       await expirationManager.expireEntries();
-      expect(cacheDeleteSpy.args).to.eql([[
-        `${location.origin}/second`,
-        {ignoreVary: true},
-      ]]);
+      expect(cacheDeleteSpy.args).to.eql([
+        [`${location.origin}/second`, {ignoreVary: true}],
+      ]);
     });
 
-    it(`should queue up expireEntries calls`, async function() {
+    it(`should queue up expireEntries calls`, async function () {
       const expirationManager = new CacheExpiration('test', {maxEntries: 10});
 
       sandbox.spy(expirationManager, 'expireEntries');
@@ -225,15 +255,19 @@ describe(`CacheExpiration`, function() {
       expirationManager.expireEntries();
 
       expect(expirationManager.expireEntries.callCount).to.equal(3);
-      expect(CacheTimestampsModel.prototype.expireEntries.callCount).to.equal(1);
+      expect(CacheTimestampsModel.prototype.expireEntries.callCount).to.equal(
+        1,
+      );
 
       await expireDone;
 
       expect(expirationManager.expireEntries.callCount).to.equal(4);
-      expect(CacheTimestampsModel.prototype.expireEntries.callCount).to.equal(2);
+      expect(CacheTimestampsModel.prototype.expireEntries.callCount).to.equal(
+        2,
+      );
     });
 
-    it(`should expire multiple expired entries`, async function() {
+    it(`should expire multiple expired entries`, async function () {
       const clock = sandbox.useFakeTimers({
         toFake: ['Date'],
       });
@@ -268,8 +302,8 @@ describe(`CacheExpiration`, function() {
     });
   });
 
-  describe(`updateTimestamp()`, function() {
-    it(`should update the timestamp for a url`, async function() {
+  describe(`updateTimestamp()`, function () {
+    it(`should update the timestamp for a url`, async function () {
       const clock = sandbox.useFakeTimers({
         toFake: ['Date'],
       });
@@ -293,17 +327,19 @@ describe(`CacheExpiration`, function() {
     });
   });
 
-  describe(`isURLExpired()`, function() {
-    it(`should throw when called without maxAgeSeconds`, function() {
+  describe(`isURLExpired()`, function () {
+    it(`should throw when called without maxAgeSeconds`, function () {
       if (process.env.NODE_ENV === 'production') this.skip();
 
-      const expirationManager = new CacheExpiration('test-cache', {maxEntries: 1});
+      const expirationManager = new CacheExpiration('test-cache', {
+        maxEntries: 1,
+      });
       return expectError(() => {
         return expirationManager.isURLExpired();
       }, 'expired-test-without-max-age');
     });
 
-    it(`should return boolean`, async function() {
+    it(`should return boolean`, async function () {
       const clock = sandbox.useFakeTimers({
         toFake: ['Date'],
       });

@@ -8,44 +8,53 @@
 
 import {RegExpRoute} from 'workbox-routing/RegExpRoute.mjs';
 
-
-describe(`RegExpRoute`, function() {
+describe(`RegExpRoute`, function () {
   const SAME_ORIGIN_URL = new URL('https://example.com');
   const CROSS_ORIGIN_URL = new URL('https://cross-origin-example.com');
   const PATH = '/test/path';
   const HANDLER = {handle: () => {}};
 
   const sandbox = sinon.createSandbox();
-  beforeEach(function() {
+  beforeEach(function () {
     sandbox.restore();
     sandbox.stub(self, 'location').value(SAME_ORIGIN_URL);
   });
-  after(function() {
+  after(function () {
     sandbox.restore();
   });
 
   for (const badRegExp of [undefined, null, 123, '123', {}]) {
-    it(`should throw when called with a regExp parameter of ${JSON.stringify(badRegExp)} in dev`, async function() {
+    it(`should throw when called with a regExp parameter of ${JSON.stringify(
+      badRegExp,
+    )} in dev`, async function () {
       if (process.env.NODE_ENV === 'production') this.skip();
 
       await expectError(
-          () => new RegExpRoute(),
-          'incorrect-class',
-          (error) => {
-            expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
-            expect(error.details).to.have.property('className').that.equals('RegExpRoute');
-            expect(error.details).to.have.property('funcName').that.equals('constructor');
-            expect(error.details).to.have.property('paramName').that.equals('pattern');
-          },
+        () => new RegExpRoute(),
+        'incorrect-class',
+        (error) => {
+          expect(error.details)
+            .to.have.property('moduleName')
+            .that.equals('workbox-routing');
+          expect(error.details)
+            .to.have.property('className')
+            .that.equals('RegExpRoute');
+          expect(error.details)
+            .to.have.property('funcName')
+            .that.equals('constructor');
+          expect(error.details)
+            .to.have.property('paramName')
+            .that.equals('pattern');
+        },
       );
     });
   }
 
-  it(`should not throw when called with valid parameters`, function() {
+  it(`should not throw when called with valid parameters`, function () {
     expect(() => new RegExpRoute(new RegExp('/test/'), HANDLER)).not.to.throw();
   });
 
-  it(`should properly match URLs`, function() {
+  it(`should properly match URLs`, function () {
     const matchingURL = new URL(PATH, SAME_ORIGIN_URL);
     const nonMatchingURL = new URL('/does/not/match', SAME_ORIGIN_URL);
     const crossOriginURL = new URL(PATH, CROSS_ORIGIN_URL);
@@ -59,16 +68,23 @@ describe(`RegExpRoute`, function() {
     expect(route.match({url: crossOriginURL})).not.to.be.ok;
   });
 
-  it(`should properly match cross-origin URLs with wildcards`, function() {
-    const matchingURL = new URL('https://fonts.googleapis.com/icon?family=Material+Icons');
-    const matchingURL2 = new URL('https://code.getmdl.io/1.2.1/material.indigo-pink.min.css');
+  it(`should properly match cross-origin URLs with wildcards`, function () {
+    const matchingURL = new URL(
+      'https://fonts.googleapis.com/icon?family=Material+Icons',
+    );
+    const matchingURL2 = new URL(
+      'https://code.getmdl.io/1.2.1/material.indigo-pink.min.css',
+    );
 
-    const route = new RegExpRoute(/.*\.(?:googleapis|getmdl)\.(?:com|io)\/.*/, HANDLER);
+    const route = new RegExpRoute(
+      /.*\.(?:googleapis|getmdl)\.(?:com|io)\/.*/,
+      HANDLER,
+    );
     expect(route.match({url: matchingURL})).to.be.ok;
     expect(route.match({url: matchingURL2})).to.be.ok;
   });
 
-  it(`should properly match cross-origin URLs without wildcards`, function() {
+  it(`should properly match cross-origin URLs without wildcards`, function () {
     const matchingURL = new URL(PATH, CROSS_ORIGIN_URL);
     const nonMatchingURL = new URL('/does/not/match', CROSS_ORIGIN_URL);
     const crossOriginRegExp = new RegExp(matchingURL.href);
@@ -78,13 +94,19 @@ describe(`RegExpRoute`, function() {
     expect(route.match({url: nonMatchingURL})).not.to.be.ok;
   });
 
-  it(`should properly match URLs with capture groups`, function() {
+  it(`should properly match URLs with capture groups`, function () {
     const value1 = 'value1';
     const value2 = 'value2';
 
     const captureGroupRegExp = new RegExp('/(\\w+)/dummy/(\\w+)');
-    const captureGroupMatchingURL = new URL(`/${value1}/dummy/${value2}`, SAME_ORIGIN_URL);
-    const captureGroupNonMatchingURL = new URL(`/${value1}/${value2}`, SAME_ORIGIN_URL);
+    const captureGroupMatchingURL = new URL(
+      `/${value1}/dummy/${value2}`,
+      SAME_ORIGIN_URL,
+    );
+    const captureGroupNonMatchingURL = new URL(
+      `/${value1}/${value2}`,
+      SAME_ORIGIN_URL,
+    );
 
     const route = new RegExpRoute(captureGroupRegExp, HANDLER);
 

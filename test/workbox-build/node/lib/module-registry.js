@@ -9,9 +9,11 @@
 const expect = require('chai').expect;
 const upath = require('upath');
 
-const {ModuleRegistry} = require('../../../../packages/workbox-build/build/lib/module-registry');
+const {
+  ModuleRegistry,
+} = require('../../../../packages/workbox-build/build/lib/module-registry');
 
-describe(`[workbox-build] lib/module-registry.js`, function() {
+describe(`[workbox-build] lib/module-registry.js`, function () {
   let moduleRegistry;
   // We can't use proxyquire to override require.resolve(), so let's get the
   // actual expected base path that will be used in the test cases.
@@ -21,12 +23,12 @@ describe(`[workbox-build] lib/module-registry.js`, function() {
     moduleRegistry = new ModuleRegistry();
   });
 
-  describe(`getImportStatements()`, function() {
-    it(`should return [] when nothing is used`, function() {
+  describe(`getImportStatements()`, function () {
+    it(`should return [] when nothing is used`, function () {
       expect(moduleRegistry.getImportStatements()).to.be.empty;
     });
 
-    it(`return the expected output given multiple calls to use()`, function() {
+    it(`return the expected output given multiple calls to use()`, function () {
       const module1Name = moduleRegistry.use('workbox-core', 'index');
       // Multiple use()s should result in only one entry.
       moduleRegistry.use('workbox-core', 'index');
@@ -44,12 +46,12 @@ describe(`[workbox-build] lib/module-registry.js`, function() {
     });
   });
 
-  describe(`getLocalName()`, function() {
-    it(`should return the expected name`, function() {
+  describe(`getLocalName()`, function () {
+    it(`should return the expected name`, function () {
       expect(moduleRegistry.getLocalName('a-b-c', 'd')).to.eql('a_b_c_d');
     });
 
-    it(`should return the expected name when called via use()`, function() {
+    it(`should return the expected name when called via use()`, function () {
       expect(moduleRegistry.use('a-b-c', 'd')).to.eql('a_b_c_d');
     });
   });

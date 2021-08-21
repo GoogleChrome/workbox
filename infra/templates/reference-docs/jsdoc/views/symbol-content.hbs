@@ -18,13 +18,19 @@
   {{/block}}
 
   {{#block 'symbol-content-enums'}}
-    {{#withOnly items=(where members.properties isEnum=true) headingKey='enums'}}
+    {{#withOnly
+      items=(where members.properties isEnum=true)
+      headingKey='enums'
+    }}
       {{#embed 'members-details'}}{{/embed}}
     {{/withOnly}}
   {{/block}}
 
   {{#block 'symbol-content-properties'}}
-    {{#withOnly items=(where members.properties isEnum=undefined) headingKey='properties'}}
+    {{#withOnly
+      items=(where members.properties isEnum=undefined)
+      headingKey='properties'
+    }}
       {{#embed 'members-details'}}{{/embed}}
     {{/withOnly}}
   {{/block}}

@@ -8,9 +8,11 @@
 
 const expect = require('chai').expect;
 
-const {replaceAndUpdateSourceMap} = require('../../../../packages/workbox-build/build/lib/replace-and-update-source-map');
+const {
+  replaceAndUpdateSourceMap,
+} = require('../../../../packages/workbox-build/build/lib/replace-and-update-source-map');
 
-describe(`[workbox-build] lib/replace-and-update-source-map`, function() {
+describe(`[workbox-build] lib/replace-and-update-source-map`, function () {
   // Test case borrowed from https://github.com/Rich-Harris/magic-string/blob/a312519cfe9caa78ade7f09cc2b07459d3d17f4d/test/MagicString.js#L225
   const JS_FILENAME = 'file.js';
   const SOURCE = `abcdefkl`;
@@ -24,7 +26,7 @@ describe(`[workbox-build] lib/replace-and-update-source-map`, function() {
     version: 3,
   };
 
-  it(`should be a no-op if there's no match`, async function() {
+  it(`should be a no-op if there's no match`, async function () {
     const {map, source} = await replaceAndUpdateSourceMap({
       jsFilename: JS_FILENAME,
       originalSource: SOURCE,
@@ -37,7 +39,7 @@ describe(`[workbox-build] lib/replace-and-update-source-map`, function() {
     expect(source).to.eql(SOURCE);
   });
 
-  it(`should be perform the replacement and update the sourcemap when there is a match`, async function() {
+  it(`should be perform the replacement and update the sourcemap when there is a match`, async function () {
     const searchString = 'bc';
     const replaceString = 'wxyz';
 

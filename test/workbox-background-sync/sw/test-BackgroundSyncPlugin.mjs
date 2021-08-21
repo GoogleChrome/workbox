@@ -14,10 +14,10 @@ function getUniqueQueueName() {
   return `queue-${count++}`;
 }
 
-describe(`BackgroundSyncPlugin`, function() {
+describe(`BackgroundSyncPlugin`, function () {
   const sandbox = sinon.createSandbox();
 
-  beforeEach(async function() {
+  beforeEach(async function () {
     // Don't actually register for a sync event in any test, as it could
     // make the tests non-deterministic.
     if ('sync' in registration) {
@@ -25,12 +25,12 @@ describe(`BackgroundSyncPlugin`, function() {
     }
   });
 
-  afterEach(function() {
+  afterEach(function () {
     sandbox.restore();
   });
 
-  describe(`constructor`, function() {
-    it(`should implement fetchDidFail and add requests to the queue`, async function() {
+  describe(`constructor`, function () {
+    it(`should implement fetchDidFail and add requests to the queue`, async function () {
       const stub = sandbox.stub(Queue.prototype, 'pushRequest');
       const queuePlugin = new BackgroundSyncPlugin(getUniqueQueueName());
 

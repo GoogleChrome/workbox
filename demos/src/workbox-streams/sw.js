@@ -1,4 +1,6 @@
-importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.1.5/workbox-sw.js');
+importScripts(
+  'https://storage.googleapis.com/workbox-cdn/releases/6.1.5/workbox-sw.js',
+);
 
 workbox.setConfig({
   debug: true,
@@ -9,13 +11,15 @@ const START_CACHE_KEY = 'start';
 const END_CACHE_KEY = 'end';
 
 self.addEventListener('install', (event) => {
-  event.waitUntil((async () => {
-    const cache = await caches.open(CACHE_NAME);
-    await Promise.all([
-      cache.put(START_CACHE_KEY, new Response('<html><head></head><body>')),
-      cache.put(END_CACHE_KEY, new Response('</body></html>')),
-    ]);
-  })());
+  event.waitUntil(
+    (async () => {
+      const cache = await caches.open(CACHE_NAME);
+      await Promise.all([
+        cache.put(START_CACHE_KEY, new Response('<html><head></head><body>')),
+        cache.put(END_CACHE_KEY, new Response('</body></html>')),
+      ]);
+    })(),
+  );
 });
 
 // Use a stale-while-revalidate strategy as a source for part of the response.
@@ -28,18 +32,16 @@ const streamsStrategy = workbox.streams.strategy([
   () => caches.match(START_CACHE_KEY, {cacheName: CACHE_NAME}),
   () => `<p>🎉 This <code>iframe</code> is composed of multiple streams.</p>`,
   () => `<p>Here's an API call, using a stale-while-revalidate strategy:</p>`,
-  ({event}) => apiStrategy.handle({
-    event: event,
-    request: new Request('/api/date'),
-  }),
+  ({event}) =>
+    apiStrategy.handle({
+      event: event,
+      request: new Request('/api/date'),
+    }),
   () => caches.match(END_CACHE_KEY, {cacheName: CACHE_NAME}),
 ]);
 
 // Once the strategy is configured, the actual routing looks clean.
-workbox.routing.registerRoute(
-    new RegExp('iframe$'),
-    streamsStrategy,
-);
+workbox.routing.registerRoute(new RegExp('iframe$'), streamsStrategy);
 
 workbox.core.skipWaiting();
 workbox.core.clientsClaim();

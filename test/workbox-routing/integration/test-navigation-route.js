@@ -10,12 +10,12 @@ const expect = require('chai').expect;
 
 const activateAndControlSW = require('../../../infra/testing/activate-and-control');
 
-describe(`[workbox-routing] Route via NavigationRoute`, function() {
+describe(`[workbox-routing] Route via NavigationRoute`, function () {
   const testServerAddress = global.__workbox.server.getAddress();
   const testingURL = `${testServerAddress}/test/workbox-routing/static/routing-navigation/`;
   const swURL = `${testingURL}sw.js`;
 
-  it(`should load a page and route requests`, async function() {
+  it(`should load a page and route requests`, async function () {
     // Load the page and wait for the first service worker to register and activate.
     await global.__workbox.webdriver.get(testingURL);
     await activateAndControlSW(swURL);

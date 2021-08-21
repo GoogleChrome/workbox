@@ -17,11 +17,15 @@ module.exports = async (webdriver, testingURL) => {
     // can't call runInSW().
   }
   const error = await webdriver.executeAsyncScript((cb) => {
-    navigator.serviceWorker.getRegistration().then((reg) => {
-      if (reg) {
-        return reg.unregister();
-      }
-    }).then(() => cb()).catch((err) => cb(err.message));
+    navigator.serviceWorker
+      .getRegistration()
+      .then((reg) => {
+        if (reg) {
+          return reg.unregister();
+        }
+      })
+      .then(() => cb())
+      .catch((err) => cb(err.message));
   });
   if (error) {
     throw new Error(error);

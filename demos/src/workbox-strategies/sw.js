@@ -1,4 +1,6 @@
-importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.1.5/workbox-sw.js');
+importScripts(
+  'https://storage.googleapis.com/workbox-cdn/releases/6.1.5/workbox-sw.js',
+);
 // To avoid async issues, we load strategies before we call it in the event listener
 workbox.loadModule('workbox-strategies');
 // Note: Ignore the error that Glitch raises about workbox being undefined.
@@ -41,7 +43,7 @@ self.addEventListener('fetch', (event) => {
     }
     case '/stale-while-revalidate.txt': {
       const staleWhileRevalidate =
-          new workbox.strategies.StaleWhileRevalidate();
+        new workbox.strategies.StaleWhileRevalidate();
       event.respondWith(staleWhileRevalidate.handle({event, request}));
       break;
     }
@@ -55,12 +57,11 @@ workbox.core.clientsClaim();
 // Populate the cache to illustrate cache-only-populated-cache route
 self.addEventListener('install', (event) => {
   event.waitUntil(
-      caches.open(workbox.core.cacheNames.runtime)
-          .then((cache) => {
-            return cache.put(
-                new Request('/cache-only-populated-cache'),
-                new Response('Hello from the populated cache.'),
-            );
-          }),
+    caches.open(workbox.core.cacheNames.runtime).then((cache) => {
+      return cache.put(
+        new Request('/cache-only-populated-cache'),
+        new Response('Hello from the populated cache.'),
+      );
+    }),
   );
 });

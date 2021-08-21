@@ -1,22 +1,21 @@
 {{~#unless symbol.hideconstructor~}}
-  <h id="{{id symbol}}" {{~cssClass '!symbol-name'}}>
+  <h id='{{id symbol}}' {{cssClass '!symbol-name'}}>
     {{~#with symbol~}}
       {{name}}
     {{~/with~}}
   </h>
 {{~/unless~}}
-{{!--
+{{!
     Note that we omit the labels for classes, modules, and namespaces, since
     these labels would duplicate the labels for the page's main heading.
---}}
+}}
 {{~#if symbol.kind~}}
-  {{~#contains 'class' 'module' 'namespace' value=symbol.kind~}}
-  {{~else~}}
+  {{~#contains 'class' 'module' 'namespace' value=symbol.kind~}}{{~else~}}
     {{~#embed 'symbol-labels'}}{{/embed~}}
   {{~/contains~}}
 {{~/if~}}
 {{~#unless symbol.hideconstructor~}}
-  <p {{~cssClass '!type-signature'}}>
+  <p {{cssClass '!type-signature'}}>
     {{~#embed 'signature'}}{{/embed~}}
   </p>
 {{~/unless~}}
@@ -25,7 +24,7 @@
     {{#embed 'description'}}{{/embed}}
     {{#embed 'params'}}{{/embed}}
     {{#embed 'properties'}}{{/embed}}
-    <dl {{~cssClass '!dl-compact'}}>
+    <dl {{cssClass '!dl-compact'}}>
       {{#embed 'details'}}{{/embed}}
     </dl>
     {{#embed 'examples'}}{{/embed}}

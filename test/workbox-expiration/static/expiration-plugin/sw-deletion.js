@@ -20,13 +20,11 @@ const expirationPlugin = new workbox.expiration.ExpirationPlugin({
 const cacheName = 'expiration-plugin-deletion';
 
 workbox.routing.registerRoute(
-    /.*.txt/,
-    new workbox.strategies.CacheFirst({
-      cacheName,
-      plugins: [
-        expirationPlugin,
-      ],
-    }),
+  /.*.txt/,
+  new workbox.strategies.CacheFirst({
+    cacheName,
+    plugins: [expirationPlugin],
+  }),
 );
 
 self.addEventListener('message', async (event) => {

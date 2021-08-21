@@ -9,28 +9,30 @@
 import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
 import {CacheFirst} from 'workbox-strategies/CacheFirst.mjs';
 import {compareResponses} from '../../../infra/testing/helpers/compareResponses.mjs';
-import {eventDoneWaiting, spyOnEvent} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
+import {
+  eventDoneWaiting,
+  spyOnEvent,
+} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
 import {generateOpaqueResponse} from '../../../infra/testing/helpers/generateOpaqueResponse.mjs';
 import {generateUniqueResponse} from '../../../infra/testing/helpers/generateUniqueResponse.mjs';
 
-
-describe(`CacheFirst`, function() {
+describe(`CacheFirst`, function () {
   const sandbox = sinon.createSandbox();
 
-  beforeEach(async function() {
+  beforeEach(async function () {
     const keys = await caches.keys();
     await Promise.all(keys.map((key) => caches.delete(key)));
     sandbox.restore();
   });
 
-  after(async function() {
+  after(async function () {
     const keys = await caches.keys();
     await Promise.all(keys.map((key) => caches.delete(key)));
     sandbox.restore();
   });
 
-  describe(`handle()`, function() {
-    it(`should be able to fetch and cache a request to default cache`, async function() {
+  describe(`handle()`, function () {
+    it(`should be able to fetch and cache a request to default cache`, async function () {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
       spyOnEvent(event);
@@ -67,7 +69,7 @@ describe(`CacheFirst`, function() {
       expect(fetch.callCount).to.equal(0);
     });
 
-    it(`should support using a string as the request`, async function() {
+    it(`should support using a string as the request`, async function () {
       const stringRequest = 'http://example.io/test/';
       const request = new Request(stringRequest);
       const event = new FetchEvent('fetch', {request});
@@ -105,7 +107,7 @@ describe(`CacheFirst`, function() {
       expect(fetch.callCount).to.equal(0);
     });
 
-    it(`should be able to cache a non-existent request to custom cache`, async function() {
+    it(`should be able to cache a non-existent request to custom cache`, async function () {
       const cacheName = 'test-cache-name';
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
@@ -131,7 +133,7 @@ describe(`CacheFirst`, function() {
       await compareResponses(firstHandleResponse, firstCachedResponse, true);
     });
 
-    it(`should not cache an opaque response by default`, async function() {
+    it(`should not cache an opaque response by default`, async function () {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
       spyOnEvent(event);
@@ -155,7 +157,7 @@ describe(`CacheFirst`, function() {
       expect(firstHandleResponse).to.exist;
     });
 
-    it(`should cache an opaque response when a cacheWillUpdate plugin returns true`, async function() {
+    it(`should cache an opaque response when a cacheWillUpdate plugin returns true`, async function () {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
       spyOnEvent(event);
@@ -186,7 +188,7 @@ describe(`CacheFirst`, function() {
       await compareResponses(firstHandleResponse, firstCachedResponse, true);
     });
 
-    it(`should return the plugin cache response`, async function() {
+    it(`should return the plugin cache response`, async function () {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
       spyOnEvent(event);
@@ -216,7 +218,7 @@ describe(`CacheFirst`, function() {
       await compareResponses(firstHandleResponse, pluginResponse, true);
     });
 
-    it(`should fallback to fetch if the plugin.cacheResponseWillBeUsed returns null`, async function() {
+    it(`should fallback to fetch if the plugin.cacheResponseWillBeUsed returns null`, async function () {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
       spyOnEvent(event);
@@ -253,7 +255,7 @@ describe(`CacheFirst`, function() {
       await compareResponses(firstHandleResponse, fetchResponse, true);
     });
 
-    it(`should be able to handle a network error`, async function() {
+    it(`should be able to handle a network error`, async function () {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
       spyOnEvent(event);
@@ -263,21 +265,25 @@ describe(`CacheFirst`, function() {
 
       const cacheFirst = new CacheFirst();
       await expectError(
-          () => cacheFirst.handle({
+        () =>
+          cacheFirst.handle({
             request,
             event,
           }),
-          'no-response');
+        'no-response',
+      );
 
       // Wait until cache.put is finished.
       await eventDoneWaiting(event);
     });
 
-    it(`should use the fetchOptions provided`, async function() {
+    it(`should use the fetchOptions provided`, async function () {
       const fetchOptions = {credentials: 'include'};
       const cacheFirst = new CacheFirst({fetchOptions});
 
-      const fetchStub = sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
+      const fetchStub = sandbox
+        .stub(self, 'fetch')
+        .resolves(generateUniqueResponse());
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
       spyOnEvent(event);
@@ -294,9 +300,10 @@ describe(`CacheFirst`, function() {
       expect(fetchStub.calledWith(request, fetchOptions)).to.be.true;
     });
 
-    it(`should use the CacheQueryOptions when performing a cache match`, async function() {
-      const matchStub = sandbox.stub(self.caches.constructor.prototype, 'match')
-          .resolves(generateUniqueResponse());
+    it(`should use the CacheQueryOptions when performing a cache match`, async function () {
+      const matchStub = sandbox
+        .stub(self.caches.constructor.prototype, 'match')
+        .resolves(generateUniqueResponse());
 
       const matchOptions = {ignoreSearch: true};
       const cacheFirst = new CacheFirst({matchOptions});

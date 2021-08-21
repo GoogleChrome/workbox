@@ -11,20 +11,19 @@ import {CacheExpiration} from 'workbox-expiration/CacheExpiration.mjs';
 import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
 import {executeQuotaErrorCallbacks} from 'workbox-core/_private/executeQuotaErrorCallbacks.mjs';
 
-
-describe(`ExpirationPlugin`, function() {
+describe(`ExpirationPlugin`, function () {
   const sandbox = sinon.createSandbox();
 
-  beforeEach(function() {
+  beforeEach(function () {
     sandbox.restore();
   });
 
-  after(function() {
+  after(function () {
     sandbox.restore();
   });
 
-  describe(`constructor`, function() {
-    it(`should throw for no config`, function() {
+  describe(`constructor`, function () {
+    it(`should throw for no config`, function () {
       if (process.env.NODE_ENV === 'production') this.skip();
 
       return expectError(() => {
@@ -32,7 +31,7 @@ describe(`ExpirationPlugin`, function() {
       }, 'max-entries-or-age-required');
     });
 
-    it(`should throw for non-number maxEntries`, function() {
+    it(`should throw for non-number maxEntries`, function () {
       if (process.env.NODE_ENV === 'production') this.skip();
 
       return expectError(() => {
@@ -42,7 +41,7 @@ describe(`ExpirationPlugin`, function() {
       }, 'incorrect-type');
     });
 
-    it(`should throw for non-number maxAgeSeconds`, function() {
+    it(`should throw for non-number maxAgeSeconds`, function () {
       if (process.env.NODE_ENV === 'production') this.skip();
 
       return expectError(() => {
@@ -52,21 +51,21 @@ describe(`ExpirationPlugin`, function() {
       }, 'incorrect-type');
     });
 
-    it(`should construct with just maxAgeSeconds`, function() {
+    it(`should construct with just maxAgeSeconds`, function () {
       const plugin = new ExpirationPlugin({
         maxAgeSeconds: 10,
       });
       expect(plugin._maxAgeSeconds).to.equal(10);
     });
 
-    it(`should construct with just maxEntries`, function() {
+    it(`should construct with just maxEntries`, function () {
       const plugin = new ExpirationPlugin({
         maxEntries: 10,
       });
       expect(plugin._config.maxEntries).to.equal(10);
     });
 
-    it(`should register a quota error callback when purgeOnQuotaError is true`, async function() {
+    it(`should register a quota error callback when purgeOnQuotaError is true`, async function () {
       const plugin = new ExpirationPlugin({
         maxEntries: 10,
         purgeOnQuotaError: true,
@@ -78,7 +77,7 @@ describe(`ExpirationPlugin`, function() {
       expect(plugin.deleteCacheAndMetadata.calledOnce).to.be.true;
     });
 
-    it(`should not register a quota error callback when purgeOnQuotaError is false`, async function() {
+    it(`should not register a quota error callback when purgeOnQuotaError is false`, async function () {
       const plugin = new ExpirationPlugin({
         maxEntries: 10,
         purgeOnQuotaError: false,
@@ -90,7 +89,7 @@ describe(`ExpirationPlugin`, function() {
       expect(plugin.deleteCacheAndMetadata.called).to.be.false;
     });
 
-    it(`should pass matchOptions through to the CacheExpiration instance`, async function() {
+    it(`should pass matchOptions through to the CacheExpiration instance`, async function () {
       const plugin = new ExpirationPlugin({
         maxEntries: 10,
         matchOptions: {
@@ -103,13 +102,13 @@ describe(`ExpirationPlugin`, function() {
     });
   });
 
-  describe(`cachedResponseWillBeUsed()`, function() {
-    it(`should expose a cachedResponseWillBeUsed() method`, function() {
+  describe(`cachedResponseWillBeUsed()`, function () {
+    it(`should expose a cachedResponseWillBeUsed() method`, function () {
       const plugin = new ExpirationPlugin({maxAgeSeconds: 1});
       expect(plugin).to.respondTo('cachedResponseWillBeUsed');
     });
 
-    it(`should return cachedResponse when cachedResponseWillBeUsed() is called and Responses Data header it valid`, async function() {
+    it(`should return cachedResponse when cachedResponseWillBeUsed() is called and Responses Data header it valid`, async function () {
       // Just to ensure no timing flakiness in test.
       sandbox.useFakeTimers({
         toFake: ['Date'],
@@ -123,11 +122,17 @@ describe(`ExpirationPlugin`, function() {
       const expirationManager = plugin._getCacheExpiration('test-cache');
       sandbox.spy(expirationManager, 'expireEntries');
 
-      expect(await plugin.cachedResponseWillBeUsed({request: new Request('/'), cacheName: 'test-cache', cachedResponse})).to.eql(cachedResponse);
+      expect(
+        await plugin.cachedResponseWillBeUsed({
+          request: new Request('/'),
+          cacheName: 'test-cache',
+          cachedResponse,
+        }),
+      ).to.eql(cachedResponse);
       expect(expirationManager.expireEntries.callCount).to.equal(1);
     });
 
-    it(`should return null when cachedResponseWillBeUsed() is called and Responses Date header is too old`, async function() {
+    it(`should return null when cachedResponseWillBeUsed() is called and Responses Date header is too old`, async function () {
       const clock = sandbox.useFakeTimers({
         toFake: ['Date'],
       });
@@ -143,20 +148,31 @@ describe(`ExpirationPlugin`, function() {
       const expirationManager = plugin._getCacheExpiration('test-cache');
       sandbox.spy(expirationManager, 'expireEntries');
 
-      expect(await plugin.cachedResponseWillBeUsed({request: new Request('/'), cacheName: 'test-cache', cachedResponse})).to.eql(null);
+      expect(
+        await plugin.cachedResponseWillBeUsed({
+          request: new Request('/'),
+          cacheName: 'test-cache',
+          cachedResponse,
+        }),
+      ).to.eql(null);
       expect(expirationManager.expireEntries.callCount).to.equal(1);
     });
 
-    it(`should handle a null cachedResponse`, async function() {
+    it(`should handle a null cachedResponse`, async function () {
       const plugin = new ExpirationPlugin({maxAgeSeconds: 1});
 
       const expirationManager = plugin._getCacheExpiration('test-cache');
       sandbox.spy(expirationManager, 'expireEntries');
 
-      expect(await plugin.cachedResponseWillBeUsed({cacheName: 'test-cache', cachedResponse: null})).to.eql(null);
+      expect(
+        await plugin.cachedResponseWillBeUsed({
+          cacheName: 'test-cache',
+          cachedResponse: null,
+        }),
+      ).to.eql(null);
     });
 
-    it(`should update the timestamp for the request URL`, async function() {
+    it(`should update the timestamp for the request URL`, async function () {
       const plugin = new ExpirationPlugin({maxEntries: 10});
 
       const expirationManager = plugin._getCacheExpiration('test-cache');
@@ -169,43 +185,49 @@ describe(`ExpirationPlugin`, function() {
       });
 
       expect(expirationManager.updateTimestamp.callCount).to.equal(1);
-      expect(expirationManager.updateTimestamp.args[0][0]).to.equal(`${location.origin}/one`);
+      expect(expirationManager.updateTimestamp.args[0][0]).to.equal(
+        `${location.origin}/one`,
+      );
     });
   });
 
-  describe(`_isResponseDateFresh()`, function() {
-    it(`should return true when maxAgeSeconds is not set`, function() {
+  describe(`_isResponseDateFresh()`, function () {
+    it(`should return true when maxAgeSeconds is not set`, function () {
       const plugin = new ExpirationPlugin({maxEntries: 1});
       const isFresh = plugin._isResponseDateFresh(new Response('Hi'));
       expect(isFresh).to.equal(true);
     });
 
-    it(`should return true when there is no Date header`, function() {
+    it(`should return true when there is no Date header`, function () {
       const plugin = new ExpirationPlugin({maxAgeSeconds: 1});
-      const isFresh = plugin._isResponseDateFresh(new Response('Hi', {
-        // TODO: Remove this when https://github.com/pinterest/service-workers/issues/72
-        // is fixed.
-        headers: {},
-      }));
+      const isFresh = plugin._isResponseDateFresh(
+        new Response('Hi', {
+          // TODO: Remove this when https://github.com/pinterest/service-workers/issues/72
+          // is fixed.
+          headers: {},
+        }),
+      );
       expect(isFresh).to.equal(true);
     });
 
-    it(`should return true when the Date header is invalid`, function() {
+    it(`should return true when the Date header is invalid`, function () {
       const plugin = new ExpirationPlugin({maxAgeSeconds: 1});
-      const isFresh = plugin._isResponseDateFresh(new Response('Hi', {
-        headers: {date: 'invalid header'},
-      }));
+      const isFresh = plugin._isResponseDateFresh(
+        new Response('Hi', {
+          headers: {date: 'invalid header'},
+        }),
+      );
       expect(isFresh).to.equal(true);
     });
   });
 
-  describe(`cacheDidUpdate()`, function() {
-    it(`should expose a cacheDidUpdate() method`, function() {
+  describe(`cacheDidUpdate()`, function () {
+    it(`should expose a cacheDidUpdate() method`, function () {
       const plugin = new ExpirationPlugin({maxAgeSeconds: 1});
       expect(plugin).to.respondTo('cacheDidUpdate');
     });
 
-    it(`should update timestamps and expire entries`, async function() {
+    it(`should update timestamps and expire entries`, async function () {
       const cacheName = 'test-cache';
       const url = new URL('/test', self.location).toString();
       const request = new Request(url);
@@ -217,17 +239,19 @@ describe(`ExpirationPlugin`, function() {
       await plugin.cacheDidUpdate({cacheName, request});
 
       expect(CacheExpiration.prototype.updateTimestamp.callCount).to.equal(1);
-      expect(CacheExpiration.prototype.updateTimestamp.args[0][0]).to.equal(url);
+      expect(CacheExpiration.prototype.updateTimestamp.args[0][0]).to.equal(
+        url,
+      );
       expect(CacheExpiration.prototype.expireEntries.callCount).to.equal(1);
     });
   });
 
-  describe(`_getCacheExpiration()`, function() {
-    it(`should reject when called with the default runtime cache name`, async function() {
+  describe(`_getCacheExpiration()`, function () {
+    it(`should reject when called with the default runtime cache name`, async function () {
       const plugin = new ExpirationPlugin({maxAgeSeconds: 1});
       await expectError(
-          () => plugin._getCacheExpiration(cacheNames.getRuntimeName()),
-          'expire-custom-caches-only',
+        () => plugin._getCacheExpiration(cacheNames.getRuntimeName()),
+        'expire-custom-caches-only',
       );
     });
   });

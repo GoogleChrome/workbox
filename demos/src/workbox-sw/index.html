@@ -2,30 +2,37 @@
 <html lang="en">
   <head>
     <title>workbox-sw demo</title>
-    <meta name="workbox-sw demo" content="An example to demonstrate the workbox-sw module">
-    <link id="favicon" rel="icon" href="https://glitch.com/edit/favicon-app.ico" type="image/x-icon">
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="workbox-sw demo"
+      content="An example to demonstrate the workbox-sw module"
+    />
+    <link
+      id="favicon"
+      rel="icon"
+      href="https://glitch.com/edit/favicon-app.ico"
+      type="image/x-icon"
+    />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
-        body {
-          margin-left: 5%;
-          font-family: 'Open Sans', sans-serif
-        }
-        ol {
-          padding-left: 20px
-        }
-        li {
-          margin-bottom: 5px
-        }
-        button {
-          margin: 20px 0;
-          font-weight: bold
-        }
+      body {
+        margin-left: 5%;
+        font-family: 'Open Sans', sans-serif;
+      }
+      ol {
+        padding-left: 20px;
+      }
+      li {
+        margin-bottom: 5px;
+      }
+      button {
+        margin: 20px 0;
+        font-weight: bold;
+      }
     </style>
   </head>
   <body>
-
     <header>
       <div>
         <h1>workbox-sw demo</h1>
@@ -34,14 +41,21 @@
 
     <ol>
       <li>Open DevTools and go to the console</li>
-      <li>Click this button:<br /><button class="install-sw">Install Service Worker</button></li>
+      <li>
+        Click this button:<br /><button class="install-sw">
+          Install Service Worker
+        </button>
+      </li>
       <li>You should see a workbox message appear</li>
-      <li>Refresh the page, go to the network tab, and check the "Size" of demo-img.png. It should read (ServiceWorker)</li>
+      <li>
+        Refresh the page, go to the network tab, and check the "Size" of
+        demo-img.png. It should read (ServiceWorker)
+      </li>
     </ol>
 
     <!-- Image will be stored in a custom cache -->
-    <img src="demo-img.png" style="width: 300px; height: 300px;"/>
-   
+    <img src="demo-img.png" style="width: 300px; height: 300px" />
+
     <script>
       const installSWBtn = document.querySelector('.install-sw');
       installSWBtn.addEventListener('click', () => {
@@ -50,14 +64,15 @@
     </script>
 
     <p>
-
-    <a href="https://developers.google.com/web/tools/workbox/modules">Back to Demos</a>
+      <a href="https://developers.google.com/web/tools/workbox/modules"
+        >Back to Demos</a
+      >
+    </p>
 
     <p>
-
-    <a href="https://developers.google.com/web/tools/workbox">Docs</a> |
-    <a href="https://github.com/googlechrome/workbox">GitHub</a> |
-    <a href="https://twitter.com/workboxjs">@workboxjs</a>
-
+      <a href="https://developers.google.com/web/tools/workbox">Docs</a> |
+      <a href="https://github.com/googlechrome/workbox">GitHub</a> |
+      <a href="https://twitter.com/workboxjs">@workboxjs</a>
+    </p>
   </body>
 </html>
