@@ -107,8 +107,6 @@ async function buildNodeTSPackage(packagePath) {
   if (packagePath.endsWith('workbox-build')) {
     await generateWorkboxBuildJSONSchema(packagePath);
   }
-
-  await execa('tsc', ['-b', packagePath], {preferLocal: true});
 }
 
 module.exports = {
