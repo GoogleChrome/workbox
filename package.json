@@ -4,14 +4,15 @@
     "node": ">=10.0.0"
   },
   "scripts": {
-    "version": "gulp build && git add -A packages",
-    "gulp": "gulp",
     "build": "gulp build",
+    "format-staged": "git-format-staged -f 'prettier --ignore-unknown --stdin --stdin-filepath \"{}\"' .",
+    "gulp": "gulp",
     "lint": "gulp lint",
-    "test_server": "gulp test_server",
-    "test_node": "gulp test_node",
+    "prepare": "husky install",
     "test_integration": "gulp test_integration",
-    "prepare": "husky install"
+    "test_node": "gulp test_node",
+    "test_server": "gulp test_server",
+    "version": "gulp build && git add -A packages"
   },
   "nyc": {
     "include": [
