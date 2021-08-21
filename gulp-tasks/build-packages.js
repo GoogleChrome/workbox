@@ -59,7 +59,6 @@ function cleanSequence() {
 module.exports = {
   build_packages_clean: cleanSequence(),
   build_packages: series(
-      cleanSequence(),
       // This needs to be a series, not in parallel, so that there isn't a
       // race condition with the terser nameCache.
       transpile_typescript,
