@@ -8,10 +8,9 @@
 
 import {Asset, Chunk, Compilation, ModuleFilenameHelpers} from 'webpack-v5';
 import {WebpackError} from 'webpack-v5';
-// @ts-ignore - TODO - get typescript version of `workbox-build`
 import transformManifest from 'workbox-build/build/lib/transform-manifest';
 
-import {CommonConfig} from '../types';
+import {WebpackGenerateSWOptions, WebpackInjectManifestOptions, ManifestEntry} from 'workbox-build';
 import {getAssetHash} from './get-asset-hash';
 import {resolveWebpackURL} from './resolve-webpack-url';
 
@@ -106,7 +105,7 @@ function getNamesOfAssetsInChunk(chunk: Chunk): Array<string> {
  * based on the criteria provided.
  * @private
  */
-function filterAssets(compilation: Compilation, config: CommonConfig): Set<Asset> {
+function filterAssets(compilation: Compilation, config: WebpackInjectManifestOptions | WebpackGenerateSWOptions): Set<Asset> {
   const filteredAssets = new Set<Asset>();
   const assets = compilation.getAssets();
 
@@ -181,7 +180,7 @@ function filterAssets(compilation: Compilation, config: CommonConfig): Set<Asset
 }
 
 // TODO - return type
-export async function getManifestEntriesFromCompilation(compilation: Compilation, config: CommonConfig) {
+export async function getManifestEntriesFromCompilation(compilation: Compilation, config: WebpackGenerateSWOptions | WebpackInjectManifestOptions) {
   const filteredAssets = filterAssets(compilation, config);
 
   const {publicPath} = compilation.options.output;

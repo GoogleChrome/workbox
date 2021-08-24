@@ -6,11 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-// @ts-ignore - TODO get typescript version of `workbox-build`
 import {escapeRegExp} from 'workbox-build/build/lib/escape-regexp';
-// @ts-ignore - TODO get typescript version of `workbox-build`
 import {replaceAndUpdateSourceMap} from 'workbox-build/build/lib/replace-and-update-source-map';
-// @ts-ignore - TODO get typescript version of `workbox-build`
 import {validateWebpackInjectManifestOptions} from 'workbox-build/build/lib/validate-options';
 import prettyBytes from 'pretty-bytes';
 import stringify from 'fast-json-stable-stringify';

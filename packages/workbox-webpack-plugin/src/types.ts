@@ -1,4 +1,3 @@
-// @ts-ignore - TODO - use typescript version of workbox-build
 import {ManifestEntry, ManifestTransform} from 'workbox-build';
 
 export interface CommonConfig {
