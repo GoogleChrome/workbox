@@ -6,10 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
+import {GenerateSWOptions, InjectManifestOptions} from 'workbox-build';
+
 // A really light wrapper on top of Node's require() to make it easier to stub
 // out reading the configuration during tests.
-// Disable lint for 'any' values returned here
-/* eslint-disable */
 export function readConfig(configFile: string) {
-  return require(configFile)
+  return require(configFile) as GenerateSWOptions | InjectManifestOptions;
 }

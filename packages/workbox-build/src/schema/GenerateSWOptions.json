@@ -446,6 +446,9 @@
         "generatePayload": {
           "type": "object",
           "additionalProperties": false
+        },
+        "notifyAllClients": {
+          "type": "boolean"
         }
       },
       "additionalProperties": false
