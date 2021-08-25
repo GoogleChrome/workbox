@@ -62,5 +62,6 @@
   "main": "build/index.js",
   "workbox": {
     "packageType": "node_ts"
-  }
+  },
+  "types": "build/index.d.ts"
 }

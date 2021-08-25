@@ -42,6 +42,12 @@ async function buildNodePackage(packagePath) {
 }
 
 async function generateWorkboxBuildJSONSchema(packagePath) {
+  // We only want to do this for workbox-build, but this function might be
+  // run for any package, so exit early.
+  if (!packagePath.endsWith('workbox-build')) {
+    return;
+  }
+
   const program = TJS.programFromConfig(
       upath.join(packagePath, 'tsconfig.json'),
   );
@@ -101,21 +107,12 @@ async function generateWorkboxBuildJSONSchema(packagePath) {
   }
 }
 
-async function buildNodeTSPackage(packagePath) {
-  // Hardcode special logic for workbox-build, as it's the only package
-  // that requires JSON schema generation.
-  if (packagePath.endsWith('workbox-build')) {
-    await generateWorkboxBuildJSONSchema(packagePath);
-  }
-
-  await execa('tsc', ['-b', packagePath], {preferLocal: true});
-}
-
 module.exports = {
   build_node_packages: parallel(
       packageRunner('build_node_packages', 'node', buildNodePackage),
   ),
   build_node_ts_packages: parallel(
-      packageRunner('build_node_ts_packages', 'node_ts', buildNodeTSPackage),
+      packageRunner('build_node_ts_packages', 'node_ts',
+          generateWorkboxBuildJSONSchema),
   ),
 };

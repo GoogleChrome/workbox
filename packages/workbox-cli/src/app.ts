@@ -7,23 +7,23 @@
 */
 
 import {oneLine as ol} from 'common-tags';
+import * as workboxBuild from 'workbox-build';
 import assert from 'assert';
-import GlobWatcher from 'glob-watcher';
+import {default as chokidar, WatchOptions} from 'chokidar';
 import meow from 'meow';
 import prettyBytes from 'pretty-bytes';
 import upath from 'upath';
-import * as workboxBuild from 'workbox-build';
 
 import {constants} from './lib/constants.js';
 import {errors} from './lib/errors.js';
 import {logger} from './lib/logger.js';
 import {readConfig} from './lib/read-config.js';
 import {runWizard} from './lib/run-wizard.js';
-import {SupportedFlags} from './bin.js'
+import {SupportedFlags} from './bin.js';
 
 interface BuildCommand {
   command: 'generateSW' | 'injectManifest';
-  config: any;
+  config: workboxBuild.GenerateSWOptions | workboxBuild.InjectManifestOptions;
   watch: boolean;
 }
 
@@ -33,33 +33,37 @@ interface BuildCommand {
  * @param {Object} options
  */
 async function runBuildCommand({command, config, watch}: BuildCommand) {
-  const {count, filePaths, size, warnings} = await workboxBuild[command](config);
+  const {count, filePaths, size, warnings} = await workboxBuild[command](
+    config,
+  );
 
   for (const warning of warnings) {
     logger.warn(warning);
   }
 
   if (filePaths.length === 1) {
-    // Can't change the type of config, we'll consider in next major release.
-    // eslint-disable-next-line
     logger.log(`The service worker file was written to ${config.swDest}`);
   } else {
     const message = filePaths
-        .sort()
-        .map((filePath) => `  • ${filePath}`)
-        .join(`\n`);
+      .sort()
+      .map((filePath) => `  • ${filePath}`)
+      .join(`\n`);
     logger.log(`The service worker files were written to:\n${message}`);
   }
 
-  logger.log(`The service worker will precache ${count} URLs, ` +
-      `totaling ${prettyBytes(size)}.`);
+  logger.log(
+    `The service worker will precache ${count} URLs, ` +
+      `totaling ${prettyBytes(size)}.`,
+  );
 
   if (watch) {
     logger.log(`\nWatching for changes...`);
   }
 }
 
-export const app = async (params: meow.Result<SupportedFlags>): Promise<void> => {
+export const app = async (
+  params: meow.Result<SupportedFlags>,
+): Promise<void> => {
   // This should not be a user-visible error, unless meow() messes something up.
   assert(params && Array.isArray(params.input), errors['missing-input']);
 
@@ -88,14 +92,16 @@ export const app = async (params: meow.Result<SupportedFlags>): Promise<void> =>
 
     case 'generateSW':
     case 'injectManifest': {
-      const configPath = upath.resolve(process.cwd(),
-          option || constants.defaultConfigFile);
+      const configPath = upath.resolve(
+        process.cwd(),
+        option || constants.defaultConfigFile,
+      );
 
-      let config: any;
+      let configFromDisk:
+        | workboxBuild.GenerateSWOptions
+        | workboxBuild.InjectManifestOptions;
       try {
-        // Can't change the type of config, we'll consider in next major release.
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        config = readConfig(configPath);
+        configFromDisk = readConfig(configPath);
       } catch (error) {
         if (error instanceof Error) {
           logger.error(errors['invalid-common-js-module']);
@@ -105,11 +111,12 @@ export const app = async (params: meow.Result<SupportedFlags>): Promise<void> =>
 
       logger.log(`Using configuration from ${configPath}.`);
 
+      const config = configFromDisk!;
       // Determine whether we're in --watch mode, or one-off mode.
-      // Can't change the type of config, we'll consider in next major release.
-      /* eslint-disable */
-      if (params.flags && params.flags.watch) {
-        const options: GlobWatcher.WatchOptions = {ignoreInitial: false};
+      if (params?.flags?.watch) {
+        const options: WatchOptions = {
+          ignoreInitial: true,
+        };
         if (config.globIgnores) {
           options.ignored = config.globIgnores;
         }
@@ -118,14 +125,21 @@ export const app = async (params: meow.Result<SupportedFlags>): Promise<void> =>
         }
 
         if (config.globPatterns) {
-          GlobWatcher(config.globPatterns, options,
-            () => runBuildCommand({command, config, watch: true}));
+          chokidar
+            .watch(config.globPatterns, options)
+            .on('all', async () => {
+              await runBuildCommand({command, config, watch: true});
+            })
+            .on('ready', async () => {
+              await runBuildCommand({command, config, watch: true});
+            })
+            .on('error', (err) => {
+              logger.error(err.toString());
+            });
         }
-
       } else {
         await runBuildCommand({command, config, watch: false});
       }
-      /* eslint-disable */
       break;
     }
 
