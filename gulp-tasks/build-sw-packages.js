@@ -12,7 +12,6 @@ const fse = require('fs-extra');
 const ol = require('common-tags').oneLine;
 const upath = require('upath');
 
-const {transpilePackageOrSkip} = require('./transpile-typescript').functions;
 const constants = require('./utils/constants');
 const logHelper = require('../infra/utils/log-helper');
 const packageRunner = require('./utils/package-runner');
@@ -151,23 +150,14 @@ async function buildSWBundle(packagePath, buildType) {
 
 // This reads a little cleaner with a function to generate the sub-sequences.
 function swBundleSequence() {
-  const transpilations = packageRunner(
-      'build_sw_packages_transpile_typescript', 'sw', transpilePackageOrSkip);
   const builds = Object.keys(constants.BUILD_TYPES).map((type) => packageRunner(
       'build_sw_packages_bundle', 'sw', buildSWBundle,
       constants.BUILD_TYPES[type]));
 
-  return series(
-      parallel(transpilations),
-      // This needs to be a series, not in parallel, so that there isn't a
-      // race condition with the terser nameCache.
-      series(builds),
-  );
+  return series(builds);
 }
 
 module.exports = {
-  build_sw_packages_transpile_typescript: parallel(packageRunner(
-      'build_sw_packages_transpile_typescript', 'sw', transpilePackageOrSkip)),
   build_sw_packages: series(
       parallel(packageRunner('build_sw_packages_version_module', 'sw',
           versionModule)),
