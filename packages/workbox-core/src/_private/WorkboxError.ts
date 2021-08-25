@@ -21,7 +21,6 @@ import '../_version.js';
  * @private
  */
 class WorkboxError extends Error {
-  name: string;
   details?: MapLikeObject;
 
   /**

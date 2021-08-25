@@ -8,7 +8,6 @@
 
 import {messageSW} from './messageSW.js';
 import {Workbox} from './Workbox.js';
-import {WorkboxEventMap} from './utils/WorkboxEvent.js';
 
 import './_version.js';
 
@@ -18,5 +17,7 @@ import './_version.js';
 export {
   messageSW,
   Workbox,
-  WorkboxEventMap,
 };
+
+// See https://github.com/GoogleChrome/workbox/issues/2770
+export * from './utils/WorkboxEvent.js';

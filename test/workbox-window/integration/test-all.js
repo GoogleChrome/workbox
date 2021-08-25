@@ -10,13 +10,13 @@ const {expect} = require('chai');
 
 const {executeAsyncAndCatch} = require('../../../infra/testing/webdriver/executeAsyncAndCatch');
 const {runUnitTests} = require('../../../infra/testing/webdriver/runUnitTests');
-const {TabManager} = require('../../../infra/testing/webdriver/TabManager');
+const {IframeManager} = require('../../../infra/testing/webdriver/IframeManager');
 const {unregisterAllSWs} = require('../../../infra/testing/webdriver/unregisterAllSWs');
 const {windowLoaded} = require('../../../infra/testing/webdriver/windowLoaded');
 const templateData = require('../../../infra/testing/server/template-data');
 
 // Store local references of these globals.
-const {webdriver, server, seleniumBrowser} = global.__workbox;
+const {webdriver, server} = global.__workbox;
 
 const testServerOrigin = server.getAddress();
 const testPath = `${testServerOrigin}/test/workbox-window/static/`;
@@ -160,14 +160,7 @@ describe(`[workbox-window] Workbox`, function() {
     });
 
     it(`reports all events for an external SW registration`, async function() {
-      // This test doesn't work in Safari or Firefox:
-      // https://github.com/GoogleChrome/workbox/issues/2755
-      if (seleniumBrowser.getId() === 'safari' ||
-          seleniumBrowser.getId() === 'firefox') {
-        this.skip();
-      }
-
-      const tabManager = new TabManager(webdriver);
+      const iframeManager = new IframeManager(webdriver);
 
       await executeAsyncAndCatch(async (cb) => {
         try {
@@ -200,30 +193,17 @@ describe(`[workbox-window] Workbox`, function() {
       // Update the version in sw.js to trigger a new installation.
       templateData.assign({version: '2'});
 
-      const secondTabPath = `${testPath}?second`;
-      await tabManager.openTab(secondTabPath);
-      await windowLoaded();
-
-      const location = await executeAsyncAndCatch(async (cb) => {
-        try {
-          const wb = new Workbox('sw-clients-claim.js.njk');
-
-          await wb.register();
-
-          // Resolve this execution block once the updated SW is in control.
-          await window.activatedAndControlling(wb);
-          cb(location.href);
-        } catch (error) {
-          cb({error: error.stack});
-        }
-      });
+      const secondPath = `${testPath}?second`;
+      const iframeClient = await iframeManager.createIframeClient(secondPath);
+      const location = await iframeClient.executeAsyncScript(`
+        const wb = new Workbox('sw-clients-claim.js.njk');
+        wb.register()
+          .then(() => window.activatedAndControlling(wb))
+          .then(() => location.href);
+      `);
 
       // Just confirm we're operating on the page we expect.
-      expect(location).to.eql(secondTabPath);
-
-      // Close the second tab and switch back to the first tab before
-      // executing the following block.
-      await tabManager.closeOpenedTabs();
+      expect(location).to.eql(secondPath);
 
       const result = await executeAsyncAndCatch(async (cb) => {
         cb({

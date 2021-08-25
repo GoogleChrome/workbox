@@ -12,9 +12,10 @@ const fse = require('fs-extra');
 const upath = require('upath');
 
 const {build_node_packages, build_node_ts_packages} =
-    require('./build-node-packages');
+  require('./build-node-packages');
 const {build_sw_packages} = require('./build-sw-packages');
 const {build_window_packages} = require('./build-window-packages');
+const {transpile_typescript} = require('./transpile-typescript');
 const constants = require('./utils/constants');
 const packageRunner = require('./utils/package-runner');
 
@@ -58,9 +59,9 @@ function cleanSequence() {
 module.exports = {
   build_packages_clean: cleanSequence(),
   build_packages: series(
-      cleanSequence(),
       // This needs to be a series, not in parallel, so that there isn't a
       // race condition with the terser nameCache.
+      transpile_typescript,
       series(build_sw_packages, build_window_packages),
       parallel(
           build_node_packages,
