@@ -9,13 +9,13 @@
 const expect = require('chai').expect;
 
 const {runUnitTests} = require('../../../infra/testing/webdriver/runUnitTests');
-const {TabManager} = require('../../../infra/testing/webdriver/TabManager');
+const {IframeManager} = require('../../../infra/testing/webdriver/IframeManager');
 const activateAndControlSW = require('../../../infra/testing/activate-and-control');
 const cleanSWEnv = require('../../../infra/testing/clean-sw');
 const templateData = require('../../../infra/testing/server/template-data');
 
 // Store local references of these globals.
-const {webdriver, server, seleniumBrowser} = global.__workbox;
+const {webdriver, server} = global.__workbox;
 
 describe(`[workbox-broadcast-update]`, function() {
   it(`passes all SW unit tests`, async function() {
@@ -122,13 +122,7 @@ describe(`[workbox-broadcast-update] Plugin`, function() {
   });
 
   it(`should broadcast a message to all open window clients by default`, async function() {
-    // This test doesn't work in Safari:
-    // https://github.com/GoogleChrome/workbox/issues/2755
-    if (seleniumBrowser.getId() === 'safari') {
-      this.skip();
-    }
-
-    const tabManager = new TabManager(webdriver);
+    const iframeManager = new IframeManager(webdriver);
 
     templateData.assign({
       title: 'Broadcast Cache Update Test',
@@ -152,15 +146,11 @@ describe(`[workbox-broadcast-update] Plugin`, function() {
       }, dynamicPageURL);
     });
 
-    // Update the template data, then open a new tab to trigger the update.
+    // Update the template data and open an iframe to trigger the cache update.
     templateData.assign({
       body: 'Third test, with an updated body.',
     });
-
-    await tabManager.openTab(dynamicPageURL);
-
-    // Go back to the initial tab to assert the message was received there.
-    await tabManager.closeOpenedTabs();
+    await iframeManager.createIframeClient(dynamicPageURL);
 
     await webdriver.wait(() => {
       return webdriver.executeScript(() => {
@@ -183,34 +173,19 @@ describe(`[workbox-broadcast-update] Plugin`, function() {
   });
 
   it(`should only broadcast a message to the client that made the request when notifyAllClients is false`, async function() {
-    // This test doesn't work in Safari:
-    // https://github.com/GoogleChrome/workbox/issues/2755
-    if (seleniumBrowser.getId() === 'safari') {
-      this.skip();
-    }
-
     const url = `${apiURL}?notifyAllClientsTest`;
-    const tabManager = new TabManager(webdriver);
+    const iframeManager = new IframeManager(webdriver);
 
     await webdriver.get(testingURL);
     await webdriver.executeAsyncScript((url, cb) => {
       fetch(url).then(() => cb()).catch((err) => cb(err.message));
     }, url);
 
-    await tabManager.openTab(testingURL);
-    await webdriver.executeAsyncScript((url, cb) => {
-      fetch(url).then(() => cb()).catch((err) => cb(err.message));
-    }, url);
+    const iframeClient = await iframeManager.createIframeClient(testingURL);
+    await iframeClient.executeAsyncScript(`fetch(${JSON.stringify(url)})`);
+    await iframeClient.wait('window.__messages.length > 0');
 
-    await webdriver.wait(() => {
-      return webdriver.executeScript(() => {
-        return window.__messages.length > 0;
-      });
-    });
-
-    const populatedMessages = await webdriver.executeScript(() => {
-      return window.__messages;
-    });
+    const populatedMessages = await iframeClient.executeAsyncScript('window.__messages');
     expect(populatedMessages).to.eql([{
       type: 'CACHE_UPDATED',
       meta: 'workbox-broadcast-update',
@@ -219,8 +194,6 @@ describe(`[workbox-broadcast-update] Plugin`, function() {
         updatedURL: url,
       },
     }]);
-
-    await tabManager.closeOpenedTabs();
 
     const unpopulatedMessages = await webdriver.executeScript(() => {
       return window.__messages;
