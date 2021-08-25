@@ -319,6 +319,17 @@ class StrategyHandler {
           method: effectiveRequest.method,
         });
       }
+
+      // See https://github.com/GoogleChrome/workbox/issues/2818
+      const vary = response.headers.get('Vary');
+      if (vary) {
+        logger.debug(
+          `The response for ${getFriendlyURL(effectiveRequest.url)} ` +
+            `has a 'Vary: ${vary}' header. ` +
+            `Consider setting the {ignoreVary: true} option on your strategy ` +
+            `to ensure cache matching and deletion works as expected.`,
+        );
+      }
     }
 
     if (!response) {

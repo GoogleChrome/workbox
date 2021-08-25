@@ -7,12 +7,13 @@
 */
 
 import {Deferred} from 'workbox-core/_private/Deferred.mjs';
-import {timeout} from 'workbox-core/_private/timeout.mjs';
+import {logger} from 'workbox-core/_private/logger.mjs';
 import {registerQuotaErrorCallback} from 'workbox-core/registerQuotaErrorCallback.mjs';
 import {Strategy} from 'workbox-strategies/Strategy.mjs';
 import {StrategyHandler} from 'workbox-strategies/StrategyHandler.mjs';
-import {spyOnEvent, eventDoneWaiting} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
+import {timeout} from 'workbox-core/_private/timeout.mjs';
 
+import {spyOnEvent, eventDoneWaiting} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
 
 class TestStrategy extends Strategy {
   _handle() {
@@ -430,6 +431,25 @@ describe(`StrategyHandler`, function() {
 
       expect(cacheOpenStub.callCount).to.equal(0);
       expect(cachePutStub.callCount).to.equal(0);
+    });
+
+    it(`should log when caching a response with a Vary: header in dev mode`, async function() {
+      if (process.env.NODE_ENV === 'production') {
+        this.skip();
+      }
+
+      const loggerSpy = sandbox.spy(logger, 'debug');
+
+      const request = new Request('/test/vary');
+      const response = new Response('Vary response', {
+        headers: {Vary: 'user-agent'},
+      });
+
+      const handler = createStrategyHandler({cacheName: 'vary-test'});
+      await handler.cachePut(request, response);
+
+      // Just a basic test for the logged string.
+      expect(loggerSpy.firstCall.args[0]).to.include('ignoreVary');
     });
 
     it(`should call cacheDidUpdate`, async function() {
