@@ -321,10 +321,11 @@ class StrategyHandler {
       }
 
       // See https://github.com/GoogleChrome/workbox/issues/2818
-      if (response.headers.has('Vary')) {
+      const vary = response.headers.get('Vary');
+      if (vary) {
         logger.debug(
           `The response for ${getFriendlyURL(effectiveRequest.url)} ` +
-            `has a 'Vary: ${response.headers.get('Vary')}' header. ` +
+            `has a 'Vary: ${vary}' header. ` +
             `Consider setting the {ignoreVary: true} option on your strategy ` +
             `to ensure cache matching and deletion works as expected.`,
         );
