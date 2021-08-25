@@ -8,9 +8,13 @@
 
 import {Asset, Chunk, Compilation, ModuleFilenameHelpers} from 'webpack-v5';
 import {WebpackError} from 'webpack-v5';
-import transformManifest from 'workbox-build/build/lib/transform-manifest';
+import {transformManifest} from 'workbox-build/build/lib/transform-manifest';
 
-import {WebpackGenerateSWOptions, WebpackInjectManifestOptions, ManifestEntry} from 'workbox-build';
+import {
+  WebpackGenerateSWOptions,
+  WebpackInjectManifestOptions,
+  ManifestEntry,
+} from 'workbox-build';
 import {getAssetHash} from './get-asset-hash';
 import {resolveWebpackURL} from './resolve-webpack-url';
 
@@ -25,7 +29,15 @@ import {resolveWebpackURL} from './resolve-webpack-url';
  * @return {boolean} Whether or not at least one condition matches.
  * @private
  */
-function checkConditions(asset: Asset, compilation: Compilation, conditions: Array<string | RegExp | ((params: {asset: Asset, compilation: Compilation}) => unknown)> = []): boolean {
+function checkConditions(
+  asset: Asset,
+  compilation: Compilation,
+  conditions: Array<
+    | string
+    | RegExp
+    | ((params: {asset: Asset; compilation: Compilation}) => unknown)
+  > = [],
+): boolean {
   for (const condition of conditions) {
     if (typeof condition === 'function') {
       if (condition({asset, compilation})) {
@@ -53,9 +65,13 @@ function checkConditions(asset: Asset, compilation: Compilation, conditions: Arr
  * @return {Array<string>|null}
  * @private
  */
-function getNamesOfAssetsInChunkOrGroup(compilation: Compilation, chunkOrGroup: string): Array<string> | null {
-  const chunkGroup = compilation.namedChunkGroups &&
-      compilation.namedChunkGroups.get(chunkOrGroup);
+function getNamesOfAssetsInChunkOrGroup(
+  compilation: Compilation,
+  chunkOrGroup: string,
+): Array<string> | null {
+  const chunkGroup =
+    compilation.namedChunkGroups &&
+    compilation.namedChunkGroups.get(chunkOrGroup);
   if (chunkGroup) {
     const assetNames = [];
     for (const chunk of chunkGroup.chunks) {
@@ -63,8 +79,8 @@ function getNamesOfAssetsInChunkOrGroup(compilation: Compilation, chunkOrGroup: 
     }
     return assetNames;
   } else {
-    const chunk = compilation.namedChunks &&
-        compilation.namedChunks.get(chunkOrGroup);
+    const chunk =
+      compilation.namedChunks && compilation.namedChunks.get(chunkOrGroup);
     if (chunk) {
       return getNamesOfAssetsInChunk(chunk);
     }
@@ -105,7 +121,10 @@ function getNamesOfAssetsInChunk(chunk: Chunk): Array<string> {
  * based on the criteria provided.
  * @private
  */
-function filterAssets(compilation: Compilation, config: WebpackInjectManifestOptions | WebpackGenerateSWOptions): Set<Asset> {
+function filterAssets(
+  compilation: Compilation,
+  config: WebpackInjectManifestOptions | WebpackGenerateSWOptions,
+): Set<Asset> {
   const filteredAssets = new Set<Asset>();
   const assets = compilation.getAssets();
 
@@ -115,15 +134,21 @@ function filterAssets(compilation: Compilation, config: WebpackInjectManifestOpt
     for (const name of config.chunks) {
       // See https://github.com/GoogleChrome/workbox/issues/2717
       const assetsInChunkOrGroup = getNamesOfAssetsInChunkOrGroup(
-          compilation, name);
+        compilation,
+        name,
+      );
       if (assetsInChunkOrGroup) {
         for (const assetName of assetsInChunkOrGroup) {
           allowedAssetNames.add(assetName);
         }
       } else {
-        compilation.warnings.push(new WebpackError(`The chunk '${name}' was ` +
-          `provided in your Workbox chunks config, but was not found in the ` +
-          `compilation.`));
+        compilation.warnings.push(
+          new WebpackError(
+            `The chunk '${name}' was ` +
+            `provided in your Workbox chunks config, but was not found in the ` +
+            `compilation.`,
+          ),
+        );
       }
     }
   }
@@ -133,7 +158,9 @@ function filterAssets(compilation: Compilation, config: WebpackInjectManifestOpt
     for (const name of config.excludeChunks) {
       // See https://github.com/GoogleChrome/workbox/issues/2717
       const assetsInChunkOrGroup = getNamesOfAssetsInChunkOrGroup(
-          compilation, name);
+        compilation,
+        name,
+      );
       if (assetsInChunkOrGroup) {
         for (const assetName of assetsInChunkOrGroup) {
           deniedAssetNames.add(assetName);
@@ -166,8 +193,9 @@ function filterAssets(compilation: Compilation, config: WebpackInjectManifestOpt
     }
 
     // Treat an empty config.includes as an implicit inclusion.
-    const isIncluded = !Array.isArray(config.include) ||
-        checkConditions(asset, compilation, config.include);
+    const isIncluded =
+      !Array.isArray(config.include) ||
+      checkConditions(asset, compilation, config.include);
     if (!isIncluded) {
       continue;
     }
@@ -179,8 +207,10 @@ function filterAssets(compilation: Compilation, config: WebpackInjectManifestOpt
   return filteredAssets;
 }
 
-// TODO - return type
-export async function getManifestEntriesFromCompilation(compilation: Compilation, config: WebpackGenerateSWOptions | WebpackInjectManifestOptions) {
+export async function getManifestEntriesFromCompilation(
+  compilation: Compilation,
+  config: WebpackGenerateSWOptions | WebpackInjectManifestOptions,
+): Promise<{size: number; sortedEntries: ManifestEntry[]}> {
   const filteredAssets = filterAssets(compilation, config);
 
   const {publicPath} = compilation.options.output;
@@ -209,9 +239,9 @@ export async function getManifestEntriesFromCompilation(compilation: Compilation
   }
 
   // Ensure that the entries are properly sorted by URL.
-  const sortedEntries = manifestEntries.sort(
-      // @ts-ignore - TODO - get typescript version of `workbox-build`
-      (a, b) => a.url === b.url ? 0 : (a.url > b.url ? 1 : -1));
+  const sortedEntries = manifestEntries.sort((a, b) =>
+    a.url === b.url ? 0 : a.url > b.url ? 1 : -1,
+  );
 
   return {size, sortedEntries};
 }
