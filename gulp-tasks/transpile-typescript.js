@@ -62,7 +62,7 @@ function needsTranspile(packageName) {
  * Transpiles all packages listed in the root tsconfig.json's references section
  * into .js and .d.ts files. Creates stub .mjs files that re-export the contents
  * of the .js files.
- * 
+ *
  * Unlike other scripts, this does not take the --package= command line param
  * into account. Each project in packages/ theoretically could depend on any
  * other project, so kicking off a single, top-level compilation makes the
