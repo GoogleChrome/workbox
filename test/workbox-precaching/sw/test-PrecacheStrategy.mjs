@@ -11,9 +11,9 @@ import {PrecacheStrategy} from 'workbox-precaching/PrecacheStrategy.mjs';
 import {eventDoneWaiting, spyOnEvent} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
 
 
-function createFetchEvent(url) {
+function createFetchEvent(url, requestInit) {
   const event = new FetchEvent('fetch', {
-    request: new Request(url),
+    request: new Request(url, requestInit),
   });
   spyOnEvent(event);
   return event;
@@ -54,6 +54,71 @@ describe(`PrecacheStrategy()`, function() {
       const response2 = await ps.handle(createFetchEvent('/two'));
       expect(await response2.text()).to.equal('Fetched Response');
       expect(self.fetch.callCount).to.equal(1);
+
+      // /two should not be there, since integrity isn't used.
+      const cachedUrls = (await cache.keys()).map((request) => request.url);
+      expect(cachedUrls).to.eql([`${location.origin}/one`]);
+    });
+
+    it(`falls back to network by default on fetch, and populates the cache if integrity is used`, async function() {
+      sandbox.stub(self, 'fetch').callsFake((request) => {
+        const response = new Response('Fetched Response');
+        sandbox.replaceGetter(response, 'url', () => request.url);
+        return response;
+      });
+
+      const cache = await caches.open(cacheNames.getPrecacheName());
+      await cache.put(new Request('/one'), new Response('Cached Response'));
+
+      const ps = new PrecacheStrategy();
+
+      const response1 = await ps.handle(createFetchEvent('/one'));
+      expect(await response1.text()).to.equal('Cached Response');
+      expect(self.fetch.callCount).to.equal(0);
+
+      const integrity = 'some-hash';
+      const request = new Request('/two', {
+        integrity,
+      });
+      const event = createFetchEvent(request.url, request);
+      const response2 = await ps.handle({
+        event,
+        request,
+        params: {
+          integrity,
+        },
+      });
+      expect(await response2.text()).to.equal('Fetched Response');
+      expect(self.fetch.callCount).to.equal(1);
+
+      // No integrity is used, so it shouldn't populate cache.
+      const response3 = await ps.handle(createFetchEvent('/three'));
+      expect(await response3.text()).to.equal('Fetched Response');
+      expect(self.fetch.callCount).to.equal(2);
+
+      // This should not populate the cache, because the params.integrity
+      // doesn't match the request.integrity.
+      const request4 = new Request('/four', {
+        integrity,
+      });
+      const event4 = createFetchEvent(request4.url, request4);
+      const response4 = await ps.handle({
+        event: event4,
+        request: request4,
+        params: {
+          integrity: 'does-not-match',
+        },
+      });
+      expect(await response4.text()).to.equal('Fetched Response');
+      expect(self.fetch.callCount).to.equal(3);
+
+      // /two should be there, since request.integrity matches params.integrity.
+      // /three and /four shouldn't.
+      const cachedUrls = (await cache.keys()).map((request) => request.url);
+      expect(cachedUrls).to.eql([
+        `${location.origin}/one`,
+        `${location.origin}/two`,
+      ]);
     });
 
     it(`just checks cache if fallbackToNetwork is false`, async function() {
