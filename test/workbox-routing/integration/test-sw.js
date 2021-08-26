@@ -8,9 +8,8 @@
 
 const {runUnitTests} = require('../../../infra/testing/webdriver/runUnitTests');
 
-
-describe(`[workbox-routing]`, function() {
-  it(`passes all SW unit tests`, async function() {
+describe(`[workbox-routing]`, function () {
+  it(`passes all SW unit tests`, async function () {
     await runUnitTests('/test/workbox-routing/sw/');
   });
 });

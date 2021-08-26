@@ -8,9 +8,8 @@
 
 import {isSupported} from 'workbox-navigation-preload/isSupported.mjs';
 
-
-describe(`isSupported`, function() {
-  it(`should return true iff navigation preload is supported`, async function() {
+describe(`isSupported`, function () {
+  it(`should return true iff navigation preload is supported`, async function () {
     if (self.registration.navigationPreload) {
       expect(isSupported()).to.equal(true);
     } else {

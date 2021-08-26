@@ -8,7 +8,7 @@
 
 const chalk = require('chalk');
 
-const prefix = function() {
+const prefix = function () {
   return chalk.inverse(`[Workbox]:`);
 };
 

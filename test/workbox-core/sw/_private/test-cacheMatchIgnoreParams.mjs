@@ -8,8 +8,7 @@
 
 import {cacheMatchIgnoreParams} from 'workbox-core/_private/cacheMatchIgnoreParams.mjs';
 
-
-describe(`cacheMatchIgnoreParams()`, function() {
+describe(`cacheMatchIgnoreParams()`, function () {
   const sandbox = sinon.createSandbox();
   let cache;
   const urls = [
@@ -23,7 +22,7 @@ describe(`cacheMatchIgnoreParams()`, function() {
     '/two?a=1&b=2&c=3',
   ];
 
-  beforeEach(async function() {
+  beforeEach(async function () {
     await caches.delete('test');
     cache = await caches.open('test');
 
@@ -33,13 +32,13 @@ describe(`cacheMatchIgnoreParams()`, function() {
     sandbox.restore();
   });
 
-  after(async function() {
+  after(async function () {
     const keys = await caches.keys();
     await Promise.all(keys.map((key) => caches.delete(key)));
     sandbox.restore();
   });
 
-  it(`matches items in the cache ignoring the passed param(s)`, async function() {
+  it(`matches items in the cache ignoring the passed param(s)`, async function () {
     const key1 = new Request('/one?a=MISS&b=2');
     const match1 = await cacheMatchIgnoreParams(cache, key1, ['a']);
     expect(await match1.text()).to.equal('/one?a=1&b=2');
@@ -53,7 +52,7 @@ describe(`cacheMatchIgnoreParams()`, function() {
     expect(await match3.text()).to.equal('/one?a=1');
   });
 
-  it(`matches the first item if there's more than one match`, async function() {
+  it(`matches the first item if there's more than one match`, async function () {
     const key = new Request('/two?a=1&b=2&c=MISS');
     const match = await cacheMatchIgnoreParams(cache, key, ['c']);
 
@@ -62,7 +61,7 @@ describe(`cacheMatchIgnoreParams()`, function() {
     expect(await match.text()).to.equal('/two?a=1&b=2');
   });
 
-  it(`matches as normal if the param is not present`, async function() {
+  it(`matches as normal if the param is not present`, async function () {
     const key = new Request('/two');
 
     const match1 = await cacheMatchIgnoreParams(cache, key, ['c']);
@@ -72,7 +71,7 @@ describe(`cacheMatchIgnoreParams()`, function() {
     expect(await match2.text()).to.equal('/two');
   });
 
-  it(`returns undefined if no match is found`, async function() {
+  it(`returns undefined if no match is found`, async function () {
     const key = new Request('/two?a=MISS&b=2');
     const match = await cacheMatchIgnoreParams(cache, key, ['b']);
     expect(match).to.equal(undefined);

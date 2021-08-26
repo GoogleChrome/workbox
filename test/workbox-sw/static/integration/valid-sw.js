@@ -28,6 +28,8 @@ const namespaces = [
 for (const namespace of namespaces) {
   const module = self.workbox[namespace];
   if (!module) {
-    throw new Error(`$self.workbox.{namespace} did not load the expected interface.`);
+    throw new Error(
+      `$self.workbox.{namespace} did not load the expected interface.`,
+    );
   }
 }

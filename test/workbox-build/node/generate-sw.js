@@ -13,15 +13,19 @@ const upath = require('upath');
 const tempy = require('tempy');
 
 const {errors} = require('../../../packages/workbox-build/build/lib/errors');
-const {generateSW} = require('../../../packages/workbox-build/build/generate-sw');
-const {WorkboxConfigError} = require('../../../packages/workbox-build/build/lib/validate-options');
+const {
+  generateSW,
+} = require('../../../packages/workbox-build/build/generate-sw');
+const {
+  WorkboxConfigError,
+} = require('../../../packages/workbox-build/build/lib/validate-options');
 const confirmDirectoryContains = require('../../../infra/testing/confirm-directory-contains');
 const validateServiceWorkerRuntime = require('../../../infra/testing/validator/service-worker-runtime');
 
 chai.use(chaiAsPromised);
 const {expect} = chai;
 
-describe(`[workbox-build] generate-sw.js (End to End)`, function() {
+describe(`[workbox-build] generate-sw.js (End to End)`, function () {
   const GLOB_DIR = upath.join(__dirname, '..', 'static', 'example-project-1');
   const BASE_OPTIONS = {
     globDirectory: GLOB_DIR,
@@ -29,9 +33,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
     mode: 'development',
     swDest: tempy.file({extension: 'js'}),
   };
-  const REQUIRED_PARAMS = [
-    'swDest',
-  ];
+  const REQUIRED_PARAMS = ['swDest'];
   const SUPPORTED_PARAMS = [
     'additionalManifestEntries',
     'babelPresetEnvTargets',
@@ -62,58 +64,62 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
     'sourcemap',
     'templatedURLs',
   ].concat(REQUIRED_PARAMS);
-  const UNSUPPORTED_PARAMS = [
-    'injectionPoint',
-    'swSrc',
-  ];
+  const UNSUPPORTED_PARAMS = ['injectionPoint', 'swSrc'];
 
-  describe('[workbox-build] required parameters', function() {
+  describe('[workbox-build] required parameters', function () {
     for (const requiredParam of REQUIRED_PARAMS) {
-      it(`should fail validation when '${requiredParam}' is missing`, async function() {
+      it(`should fail validation when '${requiredParam}' is missing`, async function () {
         const options = Object.assign({}, BASE_OPTIONS);
         delete options[requiredParam];
 
         await expect(generateSW(options)).to.eventually.be.rejectedWith(
-            WorkboxConfigError, requiredParam);
+          WorkboxConfigError,
+          requiredParam,
+        );
       });
     }
   });
 
-  describe('[workbox-build] unsupported parameters', function() {
+  describe('[workbox-build] unsupported parameters', function () {
     for (const unsupportedParam of UNSUPPORTED_PARAMS) {
-      it(`should fail validation when '${unsupportedParam}' is present`, async function() {
+      it(`should fail validation when '${unsupportedParam}' is present`, async function () {
         const options = Object.assign({}, BASE_OPTIONS);
         options[unsupportedParam] = unsupportedParam;
 
         await expect(generateSW(options)).to.eventually.be.rejectedWith(
-            WorkboxConfigError, unsupportedParam);
+          WorkboxConfigError,
+          unsupportedParam,
+        );
       });
     }
   });
 
-  describe('[workbox-build] invalid parameter values', function() {
+  describe('[workbox-build] invalid parameter values', function () {
     for (const param of SUPPORTED_PARAMS) {
-      it(`should fail validation when '${param}' is an unexpected value`, async function() {
+      it(`should fail validation when '${param}' is an unexpected value`, async function () {
         const options = Object.assign({}, BASE_OPTIONS);
         options[param] = () => {};
 
         await expect(generateSW(options)).to.eventually.be.rejectedWith(
-            WorkboxConfigError, param);
+          WorkboxConfigError,
+          param,
+        );
       });
     }
 
-    it(`should reject when there are no manifest entries or runtimeCaching`, async function() {
+    it(`should reject when there are no manifest entries or runtimeCaching`, async function () {
       const options = Object.assign({}, BASE_OPTIONS);
       // This temporary directory will be empty.
       options.globDirectory = tempy.directory();
 
       await expect(generateSW(options)).to.eventually.be.rejectedWith(
-          errors['no-manifest-entries-or-runtime-caching']);
+        errors['no-manifest-entries-or-runtime-caching'],
+      );
     });
   });
 
-  describe(`[workbox-build] writing a service worker file`, function() {
-    it(`should use defaults when all the required parameters are present`, async function() {
+  describe(`[workbox-build] writing a service worker file`, function () {
+    it(`should use defaults when all the required parameters are present`, async function () {
       const outputDir = tempy.directory();
       const swDest = upath.join(outputDir, 'sw.js');
       const options = Object.assign({}, BASE_OPTIONS, {swDest});
@@ -122,36 +128,51 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
 
       await confirmDirectoryContains(outputDir, filePaths);
 
-      await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        __WB_DISABLE_DEV_LOGS: undefined,
-        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-        precacheAndRoute: [[[{
-          url: 'index.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'page-1.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'page-2.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'styles/stylesheet-1.css',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'styles/stylesheet-2.css',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'webpackEntry.js',
-          revision: /^[0-9a-f]{32}$/,
-        }], {}]],
-      }});
+      await validateServiceWorkerRuntime({
+        swFile: swDest,
+        expectedMethodCalls: {
+          __WB_DISABLE_DEV_LOGS: undefined,
+          importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
+          precacheAndRoute: [
+            [
+              [
+                {
+                  url: 'index.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-1.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-2.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-1.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-2.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'webpackEntry.js',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+              ],
+              {},
+            ],
+          ],
+        },
+      });
     });
 
-    it(`should include the versioning strings in the generated bundle`, async function() {
+    it(`should include the versioning strings in the generated bundle`, async function () {
       const outputDir = tempy.directory();
       const swDest = upath.join(outputDir, 'sw.js');
       const options = Object.assign({}, BASE_OPTIONS, {
@@ -168,7 +189,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       expect(contents).to.include(`workbox:core:`);
     });
 
-    it(`should disable logging when disableDevLogs is set to true`, async function() {
+    it(`should disable logging when disableDevLogs is set to true`, async function () {
       const outputDir = tempy.directory();
       const swDest = upath.join(outputDir, 'sw.js');
       const options = Object.assign({}, BASE_OPTIONS, {
@@ -180,36 +201,51 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
 
       await confirmDirectoryContains(outputDir, filePaths);
 
-      await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        __WB_DISABLE_DEV_LOGS: true,
-        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-        precacheAndRoute: [[[{
-          url: 'index.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'page-1.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'page-2.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'styles/stylesheet-1.css',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'styles/stylesheet-2.css',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'webpackEntry.js',
-          revision: /^[0-9a-f]{32}$/,
-        }], {}]],
-      }});
+      await validateServiceWorkerRuntime({
+        swFile: swDest,
+        expectedMethodCalls: {
+          __WB_DISABLE_DEV_LOGS: true,
+          importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
+          precacheAndRoute: [
+            [
+              [
+                {
+                  url: 'index.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-1.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-2.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-1.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-2.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'webpackEntry.js',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+              ],
+              {},
+            ],
+          ],
+        },
+      });
     });
 
-    it(`should use defaults when all the required parameters are present, with additional importScripts`, async function() {
+    it(`should use defaults when all the required parameters are present, with additional importScripts`, async function () {
       const outputDir = tempy.directory();
       const swDest = upath.join(outputDir, 'sw.js');
       const importScripts = ['manifest.js'];
@@ -222,38 +258,50 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
 
       await confirmDirectoryContains(outputDir, filePaths);
 
-      await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [
-          [/^\.\/workbox-[0-9a-f]{8}$/],
-          [...importScripts],
-        ],
-        precacheAndRoute: [[[{
-          url: 'index.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'page-1.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'page-2.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'styles/stylesheet-1.css',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'styles/stylesheet-2.css',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'webpackEntry.js',
-          revision: /^[0-9a-f]{32}$/,
-        }], {}]],
-      }});
+      await validateServiceWorkerRuntime({
+        swFile: swDest,
+        expectedMethodCalls: {
+          importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/], [...importScripts]],
+          precacheAndRoute: [
+            [
+              [
+                {
+                  url: 'index.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-1.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-2.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-1.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-2.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'webpackEntry.js',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+              ],
+              {},
+            ],
+          ],
+        },
+      });
     });
 
-    it(`should use defaults when all the required parameters are present, with additional configuration`, async function() {
+    it(`should use defaults when all the required parameters are present, with additional configuration`, async function () {
       const outputDir = tempy.directory();
       const swDest = upath.join(outputDir, 'sw.js');
       const directoryIndex = 'test.html';
@@ -266,47 +314,65 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
         clientsClaim: true,
         skipWaiting: true,
       };
-      const options = Object.assign({}, BASE_OPTIONS, additionalOptions, {swDest});
+      const options = Object.assign({}, BASE_OPTIONS, additionalOptions, {
+        swDest,
+      });
 
       const {count, filePaths, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
 
       await confirmDirectoryContains(outputDir, filePaths);
 
-      await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-        clientsClaim: [[]],
-        skipWaiting: [[]],
-        setCacheNameDetails: [[{prefix: cacheId}]],
-        precacheAndRoute: [[[{
-          url: 'index.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'page-1.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'page-2.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'styles/stylesheet-1.css',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'styles/stylesheet-2.css',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'webpackEntry.js',
-          revision: /^[0-9a-f]{32}$/,
-        }], {directoryIndex, ignoreURLParametersMatching}]],
-      }, addEventListenerValidation: (addEventListenerStub) => {
-        // When skipWaiting is true, the 'message' addEventListener shouldn't be called.
-        expect(addEventListenerStub.called).to.be.false;
-      }});
+      await validateServiceWorkerRuntime({
+        swFile: swDest,
+        expectedMethodCalls: {
+          importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
+          clientsClaim: [[]],
+          skipWaiting: [[]],
+          setCacheNameDetails: [[{prefix: cacheId}]],
+          precacheAndRoute: [
+            [
+              [
+                {
+                  url: 'index.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-1.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-2.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-1.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-2.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'webpackEntry.js',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+              ],
+              {directoryIndex, ignoreURLParametersMatching},
+            ],
+          ],
+        },
+        addEventListenerValidation: (addEventListenerStub) => {
+          // When skipWaiting is true, the 'message' addEventListener shouldn't be called.
+          expect(addEventListenerStub.called).to.be.false;
+        },
+      });
     });
 
-    it(`should use defaults when all the required parameters are present, with additionalManifestEntries`, async function() {
+    it(`should use defaults when all the required parameters are present, with additionalManifestEntries`, async function () {
       const outputDir = tempy.directory();
       const swDest = upath.join(outputDir, 'sw.js');
       const options = Object.assign({}, BASE_OPTIONS, {
@@ -325,95 +391,134 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       expect(warnings).to.have.length(1);
       expect(count).to.eql(10);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
 
       await confirmDirectoryContains(outputDir, filePaths);
 
-      await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-        precacheAndRoute: [[[{
-          url: 'index.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'page-1.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'page-2.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'styles/stylesheet-1.css',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'styles/stylesheet-2.css',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'webpackEntry.js',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          revision: null,
-          url: '/one',
-        }, {
-          revision: null,
-          url: '/two',
-        }, {
-          revision: '333',
-          url: '/three',
-        }, {
-          url: '/four',
-          revision: '123',
-          integrity: '456',
-        }], {}]],
-      }});
+      await validateServiceWorkerRuntime({
+        swFile: swDest,
+        expectedMethodCalls: {
+          importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
+          precacheAndRoute: [
+            [
+              [
+                {
+                  url: 'index.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-1.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-2.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-1.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-2.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'webpackEntry.js',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  revision: null,
+                  url: '/one',
+                },
+                {
+                  revision: null,
+                  url: '/two',
+                },
+                {
+                  revision: '333',
+                  url: '/three',
+                },
+                {
+                  url: '/four',
+                  revision: '123',
+                  integrity: '456',
+                },
+              ],
+              {},
+            ],
+          ],
+        },
+      });
     });
 
-    it(`should add a 'message' event listener when 'skipWaiting: false'`, async function() {
+    it(`should add a 'message' event listener when 'skipWaiting: false'`, async function () {
       const outputDir = tempy.directory();
       const swDest = upath.join(outputDir, 'sw.js');
       const additionalOptions = {
         skipWaiting: false,
       };
-      const options = Object.assign({}, BASE_OPTIONS, additionalOptions, {swDest});
+      const options = Object.assign({}, BASE_OPTIONS, additionalOptions, {
+        swDest,
+      });
 
       const {count, filePaths, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
 
       await confirmDirectoryContains(outputDir, filePaths);
 
-      await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-        precacheAndRoute: [[[{
-          url: 'index.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'page-1.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'page-2.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'styles/stylesheet-1.css',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'styles/stylesheet-2.css',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'webpackEntry.js',
-          revision: /^[0-9a-f]{32}$/,
-        }], {}]],
-      }, addEventListenerValidation: (addEventListenerStub) => {
-        expect(addEventListenerStub.calledOnce).to.be.true;
-        expect(addEventListenerStub.firstCall.args[0]).to.eql('message');
-        // This isn't the *cleanest* possible way of testing the message event
-        // handler, but given the constraints of this node-based environment,
-        // it seems the most effective way to ensure the right code gets run.
-        expect(addEventListenerStub.firstCall.args[1].toString()).to.eql(`event => {\n    if (event.data && event.data.type === 'SKIP_WAITING') {\n      self.skipWaiting();\n    }\n  }`);
-      }});
+      await validateServiceWorkerRuntime({
+        swFile: swDest,
+        expectedMethodCalls: {
+          importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
+          precacheAndRoute: [
+            [
+              [
+                {
+                  url: 'index.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-1.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-2.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-1.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-2.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'webpackEntry.js',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+              ],
+              {},
+            ],
+          ],
+        },
+        addEventListenerValidation: (addEventListenerStub) => {
+          expect(addEventListenerStub.calledOnce).to.be.true;
+          expect(addEventListenerStub.firstCall.args[0]).to.eql('message');
+          // This isn't the *cleanest* possible way of testing the message event
+          // handler, but given the constraints of this node-based environment,
+          // it seems the most effective way to ensure the right code gets run.
+          expect(addEventListenerStub.firstCall.args[1].toString()).to.eql(
+            `event => {\n    if (event.data && event.data.type === 'SKIP_WAITING') {\n      self.skipWaiting();\n    }\n  }`,
+          );
+        },
+      });
     });
 
-    it(`should use defaults when all the required parameters are present, with 'navigateFallback'`, async function() {
+    it(`should use defaults when all the required parameters are present, with 'navigateFallback'`, async function () {
       const outputDir = tempy.directory();
       const swDest = upath.join(outputDir, 'sw.js');
       const navigateFallback = 'test.html';
@@ -430,41 +535,61 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
 
       await confirmDirectoryContains(outputDir, filePaths);
 
-      await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        createHandlerBoundToURL: [[navigateFallback]],
-        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-        precacheAndRoute: [[[{
-          url: 'index.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'page-1.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'page-2.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'styles/stylesheet-1.css',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'styles/stylesheet-2.css',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'webpackEntry.js',
-          revision: /^[0-9a-f]{32}$/,
-        }], {}]],
-        registerRoute: [[{name: 'NavigationRoute'}]],
-        NavigationRoute: [['/urlWithCacheKey', {
-          denylist: navigateFallbackDenylist,
-          allowlist: navigateFallbackAllowlist,
-        }]],
-      }});
+      await validateServiceWorkerRuntime({
+        swFile: swDest,
+        expectedMethodCalls: {
+          createHandlerBoundToURL: [[navigateFallback]],
+          importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
+          precacheAndRoute: [
+            [
+              [
+                {
+                  url: 'index.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-1.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-2.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-1.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-2.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'webpackEntry.js',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+              ],
+              {},
+            ],
+          ],
+          registerRoute: [[{name: 'NavigationRoute'}]],
+          NavigationRoute: [
+            [
+              '/urlWithCacheKey',
+              {
+                denylist: navigateFallbackDenylist,
+                allowlist: navigateFallbackAllowlist,
+              },
+            ],
+          ],
+        },
+      });
     });
 
-    it(`should use defaults when all the required parameters are present, with symlinks`, async function() {
+    it(`should use defaults when all the required parameters are present, with symlinks`, async function () {
       const outputDir = tempy.directory();
       const swDest = upath.join(outputDir, 'sw.js');
       const globDirectory = tempy.directory();
@@ -480,35 +605,50 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
 
       await confirmDirectoryContains(outputDir, filePaths);
 
-      await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-        precacheAndRoute: [[[{
-          url: 'link/index.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'link/page-1.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'link/page-2.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'link/styles/stylesheet-1.css',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'link/styles/stylesheet-2.css',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'link/webpackEntry.js',
-          revision: /^[0-9a-f]{32}$/,
-        }], {}]],
-      }});
+      await validateServiceWorkerRuntime({
+        swFile: swDest,
+        expectedMethodCalls: {
+          importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
+          precacheAndRoute: [
+            [
+              [
+                {
+                  url: 'link/index.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'link/page-1.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'link/page-2.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'link/styles/stylesheet-1.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'link/styles/stylesheet-2.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'link/webpackEntry.js',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+              ],
+              {},
+            ],
+          ],
+        },
+      });
     });
 
-    it(`should use defaults when all the required parameters are present, with 'globFollow' and  symlinks`, async function() {
+    it(`should use defaults when all the required parameters are present, with 'globFollow' and  symlinks`, async function () {
       const outputDir = tempy.directory();
       const swDest = upath.join(outputDir, 'sw.js');
       const globDirectory = tempy.directory();
@@ -525,29 +665,42 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       expect(warnings).to.be.empty;
       expect(count).to.eql(4);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2535, 2611]);
+      expect(size).to.be.oneOf([2707, 2629]);
 
       await confirmDirectoryContains(outputDir, filePaths);
 
-      await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-        precacheAndRoute: [[[{
-          url: 'link/index.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'link/page-1.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'link/page-2.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'link/webpackEntry.js',
-          revision: /^[0-9a-f]{32}$/,
-        }], {}]],
-      }});
+      await validateServiceWorkerRuntime({
+        swFile: swDest,
+        expectedMethodCalls: {
+          importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
+          precacheAndRoute: [
+            [
+              [
+                {
+                  url: 'link/index.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'link/page-1.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'link/page-2.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'link/webpackEntry.js',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+              ],
+              {},
+            ],
+          ],
+        },
+      });
     });
 
-    it(`should use defaults when all the required parameters are present, with 'offlineGoogleAnalytics' set to true`, async function() {
+    it(`should use defaults when all the required parameters are present, with 'offlineGoogleAnalytics' set to true`, async function () {
       const outputDir = tempy.directory();
       const swDest = upath.join(outputDir, 'sw.js');
       const options = Object.assign({}, BASE_OPTIONS, {
@@ -559,36 +712,51 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
 
       await confirmDirectoryContains(outputDir, filePaths);
 
-      await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-        precacheAndRoute: [[[{
-          url: 'index.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'page-1.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'page-2.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'styles/stylesheet-1.css',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'styles/stylesheet-2.css',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'webpackEntry.js',
-          revision: /^[0-9a-f]{32}$/,
-        }], {}]],
-        initialize: [[{}]],
-      }});
+      await validateServiceWorkerRuntime({
+        swFile: swDest,
+        expectedMethodCalls: {
+          importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
+          precacheAndRoute: [
+            [
+              [
+                {
+                  url: 'index.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-1.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-2.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-1.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-2.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'webpackEntry.js',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+              ],
+              {},
+            ],
+          ],
+          initialize: [[{}]],
+        },
+      });
     });
 
-    it(`should use defaults when all the required parameters are present, with 'offlineGoogleAnalytics' set to a config`, async function() {
+    it(`should use defaults when all the required parameters are present, with 'offlineGoogleAnalytics' set to a config`, async function () {
       const outputDir = tempy.directory();
       const swDest = upath.join(outputDir, 'sw.js');
       const options = Object.assign({}, BASE_OPTIONS, {
@@ -604,40 +772,59 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
 
       await confirmDirectoryContains(outputDir, filePaths);
 
-      await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-        precacheAndRoute: [[[{
-          url: 'index.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'page-1.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'page-2.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'styles/stylesheet-1.css',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'styles/stylesheet-2.css',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'webpackEntry.js',
-          revision: /^[0-9a-f]{32}$/,
-        }], {}]],
-        initialize: [[{
-          parameterOverrides: {
-            cd1: 'offline',
-          },
-        }]],
-      }});
+      await validateServiceWorkerRuntime({
+        swFile: swDest,
+        expectedMethodCalls: {
+          importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
+          precacheAndRoute: [
+            [
+              [
+                {
+                  url: 'index.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-1.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-2.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-1.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-2.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'webpackEntry.js',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+              ],
+              {},
+            ],
+          ],
+          initialize: [
+            [
+              {
+                parameterOverrides: {
+                  cd1: 'offline',
+                },
+              },
+            ],
+          ],
+        },
+      });
     });
 
-    it(`should support using a swDest that includes a subdirectory`, async function() {
+    it(`should support using a swDest that includes a subdirectory`, async function () {
       const outputDir = tempy.directory();
       const swDest = upath.join(outputDir, 'sub', 'directory', 'sw.js');
       const options = Object.assign({}, BASE_OPTIONS, {
@@ -648,12 +835,12 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
 
       await confirmDirectoryContains(outputDir, filePaths);
     });
 
-    it(`should inline the Workbox runtime when 'inlineWorkboxRuntime' is true`, async function() {
+    it(`should inline the Workbox runtime when 'inlineWorkboxRuntime' is true`, async function () {
       const outputDir = tempy.directory();
       const swDest = upath.join(outputDir, 'sw.js');
       const options = Object.assign({}, BASE_OPTIONS, {
@@ -665,60 +852,70 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
 
       await confirmDirectoryContains(outputDir, filePaths);
       // We can't validate the generated sw.js file, unfortunately.
     });
   });
 
-  describe(`[workbox-build] behavior with 'runtimeCaching'`, function() {
+  describe(`[workbox-build] behavior with 'runtimeCaching'`, function () {
     const DEFAULT_METHOD = 'GET';
     const REGEXP_URL_PATTERN = /test/;
     const STRING_URL_PATTERN = '/test';
     const STRING_HANDLER = 'CacheFirst';
     const FUNCTION_URL_PATTERN = (params) => true;
 
-    it(`should reject when 'urlPattern' is missing from 'runtimeCaching'`, async function() {
+    it(`should reject when 'urlPattern' is missing from 'runtimeCaching'`, async function () {
       const handler = STRING_HANDLER;
       const options = Object.assign({}, BASE_OPTIONS, {
         runtimeCaching: [{handler}],
       });
 
       await expect(generateSW(options)).to.eventually.be.rejectedWith(
-          WorkboxConfigError, 'urlPattern');
+        WorkboxConfigError,
+        'urlPattern',
+      );
     });
 
-    it(`should reject when 'handler' is missing from 'runtimeCaching'`, async function() {
+    it(`should reject when 'handler' is missing from 'runtimeCaching'`, async function () {
       const urlPattern = REGEXP_URL_PATTERN;
       const options = Object.assign({}, BASE_OPTIONS, {
         runtimeCaching: [{urlPattern}],
       });
 
       await expect(generateSW(options)).to.eventually.be.rejectedWith(
-          WorkboxConfigError, 'handler');
+        WorkboxConfigError,
+        'handler',
+      );
     });
 
-    it(`should reject when 'handler' is not a valid strategy name`, async function() {
+    it(`should reject when 'handler' is not a valid strategy name`, async function () {
       const urlPattern = REGEXP_URL_PATTERN;
       const options = Object.assign({}, BASE_OPTIONS, {
-        runtimeCaching: [{
-          urlPattern,
-          handler: 'invalid',
-        }],
+        runtimeCaching: [
+          {
+            urlPattern,
+            handler: 'invalid',
+          },
+        ],
       });
 
       await expect(generateSW(options)).to.eventually.be.rejectedWith(
-          WorkboxConfigError, 'handler');
+        WorkboxConfigError,
+        'handler',
+      );
     });
 
     // See https://github.com/GoogleChrome/workbox/issues/2078
-    it(`should not require using precaching`, async function() {
+    it(`should not require using precaching`, async function () {
       const swDest = tempy.file({extension: 'js'});
-      const runtimeCaching = [{
-        urlPattern: STRING_URL_PATTERN,
-        handler: STRING_HANDLER,
-      }];
+      const runtimeCaching = [
+        {
+          urlPattern: STRING_URL_PATTERN,
+          handler: STRING_HANDLER,
+        },
+      ];
       const options = Object.assign({}, BASE_OPTIONS, {
         runtimeCaching,
         swDest,
@@ -729,19 +926,26 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       expect(warnings).to.be.empty;
       expect(count).to.eql(0);
       expect(size).to.eql(0);
-      await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        [STRING_HANDLER]: [[]],
-        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-        registerRoute: [[STRING_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD]],
-      }});
+      await validateServiceWorkerRuntime({
+        swFile: swDest,
+        expectedMethodCalls: {
+          [STRING_HANDLER]: [[]],
+          importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
+          registerRoute: [
+            [STRING_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD],
+          ],
+        },
+      });
     });
 
-    it(`should support a single string 'urlPattern' and a string 'handler'`, async function() {
+    it(`should support a single string 'urlPattern' and a string 'handler'`, async function () {
       const swDest = tempy.file({extension: 'js'});
-      const runtimeCaching = [{
-        urlPattern: STRING_URL_PATTERN,
-        handler: STRING_HANDLER,
-      }];
+      const runtimeCaching = [
+        {
+          urlPattern: STRING_URL_PATTERN,
+          handler: STRING_HANDLER,
+        },
+      ];
       const options = Object.assign({}, BASE_OPTIONS, {
         runtimeCaching,
         swDest,
@@ -751,39 +955,58 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
-      await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        [STRING_HANDLER]: [[]],
-        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-        precacheAndRoute: [[[{
-          url: 'index.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'page-1.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'page-2.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'styles/stylesheet-1.css',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'styles/stylesheet-2.css',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'webpackEntry.js',
-          revision: /^[0-9a-f]{32}$/,
-        }], {}]],
-        registerRoute: [[STRING_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD]],
-      }});
+      expect(size).to.be.oneOf([2782, 2698]);
+      await validateServiceWorkerRuntime({
+        swFile: swDest,
+        expectedMethodCalls: {
+          [STRING_HANDLER]: [[]],
+          importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
+          precacheAndRoute: [
+            [
+              [
+                {
+                  url: 'index.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-1.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-2.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-1.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-2.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'webpackEntry.js',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+              ],
+              {},
+            ],
+          ],
+          registerRoute: [
+            [STRING_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD],
+          ],
+        },
+      });
     });
 
-    it(`should support a single function 'urlPattern' and a string 'handler'`, async function() {
+    it(`should support a single function 'urlPattern' and a string 'handler'`, async function () {
       const swDest = tempy.file({extension: 'js'});
-      const runtimeCaching = [{
-        urlPattern: FUNCTION_URL_PATTERN,
-        handler: STRING_HANDLER,
-      }];
+      const runtimeCaching = [
+        {
+          urlPattern: FUNCTION_URL_PATTERN,
+          handler: STRING_HANDLER,
+        },
+      ];
       const options = Object.assign({}, BASE_OPTIONS, {
         runtimeCaching,
         swDest,
@@ -793,35 +1016,52 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
-      await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        [STRING_HANDLER]: [[]],
-        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-        precacheAndRoute: [[[{
-          url: 'index.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'page-1.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'page-2.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'styles/stylesheet-1.css',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'styles/stylesheet-2.css',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'webpackEntry.js',
-          revision: /^[0-9a-f]{32}$/,
-        }], {}]],
-        // See https://github.com/chaijs/chai/issues/697
-        registerRoute: [['params => true', {name: STRING_HANDLER}, DEFAULT_METHOD]],
-      }});
+      expect(size).to.be.oneOf([2782, 2698]);
+      await validateServiceWorkerRuntime({
+        swFile: swDest,
+        expectedMethodCalls: {
+          [STRING_HANDLER]: [[]],
+          importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
+          precacheAndRoute: [
+            [
+              [
+                {
+                  url: 'index.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-1.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-2.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-1.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-2.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'webpackEntry.js',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+              ],
+              {},
+            ],
+          ],
+          // See https://github.com/chaijs/chai/issues/697
+          registerRoute: [
+            ['params => true', {name: STRING_HANDLER}, DEFAULT_METHOD],
+          ],
+        },
+      });
     });
 
-    it(`should support setting individual 'options' each, for multiple 'runtimeCaching' entries`, async function() {
+    it(`should support setting individual 'options' each, for multiple 'runtimeCaching' entries`, async function () {
       const swDest = tempy.file({extension: 'js'});
       const firstRuntimeCachingOptions = {
         cacheName: 'first-cache-name',
@@ -843,15 +1083,18 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
           fallbackURL: '/test',
         },
       };
-      const runtimeCaching = [{
-        urlPattern: REGEXP_URL_PATTERN,
-        handler: STRING_HANDLER,
-        options: firstRuntimeCachingOptions,
-      }, {
-        urlPattern: REGEXP_URL_PATTERN,
-        handler: STRING_HANDLER,
-        options: secondRuntimeCachingOptions,
-      }];
+      const runtimeCaching = [
+        {
+          urlPattern: REGEXP_URL_PATTERN,
+          handler: STRING_HANDLER,
+          options: firstRuntimeCachingOptions,
+        },
+        {
+          urlPattern: REGEXP_URL_PATTERN,
+          handler: STRING_HANDLER,
+          options: secondRuntimeCachingOptions,
+        },
+      ];
       const options = Object.assign({}, BASE_OPTIONS, {
         runtimeCaching,
         swDest,
@@ -862,66 +1105,95 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
 
-      await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        [STRING_HANDLER]: [[{
-          cacheName: firstRuntimeCachingOptions.cacheName,
-          plugins: [{}],
-        }], [{
-          cacheName: secondRuntimeCachingOptions.cacheName,
-          plugins: [{}, {}],
-        }]],
-        ExpirationPlugin: [[firstRuntimeCachingOptions.expiration]],
-        CacheableResponsePlugin: [[secondRuntimeCachingOptions.cacheableResponse]],
-        PrecacheFallbackPlugin: [[secondRuntimeCachingOptions.precacheFallback]],
-        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-        precacheAndRoute: [[[{
-          url: 'index.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'page-1.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'page-2.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'styles/stylesheet-1.css',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'styles/stylesheet-2.css',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'webpackEntry.js',
-          revision: /^[0-9a-f]{32}$/,
-        }], {}]],
-        registerRoute: [
-          [REGEXP_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD],
-          [REGEXP_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD],
-        ],
-      }});
+      await validateServiceWorkerRuntime({
+        swFile: swDest,
+        expectedMethodCalls: {
+          [STRING_HANDLER]: [
+            [
+              {
+                cacheName: firstRuntimeCachingOptions.cacheName,
+                plugins: [{}],
+              },
+            ],
+            [
+              {
+                cacheName: secondRuntimeCachingOptions.cacheName,
+                plugins: [{}, {}],
+              },
+            ],
+          ],
+          ExpirationPlugin: [[firstRuntimeCachingOptions.expiration]],
+          CacheableResponsePlugin: [
+            [secondRuntimeCachingOptions.cacheableResponse],
+          ],
+          PrecacheFallbackPlugin: [
+            [secondRuntimeCachingOptions.precacheFallback],
+          ],
+          importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
+          precacheAndRoute: [
+            [
+              [
+                {
+                  url: 'index.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-1.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-2.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-1.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-2.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'webpackEntry.js',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+              ],
+              {},
+            ],
+          ],
+          registerRoute: [
+            [REGEXP_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD],
+            [REGEXP_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD],
+          ],
+        },
+      });
     });
 
-    it(`should reject with a ValidationError when 'networkTimeoutSeconds' is used and handler is not 'NetworkFirst'`, async function() {
+    it(`should reject with a ValidationError when 'networkTimeoutSeconds' is used and handler is not 'NetworkFirst'`, async function () {
       const swDest = tempy.file({extension: 'js'});
       const runtimeCachingOptions = {
         networkTimeoutSeconds: 1,
       };
-      const runtimeCaching = [{
-        urlPattern: REGEXP_URL_PATTERN,
-        handler: 'NetworkOnly',
-        options: runtimeCachingOptions,
-      }];
+      const runtimeCaching = [
+        {
+          urlPattern: REGEXP_URL_PATTERN,
+          handler: 'NetworkOnly',
+          options: runtimeCachingOptions,
+        },
+      ];
       const options = Object.assign({}, BASE_OPTIONS, {
         runtimeCaching,
         swDest,
       });
 
       await expect(generateSW(options)).to.eventually.be.rejectedWith(
-          errors['invalid-network-timeout-seconds']);
+        errors['invalid-network-timeout-seconds'],
+      );
     });
 
-    it(`should support passing in a function when allowed`, async function() {
+    it(`should support passing in a function when allowed`, async function () {
       const swDest = tempy.file({extension: 'js'});
       const handler = () => {};
       const urlPattern = () => {};
@@ -933,15 +1205,19 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
             onSync: () => {},
           },
         },
-        plugins: [{
-          cachedResponseWillBeUsed: () => {},
-        }],
+        plugins: [
+          {
+            cachedResponseWillBeUsed: () => {},
+          },
+        ],
       };
-      const runtimeCaching = [{
-        handler,
-        urlPattern,
-        options: runtimeCachingOptions,
-      }];
+      const runtimeCaching = [
+        {
+          handler,
+          urlPattern,
+          options: runtimeCachingOptions,
+        },
+      ];
       const options = Object.assign({}, BASE_OPTIONS, {
         runtimeCaching,
         swDest,
@@ -951,36 +1227,51 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
-      await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        [handler]: [[runtimeCachingOptions]],
-        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-        precacheAndRoute: [[[{
-          url: 'index.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'page-1.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'page-2.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'styles/stylesheet-1.css',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'styles/stylesheet-2.css',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'webpackEntry.js',
-          revision: /^[0-9a-f]{32}$/,
-        }], {}]],
-        registerRoute: [
-          [urlPattern.toString(), handler.toString(), DEFAULT_METHOD],
-        ],
-      }});
+      expect(size).to.be.oneOf([2782, 2698]);
+      await validateServiceWorkerRuntime({
+        swFile: swDest,
+        expectedMethodCalls: {
+          [handler]: [[runtimeCachingOptions]],
+          importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
+          precacheAndRoute: [
+            [
+              [
+                {
+                  url: 'index.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-1.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-2.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-1.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-2.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'webpackEntry.js',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+              ],
+              {},
+            ],
+          ],
+          registerRoute: [
+            [urlPattern.toString(), handler.toString(), DEFAULT_METHOD],
+          ],
+        },
+      });
     });
 
-    it(`should support 'networkTimeoutSeconds' when handler is 'NetworkFirst'`, async function() {
+    it(`should support 'networkTimeoutSeconds' when handler is 'NetworkFirst'`, async function () {
       const swDest = tempy.file({extension: 'js'});
       const networkTimeoutSeconds = 1;
       const handler = 'NetworkFirst';
@@ -989,11 +1280,13 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
         networkTimeoutSeconds,
         plugins: [],
       };
-      const runtimeCaching = [{
-        urlPattern: REGEXP_URL_PATTERN,
-        handler,
-        options: runtimeCachingOptions,
-      }];
+      const runtimeCaching = [
+        {
+          urlPattern: REGEXP_URL_PATTERN,
+          handler,
+          options: runtimeCachingOptions,
+        },
+      ];
       const options = Object.assign({}, BASE_OPTIONS, {
         runtimeCaching,
         swDest,
@@ -1003,54 +1296,73 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
-      await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        [handler]: [[runtimeCachingOptions]],
-        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-        precacheAndRoute: [[[{
-          url: 'index.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'page-1.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'page-2.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'styles/stylesheet-1.css',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'styles/stylesheet-2.css',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'webpackEntry.js',
-          revision: /^[0-9a-f]{32}$/,
-        }], {}]],
-        registerRoute: [
-          [REGEXP_URL_PATTERN, {name: handler}, DEFAULT_METHOD],
-        ],
-      }});
+      expect(size).to.be.oneOf([2782, 2698]);
+      await validateServiceWorkerRuntime({
+        swFile: swDest,
+        expectedMethodCalls: {
+          [handler]: [[runtimeCachingOptions]],
+          importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
+          precacheAndRoute: [
+            [
+              [
+                {
+                  url: 'index.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-1.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-2.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-1.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-2.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'webpackEntry.js',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+              ],
+              {},
+            ],
+          ],
+          registerRoute: [
+            [REGEXP_URL_PATTERN, {name: handler}, DEFAULT_METHOD],
+          ],
+        },
+      });
     });
 
-    it(`should reject when 'options.expiration' is used without 'options.cacheName'`, async function() {
+    it(`should reject when 'options.expiration' is used without 'options.cacheName'`, async function () {
       const urlPattern = REGEXP_URL_PATTERN;
       const options = Object.assign({}, BASE_OPTIONS, {
-        runtimeCaching: [{
-          urlPattern,
-          handler: 'NetworkFirst',
-          options: {
-            expiration: {
-              maxEntries: 5,
+        runtimeCaching: [
+          {
+            urlPattern,
+            handler: 'NetworkFirst',
+            options: {
+              expiration: {
+                maxEntries: 5,
+              },
             },
           },
-        }],
+        ],
       });
 
       await expect(generateSW(options)).to.eventually.be.rejectedWith(
-          WorkboxConfigError, errors['cache-name-required']);
+        WorkboxConfigError,
+        errors['cache-name-required'],
+      );
     });
 
-    it(`should ignore swDest and workbox-*.js when generating manifest entries`, async function() {
+    it(`should ignore swDest and workbox-*.js when generating manifest entries`, async function () {
       const tempDirectory = tempy.directory();
       await fse.copy(BASE_OPTIONS.globDirectory, tempDirectory);
       const swDest = upath.join(tempDirectory, 'service-worker.js');
@@ -1066,53 +1378,72 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
-      await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-        precacheAndRoute: [[[{
-          url: 'index.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'page-1.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'page-2.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'styles/stylesheet-1.css',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'styles/stylesheet-2.css',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'webpackEntry.js',
-          revision: /^[0-9a-f]{32}$/,
-        }], {}]],
-      }});
+      expect(size).to.be.oneOf([2782, 2698]);
+      await validateServiceWorkerRuntime({
+        swFile: swDest,
+        expectedMethodCalls: {
+          importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
+          precacheAndRoute: [
+            [
+              [
+                {
+                  url: 'index.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-1.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-2.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-1.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-2.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'webpackEntry.js',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+              ],
+              {},
+            ],
+          ],
+        },
+      });
     });
   });
 
-  describe(`[workbox-build] behavior with 'navigationPreload'`, function() {
-    it(`should reject when 'navigationPreload' is true and 'runtimeCaching' is undefined`, async function() {
+  describe(`[workbox-build] behavior with 'navigationPreload'`, function () {
+    it(`should reject when 'navigationPreload' is true and 'runtimeCaching' is undefined`, async function () {
       const options = Object.assign({}, BASE_OPTIONS, {
         navigationPreload: true,
       });
 
       await expect(generateSW(options)).to.eventually.be.rejectedWith(
-          WorkboxConfigError, errors['nav-preload-runtime-caching']);
+        WorkboxConfigError,
+        errors['nav-preload-runtime-caching'],
+      );
     });
 
-    it(`should reject when 'navigationPreload' is true and 'runtimeCaching' is undefined`, async function() {
+    it(`should reject when 'navigationPreload' is true and 'runtimeCaching' is undefined`, async function () {
       const options = Object.assign({}, BASE_OPTIONS, {
         runtimeCaching: undefined,
         navigationPreload: true,
       });
 
       await expect(generateSW(options)).to.eventually.be.rejectedWith(
-          WorkboxConfigError, errors['nav-preload-runtime-caching']);
+        WorkboxConfigError,
+        errors['nav-preload-runtime-caching'],
+      );
     });
 
-    it(`should generate when 'navigationPreload' is true and 'runtimeCaching' is valid`, async function() {
+    it(`should generate when 'navigationPreload' is true and 'runtimeCaching' is valid`, async function () {
       const swDest = tempy.file({extension: 'js'});
       const urlPattern = /test/;
       const handler = 'CacheFirst';
@@ -1126,32 +1457,47 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
-      await validateServiceWorkerRuntime({swFile: swDest, expectedMethodCalls: {
-        [handler]: [[]],
-        importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-        precacheAndRoute: [[[{
-          url: 'index.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'page-1.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'page-2.html',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'styles/stylesheet-1.css',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'styles/stylesheet-2.css',
-          revision: /^[0-9a-f]{32}$/,
-        }, {
-          url: 'webpackEntry.js',
-          revision: /^[0-9a-f]{32}$/,
-        }], {}]],
-        enable: [[]],
-        registerRoute: [[urlPattern, {name: handler}, 'GET']],
-      }});
+      expect(size).to.be.oneOf([2782, 2698]);
+      await validateServiceWorkerRuntime({
+        swFile: swDest,
+        expectedMethodCalls: {
+          [handler]: [[]],
+          importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
+          precacheAndRoute: [
+            [
+              [
+                {
+                  url: 'index.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-1.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-2.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-1.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-2.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'webpackEntry.js',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+              ],
+              {},
+            ],
+          ],
+          enable: [[]],
+          registerRoute: [[urlPattern, {name: handler}, 'GET']],
+        },
+      });
     });
   });
 });

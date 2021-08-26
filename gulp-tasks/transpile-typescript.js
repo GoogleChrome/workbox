@@ -72,10 +72,7 @@ async function transpile_typescript() {
   await execa('tsc', ['--build', 'tsconfig.json'], {preferLocal: true});
 
   const jsFiles = await globby(`packages/*/**/*.js`, {
-    ignore: [
-      '**/build/**',
-      '**/src/**',
-    ],
+    ignore: ['**/build/**', '**/src/**'],
   });
 
   for (const jsFile of jsFiles) {

@@ -8,33 +8,40 @@
 
 import {resultingClientExists} from 'workbox-core/_private/resultingClientExists.mjs';
 
-
-describe(`resultingClientExists()`, function() {
+describe(`resultingClientExists()`, function () {
   const sandbox = sinon.createSandbox();
 
-  beforeEach(async function() {
+  beforeEach(async function () {
     sandbox.restore();
   });
 
-  afterEach(function() {
+  afterEach(function () {
     sandbox.restore();
   });
 
-  it(`should resolve to a matching window client ID`, async function() {
-    sandbox.stub(clients, 'matchAll')
-        .onFirstCall().resolves([{id: '1'}, {id: '2'}])
-        .onSecondCall().resolves([{id: '1'}, {id: '2'}])
-        .onThirdCall().resolves([{id: '1'}, {id: '3'}]);
+  it(`should resolve to a matching window client ID`, async function () {
+    sandbox
+      .stub(clients, 'matchAll')
+      .onFirstCall()
+      .resolves([{id: '1'}, {id: '2'}])
+      .onSecondCall()
+      .resolves([{id: '1'}, {id: '2'}])
+      .onThirdCall()
+      .resolves([{id: '1'}, {id: '3'}]);
 
     const win = await resultingClientExists('3');
     expect(win.id).to.equal('3');
   });
 
-  it(`should resolve to undefined when not passed a value`, async function() {
-    sandbox.stub(clients, 'matchAll')
-        .onFirstCall().resolves([{id: '1'}, {id: '2'}])
-        .onSecondCall().resolves([{id: '1'}, {id: '2'}])
-        .onThirdCall().resolves([{id: '1'}, {id: '3'}]);
+  it(`should resolve to undefined when not passed a value`, async function () {
+    sandbox
+      .stub(clients, 'matchAll')
+      .onFirstCall()
+      .resolves([{id: '1'}, {id: '2'}])
+      .onSecondCall()
+      .resolves([{id: '1'}, {id: '2'}])
+      .onThirdCall()
+      .resolves([{id: '1'}, {id: '3'}]);
 
     const startTime = performance.now();
     const win = await resultingClientExists();
@@ -43,7 +50,7 @@ describe(`resultingClientExists()`, function() {
     expect(performance.now() - startTime).to.be.below(2000);
   });
 
-  it(`should resolve to undefined after 2 seconds of unsuccessful retrying`, async function() {
+  it(`should resolve to undefined after 2 seconds of unsuccessful retrying`, async function () {
     sandbox.stub(clients, 'matchAll').resolves([{id: '1'}, {id: '2'}]);
 
     const startTime = performance.now();

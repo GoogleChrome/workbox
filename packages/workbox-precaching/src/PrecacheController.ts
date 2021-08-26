@@ -285,6 +285,15 @@ class PrecacheController {
   }
 
   /**
+   * @param {string} url A cache key whose SRI you want to look up.
+   * @return {string} The subresource integrity associated with the cache key,
+   * or undefined if it's not set.
+   */
+  getIntegrityForCacheKey(cacheKey: string): string | undefined {
+    return this._cacheKeysToIntegrities.get(cacheKey);
+  }
+
+  /**
    * This acts as a drop-in replacement for
    * [`cache.match()`](https://developer.mozilla.org/en-US/docs/Web/API/Cache/match)
    * with the following differences:

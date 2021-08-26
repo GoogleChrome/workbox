@@ -31,7 +31,11 @@ const doesDirectoryExist = async (directoryPath) => {
 
 const getBuildPath = (tagName) => {
   const tempReleasePath = upath.join(
-      __dirname, '..', '..', constants.GENERATED_RELEASE_FILES_DIRNAME);
+    __dirname,
+    '..',
+    '..',
+    constants.GENERATED_RELEASE_FILES_DIRNAME,
+  );
   return upath.join(tempReleasePath, tagName);
 };
 
@@ -54,8 +58,10 @@ const downloadGitCommit = async (tagName, gitBranch) => {
 
     await execa('git', [
       'clone',
-      '--branch', gitBranch,
-      '--depth', '1',
+      '--branch',
+      gitBranch,
+      '--depth',
+      '1',
       `http://github.com/${constants.GITHUB_OWNER}/${constants.GITHUB_REPO}.git`,
       sourceCodePath,
     ]);
@@ -89,8 +95,10 @@ const buildGitCommit = async (tagName) => {
  * the folder structure will be the same.
  */
 const groupBuildFiles = async (tagName, gitBranch) => {
-  const groupedBuildFiles = upath.join(getBuildPath(tagName),
-      GROUPED_BUILD_FILES);
+  const groupedBuildFiles = upath.join(
+    getBuildPath(tagName),
+    GROUPED_BUILD_FILES,
+  );
   const dirExists = await doesDirectoryExist(groupedBuildFiles);
 
   if (!dirExists) {
@@ -99,12 +107,17 @@ const groupBuildFiles = async (tagName, gitBranch) => {
 
     const sourceCodePath = upath.join(getBuildPath(tagName), SOURCE_CODE_DIR);
 
-    const browserPackages = Object.values(outputFilenameToPkgMap)
-        .map((item) => item.name);
+    const browserPackages = Object.values(outputFilenameToPkgMap).map(
+      (item) => item.name,
+    );
 
-    const pattern = upath.join(sourceCodePath, 'packages',
-        `{${browserPackages.join(',')}}`, constants.PACKAGE_BUILD_DIRNAME,
-        '*.{js,mjs,map}');
+    const pattern = upath.join(
+      sourceCodePath,
+      'packages',
+      `{${browserPackages.join(',')}}`,
+      constants.PACKAGE_BUILD_DIRNAME,
+      '*.{js,mjs,map}',
+    );
 
     logHelper.log(ol`
       Grouping Build Files into
@@ -115,8 +128,9 @@ const groupBuildFiles = async (tagName, gitBranch) => {
     // directory. In others, have a flat file structure of just the built files.
     const filesToInclude = glob.sync(pattern);
     for (const fileToInclude of filesToInclude) {
-      await fse.copy(fileToInclude, upath.join(groupedBuildFiles,
-          upath.basename(fileToInclude)),
+      await fse.copy(
+        fileToInclude,
+        upath.join(groupedBuildFiles, upath.basename(fileToInclude)),
       );
     }
   } else {

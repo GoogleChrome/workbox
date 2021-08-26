@@ -45,9 +45,7 @@ function initApp() {
   }
 
   const staticDir = path.resolve(__dirname, '..', '..', '..');
-  app.use(
-      express.static(staticDir),
-      serveIndex(staticDir, {'icons': true}));
+  app.use(express.static(staticDir), serveIndex(staticDir, {icons: true}));
 }
 
 function start() {

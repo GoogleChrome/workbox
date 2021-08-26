@@ -8,14 +8,14 @@
 
 import {copyResponse} from 'workbox-core/copyResponse.mjs';
 
-describe(`copyResponse`, function() {
+describe(`copyResponse`, function () {
   const sandbox = sinon.createSandbox();
 
-  beforeEach(function() {
+  beforeEach(function () {
     sandbox.restore();
   });
 
-  afterEach(function() {
+  afterEach(function () {
     sandbox.restore();
   });
 
@@ -28,24 +28,30 @@ describe(`copyResponse`, function() {
 
     // Default to a "real" same-origin URL, unless there's one passed in.
     if (url === undefined) {
-      url = (new URL('/app.js', self.location.origin)).href;
+      url = new URL('/app.js', self.location.origin).href;
     }
     sandbox.replaceGetter(response, 'url', () => url);
 
     return response;
   };
 
-  it(`should throw the expected exception when passed a cross-origin response`, async function() {
+  it(`should throw the expected exception when passed a cross-origin response`, async function () {
     const crossOriginResponse = makeResponse('https://cross-origin.com/app.js');
-    await expectError(() => copyResponse(crossOriginResponse), 'cross-origin-copy-response');
+    await expectError(
+      () => copyResponse(crossOriginResponse),
+      'cross-origin-copy-response',
+    );
   });
 
-  it(`should throw the expected exception when passed an opaque response`, async function() {
+  it(`should throw the expected exception when passed an opaque response`, async function () {
     const opaqueResponse = makeResponse('');
-    await expectError(() => copyResponse(opaqueResponse), 'cross-origin-copy-response');
+    await expectError(
+      () => copyResponse(opaqueResponse),
+      'cross-origin-copy-response',
+    );
   });
 
-  it(`should allow modifying a response via the modifier return value`, async function() {
+  it(`should allow modifying a response via the modifier return value`, async function () {
     const oldResponse = makeResponse();
     const newResponse1 = await copyResponse(oldResponse, (init) => {
       // Test modifying the existing headers.
@@ -73,7 +79,9 @@ describe(`copyResponse`, function() {
     });
 
     // The `Content-Type` header comes from the body.
-    expect(newResponse2.headers.get('Content-Type')).to.equal('text/javascript');
+    expect(newResponse2.headers.get('Content-Type')).to.equal(
+      'text/javascript',
+    );
     expect(newResponse2.headers.get('X-One')).to.equal(null);
     expect(newResponse2.headers.get('X-Two')).to.equal('2');
     expect(newResponse2.status).to.equal(200);
@@ -88,7 +96,9 @@ describe(`copyResponse`, function() {
     });
 
     // The `Content-Type` header comes from the body.
-    expect(newResponse3.headers.get('Content-Type')).to.equal('text/javascript');
+    expect(newResponse3.headers.get('Content-Type')).to.equal(
+      'text/javascript',
+    );
     expect(newResponse3.headers.get('X-One')).to.equal(null);
     expect(newResponse3.headers.get('X-Two')).to.equal('2');
     expect(newResponse3.headers.get('X-Three')).to.equal('3');
@@ -97,7 +107,7 @@ describe(`copyResponse`, function() {
     expect(await newResponse3.text()).to.equal('console.log()');
   });
 
-  it(`should copy a response as-is when no modifier is passed`, async function() {
+  it(`should copy a response as-is when no modifier is passed`, async function () {
     const oldResponse = makeResponse();
     const newResponse = await copyResponse(oldResponse);
 

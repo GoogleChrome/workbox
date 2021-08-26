@@ -6,7 +6,6 @@
   https://opensource.org/licenses/MIT.
 */
 
-
 let uid = 0;
 
 export const generateUniqueResponse = (responseInit = {}) => {

@@ -8,21 +8,20 @@
 
 import {deleteOutdatedCaches} from 'workbox-precaching/utils/deleteOutdatedCaches.mjs';
 
-
-describe(`deleteOutdatedCaches()`, function() {
+describe(`deleteOutdatedCaches()`, function () {
   const CACHE_NAME = 'expected-precache-name';
 
   const sandbox = sinon.createSandbox();
 
-  beforeEach(function() {
+  beforeEach(function () {
     sandbox.restore();
   });
 
-  after(function() {
+  after(function () {
     sandbox.restore();
   });
 
-  it(`should not do anything when there are no caches`, async function() {
+  it(`should not do anything when there are no caches`, async function () {
     sandbox.stub(caches, 'keys').resolves([]);
     const cachesDeleteStub = sandbox.stub(caches, 'delete').resolves();
 
@@ -32,7 +31,7 @@ describe(`deleteOutdatedCaches()`, function() {
     expect(cachesDeleteStub.notCalled).to.be.true;
   });
 
-  it(`should not do anything when there is only the expected cache`, async function() {
+  it(`should not do anything when there is only the expected cache`, async function () {
     sandbox.stub(caches, 'keys').resolves([CACHE_NAME]);
     const cachesDeleteStub = sandbox.stub(caches, 'delete').resolves();
 
@@ -42,12 +41,14 @@ describe(`deleteOutdatedCaches()`, function() {
     expect(cachesDeleteStub.notCalled).to.be.true;
   });
 
-  it(`should delete everything that matches the deletion criteria`, async function() {
-    sandbox.stub(caches, 'keys').resolves([
-      CACHE_NAME,
-      `this-precache-should-be-deleted1-${self.registration.scope}`,
-      `this-precache-should-be-deleted2-${self.registration.scope}`,
-    ]);
+  it(`should delete everything that matches the deletion criteria`, async function () {
+    sandbox
+      .stub(caches, 'keys')
+      .resolves([
+        CACHE_NAME,
+        `this-precache-should-be-deleted1-${self.registration.scope}`,
+        `this-precache-should-be-deleted2-${self.registration.scope}`,
+      ]);
     const cachesDeleteStub = sandbox.stub(caches, 'delete').resolves();
 
     const cachesDeleted = await deleteOutdatedCaches(CACHE_NAME);
@@ -57,16 +58,22 @@ describe(`deleteOutdatedCaches()`, function() {
       `this-precache-should-be-deleted2-${self.registration.scope}`,
     ]);
     expect(cachesDeleteStub.calledTwice).to.be.true;
-    expect(cachesDeleteStub.firstCall.args).to.eql([`this-precache-should-be-deleted1-${self.registration.scope}`]);
-    expect(cachesDeleteStub.secondCall.args).to.eql([`this-precache-should-be-deleted2-${self.registration.scope}`]);
+    expect(cachesDeleteStub.firstCall.args).to.eql([
+      `this-precache-should-be-deleted1-${self.registration.scope}`,
+    ]);
+    expect(cachesDeleteStub.secondCall.args).to.eql([
+      `this-precache-should-be-deleted2-${self.registration.scope}`,
+    ]);
   });
 
-  it(`should take SW scope into consideration as part of the criteria`, async function() {
-    sandbox.stub(caches, 'keys').resolves([
-      CACHE_NAME,
-      `this-precache-should-not-be-deleted-no-scope-match`,
-      `this-precache-should-be-deleted-${self.registration.scope}`,
-    ]);
+  it(`should take SW scope into consideration as part of the criteria`, async function () {
+    sandbox
+      .stub(caches, 'keys')
+      .resolves([
+        CACHE_NAME,
+        `this-precache-should-not-be-deleted-no-scope-match`,
+        `this-precache-should-be-deleted-${self.registration.scope}`,
+      ]);
     const cachesDeleteStub = sandbox.stub(caches, 'delete').resolves();
 
     const cachesDeleted = await deleteOutdatedCaches(CACHE_NAME);
@@ -75,16 +82,20 @@ describe(`deleteOutdatedCaches()`, function() {
       `this-precache-should-be-deleted-${self.registration.scope}`,
     ]);
     expect(cachesDeleteStub.calledOnce).to.be.true;
-    expect(cachesDeleteStub.firstCall.args).to.eql([`this-precache-should-be-deleted-${self.registration.scope}`]);
+    expect(cachesDeleteStub.firstCall.args).to.eql([
+      `this-precache-should-be-deleted-${self.registration.scope}`,
+    ]);
   });
 
-  it(`should support overriding the default '-precache-' substring criteria`, async function() {
-    sandbox.stub(caches, 'keys').resolves([
-      CACHE_NAME,
-      `this-precache-should-not-be-deleted-${self.registration.scope}`,
-      `this-PRECACHE-should-be-deleted1-${self.registration.scope}`,
-      `this-PRECACHE-should-be-deleted2-${self.registration.scope}`,
-    ]);
+  it(`should support overriding the default '-precache-' substring criteria`, async function () {
+    sandbox
+      .stub(caches, 'keys')
+      .resolves([
+        CACHE_NAME,
+        `this-precache-should-not-be-deleted-${self.registration.scope}`,
+        `this-PRECACHE-should-be-deleted1-${self.registration.scope}`,
+        `this-PRECACHE-should-be-deleted2-${self.registration.scope}`,
+      ]);
     const cachesDeleteStub = sandbox.stub(caches, 'delete').resolves();
 
     const cachesDeleted = await deleteOutdatedCaches(CACHE_NAME, '-PRECACHE-');
@@ -94,7 +105,11 @@ describe(`deleteOutdatedCaches()`, function() {
       `this-PRECACHE-should-be-deleted2-${self.registration.scope}`,
     ]);
     expect(cachesDeleteStub.calledTwice).to.be.true;
-    expect(cachesDeleteStub.firstCall.args).to.eql([`this-PRECACHE-should-be-deleted1-${self.registration.scope}`]);
-    expect(cachesDeleteStub.secondCall.args).to.eql([`this-PRECACHE-should-be-deleted2-${self.registration.scope}`]);
+    expect(cachesDeleteStub.firstCall.args).to.eql([
+      `this-PRECACHE-should-be-deleted1-${self.registration.scope}`,
+    ]);
+    expect(cachesDeleteStub.secondCall.args).to.eql([
+      `this-PRECACHE-should-be-deleted2-${self.registration.scope}`,
+    ]);
   });
 });

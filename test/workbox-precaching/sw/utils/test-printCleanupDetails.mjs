@@ -9,21 +9,20 @@
 import {logger} from 'workbox-core/_private/logger.mjs';
 import {printCleanupDetails} from 'workbox-precaching/utils/printCleanupDetails.mjs';
 
-
-describe(`printCleanupDetails()`, function() {
+describe(`printCleanupDetails()`, function () {
   const sandbox = sinon.createSandbox();
 
-  beforeEach(function() {
+  beforeEach(function () {
     if (logger) {
       sandbox.spy(logger, 'log');
     }
   });
 
-  afterEach(function() {
+  afterEach(function () {
     sandbox.restore();
   });
 
-  it(`shouldn't print if nothing was deleted`, function() {
+  it(`shouldn't print if nothing was deleted`, function () {
     if (process.env.NODE_ENV === 'production') this.skip();
 
     printCleanupDetails([], []);
@@ -31,7 +30,7 @@ describe(`printCleanupDetails()`, function() {
     expect(logger.log.callCount).to.equal(0);
   });
 
-  it(`should print at least one entry was delete`, function() {
+  it(`should print at least one entry was delete`, function () {
     if (process.env.NODE_ENV === 'production') this.skip();
 
     printCleanupDetails(['/'], ['/']);
@@ -39,7 +38,7 @@ describe(`printCleanupDetails()`, function() {
     expect(logger.log.callCount).to.be.gt(0);
   });
 
-  it(`should print strings with multiple entries`, function() {
+  it(`should print strings with multiple entries`, function () {
     if (process.env.NODE_ENV === 'production') this.skip();
 
     printCleanupDetails(['/', '/2'], ['/', '/2']);

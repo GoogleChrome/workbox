@@ -8,19 +8,18 @@
 
 import {timeout} from 'workbox-core/_private/timeout.mjs';
 
-
-describe(`timeout()`, function() {
+describe(`timeout()`, function () {
   const sandbox = sinon.createSandbox();
 
-  beforeEach(async function() {
+  beforeEach(async function () {
     sandbox.restore();
   });
 
-  afterEach(function() {
+  afterEach(function () {
     sandbox.restore();
   });
 
-  it(`should return a promise that resolves after the passed number of milliseconds`, function(done) {
+  it(`should return a promise that resolves after the passed number of milliseconds`, function (done) {
     const clock = sandbox.useFakeTimers();
     const startTime = performance.now();
 

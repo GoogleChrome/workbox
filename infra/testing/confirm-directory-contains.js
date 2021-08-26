@@ -12,7 +12,8 @@ const upath = require('upath');
 
 module.exports = async (directory, expectedContents) => {
   const relativeFiles = await globby('**', {cwd: directory});
-  const absoluteFilesWithNativeSeparator = relativeFiles.map(
-      (file) => upath.resolve(directory, file).replace(/\//g, upath.sep));
+  const absoluteFilesWithNativeSeparator = relativeFiles.map((file) =>
+    upath.resolve(directory, file).replace(/\//g, upath.sep),
+  );
   expect(absoluteFilesWithNativeSeparator).to.have.members(expectedContents);
 };

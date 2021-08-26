@@ -8,8 +8,10 @@
 
 import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
 import {PrecacheStrategy} from 'workbox-precaching/PrecacheStrategy.mjs';
-import {eventDoneWaiting, spyOnEvent} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
-
+import {
+  eventDoneWaiting,
+  spyOnEvent,
+} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
 
 function createFetchEvent(url, requestInit) {
   const event = new FetchEvent('fetch', {
@@ -76,17 +78,44 @@ describe(`PrecacheStrategy()`, function() {
       expect(await response1.text()).to.equal('Cached Response');
       expect(self.fetch.callCount).to.equal(0);
 
-      const response2 = await ps.handle(createFetchEvent('/two', {
-        integrity: 'some-hash',
-      }));
+      const integrity = 'some-hash';
+      const request = new Request('/two', {
+        integrity,
+      });
+      const event = createFetchEvent(request.url, request);
+      const response2 = await ps.handle({
+        event,
+        request,
+        params: {
+          integrity,
+        },
+      });
       expect(await response2.text()).to.equal('Fetched Response');
       expect(self.fetch.callCount).to.equal(1);
 
+      // No integrity is used, so it shouldn't populate cache.
       const response3 = await ps.handle(createFetchEvent('/three'));
       expect(await response3.text()).to.equal('Fetched Response');
       expect(self.fetch.callCount).to.equal(2);
 
-      // /two should be there, since integrity is used. /three shouldn't.
+      // This should not populate the cache, because the params.integrity
+      // doesn't match the request.integrity.
+      const request4 = new Request('/four', {
+        integrity,
+      });
+      const event4 = createFetchEvent(request4.url, request4);
+      const response4 = await ps.handle({
+        event: event4,
+        request: request4,
+        params: {
+          integrity: 'does-not-match',
+        },
+      });
+      expect(await response4.text()).to.equal('Fetched Response');
+      expect(self.fetch.callCount).to.equal(3);
+
+      // /two should be there, since request.integrity matches params.integrity.
+      // /three and /four shouldn't.
       const cachedUrls = (await cache.keys()).map((request) => request.url);
       expect(cachedUrls).to.eql([
         `${location.origin}/one`,
@@ -111,7 +140,9 @@ describe(`PrecacheStrategy()`, function() {
       expect(self.fetch.callCount).to.equal(0);
 
       await expectError(
-          () => ps.handle(createFetchEvent('/two')), 'missing-precache-entry');
+        () => ps.handle(createFetchEvent('/two')),
+        'missing-precache-entry',
+      );
     });
 
     it(`copies redirected responses`, async function() {
@@ -146,12 +177,16 @@ describe(`PrecacheStrategy()`, function() {
       const putStub = sandbox.stub().resolves();
       sandbox.stub(self.caches, 'open').resolves({put: putStub});
 
-      sandbox.stub(self, 'fetch').resolves(new Response('Server Error', {
-        status: 400,
-      }));
+      sandbox.stub(self, 'fetch').resolves(
+        new Response('Server Error', {
+          status: 400,
+        }),
+      );
 
       const defaultPluginSpy = sandbox.spy(
-          PrecacheStrategy.defaultPrecacheCacheabilityPlugin, 'cacheWillUpdate');
+        PrecacheStrategy.defaultPrecacheCacheabilityPlugin,
+        'cacheWillUpdate',
+      );
 
       const request = new Request('/index.html');
       const event = new ExtendableEvent('install');
@@ -159,7 +194,9 @@ describe(`PrecacheStrategy()`, function() {
 
       const ps = new PrecacheStrategy();
       await expectError(
-          () => ps.handle({event, request}), 'bad-precaching-response');
+        () => ps.handle({event, request}),
+        'bad-precaching-response',
+      );
 
       await eventDoneWaiting(event);
       expect(putStub.callCount).to.eql(0);
@@ -180,16 +217,20 @@ describe(`PrecacheStrategy()`, function() {
       // Returning any valid Response will allow caching to proceed.
       const cacheWillUpdateStub = sandbox.stub().resolves(errorResponse);
       const defaultPluginSpy = sandbox.spy(
-          PrecacheStrategy.defaultPrecacheCacheabilityPlugin, 'cacheWillUpdate');
+        PrecacheStrategy.defaultPrecacheCacheabilityPlugin,
+        'cacheWillUpdate',
+      );
 
       const request = new Request('/index.html');
       const event = new ExtendableEvent('install');
       spyOnEvent(event);
 
       const ps = new PrecacheStrategy({
-        plugins: [{
-          cacheWillUpdate: cacheWillUpdateStub,
-        }],
+        plugins: [
+          {
+            cacheWillUpdate: cacheWillUpdateStub,
+          },
+        ],
       });
 
       const response = await ps.handle({event, request});
@@ -218,22 +259,29 @@ describe(`PrecacheStrategy()`, function() {
       const cacheWillUpdateDenyStub = sandbox.stub().resolves(null);
 
       const defaultPluginSpy = sandbox.spy(
-          PrecacheStrategy.defaultPrecacheCacheabilityPlugin, 'cacheWillUpdate');
+        PrecacheStrategy.defaultPrecacheCacheabilityPlugin,
+        'cacheWillUpdate',
+      );
 
       const request = new Request('/index.html');
       const event = new ExtendableEvent('install');
       spyOnEvent(event);
 
       const ps = new PrecacheStrategy({
-        plugins: [{
-          cacheWillUpdate: cacheWillUpdateAllowStub,
-        }, {
-          cacheWillUpdate: cacheWillUpdateDenyStub,
-        }],
+        plugins: [
+          {
+            cacheWillUpdate: cacheWillUpdateAllowStub,
+          },
+          {
+            cacheWillUpdate: cacheWillUpdateDenyStub,
+          },
+        ],
       });
 
       await expectError(
-          () => ps.handle({event, request}), 'bad-precaching-response');
+        () => ps.handle({event, request}),
+        'bad-precaching-response',
+      );
 
       await eventDoneWaiting(event);
 
@@ -386,9 +434,12 @@ describe(`PrecacheStrategy()`, function() {
     it(`should return the same response when the status is 200`, async function() {
       const response = new Response('', {status: 200});
 
-      const returnedResponse = await PrecacheStrategy.defaultPrecacheCacheabilityPlugin.cacheWillUpdate({
-        response,
-      });
+      const returnedResponse =
+        await PrecacheStrategy.defaultPrecacheCacheabilityPlugin.cacheWillUpdate(
+          {
+            response,
+          },
+        );
 
       expect(returnedResponse).to.eql(response);
     });
@@ -398,9 +449,12 @@ describe(`PrecacheStrategy()`, function() {
       const response = new Response('', {status: 599});
       sandbox.stub(response, 'status').get(() => 0);
 
-      const returnedResponse = await PrecacheStrategy.defaultPrecacheCacheabilityPlugin.cacheWillUpdate({
-        response,
-      });
+      const returnedResponse =
+        await PrecacheStrategy.defaultPrecacheCacheabilityPlugin.cacheWillUpdate(
+          {
+            response,
+          },
+        );
 
       expect(returnedResponse).to.eql(response);
     });
@@ -408,9 +462,12 @@ describe(`PrecacheStrategy()`, function() {
     it(`should return null when the status is 404`, async function() {
       const response = new Response('', {status: 404});
 
-      const returnedResponse = await PrecacheStrategy.defaultPrecacheCacheabilityPlugin.cacheWillUpdate({
-        response,
-      });
+      const returnedResponse =
+        await PrecacheStrategy.defaultPrecacheCacheabilityPlugin.cacheWillUpdate(
+          {
+            response,
+          },
+        );
 
       expect(returnedResponse).to.be.null;
     });

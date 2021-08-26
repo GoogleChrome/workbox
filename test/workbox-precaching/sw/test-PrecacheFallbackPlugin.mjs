@@ -11,28 +11,30 @@ import {PrecacheController} from 'workbox-precaching/PrecacheController.mjs';
 import {PrecacheFallbackPlugin} from 'workbox-precaching/PrecacheFallbackPlugin.mjs';
 import {resetDefaultPrecacheController} from './resetDefaultPrecacheController.mjs';
 
-describe(`PrecacheFallbackPlugin`, function() {
+describe(`PrecacheFallbackPlugin`, function () {
   const sandbox = sinon.createSandbox();
 
-  beforeEach(function() {
+  beforeEach(function () {
     sandbox.stub(self, 'addEventListener');
     resetDefaultPrecacheController();
   });
 
-  afterEach(function() {
+  afterEach(function () {
     sandbox.restore();
   });
 
-  describe(`constructor`, function() {
-    it(`should construct a PrecacheFallbackPlugin instance with the default PrecacheController`, function() {
+  describe(`constructor`, function () {
+    it(`should construct a PrecacheFallbackPlugin instance with the default PrecacheController`, function () {
       const fallbackURL = '/test/url';
       const precacheFallbackPlugin = new PrecacheFallbackPlugin({fallbackURL});
 
       expect(precacheFallbackPlugin._fallbackURL).to.eql(fallbackURL);
-      expect(precacheFallbackPlugin._precacheController).to.be.instanceOf(PrecacheController);
+      expect(precacheFallbackPlugin._precacheController).to.be.instanceOf(
+        PrecacheController,
+      );
     });
 
-    it(`should construct a PrecacheFallbackPlugin instance with a non-default PrecacheController`, function() {
+    it(`should construct a PrecacheFallbackPlugin instance with a non-default PrecacheController`, function () {
       const fallbackURL = '/test/url';
       const precacheController = new PrecacheController();
       const precacheFallbackPlugin = new PrecacheFallbackPlugin({
@@ -41,10 +43,12 @@ describe(`PrecacheFallbackPlugin`, function() {
       });
 
       expect(precacheFallbackPlugin._fallbackURL).to.eql(fallbackURL);
-      expect(precacheFallbackPlugin._precacheController).to.eql(precacheController);
+      expect(precacheFallbackPlugin._precacheController).to.eql(
+        precacheController,
+      );
     });
 
-    it(`should expose a handlerDidError method`, function() {
+    it(`should expose a handlerDidError method`, function () {
       const fallbackURL = '/test/url';
       const precacheFallbackPlugin = new PrecacheFallbackPlugin({fallbackURL});
 
@@ -52,8 +56,8 @@ describe(`PrecacheFallbackPlugin`, function() {
     });
   });
 
-  describe(`handlerDidError`, function() {
-    it(`should return the matchPrecache value for the fallbackURL`, async function() {
+  describe(`handlerDidError`, function () {
+    it(`should return the matchPrecache value for the fallbackURL`, async function () {
       const body = 'test body';
       const fallbackURL = '/test/url';
       const revision = 'abcd1234';
@@ -63,10 +67,12 @@ describe(`PrecacheFallbackPlugin`, function() {
         match: matchStub,
       });
 
-      precache([{
-        revision,
-        url: fallbackURL,
-      }]);
+      precache([
+        {
+          revision,
+          url: fallbackURL,
+        },
+      ]);
 
       const precacheFallbackPlugin = new PrecacheFallbackPlugin({fallbackURL});
 

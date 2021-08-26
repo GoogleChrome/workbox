@@ -13,108 +13,193 @@ import {logger} from 'workbox-core/_private/logger.mjs';
 import {dispatchAndWaitUntilDone} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
 import generateTestVariants from '../../../infra/testing/generate-variant-tests';
 
-
-describe(`Router`, function() {
+describe(`Router`, function () {
   const sandbox = sinon.createSandbox();
   const MATCH = () => {};
   const HANDLER = {handle: () => {}};
   const METHOD = 'POST';
   const EXPECTED_RESPONSE_BODY = 'test body';
 
-  beforeEach(async function() {
+  beforeEach(async function () {
     sandbox.restore();
 
     // Spy on all added event listeners so they can be removed.
     sandbox.spy(self, 'addEventListener');
   });
 
-  afterEach(function() {
+  afterEach(function () {
     for (const args of self.addEventListener.args) {
       self.removeEventListener(...args);
     }
     sandbox.restore();
   });
 
-  describe(`constructor`, function() {
-    it(`should construct without any inputs`, function() {
+  describe(`constructor`, function () {
+    it(`should construct without any inputs`, function () {
       expect(() => {
         new Router();
       }).to.not.throw();
     });
   });
 
-  describe(`registerRoute()`, function() {
-    const invalidMatches = [{}, true, false, 123, '123', [123], null, undefined];
-    generateTestVariants(`should throw in dev when route.match is not a function`, invalidMatches, async function(variant) {
-      if (process.env.NODE_ENV === 'production') return this.skip();
+  describe(`registerRoute()`, function () {
+    const invalidMatches = [
+      {},
+      true,
+      false,
+      123,
+      '123',
+      [123],
+      null,
+      undefined,
+    ];
+    generateTestVariants(
+      `should throw in dev when route.match is not a function`,
+      invalidMatches,
+      async function (variant) {
+        if (process.env.NODE_ENV === 'production') return this.skip();
 
-      const router = new Router();
-      await expectError(
-          () => router.registerRoute({handler: HANDLER, method: METHOD, match: variant}),
+        const router = new Router();
+        await expectError(
+          () =>
+            router.registerRoute({
+              handler: HANDLER,
+              method: METHOD,
+              match: variant,
+            }),
           'missing-a-method',
           (error) => {
-            expect(error.details).to.have.property('moduleName').that.eql('workbox-routing');
-            expect(error.details).to.have.property('className').that.eql('Router');
-            expect(error.details).to.have.property('funcName').that.eql('registerRoute');
-            expect(error.details).to.have.property('paramName').that.eql('route');
-            expect(error.details).to.have.property('expectedMethod').that.eql('match');
-          });
-    });
+            expect(error.details)
+              .to.have.property('moduleName')
+              .that.eql('workbox-routing');
+            expect(error.details)
+              .to.have.property('className')
+              .that.eql('Router');
+            expect(error.details)
+              .to.have.property('funcName')
+              .that.eql('registerRoute');
+            expect(error.details)
+              .to.have.property('paramName')
+              .that.eql('route');
+            expect(error.details)
+              .to.have.property('expectedMethod')
+              .that.eql('match');
+          },
+        );
+      },
+    );
 
     const invalidHandlers = [() => {}, true, false, 123, '123', undefined];
-    generateTestVariants(`should throw in dev when route.handler is not an object`, invalidHandlers, async function(variant) {
-      if (process.env.NODE_ENV == 'production') return this.skip();
+    generateTestVariants(
+      `should throw in dev when route.handler is not an object`,
+      invalidHandlers,
+      async function (variant) {
+        if (process.env.NODE_ENV == 'production') return this.skip();
 
-      const router = new Router();
-      await expectError(
-          () => router.registerRoute({match: MATCH, method: METHOD, handler: variant}),
+        const router = new Router();
+        await expectError(
+          () =>
+            router.registerRoute({
+              match: MATCH,
+              method: METHOD,
+              handler: variant,
+            }),
           'incorrect-type',
           (error) => {
-            expect(error.details).to.have.property('moduleName').that.eql('workbox-routing');
-            expect(error.details).to.have.property('className').that.eql('Router');
-            expect(error.details).to.have.property('funcName').that.eql('registerRoute');
-            expect(error.details).to.have.property('paramName').that.eql('route');
-            expect(error.details).to.have.property('expectedType').that.eql('object');
+            expect(error.details)
+              .to.have.property('moduleName')
+              .that.eql('workbox-routing');
+            expect(error.details)
+              .to.have.property('className')
+              .that.eql('Router');
+            expect(error.details)
+              .to.have.property('funcName')
+              .that.eql('registerRoute');
+            expect(error.details)
+              .to.have.property('paramName')
+              .that.eql('route');
+            expect(error.details)
+              .to.have.property('expectedType')
+              .that.eql('object');
           },
-      );
-    });
+        );
+      },
+    );
 
-    const invalidMethods = [() => {}, {}, true, false, 123, [123], null, undefined];
-    generateTestVariants(`should throw in dev when route.method is not a string`, invalidMethods, async function(variant) {
-      if (process.env.NODE_ENV == 'production') return this.skip();
+    const invalidMethods = [
+      () => {},
+      {},
+      true,
+      false,
+      123,
+      [123],
+      null,
+      undefined,
+    ];
+    generateTestVariants(
+      `should throw in dev when route.method is not a string`,
+      invalidMethods,
+      async function (variant) {
+        if (process.env.NODE_ENV == 'production') return this.skip();
 
-      const router = new Router();
-      await expectError(
-          () => router.registerRoute({match: MATCH, handler: HANDLER, method: variant}),
+        const router = new Router();
+        await expectError(
+          () =>
+            router.registerRoute({
+              match: MATCH,
+              handler: HANDLER,
+              method: variant,
+            }),
           'incorrect-type',
           (error) => {
-            expect(error.details).to.have.property('moduleName').that.eql('workbox-routing');
-            expect(error.details).to.have.property('className').that.eql('Router');
-            expect(error.details).to.have.property('funcName').that.eql('registerRoute');
-            expect(error.details).to.have.property('paramName').that.eql('route.method');
-            expect(error.details).to.have.property('expectedType').that.eql('string');
+            expect(error.details)
+              .to.have.property('moduleName')
+              .that.eql('workbox-routing');
+            expect(error.details)
+              .to.have.property('className')
+              .that.eql('Router');
+            expect(error.details)
+              .to.have.property('funcName')
+              .that.eql('registerRoute');
+            expect(error.details)
+              .to.have.property('paramName')
+              .that.eql('route.method');
+            expect(error.details)
+              .to.have.property('expectedType')
+              .that.eql('string');
           },
-      );
-    });
+        );
+      },
+    );
 
-    it(`should throw in dev when route.handler.handle is not a function`, async function() {
+    it(`should throw in dev when route.handler.handle is not a function`, async function () {
       if (process.env.NODE_ENV === 'production') return this.skip();
 
       const router = new Router();
       await expectError(
-          () => router.registerRoute({match: MATCH, method: METHOD, handler: {}}),
-          'missing-a-method',
-          (error) => {
-            expect(error.details).to.have.property('moduleName').that.eql('workbox-routing');
-            expect(error.details).to.have.property('className').that.eql('Router');
-            expect(error.details).to.have.property('funcName').that.eql('registerRoute');
-            expect(error.details).to.have.property('paramName').that.eql('route.handler');
-            expect(error.details).to.have.property('expectedMethod').that.eql('handle');
-          },
+        () => router.registerRoute({match: MATCH, method: METHOD, handler: {}}),
+        'missing-a-method',
+        (error) => {
+          expect(error.details)
+            .to.have.property('moduleName')
+            .that.eql('workbox-routing');
+          expect(error.details)
+            .to.have.property('className')
+            .that.eql('Router');
+          expect(error.details)
+            .to.have.property('funcName')
+            .that.eql('registerRoute');
+          expect(error.details)
+            .to.have.property('paramName')
+            .that.eql('route.handler');
+          expect(error.details)
+            .to.have.property('expectedMethod')
+            .that.eql('handle');
+        },
       );
     });
 
-    it(`should add the expected entries to the internal arrays of routes`, function() {
+    it(`should add the expected entries to the internal arrays of routes`, function () {
       const router = new Router();
 
       // Routes without an explicit method will default to GET.
@@ -129,7 +214,13 @@ describe(`Router`, function() {
         method: 'POST',
       };
 
-      for (const route of [getRoute1, getRoute2, putRoute1, putRoute2, postRoute]) {
+      for (const route of [
+        getRoute1,
+        getRoute2,
+        putRoute1,
+        putRoute2,
+        postRoute,
+      ]) {
         router.registerRoute(route);
       }
 
@@ -139,12 +230,13 @@ describe(`Router`, function() {
     });
   });
 
-  describe(`addFetchListener`, function() {
-    it(`should add a listener to respond to fetch events`, async function() {
+  describe(`addFetchListener`, function () {
+    it(`should add a listener to respond to fetch events`, async function () {
       const router = new Router();
       const route = new Route(
-          () => true,
-          () => new Response(EXPECTED_RESPONSE_BODY));
+        () => true,
+        () => new Response(EXPECTED_RESPONSE_BODY),
+      );
       router.registerRoute(route);
       router.addFetchListener();
 
@@ -164,11 +256,12 @@ describe(`Router`, function() {
       expect(await response.text()).to.equal(EXPECTED_RESPONSE_BODY);
     });
 
-    it(`should not call respondWith when no routes match`, async function() {
+    it(`should not call respondWith when no routes match`, async function () {
       const router = new Router();
       const route = new Route(
-          () => false,
-          () => new Response(EXPECTED_RESPONSE_BODY));
+        () => false,
+        () => new Response(EXPECTED_RESPONSE_BODY),
+      );
       router.registerRoute(route);
       router.addFetchListener();
 
@@ -184,12 +277,13 @@ describe(`Router`, function() {
     });
   });
 
-  describe(`addCacheListener`, function() {
-    it(`should add a listener to respond to cache message events`, async function() {
+  describe(`addCacheListener`, function () {
+    it(`should add a listener to respond to cache message events`, async function () {
       const router = new Router();
       const route = new Route(
-          () => true,
-          () => new Response(EXPECTED_RESPONSE_BODY));
+        () => true,
+        () => new Response(EXPECTED_RESPONSE_BODY),
+      );
       router.registerRoute(route);
       router.addCacheListener();
 
@@ -208,49 +302,61 @@ describe(`Router`, function() {
       await dispatchAndWaitUntilDone(messageEvent);
 
       expect(router.handleRequest.callCount).to.equal(3);
-      expect(router.handleRequest.args[0][0].request.url).to.equal(`${location.origin}/one`);
-      expect(router.handleRequest.args[1][0].request.url).to.equal(`${location.origin}/two`);
-      expect(router.handleRequest.args[2][0].request.url).to.equal(`${location.origin}/three`);
+      expect(router.handleRequest.args[0][0].request.url).to.equal(
+        `${location.origin}/one`,
+      );
+      expect(router.handleRequest.args[1][0].request.url).to.equal(
+        `${location.origin}/two`,
+      );
+      expect(router.handleRequest.args[2][0].request.url).to.equal(
+        `${location.origin}/three`,
+      );
       expect(messageEvent.waitUntil.callCount).to.equal(1);
       expect(messageEvent.waitUntil.args[0][0]).to.be.instanceOf(Promise);
       expect(messageEvent.ports[0].postMessage.callCount).to.equal(1);
     });
 
-    it(`should accept URL strings or request URL+requestInit tuples`, async function() {
+    it(`should accept URL strings or request URL+requestInit tuples`, async function () {
       const router = new Router();
       const route = new Route(
-          () => true,
-          () => new Response(EXPECTED_RESPONSE_BODY));
+        () => true,
+        () => new Response(EXPECTED_RESPONSE_BODY),
+      );
       router.registerRoute(route);
       router.addCacheListener();
 
       sandbox.spy(router, 'handleRequest');
 
-      await dispatchAndWaitUntilDone(new ExtendableMessageEvent('message', {
-        data: {
-          type: 'CACHE_URLS',
-          payload: {
-            urlsToCache: [
-              '/one',
-              ['/two', {mode: 'no-cors'}],
-              '/three',
-            ],
+      await dispatchAndWaitUntilDone(
+        new ExtendableMessageEvent('message', {
+          data: {
+            type: 'CACHE_URLS',
+            payload: {
+              urlsToCache: ['/one', ['/two', {mode: 'no-cors'}], '/three'],
+            },
           },
-        },
-      }));
+        }),
+      );
 
       expect(router.handleRequest.callCount).to.equal(3);
-      expect(router.handleRequest.args[0][0].request.url).to.equal(`${location.origin}/one`);
-      expect(router.handleRequest.args[1][0].request.url).to.equal(`${location.origin}/two`);
+      expect(router.handleRequest.args[0][0].request.url).to.equal(
+        `${location.origin}/one`,
+      );
+      expect(router.handleRequest.args[1][0].request.url).to.equal(
+        `${location.origin}/two`,
+      );
       expect(router.handleRequest.args[1][0].request.mode).to.equal('no-cors');
-      expect(router.handleRequest.args[2][0].request.url).to.equal(`${location.origin}/three`);
+      expect(router.handleRequest.args[2][0].request.url).to.equal(
+        `${location.origin}/three`,
+      );
     });
 
-    it(`should do nothing for non CACHE_URLS message types`, async function() {
+    it(`should do nothing for non CACHE_URLS message types`, async function () {
       const router = new Router();
       const route = new Route(
-          () => true,
-          () => new Response(EXPECTED_RESPONSE_BODY));
+        () => true,
+        () => new Response(EXPECTED_RESPONSE_BODY),
+      );
       router.registerRoute(route);
       router.addCacheListener();
 
@@ -262,8 +368,8 @@ describe(`Router`, function() {
     });
   });
 
-  describe(`unregisterRoute()`, function() {
-    it(`should remove the expected entries from the internal arrays of routes`, function() {
+  describe(`unregisterRoute()`, function () {
+    it(`should remove the expected entries from the internal arrays of routes`, function () {
       const router = new Router();
 
       // Routes without an explicit method will default to GET.
@@ -278,7 +384,13 @@ describe(`Router`, function() {
         method: 'POST',
       };
 
-      for (const route of [getRoute1, getRoute2, putRoute1, putRoute2, postRoute]) {
+      for (const route of [
+        getRoute1,
+        getRoute2,
+        putRoute1,
+        putRoute2,
+        postRoute,
+      ]) {
         router.registerRoute(route);
       }
 
@@ -290,7 +402,7 @@ describe(`Router`, function() {
       expect(router.routes.get('POST')).to.have.members([postRoute]);
     });
 
-    it(`should throw when called with a route with a method for which there isn't an array of routes`, function() {
+    it(`should throw when called with a route with a method for which there isn't an array of routes`, function () {
       const router = new Router();
 
       // Routes without an explicit method will default to GET.
@@ -299,15 +411,15 @@ describe(`Router`, function() {
 
       router.registerRoute(getRoute);
       return expectError(
-          () => router.unregisterRoute(putRoute),
-          'unregister-route-but-not-found-with-method',
-          (error) => {
-            expect(error.details).to.have.property('method').that.eql('PUT');
-          },
+        () => router.unregisterRoute(putRoute),
+        'unregister-route-but-not-found-with-method',
+        (error) => {
+          expect(error.details).to.have.property('method').that.eql('PUT');
+        },
       );
     });
 
-    it(`should throw when called with a route that wasn't previously registered`, function() {
+    it(`should throw when called with a route that wasn't previously registered`, function () {
       const router = new Router();
 
       // Routes without an explicit method will default to GET.
@@ -316,21 +428,21 @@ describe(`Router`, function() {
 
       router.registerRoute(getRoute1);
       return expectError(
-          () => router.unregisterRoute(getRoute2),
-          'unregister-route-route-not-registered',
+        () => router.unregisterRoute(getRoute2),
+        'unregister-route-route-not-registered',
       );
     });
   });
 
-  describe(`setDefaultHandler()`, function() {
-    it(`should update the expected internal state, with the default method`, function() {
+  describe(`setDefaultHandler()`, function () {
+    it(`should update the expected internal state, with the default method`, function () {
       const router = new Router();
       router.setDefaultHandler(HANDLER);
 
       expect(router._defaultHandlerMap.get('GET')).to.eql(HANDLER);
     });
 
-    it(`should update the expected internal state, with specific methods`, function() {
+    it(`should update the expected internal state, with specific methods`, function () {
       const router = new Router();
       router.setDefaultHandler(HANDLER, 'POST');
       router.setDefaultHandler(HANDLER, 'PUT');
@@ -340,11 +452,11 @@ describe(`Router`, function() {
       expect(router._defaultHandlerMap.get('GET')).to.not.exist;
     });
 
-    it(`should return a response from the default handler when there's no matching route`, async function() {
+    it(`should return a response from the default handler when there's no matching route`, async function () {
       const router = new Router();
       const route = new Route(
-          () => false,
-          () => new Response(),
+        () => false,
+        () => new Response(),
       );
       router.registerRoute(route);
       router.setDefaultHandler(() => new Response(EXPECTED_RESPONSE_BODY));
@@ -359,14 +471,17 @@ describe(`Router`, function() {
       expect(responseBody).to.eql(EXPECTED_RESPONSE_BODY);
     });
 
-    it(`should return a response from the default handler when there's no matching route, for a custom method`, async function() {
+    it(`should return a response from the default handler when there's no matching route, for a custom method`, async function () {
       const router = new Router();
       const route = new Route(
-          () => false,
-          () => new Response(),
+        () => false,
+        () => new Response(),
       );
       router.registerRoute(route);
-      router.setDefaultHandler(() => new Response(EXPECTED_RESPONSE_BODY), 'POST');
+      router.setDefaultHandler(
+        () => new Response(EXPECTED_RESPONSE_BODY),
+        'POST',
+      );
 
       const postRequest = new Request(location, {method: 'POST'});
       const postEvent = new FetchEvent('fetch', {request: postRequest});
@@ -388,19 +503,19 @@ describe(`Router`, function() {
     });
   });
 
-  describe(`setCatchHandler()`, function() {
-    it(`should update the expected internal state`, function() {
+  describe(`setCatchHandler()`, function () {
+    it(`should update the expected internal state`, function () {
       const router = new Router();
       router.setCatchHandler(HANDLER);
 
       expect(router._catchHandler).to.deep.eql(HANDLER);
     });
 
-    it(`should return a response from the catch handler when the matching route's handler rejects async`, async function() {
+    it(`should return a response from the catch handler when the matching route's handler rejects async`, async function () {
       const router = new Router();
       const route = new Route(
-          () => true,
-          () => Promise.reject(new Error()),
+        () => true,
+        () => Promise.reject(new Error()),
       );
       router.registerRoute(route);
       router.setCatchHandler(() => new Response(EXPECTED_RESPONSE_BODY));
@@ -414,13 +529,13 @@ describe(`Router`, function() {
       expect(responseBody).to.eql(EXPECTED_RESPONSE_BODY);
     });
 
-    it(`should return a response from the catch handler when the matching route's handler throws sync`, async function() {
+    it(`should return a response from the catch handler when the matching route's handler throws sync`, async function () {
       const router = new Router();
       const route = new Route(
-          () => true,
-          () => {
-            throw new Error(`Injected sync error`);
-          },
+        () => true,
+        () => {
+          throw new Error(`Injected sync error`);
+        },
       );
       router.registerRoute(route);
       router.setCatchHandler(() => new Response(EXPECTED_RESPONSE_BODY));
@@ -435,8 +550,8 @@ describe(`Router`, function() {
     });
   });
 
-  describe(`handleRequest()`, function() {
-    it(`should throw in dev when not passed a request`, async function() {
+  describe(`handleRequest()`, function () {
+    it(`should throw in dev when not passed a request`, async function () {
       if (process.env.NODE_ENV === 'production') return this.skip();
 
       const router = new Router();
@@ -444,21 +559,30 @@ describe(`Router`, function() {
       const event = new FetchEvent('fetch', {request});
 
       await expectError(
-          () => router.handleRequest({event}),
-          'incorrect-class',
-          (error) => {
-            expect(error.details).to.have.property('moduleName').that.eql('workbox-routing');
-            expect(error.details).to.have.property('className').that.eql('Router');
-            expect(error.details).to.have.property('funcName').that.eql('handleRequest');
-            expect(error.details).to.have.property('paramName').that.eql('options.request');
-          });
+        () => router.handleRequest({event}),
+        'incorrect-class',
+        (error) => {
+          expect(error.details)
+            .to.have.property('moduleName')
+            .that.eql('workbox-routing');
+          expect(error.details)
+            .to.have.property('className')
+            .that.eql('Router');
+          expect(error.details)
+            .to.have.property('funcName')
+            .that.eql('handleRequest');
+          expect(error.details)
+            .to.have.property('paramName')
+            .that.eql('options.request');
+        },
+      );
     });
 
-    it(`should return a response from the Route's handler when there's a matching route`, async function() {
+    it(`should return a response from the Route's handler when there's a matching route`, async function () {
       const router = new Router();
       const route = new Route(
-          () => true,
-          () => new Response(EXPECTED_RESPONSE_BODY),
+        () => true,
+        () => new Response(EXPECTED_RESPONSE_BODY),
       );
       router.registerRoute(route);
 
@@ -471,11 +595,11 @@ describe(`Router`, function() {
       expect(responseBody).to.eql(EXPECTED_RESPONSE_BODY);
     });
 
-    it(`should fall back to the Route's catch handler if there's an error in the Route's handler, if set`, async function() {
+    it(`should fall back to the Route's catch handler if there's an error in the Route's handler, if set`, async function () {
       const router = new Router();
       const route = new Route(
-          () => true,
-          () => Promise.reject(new Error()),
+        () => true,
+        () => Promise.reject(new Error()),
       );
       route.setCatchHandler(() => new Response(EXPECTED_RESPONSE_BODY));
       router.registerRoute(route);
@@ -489,11 +613,11 @@ describe(`Router`, function() {
       expect(responseBody).to.eql(EXPECTED_RESPONSE_BODY);
     });
 
-    it(`should fall back to the global catch handler if there's an error in the Route's catch handler`, async function() {
+    it(`should fall back to the global catch handler if there's an error in the Route's catch handler`, async function () {
       const router = new Router();
       const route = new Route(
-          () => true,
-          () => Promise.reject(new Error()),
+        () => true,
+        () => Promise.reject(new Error()),
       );
       route.setCatchHandler(() => Promise.reject(new Error()));
       router.setCatchHandler(() => new Response(EXPECTED_RESPONSE_BODY));
@@ -508,18 +632,18 @@ describe(`Router`, function() {
       expect(responseBody).to.eql(EXPECTED_RESPONSE_BODY);
     });
 
-    it(`should return a response from the first matching route when there are multiple potential matches`, async function() {
+    it(`should return a response from the first matching route when there are multiple potential matches`, async function () {
       const router = new Router();
       const response1 = 'response1';
       const response2 = 'response2';
       const route1 = new Route(
-          () => true,
-          () => new Response(response1),
+        () => true,
+        () => new Response(response1),
       );
       router.registerRoute(route1);
       const route2 = new Route(
-          () => true,
-          () => new Response(response2),
+        () => true,
+        () => new Response(response2),
       );
       router.registerRoute(route2);
 
@@ -532,11 +656,11 @@ describe(`Router`, function() {
       expect(responseBody).to.eql(response1);
     });
 
-    it(`should work when no event is passed`, async function() {
+    it(`should work when no event is passed`, async function () {
       const router = new Router();
       const route = new Route(
-          () => true,
-          () => new Response(EXPECTED_RESPONSE_BODY),
+        () => true,
+        () => new Response(EXPECTED_RESPONSE_BODY),
       );
       router.registerRoute(route);
 
@@ -548,16 +672,16 @@ describe(`Router`, function() {
       expect(responseBody).to.eql(EXPECTED_RESPONSE_BODY);
     });
 
-    it(`should work when request and event.request are different`, async function() {
+    it(`should work when request and event.request are different`, async function () {
       const router = new Router();
       const route = new Route(
-          () => true,
-          ({url}) => {
-            // Ensure request (not event.request) is passed to the handler.
-            if (url.href !== 'https://unexpected.com') {
-              return new Response(EXPECTED_RESPONSE_BODY);
-            }
-          },
+        () => true,
+        ({url}) => {
+          // Ensure request (not event.request) is passed to the handler.
+          if (url.href !== 'https://unexpected.com') {
+            return new Response(EXPECTED_RESPONSE_BODY);
+          }
+        },
       );
       router.registerRoute(route);
 
@@ -572,11 +696,11 @@ describe(`Router`, function() {
       expect(responseBody).to.eql(EXPECTED_RESPONSE_BODY);
     });
 
-    it(`should not return a response when there's no matching route and no default handler`, async function() {
+    it(`should not return a response when there's no matching route and no default handler`, async function () {
       const router = new Router();
       const route = new Route(
-          () => false,
-          () => new Response(),
+        () => false,
+        () => new Response(),
       );
       router.registerRoute(route);
 
@@ -588,7 +712,7 @@ describe(`Router`, function() {
       expect(response).not.to.exist;
     });
 
-    it(`should not respond to non-http requests`, function() {
+    it(`should not respond to non-http requests`, function () {
       const router = new Router();
 
       // route.match() always returns false, so the Request details don't matter.
@@ -599,11 +723,14 @@ describe(`Router`, function() {
       expect(response).not.to.exist;
     });
 
-    it(`should invoke route handlers with the correct arguments`, async function() {
+    it(`should invoke route handlers with the correct arguments`, async function () {
       const router = new Router();
-      const match = sandbox.stub()
-          .onCall(0).returns(true)
-          .onCall(1).returns([1, 2, 3]);
+      const match = sandbox
+        .stub()
+        .onCall(0)
+        .returns(true)
+        .onCall(1)
+        .returns([1, 2, 3]);
 
       const handler = sandbox.stub().returns(new Response());
 
@@ -630,24 +757,30 @@ describe(`Router`, function() {
     });
 
     const matchCallbackReturnValues = [{a: 'b'}, [1, 2], 'test'];
-    generateTestVariants(`should pass the matchCallback return value to handlerCallback as params`, matchCallbackReturnValues, async function(returnValue) {
-      const handlerCallbackStub = sinon.stub().resolves(new Response());
-      const router = new Router();
-      const route = new Route(
+    generateTestVariants(
+      `should pass the matchCallback return value to handlerCallback as params`,
+      matchCallbackReturnValues,
+      async function (returnValue) {
+        const handlerCallbackStub = sinon.stub().resolves(new Response());
+        const router = new Router();
+        const route = new Route(
           sinon.stub().returns(returnValue),
           handlerCallbackStub,
-      );
-      router.registerRoute(route);
+        );
+        router.registerRoute(route);
 
-      const request = new Request(location);
-      const event = new FetchEvent('fetch', {request});
-      await router.handleRequest({request, event});
+        const request = new Request(location);
+        const event = new FetchEvent('fetch', {request});
+        await router.handleRequest({request, event});
 
-      expect(handlerCallbackStub.calledOnce).to.be.true;
-      expect(handlerCallbackStub.firstCall.args[0].params).to.eql(returnValue);
-    });
+        expect(handlerCallbackStub.calledOnce).to.be.true;
+        expect(handlerCallbackStub.firstCall.args[0].params).to.eql(
+          returnValue,
+        );
+      },
+    );
 
-    it(`should not throw for router with no-routes set`, async function() {
+    it(`should not throw for router with no-routes set`, async function () {
       const router = new Router();
 
       const request = new Request(location);
@@ -655,13 +788,10 @@ describe(`Router`, function() {
       await router.handleRequest({request, event});
     });
 
-    it(`should set the matchCallback's sameOrigin to false when called with a cross-origin request`, async function() {
+    it(`should set the matchCallback's sameOrigin to false when called with a cross-origin request`, async function () {
       const router = new Router();
       const matchCallbackStub = sandbox.stub();
-      const route = new Route(
-          matchCallbackStub,
-          () => new Response(),
-      );
+      const route = new Route(matchCallbackStub, () => new Response());
       router.registerRoute(route);
 
       const request = new Request('https://cross-origin.example.com');
@@ -671,13 +801,10 @@ describe(`Router`, function() {
       expect(matchCallbackStub.args[0][0].sameOrigin).to.be.false;
     });
 
-    it(`should set the matchCallback's sameOrigin to true when called with a same-origin request`, async function() {
+    it(`should set the matchCallback's sameOrigin to true when called with a same-origin request`, async function () {
       const router = new Router();
       const matchCallbackStub = sandbox.stub();
-      const route = new Route(
-          matchCallbackStub,
-          () => new Response(),
-      );
+      const route = new Route(matchCallbackStub, () => new Response());
       router.registerRoute(route);
 
       const request = new Request(location.href);
@@ -688,14 +815,17 @@ describe(`Router`, function() {
     });
   });
 
-  describe(`findMatchingRoute()`, function() {
-    it(`should log a warning in development when an async matchCallback is used`, function() {
+  describe(`findMatchingRoute()`, function () {
+    it(`should log a warning in development when an async matchCallback is used`, function () {
       if (process.env.NODE_ENV === 'production') return this.skip();
 
       const loggerStub = sandbox.stub(logger, 'warn');
 
       const router = new Router();
-      const route = new Route(async () => true, () => new Response());
+      const route = new Route(
+        async () => true,
+        () => new Response(),
+      );
       router.registerRoute(route);
 
       const url = new URL(location.href);
@@ -710,7 +840,7 @@ describe(`Router`, function() {
       expect(loggerStub.firstCall.args[0]).to.include('async');
     });
 
-    it(`should return the first matching route`, function() {
+    it(`should return the first matching route`, function () {
       const router = new Router();
 
       const match1 = sandbox.stub().returns(false);
@@ -730,7 +860,12 @@ describe(`Router`, function() {
       const event = new FetchEvent('fetch', {request});
       const sameOrigin = true;
 
-      const {route} = router.findMatchingRoute({url, sameOrigin, request, event});
+      const {route} = router.findMatchingRoute({
+        url,
+        sameOrigin,
+        request,
+        event,
+      });
 
       expect(match1.callCount).to.equal(1);
       expect(match2.callCount).to.equal(1);
@@ -739,7 +874,7 @@ describe(`Router`, function() {
       expect(route).to.equal(route2);
     });
 
-    it(`should invoke route match functions with the correct arguments`, function() {
+    it(`should invoke route match functions with the correct arguments`, function () {
       const router = new Router();
 
       const match1 = sandbox.stub().returns(false);
@@ -755,7 +890,12 @@ describe(`Router`, function() {
       const event = new FetchEvent('fetch', {request});
       const sameOrigin = true;
 
-      const {route} = router.findMatchingRoute({url, sameOrigin, request, event});
+      const {route} = router.findMatchingRoute({
+        url,
+        sameOrigin,
+        request,
+        event,
+      });
 
       expect(match1.callCount).to.equal(1);
       expect(match1.args[0][0]).to.eql({url, sameOrigin, request, event});
@@ -766,15 +906,22 @@ describe(`Router`, function() {
       expect(route).to.equal(route2);
     });
 
-    it(`should return the route and params (if applicable)`, function() {
+    it(`should return the route and params (if applicable)`, function () {
       const router = new Router();
-      const match = sandbox.stub()
-          .onCall(0).returns(true)
-          .onCall(1).returns('truthy')
-          .onCall(2).returns([1, 2, 3])
-          .onCall(3).returns([])
-          .onCall(4).returns({a: 1})
-          .onCall(5).returns({});
+      const match = sandbox
+        .stub()
+        .onCall(0)
+        .returns(true)
+        .onCall(1)
+        .returns('truthy')
+        .onCall(2)
+        .returns([1, 2, 3])
+        .onCall(3)
+        .returns([])
+        .onCall(4)
+        .returns({a: 1})
+        .onCall(5)
+        .returns({});
 
       const route = new Route(match, () => new Response());
       router.registerRoute(route);
@@ -784,27 +931,57 @@ describe(`Router`, function() {
       const event = new FetchEvent('fetch', {request});
       const sameOrigin = true;
 
-      const result1 = router.findMatchingRoute({url, sameOrigin, request, event});
+      const result1 = router.findMatchingRoute({
+        url,
+        sameOrigin,
+        request,
+        event,
+      });
       expect(result1.route).to.equal(route);
       expect(result1.params).to.equal(undefined);
 
-      const result2 = router.findMatchingRoute({url, sameOrigin, request, event});
+      const result2 = router.findMatchingRoute({
+        url,
+        sameOrigin,
+        request,
+        event,
+      });
       expect(result2.route).to.equal(route);
       expect(result2.params).to.equal('truthy');
 
-      const result3 = router.findMatchingRoute({url, sameOrigin, request, event});
+      const result3 = router.findMatchingRoute({
+        url,
+        sameOrigin,
+        request,
+        event,
+      });
       expect(result3.route).to.equal(route);
       expect(result3.params).to.deep.equal([1, 2, 3]);
 
-      const result4 = router.findMatchingRoute({url, sameOrigin, request, event});
+      const result4 = router.findMatchingRoute({
+        url,
+        sameOrigin,
+        request,
+        event,
+      });
       expect(result4.route).to.equal(route);
       expect(result4.params).to.equal(undefined);
 
-      const result5 = router.findMatchingRoute({url, sameOrigin, request, event});
+      const result5 = router.findMatchingRoute({
+        url,
+        sameOrigin,
+        request,
+        event,
+      });
       expect(result5.route).to.equal(route);
       expect(result5.params).to.deep.equal({a: 1});
 
-      const result6 = router.findMatchingRoute({url, sameOrigin, request, event});
+      const result6 = router.findMatchingRoute({
+        url,
+        sameOrigin,
+        request,
+        event,
+      });
       expect(result6.route).to.equal(route);
       expect(result6.params).to.equal(undefined);
     });

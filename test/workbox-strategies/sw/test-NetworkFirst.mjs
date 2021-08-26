@@ -9,29 +9,31 @@
 import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
 import {NetworkFirst} from 'workbox-strategies/NetworkFirst.mjs';
 import {compareResponses} from '../../../infra/testing/helpers/compareResponses.mjs';
-import {eventDoneWaiting, spyOnEvent} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
+import {
+  eventDoneWaiting,
+  spyOnEvent,
+} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
 import {generateOpaqueResponse} from '../../../infra/testing/helpers/generateOpaqueResponse.mjs';
 import {generateUniqueResponse} from '../../../infra/testing/helpers/generateUniqueResponse.mjs';
 import {sleep} from '../../../infra/testing/helpers/sleep.mjs';
 
-
-describe(`NetworkFirst`, function() {
+describe(`NetworkFirst`, function () {
   const sandbox = sinon.createSandbox();
 
-  beforeEach(async function() {
+  beforeEach(async function () {
     const keys = await caches.keys();
     await Promise.all(keys.map((key) => caches.delete(key)));
     sandbox.restore();
   });
 
-  after(async function() {
+  after(async function () {
     const keys = await caches.keys();
     await Promise.all(keys.map((key) => caches.delete(key)));
     sandbox.restore();
   });
 
-  describe(`handle()`, function() {
-    it(`should add the network response to the cache`, async function() {
+  describe(`handle()`, function () {
+    it(`should add the network response to the cache`, async function () {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
       spyOnEvent(event);
@@ -54,7 +56,7 @@ describe(`NetworkFirst`, function() {
       await compareResponses(cachedResponse, handleResponse, true);
     });
 
-    it(`should support using a string as the request`, async function() {
+    it(`should support using a string as the request`, async function () {
       const stringRequest = 'http://example.io/test/';
       const request = new Request(stringRequest);
       const event = new FetchEvent('fetch', {request});
@@ -78,7 +80,7 @@ describe(`NetworkFirst`, function() {
       await compareResponses(cachedResponse, handleResponse, true);
     });
 
-    it(`should return the cached response if exists and not update the cache when the network request fails`, async function() {
+    it(`should return the cached response if exists and not update the cache when the network request fails`, async function () {
       sandbox.stub(self, 'fetch').rejects(new Error('Injected error.'));
 
       const request = new Request('http://example.io/test/');
@@ -91,11 +93,12 @@ describe(`NetworkFirst`, function() {
 
       const networkFirst = new NetworkFirst();
       await expectError(
-          () => networkFirst.handle({
+        () =>
+          networkFirst.handle({
             request,
             event: event1,
           }),
-          'no-response',
+        'no-response',
       );
       await eventDoneWaiting(event1);
 
@@ -118,7 +121,7 @@ describe(`NetworkFirst`, function() {
       await compareResponses(cachedResponse, secondCachedResponse, true);
     });
 
-    it(`should return the cached response if the network request times out`, async function() {
+    it(`should return the cached response if the network request times out`, async function () {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
       spyOnEvent(event);
@@ -127,8 +130,9 @@ describe(`NetworkFirst`, function() {
       // Note Sinon fake timers do not work with `await timeout()` used
       // in the current `StrategyHandler` implementation.
       const networkTimeoutSeconds = 0.5;
-      const sleepLongerThanNetworkTimeout =
-          sleep(2 * networkTimeoutSeconds * 1000);
+      const sleepLongerThanNetworkTimeout = sleep(
+        2 * networkTimeoutSeconds * 1000,
+      );
 
       sandbox.stub(self, 'fetch').callsFake(async (req) => {
         await sleepLongerThanNetworkTimeout;
@@ -152,7 +156,7 @@ describe(`NetworkFirst`, function() {
       await compareResponses(populatedCacheResponse, injectedResponse, true);
     });
 
-    it(`should signal completion if the network request completes before timing out`, async function() {
+    it(`should signal completion if the network request completes before timing out`, async function () {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
       spyOnEvent(event);
@@ -177,7 +181,7 @@ describe(`NetworkFirst`, function() {
       await compareResponses(populatedCacheResponse, injectedResponse, true);
     });
 
-    it(`should return the network response if the timeout is exceeded, but there is no cached response`, async function() {
+    it(`should return the network response if the timeout is exceeded, but there is no cached response`, async function () {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
       spyOnEvent(event);
@@ -186,8 +190,9 @@ describe(`NetworkFirst`, function() {
       // Note Sinon fake timers do not work with `await timeout()` used
       // in the current `StrategyHandler` implementation.
       const networkTimeoutSeconds = 0.5;
-      const sleepLongerThanNetworkTimeout =
-          sleep(2 * networkTimeoutSeconds * 1000);
+      const sleepLongerThanNetworkTimeout = sleep(
+        2 * networkTimeoutSeconds * 1000,
+      );
 
       const networkResponse = new Response('from network');
 
@@ -212,19 +217,23 @@ describe(`NetworkFirst`, function() {
       expect(caches.match.firstCall.args[0]).to.equal(request);
     });
 
-    it(`should throw when NetworkFirst() is called with an invalid networkTimeoutSeconds parameter`, function() {
+    it(`should throw when NetworkFirst() is called with an invalid networkTimeoutSeconds parameter`, function () {
       if (process.env.NODE_ENV === 'production') this.skip();
 
-      return expectError(() => new NetworkFirst({networkTimeoutSeconds: 'invalid'}), 'incorrect-type', (err) => {
-        expect(err.details.paramName).to.deep.equal('networkTimeoutSeconds');
-        expect(err.details.expectedType).to.deep.equal('number');
-        expect(err.details.moduleName).to.deep.equal('workbox-strategies');
-        expect(err.details.className).to.deep.equal('NetworkFirst');
-        expect(err.details.funcName).to.deep.equal('constructor');
-      });
+      return expectError(
+        () => new NetworkFirst({networkTimeoutSeconds: 'invalid'}),
+        'incorrect-type',
+        (err) => {
+          expect(err.details.paramName).to.deep.equal('networkTimeoutSeconds');
+          expect(err.details.expectedType).to.deep.equal('number');
+          expect(err.details.moduleName).to.deep.equal('workbox-strategies');
+          expect(err.details.className).to.deep.equal('NetworkFirst');
+          expect(err.details.funcName).to.deep.equal('constructor');
+        },
+      );
     });
 
-    it(`should return the network response and update the cache when the network request succeeds`, async function() {
+    it(`should return the network response and update the cache when the network request succeeds`, async function () {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
       spyOnEvent(event);
@@ -252,7 +261,7 @@ describe(`NetworkFirst`, function() {
       await compareResponses(handleResponse, currentCachedResponse, true);
     });
 
-    it(`should update the cache with an the opaque cross-origin network response`, async function() {
+    it(`should update the cache with an the opaque cross-origin network response`, async function () {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
       spyOnEvent(event);
@@ -275,7 +284,7 @@ describe(`NetworkFirst`, function() {
       expect(cachedResponse.status).to.equal(0);
     });
 
-    it(`should not cache an opaque response if they add a custom plugin`, async function() {
+    it(`should not cache an opaque response if they add a custom plugin`, async function () {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
       spyOnEvent(event);
@@ -284,9 +293,7 @@ describe(`NetworkFirst`, function() {
       sandbox.stub(self, 'fetch').resolves(fetchResponse);
 
       const networkFirst = new NetworkFirst({
-        plugins: [
-          {cacheWillUpdate: () => null},
-        ],
+        plugins: [{cacheWillUpdate: () => null}],
       });
 
       const handleResponse = await networkFirst.handle({
@@ -302,11 +309,13 @@ describe(`NetworkFirst`, function() {
       expect(cachedResponse).to.not.exist;
     });
 
-    it(`should use the fetchOptions provided`, async function() {
+    it(`should use the fetchOptions provided`, async function () {
       const fetchOptions = {credentials: 'include'};
       const networkFirst = new NetworkFirst({fetchOptions});
 
-      const fetchStub = sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
+      const fetchStub = sandbox
+        .stub(self, 'fetch')
+        .resolves(generateUniqueResponse());
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
       spyOnEvent(event);
@@ -322,9 +331,10 @@ describe(`NetworkFirst`, function() {
       expect(fetchStub.calledWith(request, fetchOptions)).to.be.true;
     });
 
-    it(`should use the CacheQueryOptions when performing a cache match`, async function() {
-      const matchStub = sandbox.stub(self.caches.constructor.prototype, 'match')
-          .resolves(generateUniqueResponse());
+    it(`should use the CacheQueryOptions when performing a cache match`, async function () {
+      const matchStub = sandbox
+        .stub(self.caches.constructor.prototype, 'match')
+        .resolves(generateUniqueResponse());
 
       sandbox.stub(self, 'fetch').callsFake(() => Promise.reject(new Error()));
 

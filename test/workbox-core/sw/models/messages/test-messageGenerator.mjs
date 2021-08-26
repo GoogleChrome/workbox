@@ -8,14 +8,13 @@
 
 import {messageGenerator} from 'workbox-core/models/messages/messageGenerator.mjs';
 
-
-describe(`messageGenerator`, function() {
+describe(`messageGenerator`, function () {
   const detailsObj = {
     exampleDetail: 'With Value',
   };
   const detailsString = `${JSON.stringify([detailsObj])}`;
 
-  it(`should handle unknown codes`, function() {
+  it(`should handle unknown codes`, function () {
     if (process.env.NODE_ENV === 'production') {
       const message = messageGenerator('fake-code');
 
@@ -27,7 +26,7 @@ describe(`messageGenerator`, function() {
     }
   });
 
-  it(`should return the code with details if the code is unknown`, function() {
+  it(`should return the code with details if the code is unknown`, function () {
     if (process.env.NODE_ENV === 'production') {
       const message = messageGenerator('fake-code', detailsObj);
       expect(message).to.equal(`fake-code :: ${detailsString}`);
@@ -38,7 +37,7 @@ describe(`messageGenerator`, function() {
     }
   });
 
-  it(`should throw an error if the code is valid but no required details are defined`, function() {
+  it(`should throw an error if the code is valid but no required details are defined`, function () {
     if (process.env.NODE_ENV === 'production') {
       const message = messageGenerator('incorrect-type');
       expect(message).to.equal(`incorrect-type`);
@@ -49,7 +48,7 @@ describe(`messageGenerator`, function() {
     }
   });
 
-  it(`should throw an error if the code is valid but the arguments are missing details`, function() {
+  it(`should throw an error if the code is valid but the arguments are missing details`, function () {
     if (process.env.NODE_ENV === 'production') {
       const message = messageGenerator('incorrect-type', detailsObj);
       expect(message).to.equal(`incorrect-type :: ${detailsString}`);
@@ -60,7 +59,7 @@ describe(`messageGenerator`, function() {
     }
   });
 
-  it(`should return the message if the code and details are valid`, function() {
+  it(`should return the message if the code and details are valid`, function () {
     const invalidTypeDetails = {
       moduleName: 'test',
       className: 'test',
@@ -71,7 +70,9 @@ describe(`messageGenerator`, function() {
 
     const message = messageGenerator('incorrect-type', invalidTypeDetails);
     if (process.env.NODE_ENV === 'production') {
-      expect(message).to.equal(`incorrect-type :: ${JSON.stringify([invalidTypeDetails])}`);
+      expect(message).to.equal(
+        `incorrect-type :: ${JSON.stringify([invalidTypeDetails])}`,
+      );
     } else {
       expect(message.indexOf('incorrect-type')).to.equal(-1);
     }

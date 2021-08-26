@@ -8,9 +8,8 @@
 
 import {registerQuotaErrorCallback} from 'workbox-core/registerQuotaErrorCallback.mjs';
 
-
-describe(`registerQuotaErrorCallback()`, function() {
-  it(`should throw when passed a non-function in dev mode`, async function() {
+describe(`registerQuotaErrorCallback()`, function () {
+  it(`should throw when passed a non-function in dev mode`, async function () {
     if (process.env.NODE_ENV === 'production') this.skip();
 
     await expectError(() => registerQuotaErrorCallback(null), 'incorrect-type');

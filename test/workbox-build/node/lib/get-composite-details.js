@@ -8,9 +8,11 @@
 
 const expect = require('chai').expect;
 
-const {getCompositeDetails} = require('../../../../packages/workbox-build/build/lib/get-composite-details');
+const {
+  getCompositeDetails,
+} = require('../../../../packages/workbox-build/build/lib/get-composite-details');
 
-describe(`[workbox-build] lib/get-composite-details.js`, function() {
+describe(`[workbox-build] lib/get-composite-details.js`, function () {
   const URL = '/test';
 
   const ENTRY1 = {
@@ -24,7 +26,7 @@ describe(`[workbox-build] lib/get-composite-details.js`, function() {
     hash: 'hash2',
   };
 
-  it(`should return the expected composite details for a single file`, function() {
+  it(`should return the expected composite details for a single file`, function () {
     const details = getCompositeDetails(URL, [ENTRY1]);
     expect(details).to.eql({
       file: URL,
@@ -33,7 +35,7 @@ describe(`[workbox-build] lib/get-composite-details.js`, function() {
     });
   });
 
-  it(`should return the expected composite details for multiple files`, function() {
+  it(`should return the expected composite details for multiple files`, function () {
     const details = getCompositeDetails(URL, [ENTRY1, ENTRY2]);
     expect(details).to.eql({
       file: URL,

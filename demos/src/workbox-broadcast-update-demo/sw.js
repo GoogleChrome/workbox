@@ -1,12 +1,13 @@
-importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.1.5/workbox-sw.js');
+importScripts(
+  'https://storage.googleapis.com/workbox-cdn/releases/6.1.5/workbox-sw.js',
+);
 
 workbox.setConfig({
   debug: true,
 });
 
-
 const broadcastUpdate = new workbox.broadcastUpdate.BroadcastCacheUpdate(
-    'broadcast-update-demo',
+  'broadcast-update-demo',
 );
 
 const initialResponse = new Response('Response 1', {

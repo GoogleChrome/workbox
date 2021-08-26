@@ -50,7 +50,8 @@ class PrecacheRoute extends Route {
       for (const possibleURL of generateURLVariations(request.url, options)) {
         const cacheKey = urlsToCacheKeys.get(possibleURL);
         if (cacheKey) {
-          return {cacheKey};
+          const integrity = precacheController.getIntegrityForCacheKey(cacheKey);
+          return {cacheKey, integrity};
         }
       }
       if (process.env.NODE_ENV !== 'production') {

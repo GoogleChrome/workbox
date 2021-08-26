@@ -6,7 +6,6 @@
   https://opensource.org/licenses/MIT.
 */
 
-
 // Cache a resonse value and clone it instead of re-fetching every time.
 let response;
 

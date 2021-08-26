@@ -9,28 +9,30 @@
 import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
 import {StaleWhileRevalidate} from 'workbox-strategies/StaleWhileRevalidate.mjs';
 import {compareResponses} from '../../../infra/testing/helpers/compareResponses.mjs';
-import {eventDoneWaiting, spyOnEvent} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
+import {
+  eventDoneWaiting,
+  spyOnEvent,
+} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
 import {generateOpaqueResponse} from '../../../infra/testing/helpers/generateOpaqueResponse.mjs';
 import {generateUniqueResponse} from '../../../infra/testing/helpers/generateUniqueResponse.mjs';
 
-
-describe(`StaleWhileRevalidate`, function() {
+describe(`StaleWhileRevalidate`, function () {
   const sandbox = sinon.createSandbox();
 
-  beforeEach(async function() {
+  beforeEach(async function () {
     const keys = await caches.keys();
     await Promise.all(keys.map((key) => caches.delete(key)));
     sandbox.restore();
   });
 
-  after(async function() {
+  after(async function () {
     const keys = await caches.keys();
     await Promise.all(keys.map((key) => caches.delete(key)));
     sandbox.restore();
   });
 
-  describe(`handle()`, function() {
-    it(`should add the initial response to the cache`, async function() {
+  describe(`handle()`, function () {
+    it(`should add the initial response to the cache`, async function () {
       sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
 
       const request = new Request('http://example.io/test/');
@@ -51,7 +53,7 @@ describe(`StaleWhileRevalidate`, function() {
       await compareResponses(cachedResponse, handleResponse, true);
     });
 
-    it(`should support using a string as the request`, async function() {
+    it(`should support using a string as the request`, async function () {
       sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
 
       const stringRequest = 'http://example.io/test/';
@@ -73,7 +75,7 @@ describe(`StaleWhileRevalidate`, function() {
       await compareResponses(cachedResponse, handleResponse, true);
     });
 
-    it(`should return the cached response and not update the cache when the network request fails`, async function() {
+    it(`should return the cached response and not update the cache when the network request fails`, async function () {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
       spyOnEvent(event);
@@ -98,7 +100,7 @@ describe(`StaleWhileRevalidate`, function() {
       await compareResponses(firstCachedResponse, secondCachedResponse, true);
     });
 
-    it(`should return the cached response and update the cache when the network request succeeds`, async function() {
+    it(`should return the cached response and update the cache when the network request succeeds`, async function () {
       sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
 
       const request = new Request('http://example.io/test/');
@@ -108,7 +110,6 @@ describe(`StaleWhileRevalidate`, function() {
       const firstCachedResponse = new Response('response body 1');
       const cache = await caches.open(cacheNames.getRuntimeName());
       await cache.put(request, firstCachedResponse.clone());
-
 
       const staleWhileRevalidate = new StaleWhileRevalidate();
       const handleResponse = await staleWhileRevalidate.handle({
@@ -123,7 +124,7 @@ describe(`StaleWhileRevalidate`, function() {
       await compareResponses(firstCachedResponse, secondCachedResponse, false);
     });
 
-    it(`should update the cache with an the opaque cross-origin network response`, async function() {
+    it(`should update the cache with an the opaque cross-origin network response`, async function () {
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
       spyOnEvent(event);
@@ -146,7 +147,7 @@ describe(`StaleWhileRevalidate`, function() {
       expect(cachedResponse.status).to.eql(0);
     });
 
-    it(`should allow adding plugins to override cacheOkAndOpaque`, function() {
+    it(`should allow adding plugins to override cacheOkAndOpaque`, function () {
       const plugins = [
         {
           cacheWillUpdate: () => {},
@@ -158,11 +159,13 @@ describe(`StaleWhileRevalidate`, function() {
       expect(staleWhileRevalidate.plugins).to.equal(plugins);
     });
 
-    it(`should use the fetchOptions provided`, async function() {
+    it(`should use the fetchOptions provided`, async function () {
       const fetchOptions = {credentials: 'include'};
       const staleWhileRevalidate = new StaleWhileRevalidate({fetchOptions});
 
-      const fetchStub = sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
+      const fetchStub = sandbox
+        .stub(self, 'fetch')
+        .resolves(generateUniqueResponse());
       const request = new Request('http://example.io/test/');
       const event = new FetchEvent('fetch', {request});
       spyOnEvent(event);
@@ -178,11 +181,12 @@ describe(`StaleWhileRevalidate`, function() {
       expect(fetchStub.calledWith(request, fetchOptions)).to.be.true;
     });
 
-    it(`should use the CacheQueryOptions when performing a cache match`, async function() {
+    it(`should use the CacheQueryOptions when performing a cache match`, async function () {
       sandbox.stub(self, 'fetch').resolves(generateUniqueResponse());
 
-      const matchStub = sandbox.stub(self.caches.constructor.prototype, 'match')
-          .resolves(generateUniqueResponse());
+      const matchStub = sandbox
+        .stub(self.caches.constructor.prototype, 'match')
+        .resolves(generateUniqueResponse());
 
       const matchOptions = {ignoreSearch: true};
       const staleWhileRevalidate = new StaleWhileRevalidate({matchOptions});
@@ -203,7 +207,7 @@ describe(`StaleWhileRevalidate`, function() {
       expect(matchStub.firstCall.args[1].ignoreSearch).to.equal(true);
     });
 
-    it(`should throw an error when the network request fails, and there's no cache match`, async function() {
+    it(`should throw an error when the network request fails, and there's no cache match`, async function () {
       sandbox.stub(self, 'fetch').rejects(new Error('Injected error.'));
 
       const request = new Request('http://example.io/test/');
@@ -212,11 +216,12 @@ describe(`StaleWhileRevalidate`, function() {
 
       const staleWhileRevalidate = new StaleWhileRevalidate();
       await expectError(
-          () => staleWhileRevalidate.handle({
+        () =>
+          staleWhileRevalidate.handle({
             request,
             event,
           }),
-          'no-response',
+        'no-response',
       );
 
       await eventDoneWaiting(event);

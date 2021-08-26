@@ -15,7 +15,10 @@ const queue = new workbox.backgroundSync.Queue('myQueueName');
 
 self.addEventListener('fetch', (event) => {
   const pathname = new URL(event.request.url).pathname;
-  if (pathname === '/test/workbox-background-sync/static/basic-example/example.txt') {
+  if (
+    pathname ===
+    '/test/workbox-background-sync/static/basic-example/example.txt'
+  ) {
     const queuePromise = (async () => {
       await queue.pushRequest({request: event.request});
       // This is a horrible hack :(
@@ -32,5 +35,9 @@ self.addEventListener('fetch', (event) => {
   }
 });
 
-self.addEventListener('install', (event) => event.waitUntil(self.skipWaiting()));
-self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim()));
+self.addEventListener('install', (event) =>
+  event.waitUntil(self.skipWaiting()),
+);
+self.addEventListener('activate', (event) =>
+  event.waitUntil(self.clients.claim()),
+);

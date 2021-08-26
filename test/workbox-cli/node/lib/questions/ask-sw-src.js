@@ -9,16 +9,17 @@
 const expect = require('chai').expect;
 const proxyquire = require('proxyquire');
 
-const MODULE_PATH = '../../../../../packages/workbox-cli/build/lib/questions/ask-sw-src';
+const MODULE_PATH =
+  '../../../../../packages/workbox-cli/build/lib/questions/ask-sw-src';
 // This is the hardcoded name of the question that's passed to inquirer.
 // It's used as the key to read the response from the answer.
 const QUESTION_NAME = 'swSrc';
 
-describe(`[workbox-cli] lib/questions/ask-sw-src.js`, function() {
-  it(`should resolve with a valid answer to the question`, async function() {
+describe(`[workbox-cli] lib/questions/ask-sw-src.js`, function () {
+  it(`should resolve with a valid answer to the question`, async function () {
     const expectedAnswer = 'expected answer';
     const {askSWSrc} = proxyquire(MODULE_PATH, {
-      'inquirer': {
+      inquirer: {
         prompt: () => Promise.resolve({[QUESTION_NAME]: expectedAnswer}),
       },
     });
@@ -27,4 +28,3 @@ describe(`[workbox-cli] lib/questions/ask-sw-src.js`, function() {
     expect(answer).to.eql(expectedAnswer);
   });
 });
-

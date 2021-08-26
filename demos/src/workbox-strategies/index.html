@@ -2,31 +2,38 @@
 <html lang="en">
   <head>
     <title>workbox-strategies demo</title>
-    <meta name="workbox-strategies demo" content="An example to demonstrate the workbox-strategies module">
-    <link id="favicon" rel="icon" href="https://glitch.com/edit/favicon-app.ico" type="image/x-icon">
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="workbox-strategies demo"
+      content="An example to demonstrate the workbox-strategies module"
+    />
+    <link
+      id="favicon"
+      rel="icon"
+      href="https://glitch.com/edit/favicon-app.ico"
+      type="image/x-icon"
+    />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
       body {
         margin-left: 5%;
-        font-family: 'Open Sans', sans-serif
+        font-family: 'Open Sans', sans-serif;
       }
       ol {
-        padding-left: 20px
+        padding-left: 20px;
       }
       li {
-        margin-bottom: 5px
+        margin-bottom: 5px;
       }
       button {
         margin: 20px 0;
-        font-weight: bold
+        font-weight: bold;
       }
     </style>
   </head>
   <body>
-
-    <header>      
+    <header>
       <div>
         <h1>workbox-strategies Demo</h1>
       </div>
@@ -35,74 +42,110 @@
     <ol>
       <li>Open DevTools</li>
       <li>Go to the Console</li>
-      <li>Click any of the buttons below and view the logs:
+      <li>
+        Click any of the buttons below and view the logs:
         <ul>
           <li>
             <p>This will attempt to get a request from an empty cache.</p>
-            <p><button class="cache-only-empty-cache">Cache Only Request (To Empty Cache)</button></p>
+            <p>
+              <button class="cache-only-empty-cache">
+                Cache Only Request (To Empty Cache)
+              </button>
+            </p>
           </li>
-          <li><p><button class="cache-only-populated-cache">Cache Only Request (To Populated Cache)</button></p></li>
-          <li><p><button class="cache-first">Cache First Request (Try it Several Times)</button></p></li>
-          <li><p><button class="network-only">Network Only Request</button></p></li>
-          <li><p><button class="network-first-valid">Network First Request (Valid URL)</button></p></li>
-          <li><p><button class="network-first-failing">Network First Request (Failing URL)</button></p></li>
-          <li><p><button class="stale-while-revalidate">Stale While Revalidate Request</button></p></li>
+          <li>
+            <p>
+              <button class="cache-only-populated-cache">
+                Cache Only Request (To Populated Cache)
+              </button>
+            </p>
+          </li>
+          <li>
+            <p>
+              <button class="cache-first">
+                Cache First Request (Try it Several Times)
+              </button>
+            </p>
+          </li>
+          <li>
+            <p><button class="network-only">Network Only Request</button></p>
+          </li>
+          <li>
+            <p>
+              <button class="network-first-valid">
+                Network First Request (Valid URL)
+              </button>
+            </p>
+          </li>
+          <li>
+            <p>
+              <button class="network-first-failing">
+                Network First Request (Failing URL)
+              </button>
+            </p>
+          </li>
+          <li>
+            <p>
+              <button class="stale-while-revalidate">
+                Stale While Revalidate Request
+              </button>
+            </p>
+          </li>
         </ul>
       </li>
     </ol>
 
     <script>
       const cacheOnlyEmpty = document.querySelector('.cache-only-empty-cache');
-      const cacheOnlyPopulated = document.querySelector('.cache-only-populated-cache');
+      const cacheOnlyPopulated = document.querySelector(
+        '.cache-only-populated-cache',
+      );
       const cacheFirst = document.querySelector('.cache-first');
       const networkOnly = document.querySelector('.network-only');
       const networkFirstValid = document.querySelector('.network-first-valid');
-      const networkFirstFailing = document.querySelector('.network-first-failing');
-      const staleWhileRevalidate = document.querySelector('.stale-while-revalidate');
+      const networkFirstFailing = document.querySelector(
+        '.network-first-failing',
+      );
+      const staleWhileRevalidate = document.querySelector(
+        '.stale-while-revalidate',
+      );
 
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
-        .then(() => {
+        navigator.serviceWorker.register('./sw.js').then(() => {
           cacheOnlyEmpty.addEventListener('click', () => {
             fetch('cache-only-empty-cache.txt').catch(() => {});
           });
 
           cacheOnlyPopulated.addEventListener('click', () => {
-            fetch('cache-only-populated-cache')
-            .then((response) => {
+            fetch('cache-only-populated-cache').then((response) => {
               return response.text();
             });
           });
 
           cacheFirst.addEventListener('click', () => {
-            fetch('cache-first.txt')
-            .then((response) => {
+            fetch('cache-first.txt').then((response) => {
               return response.text();
             });
           });
 
           networkOnly.addEventListener('click', () => {
-            fetch('network-only.txt')
-            .then((response) => {
+            fetch('network-only.txt').then((response) => {
               return response.text();
             });
           });
 
           networkFirstValid.addEventListener('click', () => {
-            fetch('network-first.txt')
-            .then((response) => {
+            fetch('network-first.txt').then((response) => {
               return response.text();
             });
           });
 
           networkFirstFailing.addEventListener('click', () => {
-            fetch('network-first-404.txt')
-            .catch(() => {});
+            fetch('network-first-404.txt').catch(() => {});
           });
 
           staleWhileRevalidate.addEventListener('click', () => {
-            fetch('stale-while-revalidate.txt')
-            .then((response) => {
+            fetch('stale-while-revalidate.txt').then((response) => {
               return response.text();
             });
           });
@@ -110,14 +153,14 @@
       });
     </script>
 
-
-    <a href="https://developers.google.com/web/tools/workbox/modules">Back to Demos</a>
+    <a href="https://developers.google.com/web/tools/workbox/modules"
+      >Back to Demos</a
+    >
 
     <p>
-
-    <a href="https://developers.google.com/web/tools/workbox">Docs</a> |
-    <a href="https://github.com/googlechrome/workbox">GitHub</a> |
-    <a href="https://twitter.com/workboxjs">@workboxjs</a>
-    
+      <a href="https://developers.google.com/web/tools/workbox">Docs</a> |
+      <a href="https://github.com/googlechrome/workbox">GitHub</a> |
+      <a href="https://twitter.com/workboxjs">@workboxjs</a>
+    </p>
   </body>
 </html>

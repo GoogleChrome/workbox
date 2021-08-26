@@ -10,9 +10,8 @@ import {addPlugins} from 'workbox-precaching/addPlugins.mjs';
 import {precache} from 'workbox-precaching/precache.mjs';
 import {getOrCreatePrecacheController} from 'workbox-precaching/utils/getOrCreatePrecacheController.mjs';
 
-
-describe(`addPlugins()`, function() {
-  it(`should add plugins to the strategy`, async function() {
+describe(`addPlugins()`, function () {
+  it(`should add plugins to the strategy`, async function () {
     const plugin1 = {};
     const plugin2 = {};
 

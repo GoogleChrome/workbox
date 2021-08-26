@@ -10,35 +10,34 @@ import {matchPrecache} from 'workbox-precaching/matchPrecache.mjs';
 import {precache} from 'workbox-precaching/precache.mjs';
 import {resetDefaultPrecacheController} from './resetDefaultPrecacheController.mjs';
 
-
-describe(`matchPrecache()`, function() {
+describe(`matchPrecache()`, function () {
   const sandbox = sinon.createSandbox();
 
-  beforeEach(function() {
+  beforeEach(function () {
     sandbox.stub(self, 'addEventListener');
     resetDefaultPrecacheController();
   });
 
-  afterEach(function() {
+  afterEach(function () {
     sandbox.restore();
   });
 
   // This is all into one big test with multiple expects() as that plays nicer
   // with precache()'s behavior.
-  it(`should behave as expected`, async function() {
-    const matchStub = sandbox.stub()
-        .onFirstCall().resolves(new Response('response 1'))
-        .onSecondCall().resolves(new Response('response 2'))
-        .resolves(undefined);
+  it(`should behave as expected`, async function () {
+    const matchStub = sandbox
+      .stub()
+      .onFirstCall()
+      .resolves(new Response('response 1'))
+      .onSecondCall()
+      .resolves(new Response('response 2'))
+      .resolves(undefined);
 
     sandbox.stub(self.caches, 'open').resolves({
       match: matchStub,
     });
 
-    precache([
-      '/url1',
-      {url: '/url2', revision: 'abc123'},
-    ]);
+    precache(['/url1', {url: '/url2', revision: 'abc123'}]);
 
     const noMatchResponse = await matchPrecache('does-not-match');
     expect(noMatchResponse).to.be.undefined;
@@ -53,7 +52,9 @@ describe(`matchPrecache()`, function() {
     const response2 = await matchPrecache(new Request('/url2'));
 
     expect(matchStub.calledTwice).to.be.true;
-    expect(matchStub.secondCall.args).to.eql([`${location.origin}/url2?__WB_REVISION__=abc123`]);
+    expect(matchStub.secondCall.args).to.eql([
+      `${location.origin}/url2?__WB_REVISION__=abc123`,
+    ]);
     expect(await response2.text()).to.eql('response 2');
   });
 });

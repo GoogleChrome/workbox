@@ -8,13 +8,12 @@
 
 import {responsesAreSame} from '../../../packages/workbox-broadcast-update/responsesAreSame.mjs';
 
-
-describe(`responsesAreSame`, function() {
+describe(`responsesAreSame`, function () {
   const firstHeaderName = 'x-first-header';
   const secondHeaderName = 'x-second-header';
   const headersToCheck = [firstHeaderName, secondHeaderName];
 
-  it(`should throw when responsesAreSame() is called without any parameters`, function() {
+  it(`should throw when responsesAreSame() is called without any parameters`, function () {
     if (process.env.NODE_ENV === 'production') this.skip();
 
     return expectError(() => {
@@ -22,7 +21,7 @@ describe(`responsesAreSame`, function() {
     }, 'invalid-responses-are-same-args');
   });
 
-  it(`should return true when all the headers match`, function() {
+  it(`should return true when all the headers match`, function () {
     const first = new Response('', {
       headers: {
         [firstHeaderName]: 'same',
@@ -35,14 +34,10 @@ describe(`responsesAreSame`, function() {
         [secondHeaderName]: 'same',
       },
     });
-    expect(responsesAreSame(
-        first,
-        second,
-        headersToCheck,
-    )).to.be.true;
+    expect(responsesAreSame(first, second, headersToCheck)).to.be.true;
   });
 
-  it(`should return true when only a subset of headers exist, but the existing ones match`, function() {
+  it(`should return true when only a subset of headers exist, but the existing ones match`, function () {
     const first = new Response('', {
       headers: {
         [firstHeaderName]: 'same',
@@ -53,24 +48,16 @@ describe(`responsesAreSame`, function() {
         [firstHeaderName]: 'same',
       },
     });
-    expect(responsesAreSame(
-        first,
-        second,
-        headersToCheck,
-    )).to.be.true;
+    expect(responsesAreSame(first, second, headersToCheck)).to.be.true;
   });
 
-  it(`should return true when no headers exist`, function() {
+  it(`should return true when no headers exist`, function () {
     const first = new Response('');
     const second = new Response('');
-    expect(responsesAreSame(
-        first,
-        second,
-        headersToCheck,
-    )).to.be.true;
+    expect(responsesAreSame(first, second, headersToCheck)).to.be.true;
   });
 
-  it(`should return false when one header matches and the other doesn't`, function() {
+  it(`should return false when one header matches and the other doesn't`, function () {
     const first = new Response('', {
       headers: {
         [firstHeaderName]: 'same',
@@ -83,14 +70,10 @@ describe(`responsesAreSame`, function() {
         [secondHeaderName]: 'different',
       },
     });
-    expect(responsesAreSame(
-        first,
-        second,
-        headersToCheck,
-    )).to.be.false;
+    expect(responsesAreSame(first, second, headersToCheck)).to.be.false;
   });
 
-  it(`should return false when none of the headers match`, function() {
+  it(`should return false when none of the headers match`, function () {
     const first = new Response('', {
       headers: {
         [firstHeaderName]: 'same',
@@ -103,10 +86,6 @@ describe(`responsesAreSame`, function() {
         [secondHeaderName]: 'different',
       },
     });
-    expect(responsesAreSame(
-        first,
-        second,
-        headersToCheck,
-    )).to.be.false;
+    expect(responsesAreSame(first, second, headersToCheck)).to.be.false;
   });
 });

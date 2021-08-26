@@ -9,8 +9,11 @@
 import {Workbox} from '/__WORKBOX/buildFile/workbox-window';
 
 const isDev = () => {
-  return self.process && self.process.env &&
-      self.process.env.NODE_ENV !== 'production';
+  return (
+    self.process &&
+    self.process.env &&
+    self.process.env.NODE_ENV !== 'production'
+  );
 };
 
 const sleep = async (ms) => {
@@ -47,8 +50,10 @@ const uniq = (() => {
 const stubAlreadyControllingSW = async (scriptURL) => {
   await navigator.serviceWorker.register(scriptURL);
   await waitUntil(() => {
-    return navigator.serviceWorker.controller &&
-        navigator.serviceWorker.controller.scriptURL.endsWith(scriptURL);
+    return (
+      navigator.serviceWorker.controller &&
+      navigator.serviceWorker.controller.scriptURL.endsWith(scriptURL)
+    );
   });
 };
 
@@ -80,7 +85,9 @@ const updateVersion = async (version, scriptURL) => {
 const assertMatchesWorkboxEvent = (event, props) => {
   for (const [key, value] of Object.entries(props)) {
     if (key === 'originalEvent' && typeof value !== 'undefined') {
-      expect(event.originalEvent.type, `${key} doesn't match`).to.equal(value.type);
+      expect(event.originalEvent.type, `${key} doesn't match`).to.equal(
+        value.type,
+      );
     } else {
       expect(event[key], `${key} doesn't match`).to.equal(value);
     }
@@ -89,7 +96,7 @@ const assertMatchesWorkboxEvent = (event, props) => {
 
 const sandbox = sinon.createSandbox();
 
-describe(`[workbox-window] Workbox`, function() {
+describe(`[workbox-window] Workbox`, function () {
   // Since it's not possible to completely unregister a controlling SW from
   // a page (without closing all clients, including the current window), it's
   // also not possible to run unit tests all from a fresh start in a single
@@ -98,7 +105,7 @@ describe(`[workbox-window] Workbox`, function() {
   // tests with a controlling SW and only test the things that don't need to
   // assert fresh-install behavior. Anything that does must be tested with
   // integration tests.
-  beforeEach(async function() {
+  beforeEach(async function () {
     const scriptURL = uniq('sw-clients-claim.js.njk');
     await updateVersion('1.0.0', scriptURL);
     await stubAlreadyControllingSW(scriptURL);
@@ -110,17 +117,17 @@ describe(`[workbox-window] Workbox`, function() {
     sandbox.spy(console, 'error');
   });
 
-  afterEach(async function() {
+  afterEach(async function () {
     sandbox.restore();
   });
 
-  describe(`constructor`, function() {
-    it(`creates an instance of the Workbox class`, async function() {
+  describe(`constructor`, function () {
+    it(`creates an instance of the Workbox class`, async function () {
       const wb = new Workbox(uniq('sw-clients-claim.js.njk'));
       expect(wb).to.be.instanceOf(Workbox);
     });
 
-    it(`does not register a SW`, function(done) {
+    it(`does not register a SW`, function (done) {
       sandbox.spy(navigator.serviceWorker, 'register');
 
       new Workbox(uniq('sw-clients-claim.js.njk'));
@@ -135,8 +142,8 @@ describe(`[workbox-window] Workbox`, function() {
     });
   });
 
-  describe(`register`, function() {
-    it(`registers a service worker if the window is loaded`, async function() {
+  describe(`register`, function () {
+    it(`registers a service worker if the window is loaded`, async function () {
       sandbox.spy(navigator.serviceWorker, 'register');
       sandbox.spy(self, 'addEventListener');
 
@@ -151,7 +158,7 @@ describe(`[workbox-window] Workbox`, function() {
       expect(navigator.serviceWorker.register.args[0][0]).to.equal(scriptURL);
     });
 
-    it(`defers registration until after load by default`, async function() {
+    it(`defers registration until after load by default`, async function () {
       sandbox.spy(navigator.serviceWorker, 'register');
       sandbox.spy(self, 'addEventListener');
 
@@ -168,7 +175,7 @@ describe(`[workbox-window] Workbox`, function() {
       expect(self.addEventListener.args[0][0]).to.equal('load');
     });
 
-    it(`supports not deferring until load`, async function() {
+    it(`supports not deferring until load`, async function () {
       sandbox.spy(navigator.serviceWorker, 'register');
       sandbox.spy(self, 'addEventListener');
 
@@ -184,7 +191,7 @@ describe(`[workbox-window] Workbox`, function() {
       expect(self.addEventListener.calledWith('load')).to.not.equal(true);
     });
 
-    it(`errors when registration fails`, async function() {
+    it(`errors when registration fails`, async function () {
       const wb = new Workbox(uniq('sw-error.js'));
 
       try {
@@ -197,8 +204,8 @@ describe(`[workbox-window] Workbox`, function() {
       }
     });
 
-    describe(`logs in development-only`, function() {
-      it(`(debug) if a SW with the same script URL is already controlling the page`, async function() {
+    describe(`logs in development-only`, function () {
+      it(`(debug) if a SW with the same script URL is already controlling the page`, async function () {
         if (!isDev()) this.skip();
 
         // Gets the URL of the currently controlling SW.
@@ -211,7 +218,7 @@ describe(`[workbox-window] Workbox`, function() {
         expect(console.debug.args[0][2]).to.match(/same/i);
       });
 
-      it(`(debug) if a SW with a different script URL is already controlling the page`, async function() {
+      it(`(debug) if a SW with a different script URL is already controlling the page`, async function () {
         if (!isDev()) this.skip();
 
         const wb = new Workbox(uniq('sw-no-skip-waiting.js.njk'));
@@ -222,7 +229,7 @@ describe(`[workbox-window] Workbox`, function() {
         expect(console.debug.args[0][2]).to.match(/new/i);
       });
 
-      it(`(info) when registration is successful`, async function() {
+      it(`(info) when registration is successful`, async function () {
         if (!isDev()) this.skip();
 
         sandbox.spy(navigator.serviceWorker, 'register');
@@ -234,7 +241,7 @@ describe(`[workbox-window] Workbox`, function() {
         expect(console.log.args[0][2]).to.match(/success/i);
       });
 
-      it(`(warn) when the registered SW is not in scope for the current page`, async function() {
+      it(`(warn) when the registered SW is not in scope for the current page`, async function () {
         if (!isDev()) this.skip();
 
         sandbox.spy(navigator.serviceWorker, 'register');
@@ -246,7 +253,7 @@ describe(`[workbox-window] Workbox`, function() {
         expect(console.warn.args[0][2]).to.include('scope');
       });
 
-      it(`(warn) when a service worker is installed but now waiting`, async function() {
+      it(`(warn) when a service worker is installed but now waiting`, async function () {
         if (!isDev()) this.skip();
 
         const wb = new Workbox(uniq('sw-no-skip-waiting.js.njk'));
@@ -256,7 +263,7 @@ describe(`[workbox-window] Workbox`, function() {
         expect(console.warn.args[0][2]).to.match(/waiting/i);
       });
 
-      it(`(error) when registration fails`, async function() {
+      it(`(error) when registration fails`, async function () {
         if (!isDev()) this.skip();
 
         const wb = new Workbox(uniq('sw-error.js'));
@@ -272,7 +279,7 @@ describe(`[workbox-window] Workbox`, function() {
         }
       });
 
-      it(`(error) if calling register twice`, async function() {
+      it(`(error) if calling register twice`, async function () {
         if (!isDev()) this.skip();
 
         const wb = new Workbox(uniq('sw-clients-claim.js.njk'));
@@ -286,8 +293,8 @@ describe(`[workbox-window] Workbox`, function() {
     });
   });
 
-  describe(`update`, function() {
-    it(`calls update on the registration`, async function() {
+  describe(`update`, function () {
+    it(`calls update on the registration`, async function () {
       const scriptURL = navigator.serviceWorker.controller.scriptURL;
       const wb = new Workbox(scriptURL);
       const reg = await wb.register();
@@ -299,7 +306,7 @@ describe(`[workbox-window] Workbox`, function() {
       expect(reg.update.callCount).to.equal(1);
     });
 
-    it(`triggers an updatefound event if the SW was updated`, async function() {
+    it(`triggers an updatefound event if the SW was updated`, async function () {
       const scriptURL = navigator.serviceWorker.controller.scriptURL;
 
       const wb = new Workbox(scriptURL);
@@ -307,7 +314,9 @@ describe(`[workbox-window] Workbox`, function() {
       const reg = await wb.register();
       const updatefoundPromise = new Promise((resolve) => {
         reg.addEventListener('updatefound', () => {
-          expect(reg.installing).to.not.equal(navigator.serviceWorker.controller);
+          expect(reg.installing).to.not.equal(
+            navigator.serviceWorker.controller,
+          );
           resolve();
         });
       });
@@ -322,8 +331,8 @@ describe(`[workbox-window] Workbox`, function() {
       await updatefoundPromise;
     });
 
-    describe(`logs in development-only`, function() {
-      it(`(error) if calling without registration`, async function() {
+    describe(`logs in development-only`, function () {
+      it(`(error) if calling without registration`, async function () {
         if (!isDev()) this.skip();
 
         const wb = new Workbox(uniq('sw-clients-claim.js.njk'));
@@ -335,8 +344,8 @@ describe(`[workbox-window] Workbox`, function() {
     });
   });
 
-  describe(`active`, function() {
-    it(`resolves as soon as the registered SW is active`, async function() {
+  describe(`active`, function () {
+    it(`resolves as soon as the registered SW is active`, async function () {
       const controllerBeforeTest = navigator.serviceWorker.controller;
       const scriptURL = controllerBeforeTest.scriptURL;
       const wb = new Workbox(scriptURL);
@@ -350,7 +359,7 @@ describe(`[workbox-window] Workbox`, function() {
       expect(sw).to.equal(controllerBeforeTest);
     });
 
-    it(`waits for an update if the scriptURLs don't match`, async function() {
+    it(`waits for an update if the scriptURLs don't match`, async function () {
       const controllerBeforeTest = navigator.serviceWorker.controller;
       const scriptURL = uniq('sw-clients-claim.js.njk');
       const wb = new Workbox(scriptURL);
@@ -365,8 +374,8 @@ describe(`[workbox-window] Workbox`, function() {
     });
   });
 
-  describe(`controlling`, function() {
-    it(`resolves as soon as the registered SW is controlling`, async function() {
+  describe(`controlling`, function () {
+    it(`resolves as soon as the registered SW is controlling`, async function () {
       const controllerBeforeTest = navigator.serviceWorker.controller;
       const scriptURL = controllerBeforeTest.scriptURL;
       const wb = new Workbox(scriptURL);
@@ -380,7 +389,7 @@ describe(`[workbox-window] Workbox`, function() {
       expect(sw).to.equal(controllerBeforeTest);
     });
 
-    it(`waits for an update if the scriptURLs don't match`, async function() {
+    it(`waits for an update if the scriptURLs don't match`, async function () {
       const controllerBeforeTest = navigator.serviceWorker.controller;
       const scriptURL = uniq('sw-clients-claim.js.njk');
       const wb = new Workbox(scriptURL);
@@ -395,8 +404,8 @@ describe(`[workbox-window] Workbox`, function() {
     });
   });
 
-  describe(`getSW`, function() {
-    it(`resolves as soon as it has a reference to the SW registered by this instance`, async function() {
+  describe(`getSW`, function () {
+    it(`resolves as soon as it has a reference to the SW registered by this instance`, async function () {
       const wb = new Workbox(uniq('sw-skip-waiting-deferred.js.njk'));
 
       // Intentionally do not await `register()`, so we can test that
@@ -411,7 +420,7 @@ describe(`[workbox-window] Workbox`, function() {
       expect(sw).to.equal(reg.installing);
     });
 
-    it(`resolves before updating if a SW with the same script URL is already controlling`, async function() {
+    it(`resolves before updating if a SW with the same script URL is already controlling`, async function () {
       const scriptURL = navigator.serviceWorker.controller.scriptURL;
       const wb = new Workbox(scriptURL);
 
@@ -423,7 +432,7 @@ describe(`[workbox-window] Workbox`, function() {
       expect(sw).to.equal(navigator.serviceWorker.controller);
     });
 
-    it(`resolves before updating if a SW with the same script URL is already waiting to install`, async function() {
+    it(`resolves before updating if a SW with the same script URL is already waiting to install`, async function () {
       const scriptURL = uniq('sw-no-skip-waiting.js.njk');
 
       const wb1 = new Workbox(scriptURL);
@@ -436,8 +445,9 @@ describe(`[workbox-window] Workbox`, function() {
       // about to be waiting. This is done to assert that if a matching
       // controller *and* waiting SW are found at registration time, the
       // `getSW()` method resolves to the waiting SW.
-      sandbox.stub(navigator.serviceWorker.controller, 'scriptURL')
-          .value(scriptURL);
+      sandbox
+        .stub(navigator.serviceWorker.controller, 'scriptURL')
+        .value(scriptURL);
 
       const wb2 = new Workbox(scriptURL);
       const reg2Promise = wb2.register();
@@ -447,7 +457,7 @@ describe(`[workbox-window] Workbox`, function() {
       expect(sw).to.equal(reg2.waiting);
     });
 
-    it(`resolves as soon as an an update is found (if not already resolved)`, async function() {
+    it(`resolves as soon as an an update is found (if not already resolved)`, async function () {
       const wb = new Workbox(uniq('sw-clients-claim.js.njk'));
       wb.register();
 
@@ -455,7 +465,7 @@ describe(`[workbox-window] Workbox`, function() {
       expect(sw.state).to.equal('installing');
     });
 
-    it(`resolves to the new SW after an update is found`, async function() {
+    it(`resolves to the new SW after an update is found`, async function () {
       const scriptURL = navigator.serviceWorker.controller.scriptURL;
 
       // Update the SW after it's controlling so both an original compatible
@@ -485,8 +495,8 @@ describe(`[workbox-window] Workbox`, function() {
     });
   });
 
-  describe(`messageSW`, function() {
-    it(`postMessages the registered service worker`, async function() {
+  describe(`messageSW`, function () {
+    it(`postMessages the registered service worker`, async function () {
       const wb = new Workbox(uniq('sw-message-reply.js'));
       await wb.register();
 
@@ -499,7 +509,7 @@ describe(`[workbox-window] Workbox`, function() {
       expect(messageSpy.args[0][0].data).to.equal('postMessage from SW!');
     });
 
-    it(`returns a promise that resolves with the SW's response (if any)`, async function() {
+    it(`returns a promise that resolves with the SW's response (if any)`, async function () {
       const wb = new Workbox(uniq('sw-message-reply.js'));
       wb.register();
 
@@ -507,7 +517,7 @@ describe(`[workbox-window] Workbox`, function() {
       expect(response).to.equal('Reply from SW!');
     });
 
-    it(`awaits registration if registration hasn't run`, async function() {
+    it(`awaits registration if registration hasn't run`, async function () {
       const wb = new Workbox(uniq('sw-message-reply.js'));
       setTimeout(() => wb.register(), 100);
 
@@ -516,8 +526,8 @@ describe(`[workbox-window] Workbox`, function() {
     });
   });
 
-  describe(`messageSkipWaiting`, function() {
-    it(`posts the expected message to the waiting service worker`, async function() {
+  describe(`messageSkipWaiting`, function () {
+    it(`posts the expected message to the waiting service worker`, async function () {
       const scriptURL = uniq('sw-skip-waiting-on-message.js.njk');
       const wb = new Workbox(scriptURL);
 
@@ -547,7 +557,7 @@ describe(`[workbox-window] Workbox`, function() {
       expect(controllingSW.scriptURL).to.eql(scriptURL);
     });
 
-    it(`does nothing if there's no waiting service worker`, async function() {
+    it(`does nothing if there's no waiting service worker`, async function () {
       const wb = new Workbox(uniq('sw-skip-waiting.js.njk'));
       await wb.register();
 
@@ -557,9 +567,9 @@ describe(`[workbox-window] Workbox`, function() {
     });
   });
 
-  describe(`events`, function() {
-    describe(`message`, function() {
-      it(`fires when a postMessage is received from the SW`, async function() {
+  describe(`events`, function () {
+    describe(`message`, function () {
+      it(`fires when a postMessage is received from the SW`, async function () {
         const wb = new Workbox(uniq('sw-message-reply.js'));
         await wb.register();
         await wb.getSW();
@@ -580,7 +590,7 @@ describe(`[workbox-window] Workbox`, function() {
         });
       });
 
-      it(`can receive a message prior to calling register but buffers them until after registration`, async function() {
+      it(`can receive a message prior to calling register but buffers them until after registration`, async function () {
         const scriptURL = navigator.serviceWorker.controller.scriptURL;
         const wb = new Workbox(scriptURL);
 
@@ -589,10 +599,12 @@ describe(`[workbox-window] Workbox`, function() {
 
         // Simulate a message event sent from the controlling service worker
         // at page load time (prior to calling `register()`);
-        navigator.serviceWorker.dispatchEvent(new MessageEvent('message', {
-          data: 'postMessage from during page load!',
-          source: navigator.serviceWorker.controller,
-        }));
+        navigator.serviceWorker.dispatchEvent(
+          new MessageEvent('message', {
+            data: 'postMessage from during page load!',
+            source: navigator.serviceWorker.controller,
+          }),
+        );
 
         expect(messageSpy.notCalled).to.be.true;
 
@@ -608,7 +620,7 @@ describe(`[workbox-window] Workbox`, function() {
         });
       });
 
-      it(`does not dispatch messages received from non-own service workers`, async function() {
+      it(`does not dispatch messages received from non-own service workers`, async function () {
         const wb = new Workbox(uniq('sw-clients-claim.js.njk'));
 
         const messageSpy = sandbox.spy();
@@ -616,10 +628,12 @@ describe(`[workbox-window] Workbox`, function() {
 
         // Simulate a message event sent from the controlling service worker
         // at page load time (prior to calling `register()`);
-        navigator.serviceWorker.dispatchEvent(new MessageEvent('message', {
-          data: 'postMessage from during page load!',
-          source: navigator.serviceWorker.controller,
-        }));
+        navigator.serviceWorker.dispatchEvent(
+          new MessageEvent('message', {
+            data: 'postMessage from during page load!',
+            source: navigator.serviceWorker.controller,
+          }),
+        );
 
         expect(messageSpy.notCalled).to.be.true;
 
@@ -630,8 +644,8 @@ describe(`[workbox-window] Workbox`, function() {
       });
     });
 
-    describe(`installed`, function() {
-      it(`fires the first time the registered SW is installed`, async function() {
+    describe(`installed`, function () {
+      it(`fires the first time the registered SW is installed`, async function () {
         const scriptURL = uniq('sw-clients-claim.js.njk');
 
         const wb1 = new Workbox(scriptURL);
@@ -694,8 +708,8 @@ describe(`[workbox-window] Workbox`, function() {
       });
     });
 
-    describe(`waiting`, function() {
-      it(`runs if the registered service worker is waiting`, async function() {
+    describe(`waiting`, function () {
+      it(`runs if the registered service worker is waiting`, async function () {
         const wb1 = new Workbox(uniq('sw-no-skip-waiting.js.njk'));
         const waiting1Spy = sandbox.spy();
         wb1.addEventListener('waiting', waiting1Spy);
@@ -732,7 +746,6 @@ describe(`[workbox-window] Workbox`, function() {
           originalEvent: {type: 'statechange'},
           wasWaitingBeforeRegister: undefined,
           isExternal: false,
-
         });
 
         expect(waiting3Spy.callCount).to.equal(1);
@@ -746,7 +759,7 @@ describe(`[workbox-window] Workbox`, function() {
         });
       });
 
-      it(`runs if a service worker was already waiting at registration time`, async function() {
+      it(`runs if a service worker was already waiting at registration time`, async function () {
         const scriptURL = uniq('sw-no-skip-waiting.js.njk');
 
         const wb1 = new Workbox(scriptURL);
@@ -773,8 +786,8 @@ describe(`[workbox-window] Workbox`, function() {
       });
     });
 
-    describe(`activated`, function() {
-      it(`runs the first time the registered SW is activated`, async function() {
+    describe(`activated`, function () {
+      it(`runs the first time the registered SW is activated`, async function () {
         const wb1 = new Workbox(uniq('sw-clients-claim.js.njk'));
         const activated1Spy = sandbox.spy();
         wb1.addEventListener('activated', activated1Spy);
@@ -821,8 +834,8 @@ describe(`[workbox-window] Workbox`, function() {
       });
     });
 
-    describe(`controlling`, function() {
-      it(`runs the first time the registered SW is controlling`, async function() {
+    describe(`controlling`, function () {
+      it(`runs the first time the registered SW is controlling`, async function () {
         const wb1 = new Workbox(uniq('sw-clients-claim.js.njk'));
         const controlling1Spy = sandbox.spy();
         wb1.addEventListener('controlling', controlling1Spy);
@@ -883,7 +896,7 @@ describe(`[workbox-window] Workbox`, function() {
         });
       });
 
-      it(`runs every time the registered SW is updated`, async function() {
+      it(`runs every time the registered SW is updated`, async function () {
         const scriptURL = uniq('sw-skip-waiting.js.njk');
         const wb1 = new Workbox(scriptURL);
         const controlling1Spy = sandbox.spy();
@@ -929,8 +942,8 @@ describe(`[workbox-window] Workbox`, function() {
       });
     });
 
-    describe(`redundant`, function() {
-      it(`runs if the registered SW becomes redundant`, async function() {
+    describe(`redundant`, function () {
+      it(`runs if the registered SW becomes redundant`, async function () {
         const wb1 = new Workbox(uniq('sw-clients-claim.js.njk'));
         const redundantSpy = sandbox.spy();
         wb1.addEventListener('redundant', redundantSpy);
@@ -952,7 +965,7 @@ describe(`[workbox-window] Workbox`, function() {
         });
       });
 
-      it(`runs in the case where the registered SW was already controlling`, async function() {
+      it(`runs in the case where the registered SW was already controlling`, async function () {
         const controllerBeforeTest = navigator.serviceWorker.controller;
         const scriptURL = controllerBeforeTest.scriptURL;
         const wb1 = new Workbox(scriptURL);
@@ -978,8 +991,8 @@ describe(`[workbox-window] Workbox`, function() {
       });
     });
 
-    describe(`isExternal logic`, function() {
-      it(`runs when an external SW is found and installed`, async function() {
+    describe(`isExternal logic`, function () {
+      it(`runs when an external SW is found and installed`, async function () {
         const wb1 = new Workbox(uniq('sw-clients-claim.js.njk'));
         const externalInstalled1Spy = sandbox.spy();
         wb1.addEventListener('installed', externalInstalled1Spy);
@@ -1018,7 +1031,7 @@ describe(`[workbox-window] Workbox`, function() {
         });
       });
 
-      it(`runs when an updated version of the registered SW is found after the update timeout`, async function() {
+      it(`runs when an updated version of the registered SW is found after the update timeout`, async function () {
         const clock = sandbox.useFakeTimers({
           toFake: ['performance'],
         });
@@ -1057,7 +1070,7 @@ describe(`[workbox-window] Workbox`, function() {
       });
     });
 
-    it(`runs when an external SW is waiting`, async function() {
+    it(`runs when an external SW is waiting`, async function () {
       const wb1 = new Workbox(uniq('sw-clients-claim.js.njk'));
       const externalWaiting1Spy = sandbox.spy();
       wb1.addEventListener('waiting', externalWaiting1Spy);
@@ -1087,7 +1100,7 @@ describe(`[workbox-window] Workbox`, function() {
       });
     });
 
-    it(`runs when an updated version of the registered SW is found after the update timeout and is waiting to activate`, async function() {
+    it(`runs when an updated version of the registered SW is found after the update timeout and is waiting to activate`, async function () {
       const clock = sandbox.useFakeTimers({
         toFake: ['performance'],
       });
@@ -1125,7 +1138,7 @@ describe(`[workbox-window] Workbox`, function() {
       });
     });
 
-    it(`runs when an external SW is found and activated`, async function() {
+    it(`runs when an external SW is found and activated`, async function () {
       const wb1 = new Workbox(uniq('sw-clients-claim.js.njk'));
       await wb1.register();
       await nextEvent(wb1, 'activated');
@@ -1146,7 +1159,7 @@ describe(`[workbox-window] Workbox`, function() {
       });
     });
 
-    it(`runs when an updated version of the registered SW is found after the update timeout and has activated`, async function() {
+    it(`runs when an updated version of the registered SW is found after the update timeout and has activated`, async function () {
       const clock = sandbox.useFakeTimers({
         toFake: ['performance'],
       });
@@ -1183,8 +1196,8 @@ describe(`[workbox-window] Workbox`, function() {
       });
     });
 
-    describe(`removeEventListener()`, function() {
-      it(`will register and then unregister event listeners of a given type`, function() {
+    describe(`removeEventListener()`, function () {
+      it(`will register and then unregister event listeners of a given type`, function () {
         const eventType = 'testEventType';
         const event = {type: eventType};
         const eventListener1 = sandbox.stub();

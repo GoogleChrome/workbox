@@ -12,8 +12,9 @@ const proxyquire = require('proxyquire');
 
 const {errors} = require('../../../../packages/workbox-build/build/lib/errors');
 
-describe(`[workbox-build] lib/get-file-details.js`, function() {
-  const MODULE_PATH = '../../../../packages/workbox-build/build/lib/get-file-details';
+describe(`[workbox-build] lib/get-file-details.js`, function () {
+  const MODULE_PATH =
+    '../../../../packages/workbox-build/build/lib/get-file-details';
   const GLOB_DIRECTORY = './';
   const GLOB_PATTERN = 'file*';
   const DIRECTORY = 'directory';
@@ -22,7 +23,7 @@ describe(`[workbox-build] lib/get-file-details.js`, function() {
   const SIZE = 1234;
   const HASH = 'example-hash';
 
-  it(`should throw when there's a glob.sync() error`, function() {
+  it(`should throw when there's a glob.sync() error`, function () {
     const {getFileDetails} = proxyquire(MODULE_PATH, {
       glob: {
         sync: () => {
@@ -42,7 +43,7 @@ describe(`[workbox-build] lib/get-file-details.js`, function() {
     }
   });
 
-  it(`should return a warning when the pattern doesn't match anything`, function() {
+  it(`should return a warning when the pattern doesn't match anything`, function () {
     const {getFileDetails} = proxyquire(MODULE_PATH, {
       glob: {
         sync: () => [],
@@ -57,7 +58,7 @@ describe(`[workbox-build] lib/get-file-details.js`, function() {
     expect(warning).to.have.string(errors['useless-glob-pattern']);
   });
 
-  it(`should return array of file details, without null values`, function() {
+  it(`should return array of file details, without null values`, function () {
     const {getFileDetails} = proxyquire(MODULE_PATH, {
       'glob': {
         sync: () => {
@@ -75,7 +76,9 @@ describe(`[workbox-build] lib/get-file-details.js`, function() {
       './get-file-hash': {
         getFileHash: (value) => {
           if (upath.normalize(value) === upath.normalize(DIRECTORY)) {
-            throw new Error(`getFileHash(${DIRECTORY}) shouldn't have been called.`);
+            throw new Error(
+              `getFileHash(${DIRECTORY}) shouldn't have been called.`,
+            );
           }
           return HASH;
         },
@@ -88,14 +91,17 @@ describe(`[workbox-build] lib/get-file-details.js`, function() {
     });
 
     expect(warning).to.eql('');
-    expect(globbedFileDetails).to.deep.equal([{
-      file: FILE1,
-      hash: HASH,
-      size: SIZE,
-    }, {
-      file: FILE2,
-      hash: HASH,
-      size: SIZE,
-    }]);
+    expect(globbedFileDetails).to.deep.equal([
+      {
+        file: FILE1,
+        hash: HASH,
+        size: SIZE,
+      },
+      {
+        file: FILE2,
+        hash: HASH,
+        size: SIZE,
+      },
+    ]);
   });
 });

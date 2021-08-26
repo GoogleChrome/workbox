@@ -2,30 +2,37 @@
 <html lang="en">
   <head>
     <title>workbox-background-sync demo</title>
-    <meta name="workbox-background-sync demo" content="An example to demonstrate the workbox-background-sync module">
-    <link id="favicon" rel="icon" href="https://glitch.com/edit/favicon-app.ico" type="image/x-icon">
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="workbox-background-sync demo"
+      content="An example to demonstrate the workbox-background-sync module"
+    />
+    <link
+      id="favicon"
+      rel="icon"
+      href="https://glitch.com/edit/favicon-app.ico"
+      type="image/x-icon"
+    />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
       body {
         margin-left: 5%;
-        font-family: 'Open Sans', sans-serif
+        font-family: 'Open Sans', sans-serif;
       }
       ol {
-        padding-left: 20px
+        padding-left: 20px;
       }
       li {
-        margin-bottom: 5px
+        margin-bottom: 5px;
       }
       button {
         margin: 20px 0;
-        font-weight: bold
+        font-weight: bold;
       }
     </style>
   </head>
   <body>
-
     <header>
       <div>
         <h1>workbox-background-sync Demo</h1>
@@ -33,37 +40,49 @@
     </header>
 
     <ol>
-      <li><a href="https://developers.google.com/web/tools/chrome-devtools/#open">Open DevTools.</a></li>
+      <li>
+        <a href="https://developers.google.com/web/tools/chrome-devtools/#open"
+          >Open DevTools.</a
+        >
+      </li>
       <li>Switch to the Network panel.</li>
       <li>Toggle `Disable cache` checkbox on (it's unchecked by default).</li>
       <li>Click `Make Fetch request` button below.</li>
       <li>Observe that request is successfully completed with status 200.</li>
-      <li>Disconnect from actual network (DevTools offline doesn't work for background sync).</li>
+      <li>
+        Disconnect from actual network (DevTools offline doesn't work for
+        background sync).
+      </li>
       <li>Again, click `Make Fetch request` button below.</li>
       <li>Observe that request is aborted due to no network.</li>
-      <li>Connect to your network and observe the Network panel in DevTools.</li>
-      <li>Once the network is connected, you will see that the request is retried automatically upon the `sync` event.</li>
+      <li>
+        Connect to your network and observe the Network panel in DevTools.
+      </li>
+      <li>
+        Once the network is connected, you will see that the request is retried
+        automatically upon the `sync` event.
+      </li>
     </ol>
 
-    <button class="fetch">Make fetch request</button><p>
-    
+    <button class="fetch">Make fetch request</button>
+    <p>
+      <script>
+        document.querySelector('.fetch').addEventListener('click', () => {
+          fetch('example.txt');
+        });
 
-    <script>
-      document.querySelector('.fetch').addEventListener('click', () => {
-        fetch('example.txt');
-      });
+        navigator.serviceWorker.register('./sw.js');
+      </script>
 
-      navigator.serviceWorker.register('./sw.js');
-    </script>
-
-
-    <a href="https://developers.google.com/web/tools/workbox/modules">Back to Demos</a>
+      <a href="https://developers.google.com/web/tools/workbox/modules"
+        >Back to Demos</a
+      >
+    </p>
 
     <p>
-
-    <a href="https://developers.google.com/web/tools/workbox">Docs</a> |
-    <a href="https://github.com/googlechrome/workbox">GitHub</a> |
-    <a href="https://twitter.com/workboxjs">@workboxjs</a>
-
+      <a href="https://developers.google.com/web/tools/workbox">Docs</a> |
+      <a href="https://github.com/googlechrome/workbox">GitHub</a> |
+      <a href="https://twitter.com/workboxjs">@workboxjs</a>
+    </p>
   </body>
 </html>
