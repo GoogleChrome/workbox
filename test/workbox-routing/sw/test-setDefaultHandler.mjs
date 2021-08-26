@@ -9,11 +9,11 @@
 import {setDefaultHandler} from 'workbox-routing/setDefaultHandler.mjs';
 import {getOrCreateDefaultRouter} from 'workbox-routing/utils/getOrCreateDefaultRouter.mjs';
 
-describe(`setDefaultHandler()`, function() {
+describe(`setDefaultHandler()`, function () {
   const sandbox = sinon.createSandbox();
   let defaultRouter;
 
-  beforeEach(async function() {
+  beforeEach(async function () {
     sandbox.restore();
 
     // Spy on all added event listeners so they can be removed.
@@ -22,14 +22,14 @@ describe(`setDefaultHandler()`, function() {
     defaultRouter = getOrCreateDefaultRouter();
   });
 
-  afterEach(function() {
+  afterEach(function () {
     for (const args of self.addEventListener.args) {
       self.removeEventListener(...args);
     }
     sandbox.restore();
   });
 
-  it(`should call setDefaultHandler() on the default router`, function() {
+  it(`should call setDefaultHandler() on the default router`, function () {
     sandbox.stub(defaultRouter, 'setDefaultHandler');
 
     const handler = sandbox.spy();

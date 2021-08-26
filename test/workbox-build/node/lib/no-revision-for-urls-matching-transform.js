@@ -9,38 +9,37 @@
 const expect = require('chai').expect;
 
 const {errors} = require('../../../../packages/workbox-build/build/lib/errors');
-const {noRevisionForURLsMatchingTransform} = require('../../../../packages/workbox-build/build/lib/no-revision-for-urls-matching-transform');
+const {
+  noRevisionForURLsMatchingTransform,
+} = require('../../../../packages/workbox-build/build/lib/no-revision-for-urls-matching-transform');
 
-describe(`[workbox-build] lib/no-revision-for-urls-matching-transform.js`, function() {
-  const MANIFEST = [{
-    url: '/first-match/12345/hello',
-    revision: '1234abcd',
-  }, {
-    url: '/second-match/12345/hello',
-    revision: '1234abcd',
-  }, {
-    url: '/third-match/12345/hello',
-  }];
+describe(`[workbox-build] lib/no-revision-for-urls-matching-transform.js`, function () {
+  const MANIFEST = [
+    {
+      url: '/first-match/12345/hello',
+      revision: '1234abcd',
+    },
+    {
+      url: '/second-match/12345/hello',
+      revision: '1234abcd',
+    },
+    {
+      url: '/third-match/12345/hello',
+    },
+  ];
 
-  it(`should handle bad URLs in the manifest`, function() {
-    const badInputs = [
-      null,
-      undefined,
-      true,
-      false,
-      {},
-      [],
-    ];
+  it(`should handle bad URLs in the manifest`, function () {
+    const badInputs = [null, undefined, true, false, {}, []];
 
     const transform = noRevisionForURLsMatchingTransform(/ignored/);
     for (const badInput of badInputs) {
-      expect(
-          () => transform([{url: badInput}]),
-      ).to.throw(errors['manifest-entry-bad-url']);
+      expect(() => transform([{url: badInput}])).to.throw(
+        errors['manifest-entry-bad-url'],
+      );
     }
   });
 
-  it(`should handle bad dontCacheBustURLsMatching input`, function() {
+  it(`should handle bad dontCacheBustURLsMatching input`, function () {
     const badInputs = [
       null,
       undefined,
@@ -49,45 +48,57 @@ describe(`[workbox-build] lib/no-revision-for-urls-matching-transform.js`, funct
       [],
       '',
       {
-        'Hi': [],
+        Hi: [],
       },
     ];
 
     for (const badInput of badInputs) {
-      expect(
-          () => noRevisionForURLsMatchingTransform(badInput),
-      ).to.throw(errors['invalid-dont-cache-bust']);
+      expect(() => noRevisionForURLsMatchingTransform(badInput)).to.throw(
+        errors['invalid-dont-cache-bust'],
+      );
     }
   });
 
-  it(`should set revision info to null in a single matching entry`, function() {
+  it(`should set revision info to null in a single matching entry`, function () {
     const transform = noRevisionForURLsMatchingTransform(/first-match/);
-    expect(transform(MANIFEST)).to.eql({manifest: [{
-      url: '/first-match/12345/hello',
-      revision: null,
-    }, {
-      url: '/second-match/12345/hello',
-      revision: '1234abcd',
-    }, {
-      url: '/third-match/12345/hello',
-    }]});
+    expect(transform(MANIFEST)).to.eql({
+      manifest: [
+        {
+          url: '/first-match/12345/hello',
+          revision: null,
+        },
+        {
+          url: '/second-match/12345/hello',
+          revision: '1234abcd',
+        },
+        {
+          url: '/third-match/12345/hello',
+        },
+      ],
+    });
   });
 
-  it(`should set revision info to null in multiple matching entries`, function() {
+  it(`should set revision info to null in multiple matching entries`, function () {
     const transform = noRevisionForURLsMatchingTransform(/12345/);
-    expect(transform(MANIFEST)).to.eql({manifest: [{
-      url: '/first-match/12345/hello',
-      revision: null,
-    }, {
-      url: '/second-match/12345/hello',
-      revision: null,
-    }, {
-      url: '/third-match/12345/hello',
-      revision: null,
-    }]});
+    expect(transform(MANIFEST)).to.eql({
+      manifest: [
+        {
+          url: '/first-match/12345/hello',
+          revision: null,
+        },
+        {
+          url: '/second-match/12345/hello',
+          revision: null,
+        },
+        {
+          url: '/third-match/12345/hello',
+          revision: null,
+        },
+      ],
+    });
   });
 
-  it(`should do nothing when there's a match for an entry without a revision`, function() {
+  it(`should do nothing when there's a match for an entry without a revision`, function () {
     const transform = noRevisionForURLsMatchingTransform(/third-match/);
     expect(transform(MANIFEST)).to.eql({manifest: MANIFEST});
   });

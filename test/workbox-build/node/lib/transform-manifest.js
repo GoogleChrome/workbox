@@ -8,9 +8,11 @@
 
 const expect = require('chai').expect;
 
-const {transformManifest} = require('../../../../packages/workbox-build/build/lib/transform-manifest');
+const {
+  transformManifest,
+} = require('../../../../packages/workbox-build/build/lib/transform-manifest');
 
-describe(`[workbox-build] lib/transform-manifest.js`, function() {
+describe(`[workbox-build] lib/transform-manifest.js`, function () {
   const MAXIMUM_FILE_SIZE = 1234;
   const ENTRY1 = {
     file: 'file1.txt',
@@ -29,7 +31,7 @@ describe(`[workbox-build] lib/transform-manifest.js`, function() {
   };
   const FILE_DETAILS = [ENTRY1, ENTRY2, ENTRY3];
 
-  it(`should filter out files above maximumFileSizeToCacheInBytes`, async function() {
+  it(`should filter out files above maximumFileSizeToCacheInBytes`, async function () {
     const {size, count, manifestEntries} = await transformManifest({
       maximumFileSizeToCacheInBytes: MAXIMUM_FILE_SIZE,
       fileDetails: FILE_DETAILS,
@@ -37,16 +39,19 @@ describe(`[workbox-build] lib/transform-manifest.js`, function() {
 
     expect(size).to.eql(ENTRY1.size + ENTRY2.size);
     expect(count).to.eql(2);
-    expect(manifestEntries).to.deep.equal([{
-      url: ENTRY1.file,
-      revision: ENTRY1.hash,
-    }, {
-      url: ENTRY2.file,
-      revision: ENTRY2.hash,
-    }]);
+    expect(manifestEntries).to.deep.equal([
+      {
+        url: ENTRY1.file,
+        revision: ENTRY1.hash,
+      },
+      {
+        url: ENTRY2.file,
+        revision: ENTRY2.hash,
+      },
+    ]);
   });
 
-  it(`should remove revision info based on dontCacheBustURLsMatching`, async function() {
+  it(`should remove revision info based on dontCacheBustURLsMatching`, async function () {
     const {size, count, manifestEntries} = await transformManifest({
       dontCacheBustURLsMatching: new RegExp(ENTRY1.file),
       fileDetails: FILE_DETAILS,
@@ -54,19 +59,23 @@ describe(`[workbox-build] lib/transform-manifest.js`, function() {
 
     expect(size).to.eql(ENTRY1.size + ENTRY2.size + ENTRY3.size);
     expect(count).to.eql(3);
-    expect(manifestEntries).to.deep.equal([{
-      url: ENTRY1.file,
-      revision: null,
-    }, {
-      url: ENTRY2.file,
-      revision: ENTRY2.hash,
-    }, {
-      url: ENTRY3.file,
-      revision: ENTRY3.hash,
-    }]);
+    expect(manifestEntries).to.deep.equal([
+      {
+        url: ENTRY1.file,
+        revision: null,
+      },
+      {
+        url: ENTRY2.file,
+        revision: ENTRY2.hash,
+      },
+      {
+        url: ENTRY3.file,
+        revision: ENTRY3.hash,
+      },
+    ]);
   });
 
-  it(`should modify the URLs based on modifyURLPrefix`, async function() {
+  it(`should modify the URLs based on modifyURLPrefix`, async function () {
     const prefix = 'prefix/';
 
     const {size, count, manifestEntries} = await transformManifest({
@@ -78,19 +87,23 @@ describe(`[workbox-build] lib/transform-manifest.js`, function() {
 
     expect(size).to.eql(ENTRY1.size + ENTRY2.size + ENTRY3.size);
     expect(count).to.eql(3);
-    expect(manifestEntries).to.deep.equal([{
-      url: prefix + ENTRY1.file,
-      revision: ENTRY1.hash,
-    }, {
-      url: prefix + ENTRY2.file,
-      revision: ENTRY2.hash,
-    }, {
-      url: prefix + ENTRY3.file,
-      revision: ENTRY3.hash,
-    }]);
+    expect(manifestEntries).to.deep.equal([
+      {
+        url: prefix + ENTRY1.file,
+        revision: ENTRY1.hash,
+      },
+      {
+        url: prefix + ENTRY2.file,
+        revision: ENTRY2.hash,
+      },
+      {
+        url: prefix + ENTRY3.file,
+        revision: ENTRY3.hash,
+      },
+    ]);
   });
 
-  it(`should use custom manifestTransforms`, async function() {
+  it(`should use custom manifestTransforms`, async function () {
     const prefix1 = 'prefix1/';
     const prefix2 = 'prefix2/';
 
@@ -128,19 +141,23 @@ describe(`[workbox-build] lib/transform-manifest.js`, function() {
     expect(warnings).to.eql([warning1, warning2]);
     expect(size).to.eql(ENTRY1.size + ENTRY2.size + ENTRY3.size);
     expect(count).to.eql(3);
-    expect(manifestEntries).to.deep.equal([{
-      url: prefix2 + prefix1 + ENTRY1.file,
-      revision: ENTRY1.hash,
-    }, {
-      url: prefix2 + prefix1 + ENTRY2.file,
-      revision: ENTRY2.hash,
-    }, {
-      url: prefix2 + prefix1 + ENTRY3.file,
-      revision: ENTRY3.hash,
-    }]);
+    expect(manifestEntries).to.deep.equal([
+      {
+        url: prefix2 + prefix1 + ENTRY1.file,
+        revision: ENTRY1.hash,
+      },
+      {
+        url: prefix2 + prefix1 + ENTRY2.file,
+        revision: ENTRY2.hash,
+      },
+      {
+        url: prefix2 + prefix1 + ENTRY3.file,
+        revision: ENTRY3.hash,
+      },
+    ]);
   });
 
-  it(`should support an async manifestTransform`, async function() {
+  it(`should support an async manifestTransform`, async function () {
     const asyncTransform = async (manifest) => {
       await Promise.resolve();
       return {manifest, warnings: []};
@@ -154,15 +171,19 @@ describe(`[workbox-build] lib/transform-manifest.js`, function() {
     expect(warnings).to.be.empty;
     expect(size).to.eql(ENTRY1.size + ENTRY2.size + ENTRY3.size);
     expect(count).to.eql(3);
-    expect(manifestEntries).to.deep.equal([{
-      url: ENTRY1.file,
-      revision: ENTRY1.hash,
-    }, {
-      url: ENTRY2.file,
-      revision: ENTRY2.hash,
-    }, {
-      url: ENTRY3.file,
-      revision: ENTRY3.hash,
-    }]);
+    expect(manifestEntries).to.deep.equal([
+      {
+        url: ENTRY1.file,
+        revision: ENTRY1.hash,
+      },
+      {
+        url: ENTRY2.file,
+        revision: ENTRY2.hash,
+      },
+      {
+        url: ENTRY3.file,
+        revision: ENTRY3.hash,
+      },
+    ]);
   });
 });

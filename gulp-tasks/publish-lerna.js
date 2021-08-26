@@ -17,8 +17,11 @@ async function publish_lerna() {
 
   // gulp publish --distTag=latest would be the most common.
   if (global.cliOptions.distTag) {
-    logHelper.log(ol`Using ${logHelper.highlight(
-        '--dist-tag=' + global.cliOptions.distTag)}`);
+    logHelper.log(
+      ol`Using ${logHelper.highlight(
+        '--dist-tag=' + global.cliOptions.distTag,
+      )}`,
+    );
     options.push('--dist-tag', global.cliOptions.distTag);
   } else {
     throw new Error(ol`Please set the --distTag command line option, normally

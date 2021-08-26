@@ -69,7 +69,8 @@ class AggregateSizePlugin extends PluginInterface {
 
     const failPR = Boolean(percentValue > 100);
 
-    const prettyLog = `**${totalGzipString}** gzip'ed ` +
+    const prettyLog =
+      `**${totalGzipString}** gzip'ed ` +
       `(**${percentString}%** of limit)\n` +
       `**${totalSizeString}** uncompressed`;
 

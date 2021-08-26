@@ -18,20 +18,20 @@ const pkgPathToName = require('./pkg-path-to-name');
  * @return Array<string> Paths to package.json files for the matching packages.
  */
 function getPackages(typeFilter) {
-  return glob.sync(
-      `packages/${global.packageOrStar}/package.json`, {
-        absolute: true,
-      },
-  ).filter((pathToPackageJson) => {
-    const pkgInfo = require(pathToPackageJson);
-    const packageType = pkgInfo.workbox.packageType;
-    if (!packageType) {
-      throw Error(oneLine`Unable to determine package type. Please add
+  return glob
+    .sync(`packages/${global.packageOrStar}/package.json`, {
+      absolute: true,
+    })
+    .filter((pathToPackageJson) => {
+      const pkgInfo = require(pathToPackageJson);
+      const packageType = pkgInfo.workbox.packageType;
+      if (!packageType) {
+        throw Error(oneLine`Unable to determine package type. Please add
       workbox.packageType metadata to ${pathToPackageJson}`);
-    }
+      }
 
-    return typeFilter === 'all' || typeFilter === packageType;
-  });
+      return typeFilter === 'all' || typeFilter === packageType;
+    });
 }
 
 /*

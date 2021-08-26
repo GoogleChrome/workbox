@@ -18,8 +18,10 @@ const github = new GitHubApi();
 // See https://github.com/mikedeboer/node-github#authentication
 const authenticate = () => {
   if (!process.env.GITHUB_TOKEN) {
-    throw new Error('You must set a GITHUB_TOKEN in your environment to ' +
-      'publish a GitHub release.');
+    throw new Error(
+      'You must set a GITHUB_TOKEN in your environment to ' +
+        'publish a GitHub release.',
+    );
   }
 
   github.authenticate({

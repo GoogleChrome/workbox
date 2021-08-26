@@ -13,14 +13,18 @@ const upath = require('upath');
 const tempy = require('tempy');
 
 const {errors} = require('../../../packages/workbox-build/build/lib/errors');
-const {injectManifest} = require('../../../packages/workbox-build/build/inject-manifest');
-const {WorkboxConfigError} = require('../../../packages/workbox-build/build/lib/validate-options');
+const {
+  injectManifest,
+} = require('../../../packages/workbox-build/build/inject-manifest');
+const {
+  WorkboxConfigError,
+} = require('../../../packages/workbox-build/build/lib/validate-options');
 const validateServiceWorkerRuntime = require('../../../infra/testing/validator/service-worker-runtime');
 
 chai.use(chaiAsPromised);
 const {expect} = chai;
 
-describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
+describe(`[workbox-build] inject-manifest.js (End to End)`, function () {
   const GLOB_DIR = upath.join(__dirname, '..', 'static', 'example-project-1');
   const SW_SRC_DIR = upath.join(__dirname, '..', 'static', 'sw-injections');
   const BASE_OPTIONS = {
@@ -28,10 +32,7 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
     swDest: tempy.file({extension: 'js'}),
     swSrc: upath.join(SW_SRC_DIR, 'basic.js'),
   };
-  const REQUIRED_PARAMS = [
-    'swDest',
-    'swSrc',
-  ];
+  const REQUIRED_PARAMS = ['swDest', 'swSrc'];
   const SUPPORTED_PARAMS = [
     'additionalManifestEntries',
     'dontCacheBustURLsMatching',
@@ -60,62 +61,70 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
     'skipWaiting',
   ];
 
-  describe('[workbox-build] required parameters', function() {
+  describe('[workbox-build] required parameters', function () {
     for (const requiredParam of REQUIRED_PARAMS) {
-      it(`should reject when '${requiredParam}' is missing`, async function() {
+      it(`should reject when '${requiredParam}' is missing`, async function () {
         const options = Object.assign({}, BASE_OPTIONS);
         delete options[requiredParam];
 
         await expect(injectManifest(options)).to.eventually.be.rejectedWith(
-            WorkboxConfigError, requiredParam);
+          WorkboxConfigError,
+          requiredParam,
+        );
       });
     }
   });
 
-  describe('[workbox-build] unsupported parameters', function() {
+  describe('[workbox-build] unsupported parameters', function () {
     for (const unsupportedParam of UNSUPPORTED_PARAMS) {
-      it(`should reject when '${unsupportedParam}' is present`, async function() {
+      it(`should reject when '${unsupportedParam}' is present`, async function () {
         const options = Object.assign({}, BASE_OPTIONS);
         options[unsupportedParam] = unsupportedParam;
 
         await expect(injectManifest(options)).to.eventually.be.rejectedWith(
-            WorkboxConfigError, unsupportedParam);
+          WorkboxConfigError,
+          unsupportedParam,
+        );
       });
     }
   });
 
-  describe('[workbox-build] invalid parameter values', function() {
+  describe('[workbox-build] invalid parameter values', function () {
     for (const param of SUPPORTED_PARAMS) {
-      it(`should reject when '${param}' is null`, async function() {
+      it(`should reject when '${param}' is null`, async function () {
         const options = Object.assign({}, BASE_OPTIONS);
         options[param] = null;
 
         await expect(injectManifest(options)).to.eventually.be.rejectedWith(
-            WorkboxConfigError, param);
+          WorkboxConfigError,
+          param,
+        );
       });
     }
   });
 
-  describe(`[workbox-build] runtime errors`, function() {
-    it(`should throw the expected error when 'swSrc' is invalid`, async function() {
+  describe(`[workbox-build] runtime errors`, function () {
+    it(`should throw the expected error when 'swSrc' is invalid`, async function () {
       const options = Object.assign({}, BASE_OPTIONS, {
         swSrc: 'DOES_NOT_EXIST',
       });
 
       await expect(injectManifest(options)).to.eventually.be.rejectedWith(
-          errors['invalid-sw-src']);
+        errors['invalid-sw-src'],
+      );
     });
 
-    it(`should throw the expected error when there is no match for 'injectionPoint'`, async function() {
+    it(`should throw the expected error when there is no match for 'injectionPoint'`, async function () {
       const options = Object.assign({}, BASE_OPTIONS, {
         swSrc: upath.join(SW_SRC_DIR, 'bad-no-injection.js'),
       });
 
       await expect(injectManifest(options)).to.eventually.be.rejectedWith(
-          errors['injection-point-not-found']);
+        errors['injection-point-not-found'],
+      );
     });
 
-    it(`should throw the expected error when there is no match for 'injectionPoint' and 'swSrc' and 'swDest' are the same`, async function() {
+    it(`should throw the expected error when there is no match for 'injectionPoint' and 'swSrc' and 'swDest' are the same`, async function () {
       const swFile = upath.join(SW_SRC_DIR, 'bad-no-injection.js');
       const options = Object.assign({}, BASE_OPTIONS, {
         swSrc: swFile,
@@ -123,21 +132,23 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
       });
 
       await expect(injectManifest(options)).to.eventually.be.rejectedWith(
-          errors['same-src-and-dest']);
+        errors['same-src-and-dest'],
+      );
     });
 
-    it(`should throw the expected error when there are multiple matches for 'injectionPoint'`, async function() {
+    it(`should throw the expected error when there are multiple matches for 'injectionPoint'`, async function () {
       const options = Object.assign({}, BASE_OPTIONS, {
         swSrc: upath.join(SW_SRC_DIR, 'bad-multiple-injection.js'),
       });
 
       await expect(injectManifest(options)).to.eventually.be.rejectedWith(
-          errors['multiple-injection-points']);
+        errors['multiple-injection-points'],
+      );
     });
   });
 
-  describe(`[workbox-build] writing a service worker file`, function() {
-    it(`should use defaults when all the required parameters are present`, async function() {
+  describe(`[workbox-build] writing a service worker file`, function () {
+    it(`should use defaults when all the required parameters are present`, async function () {
       const swDest = tempy.file({extension: 'js'});
       const options = Object.assign({}, BASE_OPTIONS, {swDest});
 
@@ -145,37 +156,48 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
       expect(filePaths).to.have.members([upath.resolve(swDest)]);
 
       await validateServiceWorkerRuntime({
         entryPoint: 'injectManifest',
         swFile: swDest,
         expectedMethodCalls: {
-          precacheAndRoute: [[[{
-            url: 'index.html',
-            revision: /^[0-9a-f]{32}$/,
-          }, {
-            url: 'page-1.html',
-            revision: /^[0-9a-f]{32}$/,
-          }, {
-            url: 'page-2.html',
-            revision: /^[0-9a-f]{32}$/,
-          }, {
-            url: 'styles/stylesheet-1.css',
-            revision: /^[0-9a-f]{32}$/,
-          }, {
-            url: 'styles/stylesheet-2.css',
-            revision: /^[0-9a-f]{32}$/,
-          }, {
-            url: 'webpackEntry.js',
-            revision: /^[0-9a-f]{32}$/,
-          }]]],
+          precacheAndRoute: [
+            [
+              [
+                {
+                  url: 'index.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-1.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-2.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-1.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-2.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'webpackEntry.js',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+              ],
+            ],
+          ],
         },
       });
     });
 
-    it(`should use absolute paths in the filePaths return value`, async function() {
+    it(`should use absolute paths in the filePaths return value`, async function () {
       // Deliberately use a relative path for swDest.
       const swDest = upath.relative('.', tempy.file({extension: 'js'}));
       const options = Object.assign({}, BASE_OPTIONS, {swDest});
@@ -186,7 +208,7 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
       expect(filePaths).to.have.members([upath.resolve(swDest)]);
     });
 
-    it(`should use defaults when all the required parameters are present, when workboxSW.precache() is called twice`, async function() {
+    it(`should use defaults when all the required parameters are present, when workboxSW.precache() is called twice`, async function () {
       const swDest = tempy.file({extension: 'js'});
       const options = Object.assign({}, BASE_OPTIONS, {
         swDest,
@@ -197,7 +219,7 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
       expect(filePaths).to.have.members([upath.resolve(swDest)]);
 
       await validateServiceWorkerRuntime({
@@ -205,33 +227,47 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
         swFile: swDest,
         expectedMethodCalls: {
           importScripts: [['./sample-import.js']],
-          precacheAndRoute: [[[{
-            url: 'index.html',
-            revision: /^[0-9a-f]{32}$/,
-          }, {
-            url: 'page-1.html',
-            revision: /^[0-9a-f]{32}$/,
-          }, {
-            url: 'page-2.html',
-            revision: /^[0-9a-f]{32}$/,
-          }, {
-            url: 'styles/stylesheet-1.css',
-            revision: /^[0-9a-f]{32}$/,
-          }, {
-            url: 'styles/stylesheet-2.css',
-            revision: /^[0-9a-f]{32}$/,
-          }, {
-            url: 'webpackEntry.js',
-            revision: /^[0-9a-f]{32}$/,
-          }]], [[
-            '/extra-assets/example.1234.css',
-            '/extra-assets/example-2.1234.js',
-          ]]],
+          precacheAndRoute: [
+            [
+              [
+                {
+                  url: 'index.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-1.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-2.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-1.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-2.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'webpackEntry.js',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+              ],
+            ],
+            [
+              [
+                '/extra-assets/example.1234.css',
+                '/extra-assets/example-2.1234.js',
+              ],
+            ],
+          ],
         },
       });
     });
 
-    it(`should use defaults when all the required parameters are present, when a custom 'injectionPoint' is used`, async function() {
+    it(`should use defaults when all the required parameters are present, when a custom 'injectionPoint' is used`, async function () {
       const swDest = tempy.file({extension: 'js'});
       const options = Object.assign({}, BASE_OPTIONS, {
         swDest,
@@ -243,37 +279,48 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
       expect(filePaths).to.have.members([upath.resolve(swDest)]);
 
       await validateServiceWorkerRuntime({
         entryPoint: 'injectManifest',
         swFile: swDest,
         expectedMethodCalls: {
-          precacheAndRoute: [[[{
-            url: 'index.html',
-            revision: /^[0-9a-f]{32}$/,
-          }, {
-            url: 'page-1.html',
-            revision: /^[0-9a-f]{32}$/,
-          }, {
-            url: 'page-2.html',
-            revision: /^[0-9a-f]{32}$/,
-          }, {
-            url: 'styles/stylesheet-1.css',
-            revision: /^[0-9a-f]{32}$/,
-          }, {
-            url: 'styles/stylesheet-2.css',
-            revision: /^[0-9a-f]{32}$/,
-          }, {
-            url: 'webpackEntry.js',
-            revision: /^[0-9a-f]{32}$/,
-          }]]],
+          precacheAndRoute: [
+            [
+              [
+                {
+                  url: 'index.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-1.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-2.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-1.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-2.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'webpackEntry.js',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+              ],
+            ],
+          ],
         },
       });
     });
 
-    it(`should support using the default 'injectionPoint' when precacheAndRoute() is called with options`, async function() {
+    it(`should support using the default 'injectionPoint' when precacheAndRoute() is called with options`, async function () {
       const swDest = tempy.file({extension: 'js'});
       const options = Object.assign({}, BASE_OPTIONS, {
         swDest,
@@ -284,39 +331,51 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
       expect(filePaths).to.have.members([upath.resolve(swDest)]);
 
       await validateServiceWorkerRuntime({
         entryPoint: 'injectManifest',
         swFile: swDest,
         expectedMethodCalls: {
-          precacheAndRoute: [[[{
-            url: 'index.html',
-            revision: /^[0-9a-f]{32}$/,
-          }, {
-            url: 'page-1.html',
-            revision: /^[0-9a-f]{32}$/,
-          }, {
-            url: 'page-2.html',
-            revision: /^[0-9a-f]{32}$/,
-          }, {
-            url: 'styles/stylesheet-1.css',
-            revision: /^[0-9a-f]{32}$/,
-          }, {
-            url: 'styles/stylesheet-2.css',
-            revision: /^[0-9a-f]{32}$/,
-          }, {
-            url: 'webpackEntry.js',
-            revision: /^[0-9a-f]{32}$/,
-          }], {
-            cleanURLs: true,
-          }]],
+          precacheAndRoute: [
+            [
+              [
+                {
+                  url: 'index.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-1.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-2.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-1.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-2.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'webpackEntry.js',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+              ],
+              {
+                cleanURLs: true,
+              },
+            ],
+          ],
         },
       });
     });
 
-    it(`should ignore swSrc and swDest when generating manifest entries`, async function() {
+    it(`should ignore swSrc and swDest when generating manifest entries`, async function () {
       const tempDirectory = tempy.directory();
       await fse.copy(BASE_OPTIONS.globDirectory, tempDirectory);
       const swSrc = upath.join(tempDirectory, 'sw-src-service-worker.js');
@@ -333,41 +392,55 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
       await validateServiceWorkerRuntime({
         entryPoint: 'injectManifest',
         swFile: swDest,
         expectedMethodCalls: {
-          precacheAndRoute: [[[{
-            url: 'index.html',
-            revision: /^[0-9a-f]{32}$/,
-          }, {
-            url: 'page-1.html',
-            revision: /^[0-9a-f]{32}$/,
-          }, {
-            url: 'page-2.html',
-            revision: /^[0-9a-f]{32}$/,
-          }, {
-            url: 'styles/stylesheet-1.css',
-            revision: /^[0-9a-f]{32}$/,
-          }, {
-            url: 'styles/stylesheet-2.css',
-            revision: /^[0-9a-f]{32}$/,
-          }, {
-            url: 'webpackEntry.js',
-            revision: /^[0-9a-f]{32}$/,
-          }]]],
+          precacheAndRoute: [
+            [
+              [
+                {
+                  url: 'index.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-1.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'page-2.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-1.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'styles/stylesheet-2.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'webpackEntry.js',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+              ],
+            ],
+          ],
         },
       });
     });
   });
 
-  describe(`[workbox-webpack-plugin] Sourcemap manipulation`, function() {
-    it(`should update the sourcemap to account for manifest injection`, async function() {
+  describe(`[workbox-webpack-plugin] Sourcemap manipulation`, function () {
+    it(`should update the sourcemap to account for manifest injection`, async function () {
       const outputDir = tempy.directory();
       const swSrc = upath.join(SW_SRC_DIR, 'basic-with-sourcemap.js.nolint');
       const swDest = upath.join(outputDir, 'basic-with-sourcemap.js');
-      const sourcemapDest = upath.join(outputDir, 'basic-with-sourcemap.js.map');
+      const sourcemapDest = upath.join(
+        outputDir,
+        'basic-with-sourcemap.js.map',
+      );
       const options = Object.assign({}, BASE_OPTIONS, {
         swDest,
         swSrc,
@@ -377,20 +450,24 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
       expect(filePaths).to.have.members([upath.resolve(swDest), sourcemapDest]);
 
       const actualSourcemap = await fse.readJSON(sourcemapDest);
       const expectedSourcemap = await fse.readJSON(
-          upath.join(SW_SRC_DIR, '..', 'expected-source-map.js.map'));
+        upath.join(SW_SRC_DIR, '..', 'expected-source-map.js.map'),
+      );
       expect(actualSourcemap).to.eql(expectedSourcemap);
 
       // We can't validate the SW file contents.
     });
 
-    it(`should not update the sourcemap if it uses a data: URL`, async function() {
+    it(`should not update the sourcemap if it uses a data: URL`, async function () {
       const outputDir = tempy.directory();
-      const swSrc = upath.join(SW_SRC_DIR, 'basic-with-sourcemap-data-url.js.nolint');
+      const swSrc = upath.join(
+        SW_SRC_DIR,
+        'basic-with-sourcemap-data-url.js.nolint',
+      );
       const swDest = upath.join(outputDir, 'basic-with-sourcemap.js');
       const options = Object.assign({}, BASE_OPTIONS, {
         swDest,
@@ -401,13 +478,13 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
 
       // We can't validate the SW file contents.
     });
   });
 
-  describe(`[workbox-build] removed options`, function() {
+  describe(`[workbox-build] removed options`, function () {
     // These were deprecated in v4, and formally removed in v5.
     const oldOptionsToValue = {
       dontCacheBustUrlsMatching: /ignored/,
@@ -419,13 +496,15 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
     };
 
     for (const [option, value] of Object.entries(oldOptionsToValue)) {
-      it(`should fail validation when ${option} is used`, async function() {
+      it(`should fail validation when ${option} is used`, async function () {
         const options = Object.assign({}, BASE_OPTIONS, {
           [option]: value,
         });
 
         await expect(injectManifest(options)).to.eventually.be.rejectedWith(
-            WorkboxConfigError, option);
+          WorkboxConfigError,
+          option,
+        );
       });
     }
   });

@@ -9,19 +9,18 @@
 import {waitUntil} from 'workbox-core/_private/waitUntil.mjs';
 import {spyOnEvent} from '../../../../infra/testing/helpers/extendable-event-utils.mjs';
 
-
-describe(`waitUntil()`, function() {
+describe(`waitUntil()`, function () {
   const sandbox = sinon.createSandbox();
 
-  beforeEach(async function() {
+  beforeEach(async function () {
     sandbox.restore();
   });
 
-  after(async function() {
+  after(async function () {
     sandbox.restore();
   });
 
-  it(`adds an async function's returned promise to an event and returns it`, async function() {
+  it(`adds an async function's returned promise to an event and returns it`, async function () {
     const event = new ExtendableEvent('install');
     spyOnEvent(event);
 

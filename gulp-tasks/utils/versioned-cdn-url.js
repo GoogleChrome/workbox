@@ -9,5 +9,5 @@
 const cdn = require('../../packages/workbox-build/src/cdn-details.json');
 const lernaPkg = require('../../lerna.json');
 
-module.exports = () => `${cdn.origin}/${cdn.bucketName}/${cdn.releasesDir}` +
-    `/${lernaPkg.version}`;
+module.exports = () =>
+  `${cdn.origin}/${cdn.bucketName}/${cdn.releasesDir}` + `/${lernaPkg.version}`;

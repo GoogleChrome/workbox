@@ -16,13 +16,13 @@ const waitUntil = require('../../../infra/testing/wait-until');
 // Store local references of these globals.
 const {webdriver, server} = global.__workbox;
 
-describe(`[workbox-google-analytics]`, function() {
-  it(`passes all SW unit tests`, async function() {
+describe(`[workbox-google-analytics]`, function () {
+  it(`passes all SW unit tests`, async function () {
     await runUnitTests('/test/workbox-google-analytics/sw/');
   });
 });
 
-describe(`[workbox-google-analytics] initialize`, function() {
+describe(`[workbox-google-analytics] initialize`, function () {
   const testServerAddress = server.getAddress();
   const testingURL = `${testServerAddress}/test/workbox-google-analytics/static/basic-example/`;
   const swURL = `${testingURL}sw.js`;
@@ -39,34 +39,39 @@ describe(`[workbox-google-analytics] initialize`, function() {
   const messageSW = (data, done) => {
     const messageChannel = new MessageChannel();
     messageChannel.port1.onmessage = (evt) => done(evt.data);
-    navigator.serviceWorker.controller.postMessage(
-        data, [messageChannel.port2]);
+    navigator.serviceWorker.controller.postMessage(data, [
+      messageChannel.port2,
+    ]);
   };
 
-  before(async function() {
+  before(async function () {
     // Load the page and wait for the first service worker to activate.
     await webdriver.get(testingURL);
 
     await activateAndControlSW(swURL);
   });
 
-  beforeEach(async function() {
+  beforeEach(async function () {
     // Reset the spied requests array.
     await webdriver.executeAsyncScript(messageSW, {
       action: 'clear-spied-requests',
     });
   });
 
-  it(`should load a page with service worker`, async function() {
+  it(`should load a page with service worker`, async function () {
     const err = await webdriver.executeAsyncScript((done) => {
-      fetch('https://www.google-analytics.com/analytics.js', {mode: 'no-cors'})
-          .then(() => done(), (err) => done(err.message));
+      fetch('https://www.google-analytics.com/analytics.js', {
+        mode: 'no-cors',
+      }).then(
+        () => done(),
+        (err) => done(err.message),
+      );
     });
 
     expect(err).to.not.exist;
   });
 
-  it(`replay failed Google Analytics hits`, async function() {
+  it(`replay failed Google Analytics hits`, async function () {
     // Skip this test in browsers that don't support background sync.
     // TODO(philipwalton): figure out a way to work around this.
     const browserSupportsSync = await webdriver.executeScript(() => {
@@ -144,12 +149,16 @@ describe(`[workbox-google-analytics] initialize`, function() {
     });
 
     // Wait until all expected requests have replayed.
-    await waitUntil(async () => {
-      requests = await webdriver.executeAsyncScript(messageSW, {
-        action: 'get-spied-requests',
-      });
-      return requests.length === 2;
-    }, 25, 200);
+    await waitUntil(
+      async () => {
+        requests = await webdriver.executeAsyncScript(messageSW, {
+          action: 'get-spied-requests',
+        });
+        return requests.length === 2;
+      },
+      25,
+      200,
+    );
 
     // Parse the request bodies to set the params as an object and convert the
     // qt param to a number.

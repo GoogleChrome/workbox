@@ -64,8 +64,9 @@ class CDNHelper {
     const bucket = gcs.bucket(cdnDetails.bucketName);
 
     for (const filePath of filePaths) {
-      const destination =
-        `${this._getReleaseTagPath(tagName)}/${path.basename(filePath)}`;
+      const destination = `${this._getReleaseTagPath(tagName)}/${path.basename(
+        filePath,
+      )}`;
 
       try {
         await bucket.upload(filePath, {
@@ -82,7 +83,7 @@ class CDNHelper {
         throw err;
       }
       publicUrls.push(
-          `${cdnDetails.origin}/${cdnDetails.bucketName}/${destination}`,
+        `${cdnDetails.origin}/${cdnDetails.bucketName}/${destination}`,
       );
     }
 

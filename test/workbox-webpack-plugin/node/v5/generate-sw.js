@@ -18,8 +18,10 @@ try {
 }
 const upath = require('upath');
 const moduleAlias = require('module-alias');
-moduleAlias.addAlias('html-webpack-plugin', upath.resolve('node_modules',
-    'html-webpack-plugin-v5'));
+moduleAlias.addAlias(
+  'html-webpack-plugin',
+  upath.resolve('node_modules', 'html-webpack-plugin-v5'),
+);
 moduleAlias.addAlias('webpack', upath.resolve('node_modules', 'webpack-v5'));
 
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -33,14 +35,22 @@ const webpack = require('webpack');
 const CreateWebpackAssetPlugin = require('./lib/create-webpack-asset-plugin');
 const validateServiceWorkerRuntime = require('../../../../infra/testing/validator/service-worker-runtime');
 const webpackBuildCheck = require('../../../../infra/testing/webpack-build-check');
-const {GenerateSW} = require('../../../../packages/workbox-webpack-plugin/src/index');
+const {
+  GenerateSW,
+} = require('../../../../packages/workbox-webpack-plugin/src/index');
 
-describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
+describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function () {
   const WEBPACK_ENTRY_FILENAME = 'webpackEntry.js';
-  const SRC_DIR = upath.join(__dirname, '..', '..', 'static', 'example-project-1');
+  const SRC_DIR = upath.join(
+    __dirname,
+    '..',
+    '..',
+    'static',
+    'example-project-1',
+  );
 
-  describe(`[workbox-webpack-plugin] Runtime errors`, function() {
-    it(`should lead to a webpack compilation error when passed invalid config`, function(done) {
+  describe(`[workbox-webpack-plugin] Runtime errors`, function () {
+    it(`should lead to a webpack compilation error when passed invalid config`, function (done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -66,7 +76,7 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
           expect(statsJson.warnings).to.be.empty;
           expect(statsJson.errors).to.have.length(1);
           expect(statsJson.errors[0].message).to.eql(
-              `Please check your GenerateSW plugin configuration:\n[WebpackGenerateSW] 'invalid' property is not expected to be here. Did you mean property 'include'?`,
+            `Please check your GenerateSW plugin configuration:\n[WebpackGenerateSW] 'invalid' property is not expected to be here. Did you mean property 'include'?`,
           );
 
           done();
@@ -77,8 +87,8 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
     });
   });
 
-  describe(`[workbox-webpack-plugin] Multiple chunks`, function() {
-    it(`should work when called without any parameters`, function(done) {
+  describe(`[workbox-webpack-plugin] Multiple chunks`, function () {
+    it(`should work when called without any parameters`, function (done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -90,9 +100,7 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
           filename: '[name]-[chunkhash].js',
           path: outputDir,
         },
-        plugins: [
-          new GenerateSW(),
-        ],
+        plugins: [new GenerateSW()],
       };
 
       const compiler = webpack(config);
@@ -105,17 +113,24 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
           expect(files).to.have.length(4);
 
           await validateServiceWorkerRuntime({
-            swFile, expectedMethodCalls: {
+            swFile,
+            expectedMethodCalls: {
               importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-              precacheAndRoute: [[[
-                {
-                  revision: null,
-                  url: /^entry1-[0-9a-f]{20}\.js$/,
-                }, {
-                  revision: null,
-                  url: /^entry2-[0-9a-f]{20}\.js$/,
-                },
-              ], {}]],
+              precacheAndRoute: [
+                [
+                  [
+                    {
+                      revision: null,
+                      url: /^entry1-[0-9a-f]{20}\.js$/,
+                    },
+                    {
+                      revision: null,
+                      url: /^entry2-[0-9a-f]{20}\.js$/,
+                    },
+                  ],
+                  {},
+                ],
+              ],
             },
           });
 
@@ -126,7 +141,7 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
       });
     });
 
-    it(`should work when called with importScriptsViaChunks`, function(done) {
+    it(`should work when called with importScriptsViaChunks`, function (done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -141,10 +156,7 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
         },
         plugins: [
           new GenerateSW({
-            importScriptsViaChunks: [
-              'imported',
-              'INVALID_CHUNK_NAME',
-            ],
+            importScriptsViaChunks: ['imported', 'INVALID_CHUNK_NAME'],
           }),
         ],
       };
@@ -163,17 +175,25 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
           expect(files).to.have.length(8);
 
           await validateServiceWorkerRuntime({
-            swFile, expectedMethodCalls: {
+            swFile,
+            expectedMethodCalls: {
               // imported-[chunkhash].js.map should *not* be included.
               importScripts: [
                 [/^\.\/workbox-[0-9a-f]{8}$/],
                 [/^imported-[0-9a-f]{20}\.js$/],
               ],
               // imported-[chunkhash].js should *not* be included.
-              precacheAndRoute: [[[{
-                revision: null,
-                url: /^main-[0-9a-f]{20}\.js$/,
-              }], {}]],
+              precacheAndRoute: [
+                [
+                  [
+                    {
+                      revision: null,
+                      url: /^main-[0-9a-f]{20}\.js$/,
+                    },
+                  ],
+                  {},
+                ],
+              ],
             },
           });
 
@@ -184,7 +204,7 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
       });
     });
 
-    it(`should work when called with additionalManifestEntries`, function(done) {
+    it(`should work when called with additionalManifestEntries`, function (done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -220,26 +240,36 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
           expect(files).to.have.length(4);
 
           await validateServiceWorkerRuntime({
-            swFile, expectedMethodCalls: {
+            swFile,
+            expectedMethodCalls: {
               importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-              precacheAndRoute: [[[
-                {
-                  revision: null,
-                  url: /^entry1-[0-9a-f]{20}\.js$/,
-                }, {
-                  revision: null,
-                  url: /^entry2-[0-9a-f]{20}\.js$/,
-                }, {
-                  revision: null,
-                  url: 'one',
-                }, {
-                  revision: '333',
-                  url: 'three',
-                }, {
-                  revision: null,
-                  url: 'two',
-                },
-              ], {}]],
+              precacheAndRoute: [
+                [
+                  [
+                    {
+                      revision: null,
+                      url: /^entry1-[0-9a-f]{20}\.js$/,
+                    },
+                    {
+                      revision: null,
+                      url: /^entry2-[0-9a-f]{20}\.js$/,
+                    },
+                    {
+                      revision: null,
+                      url: 'one',
+                    },
+                    {
+                      revision: '333',
+                      url: 'three',
+                    },
+                    {
+                      revision: null,
+                      url: 'two',
+                    },
+                  ],
+                  {},
+                ],
+              ],
             },
           });
 
@@ -250,7 +280,7 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
       });
     });
 
-    it(`should honor the 'chunks' allowlist config`, function(done) {
+    it(`should honor the 'chunks' allowlist config`, function (done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -279,18 +309,27 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
           const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(5);
 
-          await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-            precacheAndRoute: [[[
-              {
-                revision: null,
-                url: /^entry1-[0-9a-f]{20}\.js$/,
-              }, {
-                revision: null,
-                url: /^entry2-[0-9a-f]{20}\.js$/,
-              },
-            ], {}]],
-          }});
+          await validateServiceWorkerRuntime({
+            swFile,
+            expectedMethodCalls: {
+              importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
+              precacheAndRoute: [
+                [
+                  [
+                    {
+                      revision: null,
+                      url: /^entry1-[0-9a-f]{20}\.js$/,
+                    },
+                    {
+                      revision: null,
+                      url: /^entry2-[0-9a-f]{20}\.js$/,
+                    },
+                  ],
+                  {},
+                ],
+              ],
+            },
+          });
 
           done();
         } catch (error) {
@@ -299,7 +338,7 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
       });
     });
 
-    it(`should honor the 'chunks' allowlist config, including children created via SplitChunksPlugin`, function(done) {
+    it(`should honor the 'chunks' allowlist config, including children created via SplitChunksPlugin`, function (done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -335,18 +374,27 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
           const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(4);
 
-          await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-            precacheAndRoute: [[[
-              {
-                revision: null,
-                url: /^[0-9a-f]{20}\.js$/,
-              }, {
-                revision: null,
-                url: /^[0-9a-f]{20}\.js$/,
-              },
-            ], {}]],
-          }});
+          await validateServiceWorkerRuntime({
+            swFile,
+            expectedMethodCalls: {
+              importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
+              precacheAndRoute: [
+                [
+                  [
+                    {
+                      revision: null,
+                      url: /^[0-9a-f]{20}\.js$/,
+                    },
+                    {
+                      revision: null,
+                      url: /^[0-9a-f]{20}\.js$/,
+                    },
+                  ],
+                  {},
+                ],
+              ],
+            },
+          });
 
           done();
         } catch (error) {
@@ -355,7 +403,7 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
       });
     });
 
-    it(`should honor the 'excludeChunks' denylist config`, function(done) {
+    it(`should honor the 'excludeChunks' denylist config`, function (done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -384,18 +432,27 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
           const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(5);
 
-          await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-            precacheAndRoute: [[[
-              {
-                revision: null,
-                url: /^entry1-[0-9a-f]{20}\.js$/,
-              }, {
-                revision: null,
-                url: /^entry2-[0-9a-f]{20}\.js$/,
-              },
-            ], {}]],
-          }});
+          await validateServiceWorkerRuntime({
+            swFile,
+            expectedMethodCalls: {
+              importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
+              precacheAndRoute: [
+                [
+                  [
+                    {
+                      revision: null,
+                      url: /^entry1-[0-9a-f]{20}\.js$/,
+                    },
+                    {
+                      revision: null,
+                      url: /^entry2-[0-9a-f]{20}\.js$/,
+                    },
+                  ],
+                  {},
+                ],
+              ],
+            },
+          });
 
           done();
         } catch (error) {
@@ -404,7 +461,7 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
       });
     });
 
-    it(`should honor setting both the 'chunks' and 'excludeChunks', with the denylist taking precedence`, function(done) {
+    it(`should honor setting both the 'chunks' and 'excludeChunks', with the denylist taking precedence`, function (done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -434,15 +491,23 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
           const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(5);
 
-          await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-            precacheAndRoute: [[[
-              {
-                revision: null,
-                url: /^entry1-[0-9a-f]{20}\.js$/,
-              },
-            ], {}]],
-          }});
+          await validateServiceWorkerRuntime({
+            swFile,
+            expectedMethodCalls: {
+              importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
+              precacheAndRoute: [
+                [
+                  [
+                    {
+                      revision: null,
+                      url: /^entry1-[0-9a-f]{20}\.js$/,
+                    },
+                  ],
+                  {},
+                ],
+              ],
+            },
+          });
 
           done();
         } catch (error) {
@@ -452,8 +517,8 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
     });
   });
 
-  describe(`[workbox-webpack-plugin] html-webpack-plugin and a single chunk`, function() {
-    it(`should work when called without any parameters`, function(done) {
+  describe(`[workbox-webpack-plugin] html-webpack-plugin and a single chunk`, function () {
+    it(`should work when called without any parameters`, function (done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -465,10 +530,7 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
           filename: '[name]-[chunkhash].js',
           path: outputDir,
         },
-        plugins: [
-          new HtmlWebpackPlugin(),
-          new GenerateSW(),
-        ],
+        plugins: [new HtmlWebpackPlugin(), new GenerateSW()],
       };
 
       const compiler = webpack(config);
@@ -480,19 +542,31 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
           const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(5);
 
-          await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-            precacheAndRoute: [[[{
-              revision: null,
-              url: /^entry1-[0-9a-f]{20}\.js$/,
-            }, {
-              revision: null,
-              url: /^entry2-[0-9a-f]{20}\.js$/,
-            }, {
-              revision: /^[0-9a-f]{32}$/,
-              url: 'index.html',
-            }], {}]],
-          }});
+          await validateServiceWorkerRuntime({
+            swFile,
+            expectedMethodCalls: {
+              importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
+              precacheAndRoute: [
+                [
+                  [
+                    {
+                      revision: null,
+                      url: /^entry1-[0-9a-f]{20}\.js$/,
+                    },
+                    {
+                      revision: null,
+                      url: /^entry2-[0-9a-f]{20}\.js$/,
+                    },
+                    {
+                      revision: /^[0-9a-f]{32}$/,
+                      url: 'index.html',
+                    },
+                  ],
+                  {},
+                ],
+              ],
+            },
+          });
 
           done();
         } catch (error) {
@@ -502,8 +576,8 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
     });
   });
 
-  describe(`[workbox-webpack-plugin] copy-webpack-plugin and a single chunk`, function() {
-    it(`should work when called without any parameters`, function(done) {
+  describe(`[workbox-webpack-plugin] copy-webpack-plugin and a single chunk`, function () {
+    it(`should work when called without any parameters`, function (done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -513,10 +587,14 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
           path: outputDir,
         },
         plugins: [
-          new CopyWebpackPlugin({patterns: [{
-            from: SRC_DIR,
-            to: outputDir,
-          }]}),
+          new CopyWebpackPlugin({
+            patterns: [
+              {
+                from: SRC_DIR,
+                to: outputDir,
+              },
+            ],
+          }),
           new GenerateSW(),
         ],
       };
@@ -531,46 +609,52 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
           expect(files).to.have.length(11);
 
           await validateServiceWorkerRuntime({
-            swFile, expectedMethodCalls: {
+            swFile,
+            expectedMethodCalls: {
               importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-              precacheAndRoute: [[[
-                {
-                  revision: /^[0-9a-f]{32}$/,
-                  url: 'images/example-jpeg.jpg',
-                },
-                {
-                  revision: /^[0-9a-f]{32}$/,
-                  url: 'images/web-fundamentals-icon192x192.png',
-                },
-                {
-                  revision: /^[0-9a-f]{32}$/,
-                  url: 'index.html',
-                },
-                {
-                  revision: /^[0-9a-f]{32}$/,
-                  url: 'page-1.html',
-                },
-                {
-                  revision: /^[0-9a-f]{32}$/,
-                  url: 'page-2.html',
-                },
-                {
-                  revision: /^[0-9a-f]{32}$/,
-                  url: 'splitChunksEntry.js',
-                },
-                {
-                  revision: /^[0-9a-f]{32}$/,
-                  url: 'styles/stylesheet-1.css',
-                },
-                {
-                  revision: /^[0-9a-f]{32}$/,
-                  url: 'styles/stylesheet-2.css',
-                },
-                {
-                  revision: /^[0-9a-f]{32}$/,
-                  url: 'webpackEntry.js',
-                },
-              ], {}]],
+              precacheAndRoute: [
+                [
+                  [
+                    {
+                      revision: /^[0-9a-f]{32}$/,
+                      url: 'images/example-jpeg.jpg',
+                    },
+                    {
+                      revision: /^[0-9a-f]{32}$/,
+                      url: 'images/web-fundamentals-icon192x192.png',
+                    },
+                    {
+                      revision: /^[0-9a-f]{32}$/,
+                      url: 'index.html',
+                    },
+                    {
+                      revision: /^[0-9a-f]{32}$/,
+                      url: 'page-1.html',
+                    },
+                    {
+                      revision: /^[0-9a-f]{32}$/,
+                      url: 'page-2.html',
+                    },
+                    {
+                      revision: /^[0-9a-f]{32}$/,
+                      url: 'splitChunksEntry.js',
+                    },
+                    {
+                      revision: /^[0-9a-f]{32}$/,
+                      url: 'styles/stylesheet-1.css',
+                    },
+                    {
+                      revision: /^[0-9a-f]{32}$/,
+                      url: 'styles/stylesheet-2.css',
+                    },
+                    {
+                      revision: /^[0-9a-f]{32}$/,
+                      url: 'webpackEntry.js',
+                    },
+                  ],
+                  {},
+                ],
+              ],
             },
           });
 
@@ -582,8 +666,8 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
     });
   });
 
-  describe(`[workbox-webpack-plugin] Filtering via include/exclude`, function() {
-    it(`should exclude .map and manifest.js files by default`, function(done) {
+  describe(`[workbox-webpack-plugin] Filtering via include/exclude`, function () {
+    it(`should exclude .map and manifest.js files by default`, function (done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -610,19 +694,31 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
           const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(9);
 
-          await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-            precacheAndRoute: [[[{
-              revision: /^[0-9a-f]{32}$/,
-              url: 'manifest.json',
-            }, {
-              revision: /^[0-9a-f]{32}$/,
-              url: 'not-ignored.js',
-            }, {
-              revision: /^[0-9a-f]{32}$/,
-              url: 'webpackEntry.js',
-            }], {}]],
-          }});
+          await validateServiceWorkerRuntime({
+            swFile,
+            expectedMethodCalls: {
+              importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
+              precacheAndRoute: [
+                [
+                  [
+                    {
+                      revision: /^[0-9a-f]{32}$/,
+                      url: 'manifest.json',
+                    },
+                    {
+                      revision: /^[0-9a-f]{32}$/,
+                      url: 'not-ignored.js',
+                    },
+                    {
+                      revision: /^[0-9a-f]{32}$/,
+                      url: 'webpackEntry.js',
+                    },
+                  ],
+                  {},
+                ],
+              ],
+            },
+          });
 
           done();
         } catch (error) {
@@ -631,7 +727,7 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
       });
     });
 
-    it(`should allow developers to override the default exclude filter`, function(done) {
+    it(`should allow developers to override the default exclude filter`, function (done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -656,13 +752,23 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
           const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(3);
 
-          await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-            precacheAndRoute: [[[{
-              revision: /^[0-9a-f]{32}$/,
-              url: 'manifest-normally-ignored.js',
-            }], {}]],
-          }});
+          await validateServiceWorkerRuntime({
+            swFile,
+            expectedMethodCalls: {
+              importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
+              precacheAndRoute: [
+                [
+                  [
+                    {
+                      revision: /^[0-9a-f]{32}$/,
+                      url: 'manifest-normally-ignored.js',
+                    },
+                  ],
+                  {},
+                ],
+              ],
+            },
+          });
 
           done();
         } catch (error) {
@@ -671,7 +777,7 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
       });
     });
 
-    it(`should allow developers to allowlist via include`, function(done) {
+    it(`should allow developers to allowlist via include`, function (done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -681,10 +787,14 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
           path: outputDir,
         },
         plugins: [
-          new CopyWebpackPlugin({patterns: [{
-            from: SRC_DIR,
-            to: outputDir,
-          }]}),
+          new CopyWebpackPlugin({
+            patterns: [
+              {
+                from: SRC_DIR,
+                to: outputDir,
+              },
+            ],
+          }),
           new GenerateSW({
             include: [/.html$/],
           }),
@@ -700,19 +810,31 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
           const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(11);
 
-          await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-            precacheAndRoute: [[[{
-              revision: /^[0-9a-f]{32}$/,
-              url: 'index.html',
-            }, {
-              revision: /^[0-9a-f]{32}$/,
-              url: 'page-1.html',
-            }, {
-              revision: /^[0-9a-f]{32}$/,
-              url: 'page-2.html',
-            }], {}]],
-          }});
+          await validateServiceWorkerRuntime({
+            swFile,
+            expectedMethodCalls: {
+              importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
+              precacheAndRoute: [
+                [
+                  [
+                    {
+                      revision: /^[0-9a-f]{32}$/,
+                      url: 'index.html',
+                    },
+                    {
+                      revision: /^[0-9a-f]{32}$/,
+                      url: 'page-1.html',
+                    },
+                    {
+                      revision: /^[0-9a-f]{32}$/,
+                      url: 'page-2.html',
+                    },
+                  ],
+                  {},
+                ],
+              ],
+            },
+          });
 
           done();
         } catch (error) {
@@ -721,7 +843,7 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
       });
     });
 
-    it(`should allow developers to combine the include and exclude filters`, function(done) {
+    it(`should allow developers to combine the include and exclude filters`, function (done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -731,10 +853,14 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
           path: outputDir,
         },
         plugins: [
-          new CopyWebpackPlugin({patterns: [{
-            from: SRC_DIR,
-            to: outputDir,
-          }]}),
+          new CopyWebpackPlugin({
+            patterns: [
+              {
+                from: SRC_DIR,
+                to: outputDir,
+              },
+            ],
+          }),
           new GenerateSW({
             include: [/.html$/],
             exclude: [/index/],
@@ -751,16 +877,27 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
           const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(11);
 
-          await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-            precacheAndRoute: [[[{
-              revision: /^[0-9a-f]{32}$/,
-              url: 'page-1.html',
-            }, {
-              revision: /^[0-9a-f]{32}$/,
-              url: 'page-2.html',
-            }], {}]],
-          }});
+          await validateServiceWorkerRuntime({
+            swFile,
+            expectedMethodCalls: {
+              importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
+              precacheAndRoute: [
+                [
+                  [
+                    {
+                      revision: /^[0-9a-f]{32}$/,
+                      url: 'page-1.html',
+                    },
+                    {
+                      revision: /^[0-9a-f]{32}$/,
+                      url: 'page-2.html',
+                    },
+                  ],
+                  {},
+                ],
+              ],
+            },
+          });
 
           done();
         } catch (error) {
@@ -770,8 +907,8 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
     });
   });
 
-  describe(`[workbox-webpack-plugin] swDest variations`, function() {
-    it(`should work when swDest is an absolute path`, function(done) {
+  describe(`[workbox-webpack-plugin] swDest variations`, function () {
+    it(`should work when swDest is an absolute path`, function (done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -797,13 +934,23 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
           const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(3);
 
-          await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-            precacheAndRoute: [[[{
-              revision: /^[0-9a-f]{32}$/,
-              url: 'webpackEntry.js',
-            }], {}]],
-          }});
+          await validateServiceWorkerRuntime({
+            swFile,
+            expectedMethodCalls: {
+              importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
+              precacheAndRoute: [
+                [
+                  [
+                    {
+                      revision: /^[0-9a-f]{32}$/,
+                      url: 'webpackEntry.js',
+                    },
+                  ],
+                  {},
+                ],
+              ],
+            },
+          });
 
           done();
         } catch (error) {
@@ -813,8 +960,8 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
     });
   });
 
-  describe(`[workbox-webpack-plugin] Reporting webpack warnings`, function() {
-    it(`should warn when when passed a non-existent chunk`, function(done) {
+  describe(`[workbox-webpack-plugin] Reporting webpack warnings`, function () {
+    it(`should warn when when passed a non-existent chunk`, function (done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -840,21 +987,27 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
           const statsJson = stats.toJson();
           expect(statsJson.errors).to.be.empty;
           expect(statsJson.warnings[0].message).to.eql(
-              `The chunk 'doesNotExist' was provided in your Workbox chunks config, but was not found in the compilation.`,
+            `The chunk 'doesNotExist' was provided in your Workbox chunks config, but was not found in the compilation.`,
           );
 
           const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(3);
 
           await validateServiceWorkerRuntime({
-            swFile, expectedMethodCalls: {
+            swFile,
+            expectedMethodCalls: {
               importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-              precacheAndRoute: [[[
-                {
-                  revision: null,
-                  url: /^entry1-[0-9a-f]{20}\.js$/,
-                },
-              ], {}]],
+              precacheAndRoute: [
+                [
+                  [
+                    {
+                      revision: null,
+                      url: /^entry1-[0-9a-f]{20}\.js$/,
+                    },
+                  ],
+                  {},
+                ],
+              ],
             },
           });
 
@@ -865,7 +1018,7 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
       });
     });
 
-    it(`should add maximumFileSizeToCacheInBytes warnings to compilation.warnings`, function(done) {
+    it(`should add maximumFileSizeToCacheInBytes warnings to compilation.warnings`, function (done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -877,10 +1030,14 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
           path: outputDir,
         },
         plugins: [
-          new CopyWebpackPlugin({patterns: [{
-            from: SRC_DIR,
-            to: outputDir,
-          }]}),
+          new CopyWebpackPlugin({
+            patterns: [
+              {
+                from: SRC_DIR,
+                to: outputDir,
+              },
+            ],
+          }),
           new GenerateSW({
             // Make this large enough to cache some, but not all, files.
             maximumFileSizeToCacheInBytes: 14 * 1024,
@@ -897,7 +1054,7 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
         try {
           const statsJson = stats.toJson('verbose');
           expect(statsJson.warnings[0].message).to.eql(
-              `images/example-jpeg.jpg is 15.3 kB, and won't be precached. Configure maximumFileSizeToCacheInBytes to change this limit.`,
+            `images/example-jpeg.jpg is 15.3 kB, and won't be precached. Configure maximumFileSizeToCacheInBytes to change this limit.`,
           );
 
           const swFile = upath.join(outputDir, 'service-worker.js');
@@ -905,47 +1062,55 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
           const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(12);
 
-          await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-            precacheAndRoute: [[[
-              {
-                revision: null,
-                url: /^entry1-[0-9a-f]{20}\.js$/,
-              },
-              {
-                revision: /^[0-9a-f]{32}$/,
-                url: 'images/web-fundamentals-icon192x192.png',
-              },
-              {
-                revision: /^[0-9a-f]{32}$/,
-                url: 'index.html',
-              },
-              {
-                revision: /^[0-9a-f]{32}$/,
-                url: 'page-1.html',
-              },
-              {
-                revision: /^[0-9a-f]{32}$/,
-                url: 'page-2.html',
-              },
-              {
-                revision: /^[0-9a-f]{32}$/,
-                url: 'splitChunksEntry.js',
-              },
-              {
-                revision: /^[0-9a-f]{32}$/,
-                url: 'styles/stylesheet-1.css',
-              },
-              {
-                revision: /^[0-9a-f]{32}$/,
-                url: 'styles/stylesheet-2.css',
-              },
-              {
-                revision: /^[0-9a-f]{32}$/,
-                url: 'webpackEntry.js',
-              },
-            ], {}]],
-          }});
+          await validateServiceWorkerRuntime({
+            swFile,
+            expectedMethodCalls: {
+              importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
+              precacheAndRoute: [
+                [
+                  [
+                    {
+                      revision: null,
+                      url: /^entry1-[0-9a-f]{20}\.js$/,
+                    },
+                    {
+                      revision: /^[0-9a-f]{32}$/,
+                      url: 'images/web-fundamentals-icon192x192.png',
+                    },
+                    {
+                      revision: /^[0-9a-f]{32}$/,
+                      url: 'index.html',
+                    },
+                    {
+                      revision: /^[0-9a-f]{32}$/,
+                      url: 'page-1.html',
+                    },
+                    {
+                      revision: /^[0-9a-f]{32}$/,
+                      url: 'page-2.html',
+                    },
+                    {
+                      revision: /^[0-9a-f]{32}$/,
+                      url: 'splitChunksEntry.js',
+                    },
+                    {
+                      revision: /^[0-9a-f]{32}$/,
+                      url: 'styles/stylesheet-1.css',
+                    },
+                    {
+                      revision: /^[0-9a-f]{32}$/,
+                      url: 'styles/stylesheet-2.css',
+                    },
+                    {
+                      revision: /^[0-9a-f]{32}$/,
+                      url: 'webpackEntry.js',
+                    },
+                  ],
+                  {},
+                ],
+              ],
+            },
+          });
 
           done();
         } catch (error) {
@@ -955,8 +1120,8 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
     });
   });
 
-  describe(`[workbox-webpack-plugin] Customizing output paths and names`, function() {
-    it(`should honor publicPath`, function(done) {
+  describe(`[workbox-webpack-plugin] Customizing output paths and names`, function () {
+    it(`should honor publicPath`, function (done) {
       const outputDir = tempy.directory();
       const publicPath = '/testing/';
       const config = {
@@ -969,9 +1134,7 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
           filename: '[name]-[chunkhash].js',
           path: outputDir,
         },
-        plugins: [
-          new GenerateSW(),
-        ],
+        plugins: [new GenerateSW()],
       };
 
       const compiler = webpack(config);
@@ -983,15 +1146,23 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
           const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(3);
 
-          await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-            precacheAndRoute: [[[
-              {
-                revision: null,
-                url: /^\/testing\/entry1-[0-9a-f]{20}\.js$/,
-              },
-            ], {}]],
-          }});
+          await validateServiceWorkerRuntime({
+            swFile,
+            expectedMethodCalls: {
+              importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
+              precacheAndRoute: [
+                [
+                  [
+                    {
+                      revision: null,
+                      url: /^\/testing\/entry1-[0-9a-f]{20}\.js$/,
+                    },
+                  ],
+                  {},
+                ],
+              ],
+            },
+          });
 
           done();
         } catch (error) {
@@ -1001,8 +1172,8 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
     });
   });
 
-  describe(`[workbox-webpack-plugin] Filesystem options`, function() {
-    it(`should support using MemoryFS as the outputFileSystem`, function(done) {
+  describe(`[workbox-webpack-plugin] Filesystem options`, function () {
+    it(`should support using MemoryFS as the outputFileSystem`, function (done) {
       const memoryFS = new MemoryFS();
       const outputDir = '/output/dir';
       memoryFS.mkdirpSync(outputDir);
@@ -1016,9 +1187,7 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
           filename: '[name]-[chunkhash].js',
           path: outputDir,
         },
-        plugins: [
-          new GenerateSW(),
-        ],
+        plugins: [new GenerateSW()],
       };
 
       const compiler = webpack(config);
@@ -1031,15 +1200,28 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
           const files = memoryFS.readdirSync(outputDir);
           expect(files).to.have.length(3);
 
-          const swString = memoryFS.readFileSync(`${outputDir}/service-worker.js`, 'utf-8');
+          const swString = memoryFS.readFileSync(
+            `${outputDir}/service-worker.js`,
+            'utf-8',
+          );
 
-          await validateServiceWorkerRuntime({swString, expectedMethodCalls: {
-            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-            precacheAndRoute: [[[{
-              revision: null,
-              url: /^entry1-[0-9a-f]{20}\.js$/,
-            }], {}]],
-          }});
+          await validateServiceWorkerRuntime({
+            swString,
+            expectedMethodCalls: {
+              importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
+              precacheAndRoute: [
+                [
+                  [
+                    {
+                      revision: null,
+                      url: /^entry1-[0-9a-f]{20}\.js$/,
+                    },
+                  ],
+                  {},
+                ],
+              ],
+            },
+          });
 
           done();
         } catch (error) {
@@ -1049,11 +1231,17 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
     });
   });
 
-  describe(`[workbox-webpack-plugin] Multiple invocation scenarios`, function() {
+  describe(`[workbox-webpack-plugin] Multiple invocation scenarios`, function () {
     // See https://github.com/GoogleChrome/workbox/issues/2158
-    it(`should support multiple compilations using the same plugin instance`, async function() {
+    it(`should support multiple compilations using the same plugin instance`, async function () {
       const outputDir = tempy.directory();
-      const srcDir = upath.join(__dirname, '..', '..', 'static', 'example-project-1');
+      const srcDir = upath.join(
+        __dirname,
+        '..',
+        '..',
+        'static',
+        'example-project-1',
+      );
       const config = {
         mode: 'production',
         entry: {
@@ -1063,9 +1251,7 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
           filename: '[name].js',
           path: outputDir,
         },
-        plugins: [
-          new GenerateSW(),
-        ],
+        plugins: [new GenerateSW()],
       };
 
       const compiler = webpack(config);
@@ -1100,9 +1286,15 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
       }
     });
 
-    it(`should not list the swDest from one plugin in the other's manifest`, function(done) {
+    it(`should not list the swDest from one plugin in the other's manifest`, function (done) {
       const outputDir = tempy.directory();
-      const srcDir = upath.join(__dirname, '..', '..', 'static', 'example-project-1');
+      const srcDir = upath.join(
+        __dirname,
+        '..',
+        '..',
+        'static',
+        'example-project-1',
+      );
       const config = {
         mode: 'production',
         entry: {
@@ -1137,10 +1329,17 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
             swFile: sw1File,
             expectedMethodCalls: {
               importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-              precacheAndRoute: [[[{
-                revision: /^[0-9a-f]{32}$/,
-                url: 'index.js',
-              }], {}]],
+              precacheAndRoute: [
+                [
+                  [
+                    {
+                      revision: /^[0-9a-f]{32}$/,
+                      url: 'index.js',
+                    },
+                  ],
+                  {},
+                ],
+              ],
             },
           });
 
@@ -1148,10 +1347,17 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
             swFile: sw2File,
             expectedMethodCalls: {
               importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-              precacheAndRoute: [[[{
-                revision: /^[0-9a-f]{32}$/,
-                url: 'index.js',
-              }], {}]],
+              precacheAndRoute: [
+                [
+                  [
+                    {
+                      revision: /^[0-9a-f]{32}$/,
+                      url: 'index.js',
+                    },
+                  ],
+                  {},
+                ],
+              ],
             },
           });
 
@@ -1163,8 +1369,8 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
     });
   });
 
-  describe(`[workbox-webpack-plugin] Rollup plugin configuration options`, function() {
-    it(`should support inlining the Workbox runtime`, function(done) {
+  describe(`[workbox-webpack-plugin] Rollup plugin configuration options`, function () {
+    it(`should support inlining the Workbox runtime`, function (done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -1199,7 +1405,7 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
       });
     });
 
-    it(`should support inlining the Workbox runtime and generating sourcemaps`, function(done) {
+    it(`should support inlining the Workbox runtime and generating sourcemaps`, function (done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -1235,7 +1441,7 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
       });
     });
 
-    it(`should support using a swDest that includes a subdirectory`, function(done) {
+    it(`should support using a swDest that includes a subdirectory`, function (done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -1270,8 +1476,8 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
     });
   });
 
-  describe(`[workbox-webpack-plugin] Manifest transformations`, function() {
-    it(`should use dontCacheBustURLsMatching`, function(done) {
+  describe(`[workbox-webpack-plugin] Manifest transformations`, function () {
+    it(`should use dontCacheBustURLsMatching`, function (done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -1296,13 +1502,23 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
           const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(3);
 
-          await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-            precacheAndRoute: [[[{
-              url: /^main\.[0-9a-f]{20}\.js$/,
-              revision: null,
-            }], {}]],
-          }});
+          await validateServiceWorkerRuntime({
+            swFile,
+            expectedMethodCalls: {
+              importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
+              precacheAndRoute: [
+                [
+                  [
+                    {
+                      url: /^main\.[0-9a-f]{20}\.js$/,
+                      revision: null,
+                    },
+                  ],
+                  {},
+                ],
+              ],
+            },
+          });
 
           done();
         } catch (error) {
@@ -1311,7 +1527,7 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
       });
     });
 
-    it(`should use modifyURLPrefix`, function(done) {
+    it(`should use modifyURLPrefix`, function (done) {
       const outputDir = tempy.directory();
       const config = {
         mode: 'production',
@@ -1339,13 +1555,23 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
           const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(3);
 
-          await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-            precacheAndRoute: [[[{
-              revision: null,
-              url: /^https:\/\/example\.org\/main\.[0-9a-f]{20}\.js/,
-            }], {}]],
-          }});
+          await validateServiceWorkerRuntime({
+            swFile,
+            expectedMethodCalls: {
+              importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
+              precacheAndRoute: [
+                [
+                  [
+                    {
+                      revision: null,
+                      url: /^https:\/\/example\.org\/main\.[0-9a-f]{20}\.js/,
+                    },
+                  ],
+                  {},
+                ],
+              ],
+            },
+          });
 
           done();
         } catch (error) {
@@ -1354,7 +1580,7 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
       });
     });
 
-    it(`should use manifestTransforms`, function(done) {
+    it(`should use manifestTransforms`, function (done) {
       const outputDir = tempy.directory();
       const warningMessage = 'test warning';
       const config = {
@@ -1366,24 +1592,26 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
         },
         plugins: [
           new GenerateSW({
-            manifestTransforms: [(manifest, compilation) => {
-              expect(manifest).to.have.lengthOf(1);
-              expect(manifest[0].size).to.eql(30);
-              expect(manifest[0].url.startsWith('main.')).to.be.true;
-              expect(manifest[0].revision).to.be.null;
-              expect(compilation).to.exist;
+            manifestTransforms: [
+              (manifest, compilation) => {
+                expect(manifest).to.have.lengthOf(1);
+                expect(manifest[0].size).to.eql(30);
+                expect(manifest[0].url.startsWith('main.')).to.be.true;
+                expect(manifest[0].revision).to.be.null;
+                expect(compilation).to.exist;
 
-              manifest = manifest.map((entry) => {
-                entry.url += '-suffix';
-                entry.revision = null;
-                return entry;
-              });
+                manifest = manifest.map((entry) => {
+                  entry.url += '-suffix';
+                  entry.revision = null;
+                  return entry;
+                });
 
-              return {
-                manifest,
-                warnings: [warningMessage],
-              };
-            }],
+                return {
+                  manifest,
+                  warnings: [warningMessage],
+                };
+              },
+            ],
           }),
         ],
       };
@@ -1394,19 +1622,30 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function() {
         try {
           expect(webpackError).not.to.exist;
           const statsJson = stats.toJson();
-          expect(statsJson.errors, JSON.stringify(statsJson.errors)).to.be.empty;
+          expect(statsJson.errors, JSON.stringify(statsJson.errors)).to.be
+            .empty;
           expect(statsJson.warnings[0].message).to.eql(warningMessage);
 
           const files = await globby('**', {cwd: outputDir});
           expect(files).to.have.length(3);
 
-          await validateServiceWorkerRuntime({swFile, expectedMethodCalls: {
-            importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-            precacheAndRoute: [[[{
-              revision: null,
-              url: /^main\.[0-9a-f]{20}\.js-suffix$/,
-            }], {}]],
-          }});
+          await validateServiceWorkerRuntime({
+            swFile,
+            expectedMethodCalls: {
+              importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
+              precacheAndRoute: [
+                [
+                  [
+                    {
+                      revision: null,
+                      url: /^main\.[0-9a-f]{20}\.js-suffix$/,
+                    },
+                  ],
+                  {},
+                ],
+              ],
+            },
+          });
 
           done();
         } catch (error) {

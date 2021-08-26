@@ -4,12 +4,12 @@
   // Helper function which returns a promise which resolves once the service worker registration
   // is past the "installing" state.
   function waitUntilInstalled(registration) {
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
       if (registration.installing) {
         // If the current registration represents the "installing" service worker, then wait
         // until the installation step (during which the resources are pre-fetched) completes
         // to display the file list.
-        registration.installing.addEventListener('statechange', function(e) {
+        registration.installing.addEventListener('statechange', function (e) {
           if (e.target.state === 'installed') {
             resolve();
           } else if (e.target.state === 'redundant') {
@@ -35,40 +35,42 @@
     }
     searchParams[split[0]] = decodeURIComponent(split[1]);
   });
-  navigator.serviceWorker.register(searchParams.sw)
-  .then((registration) => {
-    return waitUntilInstalled(registration);
-  })
-  .then(() => {
-    return window.caches.keys()
-    .then(keys => {
-      return window.caches.open(keys[0]);
+  navigator.serviceWorker
+    .register(searchParams.sw)
+    .then((registration) => {
+      return waitUntilInstalled(registration);
     })
-    .then((cache) => {
-      return cache.keys();
-    });
-  })
-  .then((entries) => {
-    window.__testresult = {
-      entries: entries.map((entry) => {
-        return entry.url;
-      })
-    };
-  })
-  .catch((err) => {
-    document.body.style.color = 'red';
-    document.body.innerHTML = `<h1>${err.message}</h1>
+    .then(() => {
+      return window.caches
+        .keys()
+        .then((keys) => {
+          return window.caches.open(keys[0]);
+        })
+        .then((cache) => {
+          return cache.keys();
+        });
+    })
+    .then((entries) => {
+      window.__testresult = {
+        entries: entries.map((entry) => {
+          return entry.url;
+        }),
+      };
+    })
+    .catch((err) => {
+      document.body.style.color = 'red';
+      document.body.innerHTML = `<h1>${err.message}</h1>
 
     <pre>${err.stack}</pre>`;
 
-    console.error(err.message)
-    console.error(err.stack);
+      console.error(err.message);
+      console.error(err.stack);
 
-    // This is just to help with local development so we know there is an error
-    setTimeout(() => {
-      window.__testresult = {
-        error: err
-      };
-    }, 5 * 1000);
-  });
+      // This is just to help with local development so we know there is an error
+      setTimeout(() => {
+        window.__testresult = {
+          error: err,
+        };
+      }, 5 * 1000);
+    });
 </script>

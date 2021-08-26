@@ -12,10 +12,11 @@ const sinon = require('sinon');
 
 const {errors} = require('../../../../packages/workbox-build/build/lib/errors');
 
-describe(`[workbox-build] lib/populate-sw-template.js`, function() {
-  const MODULE_PATH = '../../../../packages/workbox-build/build/lib/populate-sw-template';
+describe(`[workbox-build] lib/populate-sw-template.js`, function () {
+  const MODULE_PATH =
+    '../../../../packages/workbox-build/build/lib/populate-sw-template';
 
-  it(`should throw an error if templating fails`, function() {
+  it(`should throw an error if templating fails`, function () {
     const manifestEntries = ['ignored'];
 
     const {populateSWTemplate} = proxyquire(MODULE_PATH, {
@@ -32,7 +33,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     }
   });
 
-  it(`should throw an error if both manifestEntries and runtimeCaching are empty`, function() {
+  it(`should throw an error if both manifestEntries and runtimeCaching are empty`, function () {
     const {populateSWTemplate} = proxyquire(MODULE_PATH, {
       'lodash/template': () => {},
     });
@@ -41,11 +42,13 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
       populateSWTemplate({manifestEntries: [], runtimeCaching: []});
       throw new Error('Unexpected success.');
     } catch (error) {
-      expect(error.message).to.have.string(errors['no-manifest-entries-or-runtime-caching']);
+      expect(error.message).to.have.string(
+        errors['no-manifest-entries-or-runtime-caching'],
+      );
     }
   });
 
-  it(`should pass the expected options to the template using mostly defaults`, function() {
+  it(`should pass the expected options to the template using mostly defaults`, function () {
     const runtimeCachingPlaceholder = 'runtime-caching-placeholder';
     const swTemplate = 'template';
     const precacheOptionsString = '{}';
@@ -67,27 +70,29 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
 
     // Doing a strict comparison with functions isn't easy.
     expect(innerStub.args[0][0].use).to.be.a('function');
-    delete(innerStub.args[0][0].use);
+    delete innerStub.args[0][0].use;
 
-    expect(innerStub.args[0]).to.eql([{
-      manifestEntries,
-      cacheId: undefined,
-      cleanupOutdatedCaches: undefined,
-      clientsClaim: undefined,
-      disableDevLogs: undefined,
-      importScripts: undefined,
-      navigateFallback: undefined,
-      navigateFallbackDenylist: undefined,
-      navigateFallbackAllowlist: undefined,
-      navigationPreload: undefined,
-      offlineAnalyticsConfigString: undefined,
-      precacheOptionsString,
-      runtimeCaching: runtimeCachingPlaceholder,
-      skipWaiting: undefined,
-    }]);
+    expect(innerStub.args[0]).to.eql([
+      {
+        manifestEntries,
+        cacheId: undefined,
+        cleanupOutdatedCaches: undefined,
+        clientsClaim: undefined,
+        disableDevLogs: undefined,
+        importScripts: undefined,
+        navigateFallback: undefined,
+        navigateFallbackDenylist: undefined,
+        navigateFallbackAllowlist: undefined,
+        navigationPreload: undefined,
+        offlineAnalyticsConfigString: undefined,
+        precacheOptionsString,
+        runtimeCaching: runtimeCachingPlaceholder,
+        skipWaiting: undefined,
+      },
+    ]);
   });
 
-  it(`should pass the expected options to the template`, function() {
+  it(`should pass the expected options to the template`, function () {
     const cacheId = 'test-cache-id';
     const cleanupOutdatedCaches = true;
     const clientsClaim = true;
@@ -107,7 +112,8 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     const runtimeCachingPlaceholder = 'runtime-caching-placeholder';
     const skipWaiting = true;
     const swTemplate = 'template';
-    const precacheOptionsString = '{\n  "directoryIndex": "index.html",\n  "ignoreURLParametersMatching": [/a/, /b/]\n}';
+    const precacheOptionsString =
+      '{\n  "directoryIndex": "index.html",\n  "ignoreURLParametersMatching": [/a/, /b/]\n}';
 
     // There are two stages in templating: creating the active template function
     // from an initial string, and passing variables to that template function
@@ -146,27 +152,29 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
 
     // Doing a strict comparison with functions isn't easy.
     expect(templatePopulationStub.args[0][0].use).to.be.a('function');
-    delete(templatePopulationStub.args[0][0].use);
+    delete templatePopulationStub.args[0][0].use;
 
-    expect(templatePopulationStub.args[0]).to.eql([{
-      cacheId,
-      cleanupOutdatedCaches,
-      clientsClaim,
-      disableDevLogs,
-      importScripts,
-      manifestEntries,
-      navigateFallback,
-      navigateFallbackDenylist,
-      navigateFallbackAllowlist,
-      navigationPreload,
-      offlineAnalyticsConfigString,
-      runtimeCaching: runtimeCachingPlaceholder,
-      precacheOptionsString,
-      skipWaiting,
-    }]);
+    expect(templatePopulationStub.args[0]).to.eql([
+      {
+        cacheId,
+        cleanupOutdatedCaches,
+        clientsClaim,
+        disableDevLogs,
+        importScripts,
+        manifestEntries,
+        navigateFallback,
+        navigateFallbackDenylist,
+        navigateFallbackAllowlist,
+        navigationPreload,
+        offlineAnalyticsConfigString,
+        runtimeCaching: runtimeCachingPlaceholder,
+        precacheOptionsString,
+        skipWaiting,
+      },
+    ]);
   });
 
-  it(`should handle a complex offlineGoogleAnalytics value when populating the template`, function() {
+  it(`should handle a complex offlineGoogleAnalytics value when populating the template`, function () {
     const runtimeCachingPlaceholder = 'runtime-caching-placeholder';
     const swTemplate = 'template';
     const precacheOptionsString = '{}';
@@ -198,23 +206,25 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
 
     // Doing a strict comparison with functions isn't easy.
     expect(innerStub.args[0][0].use).to.be.a('function');
-    delete(innerStub.args[0][0].use);
+    delete innerStub.args[0][0].use;
 
-    expect(innerStub.args[0]).to.eql([{
-      manifestEntries,
-      cacheId: undefined,
-      cleanupOutdatedCaches: undefined,
-      clientsClaim: undefined,
-      disableDevLogs: undefined,
-      importScripts: undefined,
-      navigateFallback: undefined,
-      navigateFallbackDenylist: undefined,
-      navigateFallbackAllowlist: undefined,
-      navigationPreload: undefined,
-      offlineAnalyticsConfigString,
-      precacheOptionsString,
-      runtimeCaching: runtimeCachingPlaceholder,
-      skipWaiting: undefined,
-    }]);
+    expect(innerStub.args[0]).to.eql([
+      {
+        manifestEntries,
+        cacheId: undefined,
+        cleanupOutdatedCaches: undefined,
+        clientsClaim: undefined,
+        disableDevLogs: undefined,
+        importScripts: undefined,
+        navigateFallback: undefined,
+        navigateFallbackDenylist: undefined,
+        navigateFallbackAllowlist: undefined,
+        navigationPreload: undefined,
+        offlineAnalyticsConfigString,
+        precacheOptionsString,
+        runtimeCaching: runtimeCachingPlaceholder,
+        skipWaiting: undefined,
+      },
+    ]);
   });
 });

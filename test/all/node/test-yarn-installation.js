@@ -18,13 +18,13 @@ const packagesToInstall = [
 
 let temporaryDirectory;
 
-describe('[all] Yarn Installation', function() {
-  before(async function() {
+describe('[all] Yarn Installation', function () {
+  before(async function () {
     temporaryDirectory = await tempy.directory();
   });
 
   for (const packageToInstall of packagesToInstall) {
-    it(`should install ${packageToInstall} using yarn`, async function() {
+    it(`should install ${packageToInstall} using yarn`, async function () {
       this.timeout(5 * 60 * 1000);
 
       try {

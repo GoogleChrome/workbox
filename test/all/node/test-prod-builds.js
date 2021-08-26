@@ -13,29 +13,35 @@ const glob = require('glob');
 const logHelper = require('../../../infra/utils/log-helper');
 const path = require('path');
 
-describe(`[all] prod builds`, function() {
-  const buildFiles = glob.sync(`packages/*/${constants.PACKAGE_BUILD_DIRNAME}/*.prod.js`, {
-    ignore: ['packages/*/node_modules/**/*'],
-    cwd: path.join(__dirname, '..', '..', '..'),
-    absolute: true,
-  });
+describe(`[all] prod builds`, function () {
+  const buildFiles = glob.sync(
+    `packages/*/${constants.PACKAGE_BUILD_DIRNAME}/*.prod.js`,
+    {
+      ignore: ['packages/*/node_modules/**/*'],
+      cwd: path.join(__dirname, '..', '..', '..'),
+      absolute: true,
+    },
+  );
 
-  it(`should not have files with "console" or "%cworwbox"`, function() {
+  it(`should not have files with "console" or "%cworwbox"`, function () {
     const invalidFiles = [];
     buildFiles.forEach((filePath) => {
       const fileContents = fse.readFileSync(filePath).toString();
-      if ((fileContents.indexOf(`console`) > -1 &&
-           // See https://github.com/GoogleChrome/workbox/issues/2259
-           !filePath.includes('workbox-precaching')) ||
-          fileContents.indexOf(`%cworkbox`) > -1) {
+      if (
+        (fileContents.indexOf(`console`) > -1 &&
+          // See https://github.com/GoogleChrome/workbox/issues/2259
+          !filePath.includes('workbox-precaching')) ||
+        fileContents.indexOf(`%cworkbox`) > -1
+      ) {
         invalidFiles.push(filePath);
       }
     });
 
     if (invalidFiles.length > 0) {
       logHelper.error(
-          `Files with 'console' in them\n`,
-          JSON.stringify(invalidFiles, null, 2));
+        `Files with 'console' in them\n`,
+        JSON.stringify(invalidFiles, null, 2),
+      );
       throw new Error(oneLine`
         Found ${invalidFiles.length} files with "console" or "%cworkbox" in
         the final build. Please ensure all 'logger' calls are wrapped in a
@@ -44,7 +50,7 @@ describe(`[all] prod builds`, function() {
     }
   });
 
-  it(`should not have files with hasOwnProperty`, function() {
+  it(`should not have files with hasOwnProperty`, function () {
     const invalidFiles = [];
     buildFiles.forEach((filePath) => {
       const fileContents = fse.readFileSync(filePath).toString();
@@ -55,8 +61,9 @@ describe(`[all] prod builds`, function() {
 
     if (invalidFiles.length > 0) {
       logHelper.error(
-          `Files with 'hasOwnProperty('default')' in them\n`,
-          JSON.stringify(invalidFiles, null, 2));
+        `Files with 'hasOwnProperty('default')' in them\n`,
+        JSON.stringify(invalidFiles, null, 2),
+      );
       throw new Error(oneLine`
         Found ${invalidFiles.length} files with "hasOwnProperty('default')"
         in the final build. Please convert these to named exports to be friendly

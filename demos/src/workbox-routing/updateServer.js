@@ -30,12 +30,12 @@ app.post('/deploy', (request, response) => {
 
   const repoUrl = request.query.repo;
   execSync(
-      `git checkout -- ./ && git pull -X theirs ${repoUrl} ` +
+    `git checkout -- ./ && git pull -X theirs ${repoUrl} ` +
       `glitch && refresh && git branch -D glitch`,
   );
   response.status(200).send();
 });
 
-const listener = app.listen(process.env.PORT, function() {
+const listener = app.listen(process.env.PORT, function () {
   console.log('Your app is listening on port ' + listener.address().port);
 });

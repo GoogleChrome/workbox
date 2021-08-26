@@ -9,15 +9,14 @@
 import {addRoute} from 'workbox-precaching/addRoute.mjs';
 import {resetDefaultPrecacheController} from './resetDefaultPrecacheController.mjs';
 
-
-describe(`addRoute()`, function() {
+describe(`addRoute()`, function () {
   const sandbox = sinon.createSandbox();
 
   function getAddedFetchListeners() {
     return self.addEventListener.args.filter(([type]) => type === 'fetch');
   }
 
-  beforeEach(async function() {
+  beforeEach(async function () {
     sandbox.restore();
     resetDefaultPrecacheController();
 
@@ -25,14 +24,14 @@ describe(`addRoute()`, function() {
     sandbox.spy(self, 'addEventListener');
   });
 
-  afterEach(function() {
+  afterEach(function () {
     for (const args of self.addEventListener.args) {
       self.removeEventListener(...args);
     }
     sandbox.restore();
   });
 
-  it(`should add at most 1 fetch listener`, async function() {
+  it(`should add at most 1 fetch listener`, async function () {
     addRoute();
 
     const callCountAfterFirstCall = getAddedFetchListeners().length;

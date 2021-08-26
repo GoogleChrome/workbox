@@ -8,10 +8,16 @@
 
 const {expect} = require('chai');
 
-const {executeAsyncAndCatch} = require('../../../infra/testing/webdriver/executeAsyncAndCatch');
+const {
+  executeAsyncAndCatch,
+} = require('../../../infra/testing/webdriver/executeAsyncAndCatch');
 const {runUnitTests} = require('../../../infra/testing/webdriver/runUnitTests');
-const {IframeManager} = require('../../../infra/testing/webdriver/IframeManager');
-const {unregisterAllSWs} = require('../../../infra/testing/webdriver/unregisterAllSWs');
+const {
+  IframeManager,
+} = require('../../../infra/testing/webdriver/IframeManager');
+const {
+  unregisterAllSWs,
+} = require('../../../infra/testing/webdriver/unregisterAllSWs');
 const {windowLoaded} = require('../../../infra/testing/webdriver/windowLoaded');
 const templateData = require('../../../infra/testing/server/template-data');
 
@@ -21,20 +27,20 @@ const {webdriver, server} = global.__workbox;
 const testServerOrigin = server.getAddress();
 const testPath = `${testServerOrigin}/test/workbox-window/static/`;
 
-describe(`[workbox-window]`, function() {
-  it(`passes all window unit tests`, async function() {
+describe(`[workbox-window]`, function () {
+  it(`passes all window unit tests`, async function () {
     await runUnitTests('/test/workbox-window/window/');
   });
 });
 
-describe(`[workbox-window] Workbox`, function() {
-  beforeEach(async function() {
+describe(`[workbox-window] Workbox`, function () {
+  beforeEach(async function () {
     templateData.assign({version: '1'});
     await webdriver.get(testPath);
     await windowLoaded();
   });
 
-  afterEach(async function() {
+  afterEach(async function () {
     try {
       await unregisterAllSWs();
     } catch (error) {
@@ -43,7 +49,7 @@ describe(`[workbox-window] Workbox`, function() {
   });
 
   describe('register', () => {
-    it(`registers a new service worker`, async function() {
+    it(`registers a new service worker`, async function () {
       const result = await executeAsyncAndCatch(async (cb) => {
         try {
           const wb = new Workbox('sw-clients-claim.js.njk');
@@ -61,7 +67,7 @@ describe(`[workbox-window] Workbox`, function() {
       expect(result.scriptURL).to.equal(`${testPath}sw-clients-claim.js.njk`);
     });
 
-    it(`reports all events for a new SW registration`, async function() {
+    it(`reports all events for a new SW registration`, async function () {
       const result = await executeAsyncAndCatch(async (cb) => {
         try {
           const wb = new Workbox('sw-clients-claim.js.njk');
@@ -104,7 +110,7 @@ describe(`[workbox-window] Workbox`, function() {
       expect(result.waitingSpyCallCount).to.equal(0);
     });
 
-    it(`reports all events for an updated SW registration`, async function() {
+    it(`reports all events for an updated SW registration`, async function () {
       const result = await executeAsyncAndCatch(async (cb) => {
         try {
           const wb1 = new Workbox('sw-clients-claim.js.njk?v=1');
@@ -159,7 +165,7 @@ describe(`[workbox-window] Workbox`, function() {
       expect(result.controllingSpyCallCount).to.equal(1);
     });
 
-    it(`reports all events for an external SW registration`, async function() {
+    it(`reports all events for an external SW registration`, async function () {
       const iframeManager = new IframeManager(webdriver);
 
       await executeAsyncAndCatch(async (cb) => {

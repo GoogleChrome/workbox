@@ -14,12 +14,14 @@ const DEFAULT_ROOT = path.join(__dirname, '..', '..');
 const getPackages = ({type, root = DEFAULT_ROOT} = {}) => {
   const pathToPkgJsons = glob.sync('packages/*/package.json', {cwd: root});
 
-  return pathToPkgJsons.map((pathToPkgJson) => {
-    const pkg = require(`${path.resolve(root)}/${pathToPkgJson}`);
-    return pkg;
-  }).filter((pkg) => {
-    return pkg.workbox && pkg.workbox.packageType === type;
-  });
+  return pathToPkgJsons
+    .map((pathToPkgJson) => {
+      const pkg = require(`${path.resolve(root)}/${pathToPkgJson}`);
+      return pkg;
+    })
+    .filter((pkg) => {
+      return pkg.workbox && pkg.workbox.packageType === type;
+    });
 };
 
 module.exports = {

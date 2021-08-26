@@ -10,7 +10,6 @@ const globby = require('globby');
 const path = require('path');
 const templateData = require('../template-data');
 
-
 const match = '/test/:packageName/window/';
 
 async function handler(req, res) {
@@ -18,7 +17,7 @@ async function handler(req, res) {
   const testFilter = req.query.filter || '**/test-*.mjs';
 
   const testFiles =
-      await globby(`test/${packageName}/window/**/${testFilter}`) || [];
+    (await globby(`test/${packageName}/window/**/${testFilter}`)) || [];
 
   const testModules = testFiles.map((file) => '/' + file);
 

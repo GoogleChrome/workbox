@@ -47,8 +47,7 @@ async function publish_github() {
   // Get all of the tags in the repo.
   const allTags = await githubHelper.getTags();
   const taggedReleases = await githubHelper.getTaggedReleases();
-  const tagsToBuild = filterTagsWithReleaseBundles(allTags,
-      taggedReleases);
+  const tagsToBuild = filterTagsWithReleaseBundles(allTags, taggedReleases);
 
   if (tagsToBuild.length === 0) {
     logHelper.log(`No tags missing from GitHub.`);
@@ -56,8 +55,11 @@ async function publish_github() {
   }
 
   for (const tagToBuild of tagsToBuild) {
-    await handleGithubRelease(tagToBuild.name, tagToBuild.name,
-        taggedReleases[tagToBuild.name]);
+    await handleGithubRelease(
+      tagToBuild.name,
+      tagToBuild.name,
+      taggedReleases[tagToBuild.name],
+    );
   }
 }
 

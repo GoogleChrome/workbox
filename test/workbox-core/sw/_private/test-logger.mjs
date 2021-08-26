@@ -8,13 +8,13 @@
 
 import {logger} from 'workbox-core/_private/logger.mjs';
 
-describe(`logger`, function() {
+describe(`logger`, function () {
   const SAFARI_USER_AGENT = `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1.1 Safari/605.1.15`;
   const CHROME_USER_AGENT = `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.87 Safari/537.36`;
 
   const sandbox = sinon.createSandbox();
 
-  beforeEach(function() {
+  beforeEach(function () {
     sandbox.restore();
 
     // Undo the logger stubs setup in infra/testing/auto-stub-logger.mjs
@@ -30,16 +30,11 @@ describe(`logger`, function() {
     self.__WB_DISABLE_DEV_LOGS = false;
   });
 
-  after(function() {
+  after(function () {
     sandbox.restore();
   });
 
-  const consoleLevels = [
-    'debug',
-    'log',
-    'warn',
-    'error',
-  ];
+  const consoleLevels = ['debug', 'log', 'warn', 'error'];
 
   const validateStub = (stub, expectedArgs, isPrefixed) => {
     expect(stub.callCount).to.equal(1);
@@ -55,13 +50,13 @@ describe(`logger`, function() {
     expect(calledArgs).to.deep.equal(expectedArgs);
   };
 
-  it(`should be null in production mode`, function() {
+  it(`should be null in production mode`, function () {
     if (process.env.NODE_ENV !== 'production') this.skip();
 
     expect(logger).to.equal(null);
   });
 
-  it(`should toggle logging based on the value of __WB_DISABLE_DEV_LOGS`, function() {
+  it(`should toggle logging based on the value of __WB_DISABLE_DEV_LOGS`, function () {
     if (process.env.NODE_ENV === 'production') this.skip();
 
     const logStub = sandbox.stub(console, 'log');
@@ -76,8 +71,8 @@ describe(`logger`, function() {
   });
 
   consoleLevels.forEach((consoleLevel) => {
-    describe(`.${consoleLevel}()`, function() {
-      it(`should work without input`, function() {
+    describe(`.${consoleLevel}()`, function () {
+      it(`should work without input`, function () {
         if (process.env.NODE_ENV === 'production') this.skip();
 
         const stub = sandbox.stub(console, consoleLevel);
@@ -90,7 +85,7 @@ describe(`logger`, function() {
         validateStub(stub, [], true);
       });
 
-      it(`should work with several inputs`, function() {
+      it(`should work with several inputs`, function () {
         if (process.env.NODE_ENV === 'production') this.skip();
 
         const stub = sandbox.stub(console, consoleLevel);
@@ -106,8 +101,8 @@ describe(`logger`, function() {
     });
   });
 
-  describe(`.groupCollapsed()`, function() {
-    it(`should work without input`, function() {
+  describe(`.groupCollapsed()`, function () {
+    it(`should work without input`, function () {
       if (process.env.NODE_ENV === 'production') this.skip();
 
       const stub = sandbox.stub(console, 'groupCollapsed');
@@ -125,8 +120,11 @@ describe(`logger`, function() {
     // There's User-Agent sniffing in the logger code, so we need to run
     // two different test scenarios for Safari and non-Safari browsers.
     // See https://github.com/GoogleChrome/workbox/issues/2149
-    for (const [userAgent, isPrefixed] of new Map([[SAFARI_USER_AGENT, false], [CHROME_USER_AGENT, true]])) {
-      it(`should work with several inputs (for ${userAgent})`, function() {
+    for (const [userAgent, isPrefixed] of new Map([
+      [SAFARI_USER_AGENT, false],
+      [CHROME_USER_AGENT, true],
+    ])) {
+      it(`should work with several inputs (for ${userAgent})`, function () {
         if (process.env.NODE_ENV === 'production') this.skip();
 
         const stub = sandbox.stub(console, 'groupCollapsed');
@@ -143,7 +141,7 @@ describe(`logger`, function() {
         validateStub(stub, args, isPrefixed);
       });
 
-      it(`should not prefix log message until after .groupEnd() is called (for ${userAgent})`, function() {
+      it(`should not prefix log message until after .groupEnd() is called (for ${userAgent})`, function () {
         if (process.env.NODE_ENV === 'production') this.skip();
 
         sandbox.replaceGetter(navigator, 'userAgent', () => userAgent);
@@ -183,8 +181,8 @@ describe(`logger`, function() {
     }
   });
 
-  describe(`.groupEnd()`, function() {
-    it(`should work without input`, function() {
+  describe(`.groupEnd()`, function () {
+    it(`should work without input`, function () {
       if (process.env.NODE_ENV === 'production') this.skip();
 
       const stub = sandbox.stub(console, 'groupEnd');

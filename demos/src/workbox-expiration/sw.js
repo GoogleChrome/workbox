@@ -1,4 +1,6 @@
-importScripts('https://storage.googleapis.com/workbox-cdn/releases/6.1.5/workbox-sw.js');
+importScripts(
+  'https://storage.googleapis.com/workbox-cdn/releases/6.1.5/workbox-sw.js',
+);
 
 // Note: Ignore the error that Glitch raises about workbox being undefined.
 workbox.setConfig({
@@ -6,17 +8,19 @@ workbox.setConfig({
 });
 
 const expirationManager = new workbox.expiration.CacheExpiration(
-    'demo-cache-for-expiration', {
-      maxEntries: 3,
-      maxAgeSeconds: 30,
-    });
+  'demo-cache-for-expiration',
+  {
+    maxEntries: 3,
+    maxAgeSeconds: 30,
+  },
+);
 
 const updateEntry = async (entryID) => {
   const openCache = await caches.open('demo-cache-for-expiration');
 
   openCache.put(
-      `example-entry-${entryID}`,
-      new Response(`Hello from entry number ${entryID}`),
+    `example-entry-${entryID}`,
+    new Response(`Hello from entry number ${entryID}`),
   );
 
   expirationManager.updateTimestamp(`example-entry-${entryID}`);

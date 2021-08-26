@@ -13,8 +13,8 @@ const sinon = require('sinon');
 
 const MODULE_PATH = '../../../../packages/workbox-cli/build/lib/run-wizard';
 
-describe(`[workbox-cli] lib/run-wizard.js`, function() {
-  it(`should write the configuration to the expected location based on the answers provided`, async function() {
+describe(`[workbox-cli] lib/run-wizard.js`, function () {
+  it(`should write the configuration to the expected location based on the answers provided`, async function () {
     const configLocation = upath.join('path', 'to', 'config.js');
     const config = {dummy: 123, regExp: [/1/, /2/]};
     const fseWriteFileStub = sinon.stub().resolves();
@@ -41,7 +41,7 @@ describe(`[workbox-cli] lib/run-wizard.js`, function() {
     expect(fseArgs[0]).to.eql(configLocation);
     // See https://github.com/GoogleChrome/workbox/issues/2796
     expect(fseArgs[1]).to.eql(
-        `module.exports = {
+      `module.exports = {
 \tdummy: 123,
 \tregExp: [
 \t\t/1/,
@@ -52,4 +52,3 @@ describe(`[workbox-cli] lib/run-wizard.js`, function() {
     expect(loggerStub.calledTwice).to.be.true;
   });
 });
-

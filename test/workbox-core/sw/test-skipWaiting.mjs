@@ -9,14 +9,14 @@
 import {logger} from 'workbox-core/_private/logger.mjs';
 import {skipWaiting} from 'workbox-core/skipWaiting.mjs';
 
-describe(`skipWaiting`, function() {
+describe(`skipWaiting`, function () {
   const sandbox = sinon.createSandbox();
 
-  afterEach(function() {
+  afterEach(function () {
     sandbox.restore();
   });
 
-  it(`should call self.skipWaiting()`, function() {
+  it(`should call self.skipWaiting()`, function () {
     const skipWaitingStub = sandbox.stub(self, 'skipWaiting');
 
     skipWaiting();
@@ -24,7 +24,7 @@ describe(`skipWaiting`, function() {
     expect(skipWaitingStub.callCount).to.eql(1);
   });
 
-  it(`should log a warning message in development`, function() {
+  it(`should log a warning message in development`, function () {
     if (process.env.NODE_ENV === 'production') {
       this.skip();
     }

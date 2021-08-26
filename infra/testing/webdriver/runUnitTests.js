@@ -8,7 +8,6 @@
 
 const waitUntil = require('../wait-until');
 
-
 // Store local references of these globals.
 const {webdriver, server} = global.__workbox;
 
@@ -16,9 +15,13 @@ const runUnitTests = async (testPath) => {
   await webdriver.get(server.getAddress() + testPath);
 
   // Wait until the mocha tests are finished.
-  await waitUntil(async () => {
-    return await webdriver.executeScript(() => self.mochaResults);
-  }, 120, 500); // Retry for 60 seconds.
+  await waitUntil(
+    async () => {
+      return await webdriver.executeScript(() => self.mochaResults);
+    },
+    120,
+    500,
+  ); // Retry for 60 seconds.
 
   const results = await webdriver.executeScript(() => self.mochaResults);
 

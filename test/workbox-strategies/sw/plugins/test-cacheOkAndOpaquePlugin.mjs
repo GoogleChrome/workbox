@@ -10,22 +10,27 @@ import {cacheOkAndOpaquePlugin} from 'workbox-strategies/plugins/cacheOkAndOpaqu
 import {generateOpaqueResponse} from '../../../../infra/testing/helpers/generateOpaqueResponse.mjs';
 import {generateUniqueResponse} from '../../../../infra/testing/helpers/generateUniqueResponse.mjs';
 
-
-describe(`cacheOkAndOpaquePlugin`, function() {
+describe(`cacheOkAndOpaquePlugin`, function () {
   for (const status of [206, 404]) {
-    it(`should return null when status is ${status}`, async function() {
+    it(`should return null when status is ${status}`, async function () {
       const response = generateUniqueResponse({status});
-      expect(await cacheOkAndOpaquePlugin.cacheWillUpdate({response})).to.equal(null);
+      expect(await cacheOkAndOpaquePlugin.cacheWillUpdate({response})).to.equal(
+        null,
+      );
     });
   }
 
-  it(`should return Response if status is opaque`, async function() {
+  it(`should return Response if status is opaque`, async function () {
     const response = await generateOpaqueResponse();
-    expect(await cacheOkAndOpaquePlugin.cacheWillUpdate({response})).to.equal(response);
+    expect(await cacheOkAndOpaquePlugin.cacheWillUpdate({response})).to.equal(
+      response,
+    );
   });
 
-  it(`should return Response if status is 200`, async function() {
+  it(`should return Response if status is 200`, async function () {
     const response = generateUniqueResponse();
-    expect(await cacheOkAndOpaquePlugin.cacheWillUpdate({response})).to.equal(response);
+    expect(await cacheOkAndOpaquePlugin.cacheWillUpdate({response})).to.equal(
+      response,
+    );
   });
 });

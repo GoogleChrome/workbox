@@ -17,18 +17,26 @@ const {build_packages} = require('./build-packages');
 // to add CDN details to workbox-sw.
 // Make sure this runs **before** build_lerna_bootstrap.
 async function build_update_cdn_details() {
-  const cdnDetails = await fse.readJSON(upath.join(
-      __dirname, '..', 'cdn-details.json',
-  ));
+  const cdnDetails = await fse.readJSON(
+    upath.join(__dirname, '..', 'cdn-details.json'),
+  );
 
   const workboxBuildPath = upath.join(
-      __dirname, '..', 'packages', 'workbox-build');
+    __dirname,
+    '..',
+    'packages',
+    'workbox-build',
+  );
 
   const workboxBuildCdnDetailsPath = upath.join(
-      workboxBuildPath, 'src', 'cdn-details.json');
+    workboxBuildPath,
+    'src',
+    'cdn-details.json',
+  );
 
-  const workboxBuildPkg = await fse.readJSON(upath.join(
-      workboxBuildPath, 'package.json'));
+  const workboxBuildPkg = await fse.readJSON(
+    upath.join(workboxBuildPath, 'package.json'),
+  );
 
   cdnDetails.latestVersion = workboxBuildPkg.version;
 
@@ -43,8 +51,8 @@ async function build_lerna_bootstrap() {
 
 module.exports = {
   build: series(
-      build_update_cdn_details,
-      build_lerna_bootstrap,
-      build_packages,
+    build_update_cdn_details,
+    build_lerna_bootstrap,
+    build_packages,
   ),
 };

@@ -35,8 +35,10 @@ for (const taskFile of taskFiles) {
       continue;
     }
     if (name in module.exports) {
-      throw new Error(`Duplicate task definition: ${name} defined in` +
-        ` ${taskFile} conflicts with another task.`);
+      throw new Error(
+        `Duplicate task definition: ${name} defined in` +
+          ` ${taskFile} conflicts with another task.`,
+      );
     }
     module.exports[name] = task;
   }

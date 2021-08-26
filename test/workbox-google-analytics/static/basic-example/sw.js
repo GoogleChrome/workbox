@@ -27,8 +27,8 @@ self.fetch = async (...args) => {
     await sleep(100);
     throw new Error('Simulated network error');
   }
-  const clone = args[0] instanceof Request ?
-    args[0].clone() : new Request(args[0]);
+  const clone =
+    args[0] instanceof Request ? args[0].clone() : new Request(args[0]);
 
   spiedRequests.push({
     url: clone.url,
@@ -52,17 +52,18 @@ self.addEventListener('message', (evt) => {
     case 'get-spied-requests':
       evt.ports[0].postMessage(spiedRequests);
       break;
-    case 'dispatch-sync-event':
-    {
+    case 'dispatch-sync-event': {
       // Override `.waitUntil` so we can signal when the sync is done.
       const originalSyncEventWaitUntil = SyncEvent.prototype.waitUntil;
       SyncEvent.prototype.waitUntil = (promise) => {
         return promise.then(() => evt.ports[0].postMessage(null));
       };
 
-      self.dispatchEvent(new SyncEvent('sync', {
-        tag: 'workbox-background-sync:workbox-google-analytics',
-      }));
+      self.dispatchEvent(
+        new SyncEvent('sync', {
+          tag: 'workbox-background-sync:workbox-google-analytics',
+        }),
+      );
       SyncEvent.prototype.waitUntil = originalSyncEventWaitUntil;
       break;
     }

@@ -11,11 +11,10 @@ import {enable} from 'workbox-navigation-preload/enable.mjs';
 import {isSupported} from 'workbox-navigation-preload/isSupported.mjs';
 import {dispatchAndWaitUntilDone} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
 
-
-describe(`enable`, function() {
+describe(`enable`, function () {
   const sandbox = sinon.createSandbox();
 
-  beforeEach(async function() {
+  beforeEach(async function () {
     sandbox.restore();
 
     // Spy on all added event listeners so they can be removed.
@@ -27,7 +26,7 @@ describe(`enable`, function() {
     }
   });
 
-  afterEach(function() {
+  afterEach(function () {
     for (const args of self.addEventListener.args) {
       self.removeEventListener(...args);
     }
@@ -37,11 +36,11 @@ describe(`enable`, function() {
   // This is needed because we're skipping the last test, which for some
   // reasons seems to be skipping the afterEach hook:
   // https://github.com/mochajs/mocha/pull/2571#issuecomment-477407091
-  after(function() {
+  after(function () {
     sandbox.restore();
   });
 
-  it(`should call addEventListener iff navigation preload is supported`, async function() {
+  it(`should call addEventListener iff navigation preload is supported`, async function () {
     enable();
 
     if (isSupported()) {
@@ -52,7 +51,7 @@ describe(`enable`, function() {
     }
   });
 
-  it(`should enable navigation preload if supported`, async function() {
+  it(`should enable navigation preload if supported`, async function () {
     if (!isSupported()) this.skip();
 
     enable();
@@ -63,7 +62,7 @@ describe(`enable`, function() {
     expect(self.registration.navigationPreload.enable.callCount).to.equal(1);
   });
 
-  it(`should use a custom header value if specified`, async function() {
+  it(`should use a custom header value if specified`, async function () {
     if (!isSupported()) this.skip();
 
     sandbox.spy(self.registration.navigationPreload, 'setHeaderValue');
@@ -72,11 +71,15 @@ describe(`enable`, function() {
 
     await dispatchAndWaitUntilDone(new ExtendableEvent('activate'));
 
-    expect(self.registration.navigationPreload.setHeaderValue.callCount).to.equal(1);
-    expect(self.registration.navigationPreload.setHeaderValue.args[0][0]).to.equal('custom-header');
+    expect(
+      self.registration.navigationPreload.setHeaderValue.callCount,
+    ).to.equal(1);
+    expect(
+      self.registration.navigationPreload.setHeaderValue.args[0][0],
+    ).to.equal('custom-header');
   });
 
-  it(`should log a confirmation message in development`, async function() {
+  it(`should log a confirmation message in development`, async function () {
     if (process.env.NODE_ENV === 'production') this.skip();
 
     sandbox.spy(logger, 'log');

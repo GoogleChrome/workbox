@@ -13,10 +13,11 @@ const sinon = require('sinon');
 
 const {errors} = require('../../../../packages/workbox-build/build/lib/errors');
 
-describe(`[workbox-build] lib/write-sw-using-default-template.js`, function() {
-  const MODULE_PATH = '../../../../packages/workbox-build/build/lib/write-sw-using-default-template';
+describe(`[workbox-build] lib/write-sw-using-default-template.js`, function () {
+  const MODULE_PATH =
+    '../../../../packages/workbox-build/build/lib/write-sw-using-default-template';
 
-  it(`should reject with an error when fs-extra.mkdirp() fails`, async function() {
+  it(`should reject with an error when fs-extra.mkdirp() fails`, async function () {
     const {writeSWUsingDefaultTemplate} = proxyquire(MODULE_PATH, {
       'upath': {
         dirname: () => 'ignored',
@@ -30,11 +31,13 @@ describe(`[workbox-build] lib/write-sw-using-default-template.js`, function() {
       await writeSWUsingDefaultTemplate({});
       throw new Error('Unexpected success.');
     } catch (error) {
-      expect(error.message).to.have.string(errors['unable-to-make-sw-directory']);
+      expect(error.message).to.have.string(
+        errors['unable-to-make-sw-directory'],
+      );
     }
   });
 
-  it(`should reject with an error when fs-extra.writeFile() fails`, async function() {
+  it(`should reject with an error when fs-extra.writeFile() fails`, async function () {
     const {writeSWUsingDefaultTemplate} = proxyquire(MODULE_PATH, {
       'upath': {
         dirname: () => 'ignored',
@@ -53,7 +56,7 @@ describe(`[workbox-build] lib/write-sw-using-default-template.js`, function() {
     }
   });
 
-  it(`should reject with a specific error when fs-extra.writeFile() fails due to EISDIR`, async function() {
+  it(`should reject with a specific error when fs-extra.writeFile() fails due to EISDIR`, async function () {
     const eisdirError = new Error();
     eisdirError.code = 'EISDIR';
 
@@ -67,10 +70,12 @@ describe(`[workbox-build] lib/write-sw-using-default-template.js`, function() {
         writeFile: () => Promise.reject(eisdirError),
       },
       './bundle': {
-        bundle: async () => [{
-          name: 'ignored',
-          contents: 'ignored',
-        }],
+        bundle: async () => [
+          {
+            name: 'ignored',
+            contents: 'ignored',
+          },
+        ],
       },
     });
 
@@ -78,11 +83,13 @@ describe(`[workbox-build] lib/write-sw-using-default-template.js`, function() {
       await writeSWUsingDefaultTemplate({manifestEntries: ['ignored']});
       throw new Error('Unexpected success.');
     } catch (error) {
-      expect(error.message).to.have.string(errors['sw-write-failure-directory']);
+      expect(error.message).to.have.string(
+        errors['sw-write-failure-directory'],
+      );
     }
   });
 
-  it(`should call fs-extra.writeFile() with the expected parameters when everything succeeds`, async function() {
+  it(`should call fs-extra.writeFile() with the expected parameters when everything succeeds`, async function () {
     const expectedPath = upath.join('expected', 'path');
     const swDest = upath.join(expectedPath, 'sw.js');
     const file1 = 'file1.js';
@@ -100,13 +107,16 @@ describe(`[workbox-build] lib/write-sw-using-default-template.js`, function() {
         writeFile: writeFileStub,
       },
       './bundle': {
-        bundle: async () => [{
-          name: upath.join(expectedPath, file1),
-          contents: contents1,
-        }, {
-          name: upath.join(expectedPath, file2),
-          contents: contents2,
-        }],
+        bundle: async () => [
+          {
+            name: upath.join(expectedPath, file1),
+            contents: contents1,
+          },
+          {
+            name: upath.join(expectedPath, file2),
+            contents: contents2,
+          },
+        ],
       },
       './populate-sw-template': {
         populateSWTemplate: () => '',
@@ -116,12 +126,9 @@ describe(`[workbox-build] lib/write-sw-using-default-template.js`, function() {
     await writeSWUsingDefaultTemplate({swDest});
 
     // There should be exactly two calls to fs-extra.writeFile().
-    expect(writeFileStub.args).to.eql([[
-      upath.resolve(expectedPath, file1),
-      contents1,
-    ], [
-      upath.resolve(expectedPath, file2),
-      contents2,
-    ]]);
+    expect(writeFileStub.args).to.eql([
+      [upath.resolve(expectedPath, file1), contents1],
+      [upath.resolve(expectedPath, file2), contents2],
+    ]);
   });
 });

@@ -9,7 +9,6 @@
 import {PrecacheController} from 'workbox-precaching/PrecacheController.mjs';
 import {PrecacheRoute} from 'workbox-precaching/PrecacheRoute.mjs';
 
-
 function createMatchParams(path) {
   const request = new Request(path);
   const url = new URL(request.url);
@@ -17,9 +16,9 @@ function createMatchParams(path) {
   return {request, url, event};
 }
 
-describe(`PrecacheRoute()`, function() {
-  describe(`.match`, function() {
-    it(`should only match precached urls`, async function() {
+describe(`PrecacheRoute()`, function () {
+  describe(`.match`, function () {
+    it(`should only match precached urls`, async function () {
       const pc = new PrecacheController();
 
       pc.addToCacheList([
@@ -37,7 +36,7 @@ describe(`PrecacheRoute()`, function() {
       expect(pr.match(createMatchParams('/three'))).to.not.be.ok;
     });
 
-    it(`matches precached urls with ignored params`, async function() {
+    it(`matches precached urls with ignored params`, async function () {
       const pc = new PrecacheController();
       pc.addToCacheList([`/?a=1&b=2`]);
 
@@ -46,13 +45,16 @@ describe(`PrecacheRoute()`, function() {
       });
       const prWithoutIgnore = new PrecacheRoute(pc);
 
-      expect(prWithIgnore.match(createMatchParams('/?a=1&ignore=me&b=2'))).to.be.ok;
-      expect(prWithIgnore.match(createMatchParams('/?a=1&ignore=me&b=3'))).to.not.be.ok;
-      expect(prWithoutIgnore.match(createMatchParams('/?a=1&ignore=me&b=2'))).to.not.be.ok;
+      expect(prWithIgnore.match(createMatchParams('/?a=1&ignore=me&b=2'))).to.be
+        .ok;
+      expect(prWithIgnore.match(createMatchParams('/?a=1&ignore=me&b=3'))).to
+        .not.be.ok;
+      expect(prWithoutIgnore.match(createMatchParams('/?a=1&ignore=me&b=2'))).to
+        .not.be.ok;
     });
 
     // Should we sort the search params to ensure that matches are consistent?
-    it.skip(`should match search params out of order`, async function() {
+    it.skip(`should match search params out of order`, async function () {
       const pc = new PrecacheController();
       pc.addToCacheList([`/?a=1&b=2`]);
 
@@ -61,11 +63,13 @@ describe(`PrecacheRoute()`, function() {
       });
       const prWithoutIgnore = new PrecacheRoute(pc);
 
-      expect(prWithIgnore.match(createMatchParams('/?b=2&ignore=me&a=1'))).to.be.ok;
-      expect(prWithoutIgnore.match(createMatchParams('/?b=2&ignore=me&a=1'))).to.be.ok;
+      expect(prWithIgnore.match(createMatchParams('/?b=2&ignore=me&a=1'))).to.be
+        .ok;
+      expect(prWithoutIgnore.match(createMatchParams('/?b=2&ignore=me&a=1'))).to
+        .be.ok;
     });
 
-    it(`should use the directoryIndex if the original request fails to match a cached URL`, async function() {
+    it(`should use the directoryIndex if the original request fails to match a cached URL`, async function () {
       const pc = new PrecacheController();
       pc.addToCacheList([`/test-index.html`]);
 
@@ -78,7 +82,7 @@ describe(`PrecacheRoute()`, function() {
       expect(prWithoutIndex.match(createMatchParams('/'))).to.not.be.ok;
     });
 
-    it(`should use the default directoryIndex of 'index.html'`, async function() {
+    it(`should use the default directoryIndex of 'index.html'`, async function () {
       const pc = new PrecacheController();
       pc.addToCacheList([`/index.html`]);
 
@@ -87,7 +91,7 @@ describe(`PrecacheRoute()`, function() {
       expect(pr.match(createMatchParams('/'))).to.be.ok;
     });
 
-    it(`should use the cleanURLs of 'about.html'`, async function() {
+    it(`should use the cleanURLs of 'about.html'`, async function () {
       const pc = new PrecacheController();
       pc.addToCacheList([`/about.html`]);
 
@@ -96,7 +100,7 @@ describe(`PrecacheRoute()`, function() {
       expect(pr.match(createMatchParams('/about'))).to.be.ok;
     });
 
-    it(`should *not* use the cleanURLs of 'about.html' if set to false`, async function() {
+    it(`should *not* use the cleanURLs of 'about.html' if set to false`, async function () {
       const pc = new PrecacheController();
       pc.addToCacheList([`/about.html`]);
 
@@ -107,7 +111,7 @@ describe(`PrecacheRoute()`, function() {
       expect(pr.match(createMatchParams('/about'))).to.not.be.ok;
     });
 
-    it(`should use a custom urlManipulation function`, async function() {
+    it(`should use a custom urlManipulation function`, async function () {
       const pc = new PrecacheController();
       pc.addToCacheList([`/123.html`]);
 
@@ -116,16 +120,14 @@ describe(`PrecacheRoute()`, function() {
           expect(url.pathname).to.equal('/');
           const customURL = new URL(url);
           customURL.pathname = '123.html';
-          return [
-            customURL,
-          ];
+          return [customURL];
         },
       });
 
       expect(pr.match(createMatchParams('/'))).to.be.ok;
     });
 
-    it(`should return null if there is no match`, async function() {
+    it(`should return null if there is no match`, async function () {
       const pc = new PrecacheController();
       pc.addToCacheList([`/precached.html`]);
 
@@ -135,8 +137,8 @@ describe(`PrecacheRoute()`, function() {
     });
   });
 
-  describe('.handler', function() {
-    it(`should use the PrecacheController's strategy as the handler`, function() {
+  describe('.handler', function () {
+    it(`should use the PrecacheController's strategy as the handler`, function () {
       const pc = new PrecacheController();
       const pr = new PrecacheRoute(pc);
 
@@ -144,8 +146,8 @@ describe(`PrecacheRoute()`, function() {
     });
   });
 
-  describe('.method', function() {
-    it(`defaults to GET`, function() {
+  describe('.method', function () {
+    it(`defaults to GET`, function () {
       const pc = new PrecacheController();
       const pr = new PrecacheRoute(pc);
 

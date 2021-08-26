@@ -1,15 +1,14 @@
-
 .label {
   font-style: italic;
   text-transform: uppercase;
 }
 
 .dl-compact dt {
-  margin:8px 0px 0px 0px;
+  margin: 8px 0px 0px 0px;
 }
 
 h1.devsite-page-title {
-    display: none;
+  display: none;
 }
 
 h1 {
@@ -67,5 +66,5 @@ h2.symbol-header {
 }
 
 table.function.param tr {
-  background: #80A7B9;
+  background: #80a7b9;
 }
