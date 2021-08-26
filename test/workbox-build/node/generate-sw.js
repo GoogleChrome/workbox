@@ -128,7 +128,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
 
       await confirmDirectoryContains(outputDir, filePaths);
 
@@ -201,7 +201,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
 
       await confirmDirectoryContains(outputDir, filePaths);
 
@@ -258,7 +258,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
 
       await confirmDirectoryContains(outputDir, filePaths);
 
@@ -322,7 +322,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
 
       await confirmDirectoryContains(outputDir, filePaths);
 
@@ -391,7 +391,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
       expect(warnings).to.have.length(1);
       expect(count).to.eql(10);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
 
       await confirmDirectoryContains(outputDir, filePaths);
 
@@ -465,7 +465,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
 
       await confirmDirectoryContains(outputDir, filePaths);
 
@@ -535,7 +535,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
 
       await confirmDirectoryContains(outputDir, filePaths);
 
@@ -605,7 +605,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
 
       await confirmDirectoryContains(outputDir, filePaths);
 
@@ -665,7 +665,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
       expect(warnings).to.be.empty;
       expect(count).to.eql(4);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2535, 2611]);
+      expect(size).to.be.oneOf([2707, 2629]);
 
       await confirmDirectoryContains(outputDir, filePaths);
 
@@ -712,7 +712,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
 
       await confirmDirectoryContains(outputDir, filePaths);
 
@@ -772,7 +772,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
 
       await confirmDirectoryContains(outputDir, filePaths);
 
@@ -835,7 +835,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
 
       await confirmDirectoryContains(outputDir, filePaths);
     });
@@ -852,7 +852,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
 
       await confirmDirectoryContains(outputDir, filePaths);
       // We can't validate the generated sw.js file, unfortunately.
@@ -955,7 +955,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
       await validateServiceWorkerRuntime({
         swFile: swDest,
         expectedMethodCalls: {
@@ -1016,7 +1016,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
       await validateServiceWorkerRuntime({
         swFile: swDest,
         expectedMethodCalls: {
@@ -1105,7 +1105,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
 
       await validateServiceWorkerRuntime({
         swFile: swDest,
@@ -1227,7 +1227,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
       await validateServiceWorkerRuntime({
         swFile: swDest,
         expectedMethodCalls: {
@@ -1296,7 +1296,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
       await validateServiceWorkerRuntime({
         swFile: swDest,
         expectedMethodCalls: {
@@ -1378,7 +1378,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
       await validateServiceWorkerRuntime({
         swFile: swDest,
         expectedMethodCalls: {
@@ -1457,7 +1457,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
       expect(warnings).to.be.empty;
       expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2604, 2686]);
+      expect(size).to.be.oneOf([2782, 2698]);
       await validateServiceWorkerRuntime({
         swFile: swDest,
         expectedMethodCalls: {
