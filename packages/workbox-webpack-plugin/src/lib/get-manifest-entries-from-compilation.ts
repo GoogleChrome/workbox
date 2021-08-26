@@ -14,6 +14,7 @@ import {
   WebpackGenerateSWOptions,
   WebpackInjectManifestOptions,
   ManifestEntry,
+  FileDetails,
 } from 'workbox-build';
 import {getAssetHash} from './get-asset-hash';
 import {resolveWebpackURL} from './resolve-webpack-url';
@@ -31,18 +32,11 @@ import {resolveWebpackURL} from './resolve-webpack-url';
  */
 function checkConditions(
   asset: Asset,
-  compilation: Compilation,
-  conditions: Array<
-    | string
-    | RegExp
-    | ((params: {asset: Asset; compilation: Compilation}) => unknown)
-  > = [],
+  conditions: Array<string | RegExp | ((arg0: string) => boolean)> = [],
 ): boolean {
   for (const condition of conditions) {
     if (typeof condition === 'function') {
-      if (condition({asset, compilation})) {
-        return true;
-      }
+      return condition(asset.name)
     } else {
       if (ModuleFilenameHelpers.matchPart(asset.name, condition)) {
         return true;
@@ -187,7 +181,7 @@ function filterAssets(
     }
 
     // Next, check asset-level checks via includes/excludes:
-    const isExcluded = checkConditions(asset, compilation, config.exclude);
+    const isExcluded = checkConditions(asset, config.exclude);
     if (isExcluded) {
       continue;
     }
@@ -195,7 +189,7 @@ function filterAssets(
     // Treat an empty config.includes as an implicit inclusion.
     const isIncluded =
       !Array.isArray(config.include) ||
-      checkConditions(asset, compilation, config.include);
+      checkConditions(asset, config.include);
     if (!isIncluded) {
       continue;
     }
@@ -220,7 +214,7 @@ export async function getManifestEntriesFromCompilation(
       file: resolveWebpackURL(publicPath as string, asset.name),
       hash: getAssetHash(asset),
       size: asset.source.size() || 0,
-    };
+    } as FileDetails;
   });
 
   const {manifestEntries, size, warnings} = await transformManifest({

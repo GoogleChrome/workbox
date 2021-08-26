@@ -29,6 +29,7 @@ import type {Compilation} from 'webpack-v5';
  * @private
  */
 export function getSourcemapAssetName(compilation: Compilation, swContents: string, swDest: string): string | undefined {
+  // eslint-disable-next-line
   const url = sourceMapURL.getFrom(swContents);
   if (url) {
     // Translate the relative URL to what the presumed name for the webpack

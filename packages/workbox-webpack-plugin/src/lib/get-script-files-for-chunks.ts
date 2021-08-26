@@ -11,7 +11,10 @@ import {Compilation, WebpackError} from 'webpack-v5';
 
 import {resolveWebpackURL} from './resolve-webpack-url';
 
-export function getScriptFilesForChunks(compilation: Compilation, chunkNames: Array<string>): Array<string> {
+export function getScriptFilesForChunks(
+  compilation: Compilation,
+  chunkNames: Array<string>,
+): Array<string> {
   const {chunks} = compilation.getStats().toJson({chunks: true});
   const {publicPath} = compilation.options.output;
   const scriptFiles = new Set<string>();
@@ -26,14 +29,22 @@ export function getScriptFilesForChunks(compilation: Compilation, chunkNames: Ar
         }
       }
     } else {
-      compilation.warnings.push(new WebpackError(`${chunkName} was provided to ` +
-        `importScriptsViaChunks, but didn't match any named chunks.`));
+      compilation.warnings.push(
+        new WebpackError(
+          `${chunkName} was provided to ` +
+          `importScriptsViaChunks, but didn't match any named chunks.`,
+        ),
+      );
     }
   }
 
   if (scriptFiles.size === 0) {
-    compilation.warnings.push(new WebpackError(`There were no assets matching ` +
-        `importScriptsViaChunks: [${chunkNames}].`));
+    compilation.warnings.push(
+      new WebpackError(
+        `There were no assets matching ` +
+        `importScriptsViaChunks: [${chunkNames.join(' ')}].`,
+      ),
+    );
   }
 
   return Array.from(scriptFiles);
