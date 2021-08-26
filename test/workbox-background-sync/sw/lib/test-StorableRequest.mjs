@@ -8,20 +8,19 @@
 
 import {StorableRequest} from 'workbox-background-sync/lib/StorableRequest.mjs';
 
-
-describe(`StorableRequest`, function() {
+describe(`StorableRequest`, function () {
   const sandbox = sinon.createSandbox();
 
-  beforeEach(function() {
+  beforeEach(function () {
     sandbox.restore();
   });
 
-  afterEach(function() {
+  afterEach(function () {
     sandbox.restore();
   });
 
-  describe(`static fromRequest`, function() {
-    it(`should convert a Request to a StorableRequest instance`, async function() {
+  describe(`static fromRequest`, function () {
+    it(`should convert a Request to a StorableRequest instance`, async function () {
       const request = new Request('/foo', {
         method: 'POST',
         body: 'it worked!',
@@ -33,7 +32,9 @@ describe(`StorableRequest`, function() {
       });
 
       const storableRequest = await StorableRequest.fromRequest(request);
-      expect(storableRequest._requestData.url).to.equal(`${location.origin}/foo`);
+      expect(storableRequest._requestData.url).to.equal(
+        `${location.origin}/foo`,
+      );
       expect(storableRequest._requestData.method).to.equal('POST');
       expect(storableRequest._requestData.body).to.be.instanceOf(ArrayBuffer);
       expect(storableRequest._requestData.body.byteLength).to.equal(10);
@@ -44,8 +45,8 @@ describe(`StorableRequest`, function() {
     });
   });
 
-  describe(`constructor`, function() {
-    it(`sets the passed properties on the instance`, function() {
+  describe(`constructor`, function () {
+    it(`sets the passed properties on the instance`, function () {
       const requestData = {
         url: '/foo',
         method: 'POST',
@@ -61,7 +62,7 @@ describe(`StorableRequest`, function() {
       expect(storableRequest._requestData).to.deep.equal(requestData);
     });
 
-    it(`handles navigation requests by converting them to same-origin`, async function() {
+    it(`handles navigation requests by converting them to same-origin`, async function () {
       const requestData = {
         url: '/api',
         method: 'POST',
@@ -73,7 +74,7 @@ describe(`StorableRequest`, function() {
       expect(storableRequest._requestData.mode).to.equal('same-origin');
     });
 
-    it(`throws if not given a requestData object`, function() {
+    it(`throws if not given a requestData object`, function () {
       if (process.env.NODE_ENV === 'production') this.skip();
 
       return expectError(() => {
@@ -81,7 +82,7 @@ describe(`StorableRequest`, function() {
       }, 'incorrect-type');
     });
 
-    it(`throws if not given a URL in the requestData object`, function() {
+    it(`throws if not given a URL in the requestData object`, function () {
       if (process.env.NODE_ENV === 'production') this.skip();
 
       return expectError(() => {
@@ -90,18 +91,19 @@ describe(`StorableRequest`, function() {
     });
   });
 
-  describe(`toObject`, function() {
-    it(`converts the instance to a plain object`, async function() {
+  describe(`toObject`, function () {
+    it(`converts the instance to a plain object`, async function () {
       const storableRequest = await StorableRequest.fromRequest(
-          new Request('/foo', {
-            method: 'POST',
-            body: 'it worked!',
-            mode: 'cors',
-            headers: {
-              'x-foo': 'bar',
-              'x-qux': 'baz',
-            },
-          }));
+        new Request('/foo', {
+          method: 'POST',
+          body: 'it worked!',
+          mode: 'cors',
+          headers: {
+            'x-foo': 'bar',
+            'x-qux': 'baz',
+          },
+        }),
+      );
 
       const requestData = storableRequest.toObject();
 
@@ -116,18 +118,19 @@ describe(`StorableRequest`, function() {
     });
   });
 
-  describe(`toRequest`, function() {
-    it(`converts the instance to a Request object`, async function() {
+  describe(`toRequest`, function () {
+    it(`converts the instance to a Request object`, async function () {
       const storableRequest = await StorableRequest.fromRequest(
-          new Request('/foo', {
-            method: 'POST',
-            body: 'it worked!',
-            mode: 'cors',
-            headers: {
-              'x-foo': 'bar',
-              'x-qux': 'baz',
-            },
-          }));
+        new Request('/foo', {
+          method: 'POST',
+          body: 'it worked!',
+          mode: 'cors',
+          headers: {
+            'x-foo': 'bar',
+            'x-qux': 'baz',
+          },
+        }),
+      );
 
       const request = storableRequest.toRequest();
 
@@ -141,8 +144,8 @@ describe(`StorableRequest`, function() {
     });
   });
 
-  describe(`clone`, function() {
-    it(`creates a new instance with the same values`, async function() {
+  describe(`clone`, function () {
+    it(`creates a new instance with the same values`, async function () {
       const original = new StorableRequest({
         url: '/foo',
         body: new Blob(['it worked!']),
@@ -160,7 +163,8 @@ describe(`StorableRequest`, function() {
       // Ensure clone was not shallow.
       expect(original._requestData.body).to.not.equal(clone._requestData.body);
       expect(original._requestData.headers).to.not.equal(
-          clone._requestData.headers);
+        clone._requestData.headers,
+      );
     });
   });
 });

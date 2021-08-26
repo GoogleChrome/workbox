@@ -12,15 +12,15 @@ const activateAndControlSW = require('../../../infra/testing/activate-and-contro
 const cleanSWEnv = require('../../../infra/testing/clean-sw');
 const runInSW = require('../../../infra/testing/comlink/node-interface');
 
-describe(`[workbox-strategies] NetworkOnly Requests`, function() {
+describe(`[workbox-strategies] NetworkOnly Requests`, function () {
   const baseURL = `${global.__workbox.server.getAddress()}/test/workbox-strategies/static/network-only/`;
 
-  beforeEach(async function() {
+  beforeEach(async function () {
     // Navigate to our test page and clear all caches before this test runs.
     await cleanSWEnv(global.__workbox.webdriver, `${baseURL}integration.html`);
   });
 
-  it(`should respond with a non-cached entry`, async function() {
+  it(`should respond with a non-cached entry`, async function () {
     const swURL = `${baseURL}sw.js`;
 
     // Wait for the service worker to register and activate.
@@ -28,9 +28,9 @@ describe(`[workbox-strategies] NetworkOnly Requests`, function() {
 
     let response = await global.__workbox.webdriver.executeAsyncScript((cb) => {
       fetch(`/__WORKBOX/uniqueValue`)
-          .then((response) => response.text())
-          .then((responseBody) => cb(responseBody))
-          .catch((err) => cb(err.message));
+        .then((response) => response.text())
+        .then((responseBody) => cb(responseBody))
+        .catch((err) => cb(err.message));
     });
     const firstResponse = response.trim();
     expect(firstResponse).to.not.eql('Cached');
@@ -39,9 +39,9 @@ describe(`[workbox-strategies] NetworkOnly Requests`, function() {
 
     response = await global.__workbox.webdriver.executeAsyncScript((cb) => {
       fetch(`/__WORKBOX/uniqueValue`)
-          .then((response) => response.text())
-          .then((responseBody) => cb(responseBody))
-          .catch((err) => cb(err.message));
+        .then((response) => response.text())
+        .then((responseBody) => cb(responseBody))
+        .catch((err) => cb(err.message));
     });
     const secondResponse = response.trim();
     expect(secondResponse).to.not.eql(firstResponse);

@@ -6,7 +6,6 @@
   https://opensource.org/licenses/MIT.
 */
 
-
 const compareResponses = async (first, second, shouldBeSame) => {
   const firstBody = await first.clone().text();
   const secondBody = await second.clone().text();
@@ -18,6 +17,4 @@ const compareResponses = async (first, second, shouldBeSame) => {
   }
 };
 
-export {
-  compareResponses,
-};
+export {compareResponses};

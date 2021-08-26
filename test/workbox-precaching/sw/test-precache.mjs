@@ -12,11 +12,10 @@ import {getOrCreatePrecacheController} from 'workbox-precaching/utils/getOrCreat
 import {resetDefaultPrecacheController} from './resetDefaultPrecacheController.mjs';
 import {dispatchAndWaitUntilDone} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
 
-
-describe(`precache()`, function() {
+describe(`precache()`, function () {
   const sandbox = sinon.createSandbox();
 
-  beforeEach(async function() {
+  beforeEach(async function () {
     sandbox.restore();
     resetDefaultPrecacheController();
 
@@ -26,14 +25,14 @@ describe(`precache()`, function() {
 
   // The `addFetchListener` method adds a listener only the first time it's invoked,
   // so we can't remove that listener until all tests are run.
-  afterEach(function() {
+  afterEach(function () {
     for (const args of self.addEventListener.args) {
       self.removeEventListener(...args);
     }
     sandbox.restore();
   });
 
-  it(`should call install and activate on install and activate`, async function() {
+  it(`should call install and activate on install and activate`, async function () {
     const pc = getOrCreatePrecacheController();
 
     sandbox.spy(pc, 'install');
@@ -52,17 +51,18 @@ describe(`precache()`, function() {
     expect(pc.activate.callCount).to.equal(1);
   });
 
-  it(`should add entries to the default PrecacheController cache list`, async function() {
+  it(`should add entries to the default PrecacheController cache list`, async function () {
     sandbox.spy(PrecacheController.prototype, 'addToCacheList');
 
     precache(['/one', '/two', '/three']);
 
     expect(PrecacheController.prototype.addToCacheList.callCount).to.equal(1);
-    expect(PrecacheController.prototype.addToCacheList.args[0][0])
-        .to.deep.equal(['/one', '/two', '/three']);
+    expect(
+      PrecacheController.prototype.addToCacheList.args[0][0],
+    ).to.deep.equal(['/one', '/two', '/three']);
   });
 
-  it(`shouldn't throw when precaching assets`, function() {
+  it(`shouldn't throw when precaching assets`, function () {
     precache([
       'index.1234.html',
       {

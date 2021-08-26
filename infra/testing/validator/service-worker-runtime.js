@@ -19,7 +19,9 @@ const {expect} = chai;
 
 // See https://github.com/chaijs/chai/issues/697
 function stringifyFunctionsInArray(arr) {
-  return arr.map((item) => typeof item === 'function' ? item.toString() : item);
+  return arr.map((item) =>
+    typeof item === 'function' ? item.toString() : item,
+  );
 }
 
 function setupSpiesAndContextForInjectManifest() {
@@ -76,10 +78,13 @@ function setupSpiesAndContextForInjectManifest() {
     },
   };
 
-  const context = Object.assign({
-    importScripts,
-    workbox,
-  }, makeServiceWorkerEnv());
+  const context = Object.assign(
+    {
+      importScripts,
+      workbox,
+    },
+    makeServiceWorkerEnv(),
+  );
   context.self.addEventListener = addEventListener;
   context.self.skipWaiting = sinon.spy();
 
@@ -128,13 +133,16 @@ function setupSpiesAndContextForGenerateSW() {
     skipWaiting: sinon.spy(),
   };
 
-  const context = Object.assign({
-    importScripts,
-    define: (_, scripts, callback) => {
-      importScripts(...scripts);
-      callback(workboxContext);
+  const context = Object.assign(
+    {
+      importScripts,
+      define: (_, scripts, callback) => {
+        importScripts(...scripts);
+        callback(workboxContext);
+      },
     },
-  }, makeServiceWorkerEnv());
+    makeServiceWorkerEnv(),
+  );
   context.self.addEventListener = addEventListener;
   context.self.skipWaiting = workboxContext.skipWaiting;
 
@@ -144,14 +152,18 @@ function setupSpiesAndContextForGenerateSW() {
 function validateMethodCalls({methodsToSpies, expectedMethodCalls, context}) {
   for (const [method, spy] of Object.entries(methodsToSpies)) {
     if (spy.called) {
-      const args = spy.args.map(
-          (arg) => Array.isArray(arg) ? stringifyFunctionsInArray(arg) : arg);
+      const args = spy.args.map((arg) =>
+        Array.isArray(arg) ? stringifyFunctionsInArray(arg) : arg,
+      );
 
-      expect(args, `while testing method calls for ${method}`)
-          .to.matchPattern(expectedMethodCalls[method]);
+      expect(args, `while testing method calls for ${method}`).to.matchPattern(
+        expectedMethodCalls[method],
+      );
     } else {
-      expect(expectedMethodCalls[method],
-          `while testing method calls for ${method}`).to.be.undefined;
+      expect(
+        expectedMethodCalls[method],
+        `while testing method calls for ${method}`,
+      ).to.be.undefined;
     }
   }
 
@@ -159,7 +171,9 @@ function validateMethodCalls({methodsToSpies, expectedMethodCalls, context}) {
   // assignment, so we can't stub it out.
   if ('__WB_DISABLE_DEV_LOGS' in expectedMethodCalls) {
     expect(context.self.__WB_DISABLE_DEV_LOGS).to.eql(
-        expectedMethodCalls.__WB_DISABLE_DEV_LOGS, `__WB_DISABLE_DEV_LOGS`);
+      expectedMethodCalls.__WB_DISABLE_DEV_LOGS,
+      `__WB_DISABLE_DEV_LOGS`,
+    );
   }
 }
 
@@ -185,16 +199,19 @@ module.exports = async ({
   swFile,
   swString,
 }) => {
-  assert((swFile || swString) && !(swFile && swString),
-      `Set swFile or swString, but not both.`);
+  assert(
+    (swFile || swString) && !(swFile && swString),
+    `Set swFile or swString, but not both.`,
+  );
 
   if (swFile) {
     swString = await fse.readFile(swFile, 'utf8');
   }
 
-  const {addEventListener, context, methodsToSpies} = entryPoint === 'injectManifest' ?
-    setupSpiesAndContextForInjectManifest() :
-    setupSpiesAndContextForGenerateSW();
+  const {addEventListener, context, methodsToSpies} =
+    entryPoint === 'injectManifest'
+      ? setupSpiesAndContextForInjectManifest()
+      : setupSpiesAndContextForGenerateSW();
 
   vm.runInNewContext(swString, context);
 

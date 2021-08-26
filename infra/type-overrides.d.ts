@@ -2,20 +2,35 @@
 // https://github.com/microsoft/TSJS-lib-generator/pull/701
 
 interface IDBIndex {
-  openCursor(range?: IDBValidKey | IDBKeyRange | null, direction?: IDBCursorDirection): IDBRequest<IDBCursorWithValue | null>;
-  openKeyCursor(range?: IDBValidKey | IDBKeyRange | null, direction?: IDBCursorDirection): IDBRequest<IDBCursor | null>;
+  openCursor(
+    range?: IDBValidKey | IDBKeyRange | null,
+    direction?: IDBCursorDirection,
+  ): IDBRequest<IDBCursorWithValue | null>;
+  openKeyCursor(
+    range?: IDBValidKey | IDBKeyRange | null,
+    direction?: IDBCursorDirection,
+  ): IDBRequest<IDBCursor | null>;
 }
 
 interface IDBObjectStore {
-  openCursor(range?: IDBValidKey | IDBKeyRange | null, direction?: IDBCursorDirection): IDBRequest<IDBCursorWithValue | null>;
-  openKeyCursor(query?: IDBValidKey | IDBKeyRange | null, direction?: IDBCursorDirection): IDBRequest<IDBCursor | null>;
+  openCursor(
+    range?: IDBValidKey | IDBKeyRange | null,
+    direction?: IDBCursorDirection,
+  ): IDBRequest<IDBCursorWithValue | null>;
+  openKeyCursor(
+    query?: IDBValidKey | IDBKeyRange | null,
+    direction?: IDBCursorDirection,
+  ): IDBRequest<IDBCursor | null>;
 }
 
 // TODO(philipwalton): remove these once this PR makes its way to a release:
 // https://github.com/microsoft/TSJS-lib-generator/pull/740
 
 interface CacheStorage {
-  match(request: RequestInfo, options?: MultiCacheQueryOptions): Promise<Response | undefined>;
+  match(
+    request: RequestInfo,
+    options?: MultiCacheQueryOptions,
+  ): Promise<Response | undefined>;
 }
 
 // TODO(philipwalton): remove these once this bug is fixed:

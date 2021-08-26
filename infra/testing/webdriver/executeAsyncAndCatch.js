@@ -6,7 +6,6 @@
   https://opensource.org/licenses/MIT.
 */
 
-
 // Store local references of these globals.
 const {webdriver} = global.__workbox;
 

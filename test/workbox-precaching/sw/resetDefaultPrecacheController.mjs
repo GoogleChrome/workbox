@@ -8,7 +8,6 @@
 
 import {getOrCreatePrecacheController} from 'workbox-precaching/utils/getOrCreatePrecacheController.mjs';
 
-
 export function resetDefaultPrecacheController() {
   const pc = getOrCreatePrecacheController();
 

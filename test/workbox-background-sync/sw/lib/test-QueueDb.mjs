@@ -383,7 +383,6 @@ describe(`QueueDb`, () => {
     });
   });
 
-
   describe('deleteEntry', () => {
     it(`should delete an entry for the given ID`, async () => {
       const queueDb = new QueueDb();

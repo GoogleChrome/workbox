@@ -11,25 +11,25 @@ import {StorableRequest} from 'workbox-background-sync/lib/StorableRequest.mjs';
 import {QueueDb} from 'workbox-background-sync/lib/QueueDb.mjs';
 import {openDB} from 'idb';
 
-describe(`QueueStore`, function() {
+describe(`QueueStore`, function () {
   let db = null;
 
-  beforeEach(async function() {
+  beforeEach(async function () {
     db = await openDB('workbox-background-sync', 3, {
       upgrade: QueueDb.prototype._upgradeDb,
     });
     await db.clear('requests');
   });
 
-  describe(`constructor`, function() {
-    it(`should associate the queue name with a Queue instance`, function() {
+  describe(`constructor`, function () {
+    it(`should associate the queue name with a Queue instance`, function () {
       const queueStore = new QueueStore('foo');
       expect(queueStore._queueName).to.equal('foo');
     });
   });
 
-  describe(`pushEntry`, function() {
-    it(`should append an entry to IDB with the right queue name`, async function() {
+  describe(`pushEntry`, function () {
+    it(`should append an entry to IDB with the right queue name`, async function () {
       const queueStore1 = new QueueStore('a');
       const queueStore2 = new QueueStore('b');
 
@@ -98,7 +98,7 @@ describe(`QueueStore`, function() {
       expect(entries[4].metadata).to.deep.equal({name: 'meta5'});
     });
 
-    it(`throws if not given an entry object`, function() {
+    it(`throws if not given an entry object`, function () {
       if (process.env.NODE_ENV === 'production') this.skip();
 
       return expectError(async () => {
@@ -107,7 +107,7 @@ describe(`QueueStore`, function() {
       }, 'incorrect-type');
     });
 
-    it(`throws if not given an entry object with requestData`, function() {
+    it(`throws if not given an entry object with requestData`, function () {
       if (process.env.NODE_ENV === 'production') this.skip();
 
       return expectError(async () => {
@@ -117,8 +117,8 @@ describe(`QueueStore`, function() {
     });
   });
 
-  describe(`unshiftEntry`, function() {
-    it(`should prepend an entry to IDB with the right queue name and ID`, async function() {
+  describe(`unshiftEntry`, function () {
+    it(`should prepend an entry to IDB with the right queue name and ID`, async function () {
       const queueStore1 = new QueueStore('a');
       const queueStore2 = new QueueStore('b');
 
@@ -187,7 +187,7 @@ describe(`QueueStore`, function() {
       expect(entries[4].requestData.url).to.equal(`${location.origin}/one`);
     });
 
-    it(`throws if not given an entry object`, function() {
+    it(`throws if not given an entry object`, function () {
       if (process.env.NODE_ENV === 'production') this.skip();
 
       return expectError(async () => {
@@ -196,7 +196,7 @@ describe(`QueueStore`, function() {
       }, 'incorrect-type');
     });
 
-    it(`throws if not given an entry object with requestData`, function() {
+    it(`throws if not given an entry object with requestData`, function () {
       if (process.env.NODE_ENV === 'production') this.skip();
 
       return expectError(async () => {
@@ -206,8 +206,8 @@ describe(`QueueStore`, function() {
     });
   });
 
-  describe(`shiftEntry`, function() {
-    it(`should remove and return the first entry in IDB with the matching queue name`, async function() {
+  describe(`shiftEntry`, function () {
+    it(`should remove and return the first entry in IDB with the matching queue name`, async function () {
       const queueStore1 = new QueueStore('a');
       const queueStore2 = new QueueStore('b');
 
@@ -279,8 +279,8 @@ describe(`QueueStore`, function() {
     });
   });
 
-  describe(`popEntry`, function() {
-    it(`should remove and return the last entry in IDB with the matching queue name`, async function() {
+  describe(`popEntry`, function () {
+    it(`should remove and return the last entry in IDB with the matching queue name`, async function () {
       const queueStore1 = new QueueStore('a');
       const queueStore2 = new QueueStore('b');
 
@@ -360,8 +360,8 @@ describe(`QueueStore`, function() {
     });
   });
 
-  describe(`getAll`, function() {
-    it(`should return all entries in IDB with the right queue name`, async function() {
+  describe(`getAll`, function () {
+    it(`should return all entries in IDB with the right queue name`, async function () {
       const queueStore1 = new QueueStore('a');
       const queueStore2 = new QueueStore('b');
 
@@ -449,8 +449,8 @@ describe(`QueueStore`, function() {
     });
   });
 
-  describe(`delete`, function() {
-    it(`should delete an entry for the given ID`, async function() {
+  describe(`delete`, function () {
+    it(`should delete an entry for the given ID`, async function () {
       const queueStore = new QueueStore('a');
 
       const sr1 = await StorableRequest.fromRequest(new Request('/one'));

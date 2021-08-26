@@ -8,11 +8,11 @@
 
 module.exports = {
   devOnly: {
-    it: function(title, cb) {
+    it: function (title, cb) {
       // If the wrapped callback expects done, then we need to call it() with
       // a function that expects done.
       if (cb.length === 1) {
-        it(title, function(done) {
+        it(title, function (done) {
           if (process.env.NODE_ENV === 'production') {
             return this.skip();
           }
@@ -20,7 +20,7 @@ module.exports = {
           return cb(done);
         });
       } else {
-        it(title, function() {
+        it(title, function () {
           if (process.env.NODE_ENV === 'production') {
             return this.skip();
           }
@@ -32,11 +32,11 @@ module.exports = {
   },
 
   prodOnly: {
-    it: function(title, cb) {
+    it: function (title, cb) {
       // If the wrapped callback expects done, then we need to call it() with
       // a function that expects done.
       if (cb.length === 1) {
-        it(title, function(done) {
+        it(title, function (done) {
           if (process.env.NODE_ENV !== 'production') {
             return this.skip();
           }
@@ -44,7 +44,7 @@ module.exports = {
           return cb(done);
         });
       } else {
-        it(title, function() {
+        it(title, function () {
           if (process.env.NODE_ENV !== 'production') {
             return this.skip();
           }

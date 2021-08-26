@@ -8,15 +8,14 @@
 
 import {clientsClaim} from 'workbox-core/clientsClaim.mjs';
 
-
-describe(`clientsClaim`, function() {
+describe(`clientsClaim`, function () {
   const sandbox = sinon.createSandbox();
 
-  afterEach(function() {
+  afterEach(function () {
     sandbox.restore();
   });
 
-  it(`should add an activate event listener that calls clientsClaim`, function() {
+  it(`should add an activate event listener that calls clientsClaim`, function () {
     const clientsClaimSpy = sandbox.stub(self.clients, 'claim');
 
     sandbox.stub(self, 'addEventListener').callsFake((eventName, cb) => {

@@ -9,7 +9,6 @@
 const path = require('path');
 const templateData = require('../template-data');
 
-
 // Matches any URL ending in `.njk` and renders the file in the
 // `../templates/*` directory as the response.
 // NOTE: this allows you to serve a template file with any directory path,

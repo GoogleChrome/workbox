@@ -13,12 +13,13 @@ const sinon = require('sinon');
 
 const {errors} = require('../../../../packages/workbox-build/build/lib/errors');
 
-describe(`[workbox-build] lib/copy-workbox-libraries.js`, function() {
-  const MODULE_PATH = '../../../../packages/workbox-build/build/lib/copy-workbox-libraries';
+describe(`[workbox-build] lib/copy-workbox-libraries.js`, function () {
+  const MODULE_PATH =
+    '../../../../packages/workbox-build/build/lib/copy-workbox-libraries';
   const ABSOLUTE_DEST_DIRECTORY = upath.join('/', 'test-dir');
   const RELATIVE_DEST_DIRECTORY = upath.join('.', 'test-dir');
 
-  it(`should reject with an error when the copy fails`, async function() {
+  it(`should reject with an error when the copy fails`, async function () {
     const {copyWorkboxLibraries} = proxyquire(MODULE_PATH, {
       'fs-extra': {
         ensureDir: sinon.stub().resolves(),
@@ -30,12 +31,14 @@ describe(`[workbox-build] lib/copy-workbox-libraries.js`, function() {
       await copyWorkboxLibraries(ABSOLUTE_DEST_DIRECTORY);
       throw new Error('Unexpected success.');
     } catch (error) {
-      expect(error.message).to.have.string(errors['unable-to-copy-workbox-libraries']);
+      expect(error.message).to.have.string(
+        errors['unable-to-copy-workbox-libraries'],
+      );
     }
   });
 
   for (const destDir of [ABSOLUTE_DEST_DIRECTORY, RELATIVE_DEST_DIRECTORY]) {
-    it(`should resolve with the new directory name, using a destDir of ${destDir}`, async function() {
+    it(`should resolve with the new directory name, using a destDir of ${destDir}`, async function () {
       const copyStub = sinon.stub().resolves();
       const ensureDirStub = sinon.stub().resolves();
 

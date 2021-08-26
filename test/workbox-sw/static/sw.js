@@ -20,7 +20,4 @@ wb.clientsClaim();
 
 wb.core.setLogLevel(self.workbox.core.LOG_LEVELS.debug);
 
-wb.precaching.precache([
-  'example.css',
-  'example.js',
-]);
+wb.precaching.precache(['example.css', 'example.js']);

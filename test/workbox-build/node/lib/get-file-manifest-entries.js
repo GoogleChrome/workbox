@@ -11,8 +11,9 @@ const proxyquire = require('proxyquire');
 
 const {errors} = require('../../../../packages/workbox-build/build/lib/errors');
 
-describe(`[workbox-build] Test getFileManifestEntries`, function() {
-  const MODULE_PATH = '../../../../packages/workbox-build/build/lib/get-file-manifest-entries';
+describe(`[workbox-build] Test getFileManifestEntries`, function () {
+  const MODULE_PATH =
+    '../../../../packages/workbox-build/build/lib/get-file-manifest-entries';
   const GLOB_DIRECTORY = './';
   const GLOB_PATTERNS = ['invalid*'];
   const FILE = {
@@ -21,7 +22,7 @@ describe(`[workbox-build] Test getFileManifestEntries`, function() {
     hash: 'hash1',
   };
 
-  it(`should return empty info when neither globDirectory nor templatedURLs are provided`, async function() {
+  it(`should return empty info when neither globDirectory nor templatedURLs are provided`, async function () {
     const {getFileManifestEntries} = require(MODULE_PATH);
 
     const {count, size, manifestEntries} = await getFileManifestEntries({});
@@ -31,7 +32,7 @@ describe(`[workbox-build] Test getFileManifestEntries`, function() {
     expect(manifestEntries).to.have.lengthOf(0);
   });
 
-  it(`should not return the same file twice`, async function() {
+  it(`should not return the same file twice`, async function () {
     const {getFileManifestEntries} = proxyquire(MODULE_PATH, {
       './get-file-details': {
         getFileDetails: () => {
@@ -50,13 +51,15 @@ describe(`[workbox-build] Test getFileManifestEntries`, function() {
 
     expect(count).to.eql(1);
     expect(size).to.eql(FILE.size);
-    expect(manifestEntries).to.deep.equal([{
-      url: FILE.file,
-      revision: FILE.hash,
-    }]);
+    expect(manifestEntries).to.deep.equal([
+      {
+        url: FILE.file,
+        revision: FILE.hash,
+      },
+    ]);
   });
 
-  it(`should throw when a templatedURL matches a globbed file`, async function() {
+  it(`should throw when a templatedURL matches a globbed file`, async function () {
     const {getFileManifestEntries} = proxyquire(MODULE_PATH, {
       './get-file-details': {
         getFileDetails: () => {
@@ -78,11 +81,13 @@ describe(`[workbox-build] Test getFileManifestEntries`, function() {
       });
       throw new Error('Unexpected success.');
     } catch (error) {
-      expect(error.message).to.have.string(errors['templated-url-matches-glob']);
+      expect(error.message).to.have.string(
+        errors['templated-url-matches-glob'],
+      );
     }
   });
 
-  it(`should treat an exception thrown by getFileDetails() as a warning message`, async function() {
+  it(`should treat an exception thrown by getFileDetails() as a warning message`, async function () {
     const warningMessage = 'test warning';
     const {getFileManifestEntries} = proxyquire(MODULE_PATH, {
       './get-file-details': {
@@ -103,7 +108,7 @@ describe(`[workbox-build] Test getFileManifestEntries`, function() {
     expect(warnings).to.eql([warningMessage]);
   });
 
-  it(`should throw when a templatedURL contains a pattern that doesn't match anything`, async function() {
+  it(`should throw when a templatedURL contains a pattern that doesn't match anything`, async function () {
     const {getFileManifestEntries} = require(MODULE_PATH);
 
     try {
@@ -119,7 +124,7 @@ describe(`[workbox-build] Test getFileManifestEntries`, function() {
     }
   });
 
-  it(`should return results that take both glob patterns and templatedURLs into account`, async function() {
+  it(`should return results that take both glob patterns and templatedURLs into account`, async function () {
     const url1 = '/path/to/url1';
     const url2 = '/path/to/url2';
     const stringValue = 'string';
@@ -146,17 +151,21 @@ describe(`[workbox-build] Test getFileManifestEntries`, function() {
 
     expect(count).to.eql(3);
     expect(size).to.eql(FILE.size + FILE.size + stringValue.length);
-    expect(manifestEntries).to.deep.equal([{
-      url: FILE.file,
-      revision: FILE.hash,
-    }, {
-      url: url1,
-      // This is the hash of FILE.hash.
-      revision: '00c6ee2e21a7548de6260cf72c4f4b5b',
-    }, {
-      url: url2,
-      // THis is the hash of stringValue.
-      revision: 'b45cffe084dd3d20d928bee85e7b0f21',
-    }]);
+    expect(manifestEntries).to.deep.equal([
+      {
+        url: FILE.file,
+        revision: FILE.hash,
+      },
+      {
+        url: url1,
+        // This is the hash of FILE.hash.
+        revision: '00c6ee2e21a7548de6260cf72c4f4b5b',
+      },
+      {
+        url: url2,
+        // THis is the hash of stringValue.
+        revision: 'b45cffe084dd3d20d928bee85e7b0f21',
+      },
+    ]);
   });
 });

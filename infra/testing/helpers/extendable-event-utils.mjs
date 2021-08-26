@@ -6,7 +6,6 @@
   https://opensource.org/licenses/MIT.
 */
 
-
 const extendLifetimePromises = new WeakMap();
 const eventResponses = new WeakMap();
 
@@ -14,7 +13,7 @@ export const eventDoneWaiting = async (event, {catchErrors = true} = {}) => {
   const promises = extendLifetimePromises.get(event);
   let promise;
 
-  while (promise = promises.shift()) {
+  while ((promise = promises.shift())) {
     // Ignore errors by default;
     if (catchErrors) {
       promise = promise.catch((e) => e);

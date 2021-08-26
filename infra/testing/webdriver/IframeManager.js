@@ -16,12 +16,16 @@ class Client {
   }
 
   async executeAsyncScript(code) {
-    const value = await this._driver.executeAsyncScript((id, code, cb) => {
-      const iframe = document.querySelector(`#${id}`);
-      Promise.resolve(iframe.contentWindow.eval(code))
+    const value = await this._driver.executeAsyncScript(
+      (id, code, cb) => {
+        const iframe = document.querySelector(`#${id}`);
+        Promise.resolve(iframe.contentWindow.eval(code))
           .then((value) => cb(value))
           .catch((err) => cb(err.toString()));
-    }, this._id, code);
+      },
+      this._id,
+      code,
+    );
 
     return value;
   }
@@ -54,19 +58,23 @@ class IframeManager {
   }
 
   async createIframeClient(url) {
-    const iframeId = await this._driver.executeAsyncScript((url, prefix, cb) => {
-      const el = document.createElement('iframe');
-      if (!('iframeCount' in window)) {
-        window.iframeCount = 1;
-      }
-      const id = `${prefix}${window.iframeCount++}`;
-      el.addEventListener('load', () => {
-        cb(id);
-      });
-      el.src = url;
-      el.id = id;
-      document.body.appendChild(el);
-    }, url, PREFIX);
+    const iframeId = await this._driver.executeAsyncScript(
+      (url, prefix, cb) => {
+        const el = document.createElement('iframe');
+        if (!('iframeCount' in window)) {
+          window.iframeCount = 1;
+        }
+        const id = `${prefix}${window.iframeCount++}`;
+        el.addEventListener('load', () => {
+          cb(id);
+        });
+        el.src = url;
+        el.id = id;
+        document.body.appendChild(el);
+      },
+      url,
+      PREFIX,
+    );
 
     return new Client(this._driver, iframeId);
   }

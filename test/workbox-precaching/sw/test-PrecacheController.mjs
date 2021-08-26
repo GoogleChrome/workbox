@@ -13,7 +13,6 @@ import {resetDefaultPrecacheController} from './resetDefaultPrecacheController.m
 import {spyOnEvent} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
 import generateTestVariants from '../../../infra/testing/generate-variant-tests';
 
-
 function createFetchEvent(url) {
   const event = new FetchEvent('fetch', {
     request: new Request(url),
@@ -22,10 +21,10 @@ function createFetchEvent(url) {
   return event;
 }
 
-describe(`PrecacheController`, function() {
+describe(`PrecacheController`, function () {
   const sandbox = sinon.createSandbox();
 
-  beforeEach(async function() {
+  beforeEach(async function () {
     sandbox.restore();
     resetDefaultPrecacheController();
 
@@ -47,33 +46,33 @@ describe(`PrecacheController`, function() {
     }
   });
 
-  afterEach(function() {
+  afterEach(function () {
     for (const args of self.addEventListener.args) {
       self.removeEventListener(...args);
     }
     sandbox.restore();
   });
 
-  describe(`constructor`, function() {
-    it(`should construct without any inputs`, async function() {
+  describe(`constructor`, function () {
+    it(`should construct without any inputs`, async function () {
       expect(() => {
         new PrecacheController();
       }).to.not.throw();
     });
 
-    it(`should construct with a valid cache name`, async function() {
+    it(`should construct with a valid cache name`, async function () {
       expect(() => {
         new PrecacheController({cacheName: 'test-cache-name'});
       }).to.not.throw();
     });
 
-    it(`should pass the 'cacheName' option to the strategy`, async function() {
+    it(`should pass the 'cacheName' option to the strategy`, async function () {
       const cacheName = 'test-cache-name';
       const pc = new PrecacheController({cacheName});
       expect(pc.strategy.cacheName).to.equal(cacheName);
     });
 
-    it(`should pass the 'plugins' option to the strategy`, async function() {
+    it(`should pass the 'plugins' option to the strategy`, async function () {
       const plugin = {};
       const plugins = [plugin];
       const pc = new PrecacheController({plugins});
@@ -82,7 +81,7 @@ describe(`PrecacheController`, function() {
       expect(pc.strategy.plugins).to.include(plugin);
     });
 
-    it(`should pass the 'fallbackToNetwork' option to the strategy`, async function() {
+    it(`should pass the 'fallbackToNetwork' option to the strategy`, async function () {
       const pc = new PrecacheController({
         cacheName: 'test',
         fallbackToNetwork: false,
@@ -103,46 +102,41 @@ describe(`PrecacheController`, function() {
     });
   });
 
-  describe(`addToCacheList()`, function() {
-    const badTopLevelInputs = [
-      {},
-      true,
-      false,
-      123,
-      '',
-      null,
-      undefined,
-    ];
-    generateTestVariants(`should throw when passing in non-array values in dev`, badTopLevelInputs, async function(variant) {
-      if (process.env.NODE_ENV === 'production') return this.skip();
+  describe(`addToCacheList()`, function () {
+    const badTopLevelInputs = [{}, true, false, 123, '', null, undefined];
+    generateTestVariants(
+      `should throw when passing in non-array values in dev`,
+      badTopLevelInputs,
+      async function (variant) {
+        if (process.env.NODE_ENV === 'production') return this.skip();
 
-      const precacheController = new PrecacheController();
-      return expectError(() => {
-        precacheController.addToCacheList(variant);
-      }, 'not-an-array');
-    });
+        const precacheController = new PrecacheController();
+        return expectError(() => {
+          precacheController.addToCacheList(variant);
+        }, 'not-an-array');
+      },
+    );
 
-    const badNestedInputs = [
-      true,
-      false,
-      123,
-      null,
-      undefined,
-      [],
-      '',
-      {},
-    ];
+    const badNestedInputs = [true, false, 123, null, undefined, [], '', {}];
 
-    generateTestVariants(`should throw when passing in invalid inputs in the array in dev`, badNestedInputs, async function(variant) {
-      if (process.env.NODE_ENV == 'production') return this.skip();
+    generateTestVariants(
+      `should throw when passing in invalid inputs in the array in dev`,
+      badNestedInputs,
+      async function (variant) {
+        if (process.env.NODE_ENV == 'production') return this.skip();
 
-      const precacheController = new PrecacheController();
-      return expectError(() => {
-        precacheController.addToCacheList([variant]);
-      }, 'add-to-cache-list-unexpected-type', (err) => {
-        expect(err.details.entry).to.deep.equal(variant);
-      });
-    });
+        const precacheController = new PrecacheController();
+        return expectError(
+          () => {
+            precacheController.addToCacheList([variant]);
+          },
+          'add-to-cache-list-unexpected-type',
+          (err) => {
+            expect(err.details.entry).to.deep.equal(variant);
+          },
+        );
+      },
+    );
 
     const unrevisionedEntryGroups = {
       'string entries': [
@@ -162,14 +156,16 @@ describe(`PrecacheController`, function() {
     Object.keys(unrevisionedEntryGroups).forEach((groupName) => {
       const inputGroup = unrevisionedEntryGroups[groupName];
 
-      it(`should add ${groupName} to cache list in dev`, async function() {
+      it(`should add ${groupName} to cache list in dev`, async function () {
         if (process.env.NODE_ENV === 'production') this.skip();
 
         const precacheController = new PrecacheController();
 
         precacheController.addToCacheList(inputGroup);
 
-        expect(precacheController._urlsToCacheKeys.size).to.equal(inputGroup.length);
+        expect(precacheController._urlsToCacheKeys.size).to.equal(
+          inputGroup.length,
+        );
 
         inputGroup.forEach((inputValue) => {
           const urlValue = new URL(inputValue.url || inputValue, location).href;
@@ -179,13 +175,10 @@ describe(`PrecacheController`, function() {
         });
       });
 
-      it(`should remove duplicate ${groupName}`, async function() {
+      it(`should remove duplicate ${groupName}`, async function () {
         const precacheController = new PrecacheController();
 
-        const inputURLs = [
-          ...inputGroup,
-          ...inputGroup,
-        ];
+        const inputURLs = [...inputGroup, ...inputGroup];
 
         precacheController.addToCacheList(inputURLs);
 
@@ -198,21 +191,18 @@ describe(`PrecacheController`, function() {
       });
     });
 
-    it(`should log a warning unless an entry has a revision property`, function() {
-      const logObject = process.env.NODE_ENV === 'production' ? console : logger;
+    it(`should log a warning unless an entry has a revision property`, function () {
+      const logObject =
+        process.env.NODE_ENV === 'production' ? console : logger;
       const warnStub = sandbox.stub(logObject, 'warn');
 
       const precacheController = new PrecacheController();
 
-      precacheController.addToCacheList([
-        '/should-warn',
-      ]);
+      precacheController.addToCacheList(['/should-warn']);
       expect(warnStub.calledOnce).to.be.true;
       warnStub.resetHistory();
 
-      precacheController.addToCacheList([
-        {url: '/also-should-warn'},
-      ]);
+      precacheController.addToCacheList([{url: '/also-should-warn'}]);
       expect(warnStub.calledOnce).to.be.true;
       warnStub.resetHistory();
 
@@ -223,7 +213,7 @@ describe(`PrecacheController`, function() {
       expect(warnStub.notCalled).to.be.true;
     });
 
-    it(`should add url + revision objects to cache list`, async function() {
+    it(`should add url + revision objects to cache list`, async function () {
       const precacheController = new PrecacheController();
 
       const inputObjects = [
@@ -242,42 +232,45 @@ describe(`PrecacheController`, function() {
       ]);
     });
 
-    it(`should remove duplicate url + revision object entries`, async function() {
+    it(`should remove duplicate url + revision object entries`, async function () {
       const precacheController = new PrecacheController();
 
       const singleObject = {
         url: new URL('/duplicate.html', location).href,
         revision: '123',
       };
-      const inputObjects = [
-        singleObject,
-        singleObject,
-      ];
+      const inputObjects = [singleObject, singleObject];
       precacheController.addToCacheList(inputObjects);
 
       expect(precacheController._urlsToCacheKeys.size).to.equal(1);
-      expect(precacheController._urlsToCacheKeys.has(singleObject.url)).to.be.true;
+      expect(precacheController._urlsToCacheKeys.has(singleObject.url)).to.be
+        .true;
     });
 
-    it(`should throw on conflicting entries with different revisions`, async function() {
+    it(`should throw on conflicting entries with different revisions`, async function () {
       const firstEntry = {url: '/duplicate.html', revision: '123'};
       const secondEntry = {url: '/duplicate.html', revision: '456'};
-      return expectError(() => {
-        const precacheController = new PrecacheController();
-        const inputObjects = [
-          firstEntry,
-          secondEntry,
-        ];
-        precacheController.addToCacheList(inputObjects);
-      }, 'add-to-cache-list-conflicting-entries', (err) => {
-        expect(err.details.firstEntry).to.eql(`${location.origin}/duplicate.html?__WB_REVISION__=123`);
-        expect(err.details.secondEntry).to.eql(`${location.origin}/duplicate.html?__WB_REVISION__=456`);
-      });
+      return expectError(
+        () => {
+          const precacheController = new PrecacheController();
+          const inputObjects = [firstEntry, secondEntry];
+          precacheController.addToCacheList(inputObjects);
+        },
+        'add-to-cache-list-conflicting-entries',
+        (err) => {
+          expect(err.details.firstEntry).to.eql(
+            `${location.origin}/duplicate.html?__WB_REVISION__=123`,
+          );
+          expect(err.details.secondEntry).to.eql(
+            `${location.origin}/duplicate.html?__WB_REVISION__=456`,
+          );
+        },
+      );
     });
   });
 
-  describe(`install()`, function() {
-    it(`should be fine when calling with empty precache list`, async function() {
+  describe(`install()`, function () {
+    it(`should be fine when calling with empty precache list`, async function () {
       const event = new ExtendableEvent('install');
       spyOnEvent(event);
 
@@ -285,7 +278,7 @@ describe(`PrecacheController`, function() {
       return precacheController.install(event);
     });
 
-    it(`should precache assets (with cache busting via search params)`, async function() {
+    it(`should precache assets (with cache busting via search params)`, async function () {
       const precacheController = new PrecacheController();
       const cacheList = [
         '/index.1234.html',
@@ -328,13 +321,16 @@ describe(`PrecacheController`, function() {
       }
     });
 
-    it(`should copy the response for redirected entries`, async function() {
+    it(`should copy the response for redirected entries`, async function () {
       self.fetch.restore();
       sandbox.stub(self, 'fetch').callsFake((request) => {
         const response = new Response('Redirected Response');
         sandbox.replaceGetter(response, 'redirected', () => true);
-        sandbox.replaceGetter(response, 'url',
-            () => (new URL(request.url, self.location.href)).href);
+        sandbox.replaceGetter(
+          response,
+          'url',
+          () => new URL(request.url, self.location.href).href,
+        );
         return response;
       });
 
@@ -351,7 +347,7 @@ describe(`PrecacheController`, function() {
       await precacheController.install(event);
     });
 
-    it(`should use the desired cache name`, async function() {
+    it(`should use the desired cache name`, async function () {
       const precacheController = new PrecacheController({
         cacheName: 'test-cache-name',
       });
@@ -382,7 +378,7 @@ describe(`PrecacheController`, function() {
       }
     });
 
-    it(`should update assets that have changed`, async function() {
+    it(`should update assets that have changed`, async function () {
       const initialPrecacheController = new PrecacheController();
 
       const initialCacheList = [
@@ -397,7 +393,9 @@ describe(`PrecacheController`, function() {
       const installEvent = new ExtendableEvent('install');
       spyOnEvent(installEvent);
 
-      const initialInstallInfo = await initialPrecacheController.install(installEvent);
+      const initialInstallInfo = await initialPrecacheController.install(
+        installEvent,
+      );
 
       const initialExpectedCacheKeys = [
         `${location.origin}/index.1234.html`,
@@ -417,12 +415,16 @@ describe(`PrecacheController`, function() {
       let cache = await caches.open(cacheNames.getPrecacheName());
       const initialCacheKeys = await cache.keys();
       // Get the url field out of each Request object.
-      expect(initialCacheKeys.map((r) => r.url)).to.have.members(initialExpectedCacheKeys);
+      expect(initialCacheKeys.map((r) => r.url)).to.have.members(
+        initialExpectedCacheKeys,
+      );
 
       const activateEvent = new ExtendableEvent('activate');
       spyOnEvent(activateEvent);
 
-      const initialActivateInfo = await initialPrecacheController.activate(activateEvent);
+      const initialActivateInfo = await initialPrecacheController.activate(
+        activateEvent,
+      );
       expect(initialActivateInfo.deletedURLs).to.be.empty;
 
       // Make sure the files are cached after activation.
@@ -442,7 +444,9 @@ describe(`PrecacheController`, function() {
 
       updatePrecacheController.addToCacheList(updateCacheList);
 
-      const updateInstallInfo = await updatePrecacheController.install(installEvent);
+      const updateInstallInfo = await updatePrecacheController.install(
+        installEvent,
+      );
 
       expect(updateInstallInfo.updatedURLs).to.have.members([
         `${location.origin}/index.4321.html`,
@@ -472,7 +476,9 @@ describe(`PrecacheController`, function() {
         expect(logger.log.callCount).to.be.gt(0);
       }
 
-      const updateActivateInfo = await updatePrecacheController.activate(activateEvent);
+      const updateActivateInfo = await updatePrecacheController.activate(
+        activateEvent,
+      );
       expect(updateActivateInfo.deletedURLs).to.have.members([
         `${location.origin}/index.1234.html`,
         `${location.origin}/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=1234`,
@@ -489,7 +495,9 @@ describe(`PrecacheController`, function() {
       cache = await caches.open(cacheNames.getPrecacheName());
       const postActivateUpdateCacheKeys = await cache.keys();
       // Get the url field out of each Request object.
-      expect(postActivateUpdateCacheKeys.map((r) => r.url)).to.have.members(expectedPostActivateUpdateCacheKeys);
+      expect(postActivateUpdateCacheKeys.map((r) => r.url)).to.have.members(
+        expectedPostActivateUpdateCacheKeys,
+      );
 
       // Make sure the files are cached after activation.
       for (const key of expectedPostActivateUpdateCacheKeys) {
@@ -498,7 +506,7 @@ describe(`PrecacheController`, function() {
       }
     });
 
-    it(`should precache with plugins`, async function() {
+    it(`should precache with plugins`, async function () {
       const plugins = [
         {
           requestWillFetch: sandbox.stub().callsFake(({request}) => request),
@@ -530,7 +538,7 @@ describe(`PrecacheController`, function() {
       expect(plugins[1].cacheWillUpdate.callCount).to.equal(4);
     });
 
-    it(`should detect older precached versions in the cacheDidUpdate callback`, async function() {
+    it(`should detect older precached versions in the cacheDidUpdate callback`, async function () {
       // Restore fetch since this test depends on real fetch calls happening.
       self.fetch.restore();
 
@@ -548,9 +556,11 @@ describe(`PrecacheController`, function() {
 
       await precacheControllerV1.install(installEventV1);
 
-      const plugins = [{
-        cacheDidUpdate: sandbox.stub().callsFake(({request}) => request),
-      }];
+      const plugins = [
+        {
+          cacheDidUpdate: sandbox.stub().callsFake(({request}) => request),
+        },
+      ];
 
       const precacheControllerV2 = new PrecacheController({plugins});
       const cacheListV2 = [
@@ -572,10 +582,12 @@ describe(`PrecacheController`, function() {
       // match, but the bodies should be different.
       expect(c1.oldResponse.url).to.equal(c1.newResponse.url);
       expect(await c1.oldResponse.text()).to.not.equal(
-          await c1.newResponse.text());
+        await c1.newResponse.text(),
+      );
       expect(c2.oldResponse.url).to.equal(c2.newResponse.url);
       expect(await c2.oldResponse.text()).to.not.equal(
-          await c2.newResponse.text());
+        await c2.newResponse.text(),
+      );
 
       // For other resources it shouldn't find an old response.
       expect(c3.oldResponse).to.equal(undefined);
@@ -584,7 +596,7 @@ describe(`PrecacheController`, function() {
       expect(c4.newResponse.url).to.equal(location.origin + cacheListV2[3].url);
     });
 
-    it(`should use the proper 'this' when calling a cacheWillUpdate plugin`, async function() {
+    it(`should use the proper 'this' when calling a cacheWillUpdate plugin`, async function () {
       class TestPlugin {
         cacheWillUpdate({response}) {
           return response;
@@ -597,9 +609,7 @@ describe(`PrecacheController`, function() {
         plugins: [pluginInstance],
       });
 
-      const cacheList = [
-        '/index.1234.html',
-      ];
+      const cacheList = ['/index.1234.html'];
       precacheController.addToCacheList(cacheList);
 
       const event = new ExtendableEvent('install');
@@ -610,11 +620,9 @@ describe(`PrecacheController`, function() {
       expect(cacheWillUpdateSpy.thisValues[0]).to.be.an.instanceof(TestPlugin);
     });
 
-    it(`should set credentials: 'same-origin' on the precaching requests`, async function() {
+    it(`should set credentials: 'same-origin' on the precaching requests`, async function () {
       const precacheController = new PrecacheController();
-      const cacheList = [
-        '/index.1234.html',
-      ];
+      const cacheList = ['/index.1234.html'];
       precacheController.addToCacheList(cacheList);
 
       const event = new ExtendableEvent('install');
@@ -628,11 +636,9 @@ describe(`PrecacheController`, function() {
       expect(request.credentials).to.eql('same-origin');
     });
 
-    it(`should use cache: 'reload' on the precaching requests when there's a revision field`, async function() {
+    it(`should use cache: 'reload' on the precaching requests when there's a revision field`, async function () {
       const precacheController = new PrecacheController();
-      const cacheList = [
-        {url: '/test', revision: 'abcd'},
-      ];
+      const cacheList = [{url: '/test', revision: 'abcd'}];
       precacheController.addToCacheList(cacheList);
 
       const event = new ExtendableEvent('install');
@@ -647,11 +653,9 @@ describe(`PrecacheController`, function() {
       expect(request.cache).to.eql('reload');
     });
 
-    it(`should use cache: 'default' on the precaching requests when there's no revision field`, async function() {
+    it(`should use cache: 'default' on the precaching requests when there's no revision field`, async function () {
       const precacheController = new PrecacheController();
-      const cacheList = [
-        {url: '/test'},
-      ];
+      const cacheList = [{url: '/test'}];
       precacheController.addToCacheList(cacheList);
 
       const event = new ExtendableEvent('install');
@@ -666,13 +670,11 @@ describe(`PrecacheController`, function() {
       expect(request.cache).to.eql('default');
     });
 
-    it(`should pass in a request that includes the revision to cacheWrapper.put()`, async function() {
+    it(`should pass in a request that includes the revision to cacheWrapper.put()`, async function () {
       const putStub = sandbox.stub(Cache.prototype, 'put');
 
       const precacheController = new PrecacheController();
-      const cacheList = [
-        {url: '/test', revision: 'abcd'},
-      ];
+      const cacheList = [{url: '/test', revision: 'abcd'}];
       precacheController.addToCacheList(cacheList);
 
       const event = new ExtendableEvent('install');
@@ -683,10 +685,12 @@ describe(`PrecacheController`, function() {
       expect(putStub.calledOnce).to.be.true;
 
       const request = putStub.args[0][0];
-      expect(request.url).to.eql(`${location.origin}/test?__WB_REVISION__=abcd`);
+      expect(request.url).to.eql(
+        `${location.origin}/test?__WB_REVISION__=abcd`,
+      );
     });
 
-    it(`should use the integrity value when making requests`, async function() {
+    it(`should use the integrity value when making requests`, async function () {
       const precacheController = new PrecacheController();
       const cacheList = [
         {url: '/first'},
@@ -704,41 +708,45 @@ describe(`PrecacheController`, function() {
       expect(self.fetch.args[1][0].integrity).to.eql('sha256-second');
     });
 
-    it(`should fail when entries have the same url but different integrity`, function() {
-      return expectError(() => {
-        const precacheController = new PrecacheController();
-        const cacheList = [
-          {url: '/test', integrity: 'sha256-one'},
-          {url: '/test', integrity: 'sha256-two'},
-        ];
-        precacheController.addToCacheList(cacheList);
-      }, 'add-to-cache-list-conflicting-integrities', (err) => {
-        expect(err.details.url).to.eql(`${location.origin}/test`);
-      });
+    it(`should fail when entries have the same url but different integrity`, function () {
+      return expectError(
+        () => {
+          const precacheController = new PrecacheController();
+          const cacheList = [
+            {url: '/test', integrity: 'sha256-one'},
+            {url: '/test', integrity: 'sha256-two'},
+          ];
+          precacheController.addToCacheList(cacheList);
+        },
+        'add-to-cache-list-conflicting-integrities',
+        (err) => {
+          expect(err.details.url).to.eql(`${location.origin}/test`);
+        },
+      );
     });
 
-    it(`should fail installation when a response with a status of 400 is received`, async function() {
+    it(`should fail installation when a response with a status of 400 is received`, async function () {
       self.fetch.restore();
-      sandbox.stub(self, 'fetch').resolves(new Response('', {
-        status: 400,
-      }));
+      sandbox.stub(self, 'fetch').resolves(
+        new Response('', {
+          status: 400,
+        }),
+      );
 
       const precacheController = new PrecacheController();
-      const cacheList = [
-        '/will-be-error.html',
-      ];
+      const cacheList = ['/will-be-error.html'];
       precacheController.addToCacheList(cacheList);
 
       const event = new ExtendableEvent('install');
       spyOnEvent(event);
 
       return expectError(
-          () => precacheController.install(event),
-          'bad-precaching-response',
+        () => precacheController.install(event),
+        'bad-precaching-response',
       );
     });
 
-    it(`should successfully install when an opaque response is received`, async function() {
+    it(`should successfully install when an opaque response is received`, async function () {
       self.fetch.restore();
       sandbox.stub(self, 'fetch').callsFake(() => {
         const response = new Response('opaque');
@@ -747,9 +755,7 @@ describe(`PrecacheController`, function() {
       });
 
       const precacheController = new PrecacheController();
-      const cacheList = [
-        '/will-be-opaque.html',
-      ];
+      const cacheList = ['/will-be-opaque.html'];
       precacheController.addToCacheList(cacheList);
 
       const event = new ExtendableEvent('install');
@@ -759,25 +765,27 @@ describe(`PrecacheController`, function() {
       await precacheController.install(event);
     });
 
-    it(`should successfully install when a response with a status of 400 is received, if a cacheWillUpdate plugin allows it`, async function() {
+    it(`should successfully install when a response with a status of 400 is received, if a cacheWillUpdate plugin allows it`, async function () {
       self.fetch.restore();
-      sandbox.stub(self, 'fetch').resolves(new Response('', {
-        status: 400,
-      }));
+      sandbox.stub(self, 'fetch').resolves(
+        new Response('', {
+          status: 400,
+        }),
+      );
 
-      const plugins = [{
-        cacheWillUpdate: ({request, response}) => {
-          if (response.status === 400) {
-            return response;
-          }
-          return null;
+      const plugins = [
+        {
+          cacheWillUpdate: ({request, response}) => {
+            if (response.status === 400) {
+              return response;
+            }
+            return null;
+          },
         },
-      }];
+      ];
 
       const precacheController = new PrecacheController({plugins});
-      const cacheList = [
-        '/will-be-error.html',
-      ];
+      const cacheList = ['/will-be-error.html'];
       precacheController.addToCacheList(cacheList);
 
       const event = new ExtendableEvent('install');
@@ -787,7 +795,7 @@ describe(`PrecacheController`, function() {
       await precacheController.install(event);
     });
 
-    it(`should automatically call event.waitUntil()`, async function() {
+    it(`should automatically call event.waitUntil()`, async function () {
       const event = new ExtendableEvent('install');
       spyOnEvent(event);
 
@@ -797,24 +805,24 @@ describe(`PrecacheController`, function() {
     });
   });
 
-  describe(`activate()`, function() {
-    it(`should remove out of date entry`, async function() {
+  describe(`activate()`, function () {
+    it(`should remove out of date entry`, async function () {
       const cache = await caches.open(cacheNames.getPrecacheName());
       const installEvent = new ExtendableEvent('install');
       spyOnEvent(installEvent);
 
       // First precache some entries.
       const precacheControllerOne = new PrecacheController();
-      const cacheList1 = [
-        {url: '/scripts/index.js', revision: '1234'},
-      ];
+      const cacheList1 = [{url: '/scripts/index.js', revision: '1234'}];
       precacheControllerOne.addToCacheList(cacheList1);
       await precacheControllerOne.install(installEvent);
 
       const activateEvent = new ExtendableEvent('activate');
       spyOnEvent(activateEvent);
 
-      const cleanupDetailsOne = await precacheControllerOne.activate(activateEvent);
+      const cleanupDetailsOne = await precacheControllerOne.activate(
+        activateEvent,
+      );
       expect(cleanupDetailsOne.deletedURLs.length).to.equal(0);
 
       const precacheControllerTwo = new PrecacheController();
@@ -822,15 +830,19 @@ describe(`PrecacheController`, function() {
       precacheControllerTwo.addToCacheList(cacheListTwo);
       await precacheControllerTwo.install(installEvent);
 
-      const cleanupDetailsTwo = await precacheControllerTwo.activate(activateEvent);
+      const cleanupDetailsTwo = await precacheControllerTwo.activate(
+        activateEvent,
+      );
       expect(cleanupDetailsTwo.deletedURLs.length).to.equal(1);
-      expect(cleanupDetailsTwo.deletedURLs[0]).to.eql(`${location.origin}/scripts/index.js?__WB_REVISION__=1234`);
+      expect(cleanupDetailsTwo.deletedURLs[0]).to.eql(
+        `${location.origin}/scripts/index.js?__WB_REVISION__=1234`,
+      );
 
       const keysTwo = await cache.keys();
       expect(keysTwo.length).to.equal(cacheListTwo.length);
     });
 
-    it(`should remove out of date entries`, async function() {
+    it(`should remove out of date entries`, async function () {
       const cache = await caches.open(cacheNames.getPrecacheName());
       const installEvent = new ExtendableEvent('install');
       spyOnEvent(installEvent);
@@ -854,7 +866,9 @@ describe(`PrecacheController`, function() {
       const activateEvent = new ExtendableEvent('activate');
       spyOnEvent(activateEvent);
 
-      const cleanupDetailsOne = await precacheControllerOne.activate(activateEvent);
+      const cleanupDetailsOne = await precacheControllerOne.activate(
+        activateEvent,
+      );
       expect(cleanupDetailsOne.deletedURLs.length).to.equal(0);
 
       // Then, precache the same URLs, but two with different revisions.
@@ -873,7 +887,9 @@ describe(`PrecacheController`, function() {
         logger.log.resetHistory();
       }
 
-      const cleanupDetailsTwo = await precacheControllerTwo.activate(activateEvent);
+      const cleanupDetailsTwo = await precacheControllerTwo.activate(
+        activateEvent,
+      );
       expect(cleanupDetailsTwo.deletedURLs).to.have.members([
         `${location.origin}/index.1234.html`,
         `${location.origin}/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=1234`,
@@ -899,7 +915,7 @@ describe(`PrecacheController`, function() {
       }
     });
 
-    it(`should automatically call event.waitUntil()`, async function() {
+    it(`should automatically call event.waitUntil()`, async function () {
       const event = new ExtendableEvent('activate');
       spyOnEvent(event);
 
@@ -909,8 +925,8 @@ describe(`PrecacheController`, function() {
     });
   });
 
-  describe(`getCachedURLs()`, function() {
-    it(`should return the cached URLs`, function() {
+  describe(`getCachedURLs()`, function () {
+    it(`should return the cached URLs`, function () {
       const precacheController = new PrecacheController();
       const cacheList = [
         '/index.1234.html',

@@ -27,8 +27,10 @@ async function buildWindowBundle(packagePath, buildType) {
     throw new Error(`Could not find ${packageIndex}`);
   }
 
-  const outputDirectory = upath.join(packagePath,
-      constants.PACKAGE_BUILD_DIRNAME);
+  const outputDirectory = upath.join(
+    packagePath,
+    constants.PACKAGE_BUILD_DIRNAME,
+  );
 
   const esmFilename = `${packageName}.${buildType.slice(0, 4)}.mjs`;
   const esmLegacyFilename = `${packageName}.${buildType.slice(0, 4)}.es5.mjs`;
@@ -36,8 +38,10 @@ async function buildWindowBundle(packagePath, buildType) {
 
   const onwarn = (warning) => {
     // This can occur when using rollup-plugin-replace.
-    if (buildType === constants.BUILD_TYPES.prod &&
-        warning.code === 'UNUSED_EXTERNAL_IMPORT') {
+    if (
+      buildType === constants.BUILD_TYPES.prod &&
+      warning.code === 'UNUSED_EXTERNAL_IMPORT'
+    ) {
       logHelper.warn(`[${warning.code}] ${warning.message}`);
       return;
     }
@@ -92,17 +96,27 @@ async function buildWindowBundle(packagePath, buildType) {
 
 // This reads a little cleaner with a function to generate the sub-sequences.
 function windowBundleSequence() {
-  const builds = Object.keys(constants.BUILD_TYPES).map((type) => packageRunner(
-      'build_window_packages_bundle', 'window', buildWindowBundle,
-      constants.BUILD_TYPES[type]));
+  const builds = Object.keys(constants.BUILD_TYPES).map((type) =>
+    packageRunner(
+      'build_window_packages_bundle',
+      'window',
+      buildWindowBundle,
+      constants.BUILD_TYPES[type],
+    ),
+  );
 
   return series(builds);
 }
 
 module.exports = {
   build_window_packages: series(
-      parallel(packageRunner('build_window_packages_version_module', 'window',
-          versionModule)),
-      windowBundleSequence(),
+    parallel(
+      packageRunner(
+        'build_window_packages_version_module',
+        'window',
+        versionModule,
+      ),
+    ),
+    windowBundleSequence(),
   ),
 };
