@@ -206,7 +206,7 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function () {
       ]);
       expect(count).to.eql(2);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([217, 220]);
+      expect(size).to.be.oneOf([216, 219]);
     });
 
     it(`should use defaults when all the required parameters, and 'maximumFileSizeToCacheInBytes' are present`, async function () {
@@ -298,7 +298,7 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function () {
       ]);
       expect(count).to.eql(8);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([4973, 5131]);
+      expect(size).to.be.oneOf([5162, 5324]);
     });
 
     it(`should use defaults when all the required parameters, and 'manifestTransforms' are present`, async function () {
