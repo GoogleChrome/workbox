@@ -7,7 +7,7 @@
 */
 
 import upath from 'upath';
-import type {Compilation} from 'webpack-v5';
+import type {Compilation} from 'webpack';
 
 /**
  * @param {Object} compilation The webpack compilation.

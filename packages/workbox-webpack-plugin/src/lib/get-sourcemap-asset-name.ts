@@ -8,7 +8,7 @@
 
 import sourceMapURL from 'source-map-url';
 import upath from 'upath';
-import type {Compilation} from 'webpack-v5';
+import type {Compilation} from 'webpack';
 
 /**
  * If our bundled swDest file contains a sourcemap, we would invalidate that

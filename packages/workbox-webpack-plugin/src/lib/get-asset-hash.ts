@@ -7,7 +7,7 @@
 */
 
 import crypto from 'crypto';
-import type {Asset} from 'webpack-v5';
+import type {Asset} from 'webpack';
 
 /**
  * @param {Asset} asset

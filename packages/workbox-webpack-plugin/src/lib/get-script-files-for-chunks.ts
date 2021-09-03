@@ -7,7 +7,7 @@
 */
 
 import upath from 'upath';
-import {Compilation, WebpackError} from 'webpack-v5';
+import {Compilation, WebpackError} from 'webpack';
 
 import {resolveWebpackURL} from './resolve-webpack-url';
 

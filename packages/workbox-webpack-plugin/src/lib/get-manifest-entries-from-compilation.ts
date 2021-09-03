@@ -6,8 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {Asset, Chunk, Compilation, ModuleFilenameHelpers} from 'webpack-v5';
-import {WebpackError} from 'webpack-v5';
+import {Asset, Chunk, Compilation, ModuleFilenameHelpers} from 'webpack';
+import {WebpackError} from 'webpack';
 import {transformManifest} from 'workbox-build/build/lib/transform-manifest';
 
 import {

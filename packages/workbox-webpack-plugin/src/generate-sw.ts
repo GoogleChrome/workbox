@@ -11,7 +11,7 @@ import {bundle} from 'workbox-build/build/lib/bundle';
 import {populateSWTemplate} from 'workbox-build/build/lib/populate-sw-template';
 //import {GoogleAnalyticsInitializeOptions} from 'workbox-google-analytics/initialize';
 import prettyBytes from 'pretty-bytes';
-import webpack from 'webpack-v5';
+import webpack from 'webpack';
 //import {RuntimeCachingEntry} from 'workbox-build';
 import {ManifestEntry, WebpackGenerateSWOptions} from 'workbox-build';
 //import {CommonConfig} from './types';

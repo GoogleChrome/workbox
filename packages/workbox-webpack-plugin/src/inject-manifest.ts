@@ -169,7 +169,7 @@ export default class InjectManifest {
 
     // webpack v4/v5 compatibility:
     // https://github.com/webpack/webpack/issues/11425#issuecomment-690387207
-    if (webpack.version.startsWith('4.')) {
+    if (webpack.version?.startsWith('4.')) {
       compiler.hooks.emit.tapPromise(this.constructor.name, (compilation) =>
         this.addAssets(compilation).catch((error: webpack.WebpackError) => {
           compilation.errors.push(error);
@@ -265,8 +265,6 @@ export default class InjectManifest {
     compilation: webpack.Compilation,
     parentCompiler: webpack.Compiler,
   ): void {
-    // TODO - readFileSync doesn't exist in webpack v5?
-    // eslint-disable-next-line
     // const source = parentCompiler.inputFileSystem
     //   .readFileSync(this.config.swSrc!)
     //   .toString();
