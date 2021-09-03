@@ -112,7 +112,7 @@ class CacheTimestampsModel {
     };
     const db = await this.getDb();
     const tx = db.transaction(CACHE_OBJECT_STORE, 'readwrite', {durability: 'relaxed'});
-    await tx.store.put(CACHE_OBJECT_STORE, entry);
+    await tx.store.put(entry);
     await tx.done;
   }
 
