@@ -6,8 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-import GenerateSW from './generate-sw';
-import InjectManifest from './inject-manifest';
+import {GenerateSW} from './generate-sw';
+import {InjectManifest} from './inject-manifest';
 
 /**
  * @module workbox-webpack-plugin

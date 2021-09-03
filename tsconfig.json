@@ -31,6 +31,9 @@
     {"path": "./packages/workbox-routing/"},
     {"path": "./packages/workbox-strategies/"},
     {"path": "./packages/workbox-streams/"},
+    {
+      "path": "./packages/workbox-webpack-plugin/"
+    },
     {"path": "./packages/workbox-window/"}
   ]
 }

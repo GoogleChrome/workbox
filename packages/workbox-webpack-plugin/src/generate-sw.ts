@@ -41,7 +41,7 @@ interface GenerateSWConfig extends WebpackGenerateSWOptions {
  *
  * @memberof module:workbox-webpack-plugin
  */
-export default class GenerateSW {
+class GenerateSW {
   private config: GenerateSWConfig;
   private alreadyCalled: boolean;
   // eslint-disable-next-line jsdoc/newline-after-description
@@ -358,3 +358,5 @@ export default class GenerateSW {
     }
   }
 }
+
+export {GenerateSW}

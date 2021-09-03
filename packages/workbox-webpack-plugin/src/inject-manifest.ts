@@ -48,7 +48,7 @@ interface InjectManifestConfig extends CommonConfig {
  *
  * @memberof module:workbox-webpack-plugin
  */
-export default class InjectManifest {
+class InjectManifest {
   private config: InjectManifestConfig;
   private alreadyCalled: boolean;
   // eslint-disable-next-line jsdoc/newline-after-description
@@ -265,10 +265,10 @@ export default class InjectManifest {
     compilation: webpack.Compilation,
     parentCompiler: webpack.Compiler,
   ): void {
-    // const source = parentCompiler.inputFileSystem
-    //   .readFileSync(this.config.swSrc!)
-    //   .toString();
-    // compilation.emitAsset(this.config.swDest!, new RawSource(source));
+
+
+    parentCompiler.inputFileSystem;
+    compilation.emitAsset(this.config.swDest!, new RawSource('source'));
   }
 
   /**
@@ -432,3 +432,5 @@ export default class InjectManifest {
     }
   }
 }
+
+export {InjectManifest}
