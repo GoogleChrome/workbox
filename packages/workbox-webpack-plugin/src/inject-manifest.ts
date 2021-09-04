@@ -146,7 +146,7 @@ class InjectManifest {
       {
         mode: compiler.options.mode,
         // Use swSrc with a hardcoded .js extension, in case swSrc is a .ts file.
-        swDest: upath.parse(this.config.swSrc!).name + '.js',
+        swDest: upath.parse(this.config.swSrc).name + '.js',
       },
       this.config,
     );
@@ -228,13 +228,13 @@ class InjectManifest {
 
     if (Array.isArray(this.config.webpackCompilationPlugins)) {
       for (const plugin of this.config.webpackCompilationPlugins) {
-        plugin.apply(childCompiler);
+        plugin.apply(childCompiler); //eslint-disable-line
       }
     }
 
     new SingleEntryPlugin(
       parentCompiler.context,
-      this.config.swSrc!,
+      this.config.swSrc,
       this.constructor.name,
     ).apply(childCompiler);
 
@@ -266,6 +266,7 @@ class InjectManifest {
     compilation: webpack.Compilation,
     parentCompiler: webpack.Compiler,
   ): void {
+    // eslint-disable-next-line
     const source = (parentCompiler.inputFileSystem as any).readFileSync(this.config.swSrc)
     compilation.emitAsset(this.config.swDest!, new RawSource(source));
   }
