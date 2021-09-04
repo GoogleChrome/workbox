@@ -56,7 +56,9 @@ export class QueueDb {
    */
   async addEntry(entry: UnidentifiedQueueStoreEntry): Promise<void> {
     const db = await this.getDb();
-    await db.add(REQUEST_OBJECT_STORE_NAME, entry as QueueStoreEntry);
+    const tx = db.transaction(REQUEST_OBJECT_STORE_NAME, 'readwrite', { durability: 'relaxed' });
+    await tx.store.add(entry as QueueStoreEntry);
+    await tx.done;
   }
 
   /**
