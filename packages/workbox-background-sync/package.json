@@ -1,6 +1,6 @@
 {
   "name": "workbox-background-sync",
-  "version": "6.2.4",
+  "version": "6.3.0",
   "license": "MIT",
   "author": "Google's Web DevRel Team",
   "description": "Queues failed requests and uses the Background Sync API to replay them when the network is available",
@@ -25,6 +25,6 @@
   "types": "index.d.ts",
   "dependencies": {
     "idb": "^6.0.0",
-    "workbox-core": "6.2.4"
+    "workbox-core": "6.3.0"
   }
 }
