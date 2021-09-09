@@ -6,16 +6,17 @@
   https://opensource.org/licenses/MIT.
 */
 
-const {series} = require('gulp');
+const { series } = require('gulp');
 const execa = require('execa');
 const fse = require('fs-extra');
 const ol = require('common-tags').oneLine;
 
-const {build_packages_clean} = require('./build-packages');
-const {publish_cdn} = require('./publish-cdn');
-const {publish_github} = require('./publish-github');
-const {publish_lerna} = require('./publish-lerna');
-const {test} = require('./test');
+const { build } = require('./build');
+const { build_packages_clean } = require('./build-packages');
+const { publish_cdn } = require('./publish-cdn');
+const { publish_github } = require('./publish-github');
+const { publish_lerna } = require('./publish-lerna');
+const { test } = require('./test');
 const constants = require('./utils/constants');
 
 async function publish_clean() {
@@ -39,6 +40,7 @@ module.exports = {
     publish_sign_in_check,
     build_packages_clean,
     publish_clean,
+    build,
     test,
     publish_lerna,
     publish_github,
