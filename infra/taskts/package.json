@@ -1,0 +1,27 @@
+{
+  "author": "Google's Web DevRel Team",
+  "bin": {
+    "taskts": "./src/bin.mjs"
+  },
+  "dependencies": {
+    "esbuild-node-loader": "^0.3.1",
+    "execa": "^5.1.1",
+    "yargs": "^17.1.1"
+  },
+  "description": "A runner for tasks that are written in TypeScript.",
+  "devDependencies": {
+    "@types/yargs": "^17.0.2"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "keywords": [
+    "task",
+    "typescript"
+  ],
+  "license": "MIT",
+  "name": "taskts",
+  "type": "module",
+  "types": "./src/types.ts",
+  "version": "0.0.1"
+}
