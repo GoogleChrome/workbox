@@ -7,8 +7,11 @@
 */
 
 import {hideBin} from 'yargs/helpers';
-import {loadConfig} from './lib/load-config';
 import yargs from 'yargs';
+
+import {loadConfig} from './lib/load-config';
+import {log} from './lib/log';
+import {timeSince} from './lib/time-since';
 
 async function main() {
   const argv = await yargs(hideBin(process.argv)).argv;
@@ -25,7 +28,16 @@ async function main() {
   }
 
   for (const task of tasks) {
-    await config[task](argv);
+    const start = Date.now();
+    log(`Starting '${task}'...`);
+
+    try {
+      await config[task](argv);
+      log(`'${task}' finished after ${timeSince(start)} seconds.`);
+    } catch (err: unknown) {
+      log(`'${task}' errored after ${timeSince(start)} seconds.`);
+      throw err;
+    }
   }
 }
 

@@ -133,7 +133,7 @@ module.exports = {
       ],
       plugins: ['header'],
       rules: {
-        'header/header': [2, 'block', {pattern: 'Copyright \\d{4} Google LLC'}],
+        'header/header': [2, 'block', { pattern: 'Copyright \\d{4} Google LLC' }],
       },
     },
     {
@@ -144,5 +144,8 @@ module.exports = {
     },
   ],
   // eslint can't parse some of these files.
-  ignorePatterns: ['**/wasm-project/**'],
+  ignorePatterns: [
+    '**/wasm-project/**',
+    'infra/taskts/src/bin.mjs',
+  ],
 };

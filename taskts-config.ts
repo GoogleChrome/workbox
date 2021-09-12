@@ -34,6 +34,10 @@ export function log({message}: {message: string}) {
   console.log(`Message is ${message}`);
 }
 
+export function sleep({duration = 3400}: {duration: number}) {
+  return new Promise((resolve) => setTimeout(resolve, duration));
+}
+
 export default function cwd() {
   console.log(`cwd is ${process.cwd()}`);
 }

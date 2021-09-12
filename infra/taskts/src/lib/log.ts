@@ -6,8 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {Arguments} from 'yargs';
-export {Arguments};
+import tinydate from 'tinydate';
 
-export type TaskReturn = void | Promise<void>;
-export type Task = (args: Arguments) => TaskReturn;
+const timestamp = tinydate('[{HH}:{mm}:{ss}]');
+
+export function log(...args: Array<unknown>) {
+  console.log(timestamp(new Date()), ...args);
+}
