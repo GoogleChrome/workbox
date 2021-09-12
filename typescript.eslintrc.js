@@ -2,7 +2,11 @@ module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    project: ['./tsconfig.json', './packages/**/tsconfig.json'],
+    project: [
+      './tsconfig.json',
+      './packages/**/tsconfig.json',
+      './infra/**/tsconfig.json',
+    ],
     tsconfigRootDir: __dirname,
   },
   plugins: ['@typescript-eslint', 'jsdoc'],
@@ -41,5 +45,5 @@ module.exports = {
     'prefer-spread': 'off',
     'space-before-function-paren': 'off',
   },
-  ignorePatterns: ['**/_version.ts', 'test/**'],
+  ignorePatterns: ['**/_version.ts', 'test/**', 'taskts-config.ts'],
 };

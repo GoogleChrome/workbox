@@ -8,7 +8,7 @@
 
 import path from 'path';
 import fs from 'fs/promises';
-import {Task} from '..';
+import {Task} from '../index';
 
 const DEFAULT_CONFIG_FILE_NAME = 'taskts-config.ts';
 
@@ -38,8 +38,8 @@ async function getConfigFilePath(configName: string): Promise<string | null> {
 }
 
 export async function loadConfig(
-  configFilePath?: string,
-): Promise<Record<string, Task>> {
+  configFilePath?: string | null,
+): Promise<Record<string, Task> | null> {
   if (configFilePath) {
     if (!(await fileExists(configFilePath))) {
       return null;
@@ -59,5 +59,5 @@ export async function loadConfig(
     process.chdir(dir);
   }
 
-  return await import(path.join(dir, name));
+  return (await import(path.join(dir, name))) as Promise<Record<string, Task>>;
 }

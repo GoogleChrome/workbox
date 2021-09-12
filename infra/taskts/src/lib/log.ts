@@ -10,6 +10,6 @@ import tinydate from 'tinydate';
 
 const timestamp = tinydate('[{HH}:{mm}:{ss}]');
 
-export function log(...args: Array<unknown>) {
+export function log(...args: Array<unknown>): void {
   console.log(timestamp(new Date()), ...args);
 }

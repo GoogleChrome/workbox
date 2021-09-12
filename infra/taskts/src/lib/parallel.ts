@@ -8,7 +8,7 @@
 
 import {Arguments} from 'yargs';
 
-import {Task} from '..';
+import {Task} from '../index';
 
 export function parallel(...funcs: Array<Task>): Task {
   return async (args: Arguments) => {

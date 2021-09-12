@@ -8,7 +8,7 @@
 
 import {Arguments} from 'yargs';
 
-import {Task} from '../types';
+import {Task} from '../index';
 
 export function series(...funcs: Array<Task>): Task {
   return async (args: Arguments) => {

@@ -42,6 +42,6 @@ async function main() {
 }
 
 main().catch((err: unknown) => {
-  console.error(err.toString());
+  console.error(err instanceof Error ? err.toString() : err);
   process.exit(1);
 });
