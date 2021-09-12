@@ -9,10 +9,15 @@
 
 import execa from 'execa';
 import path from 'path';
+import resolve from 'resolve';
 import url from 'url';
 
 const currentScript = url.fileURLToPath(import.meta.url);
-const pathToMain = path.join(path.dirname(currentScript), 'main.ts');
+const currentDir = path.dirname(currentScript);
+const pathToMain = path.join(currentDir, 'main.ts');
+const pathToESBuildLoader = resolve.sync('esbuild-node-loader', {
+  basedir: currentDir,
+});
 
 (async () => {
   try {
@@ -20,7 +25,7 @@ const pathToMain = path.join(path.dirname(currentScript), 'main.ts');
       // C.f. https://github.com/nodejs/node/issues/30810
       '--no-warnings',
       '--experimental-loader',
-      'esbuild-node-loader',
+      pathToESBuildLoader,
       pathToMain,
       ...process.argv.slice(2),
     ]);

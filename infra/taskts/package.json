@@ -7,6 +7,7 @@
     "@types/node": "^16.9.1",
     "esbuild-node-loader": "^0.3.1",
     "execa": "^5.1.1",
+    "resolve": "^1.20.0",
     "save-dev": "0.0.1-security",
     "tinydate": "^1.3.0",
     "yargs": "^17.1.1"
