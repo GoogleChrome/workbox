@@ -8,7 +8,7 @@
 
 import path from 'path';
 import fs from 'fs/promises';
-import {Task} from '../types';
+import {Task} from '..';
 
 const DEFAULT_CONFIG_FILE_NAME = 'taskts-config.ts';
 
