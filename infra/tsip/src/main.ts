@@ -27,11 +27,11 @@ async function main() {
     throw new Error(`Invalid task names: ${invalidTaskNames.join(', ')}`);
   }
 
-  const params: TaskArgs = Object.assign({stuff: {}}, argv);
-  delete params['$0'];
-  delete params['_'];
+  const param: TaskArgs = Object.assign({}, argv);
+  delete param['$0'];
+  delete param['_'];
 
-  await series(...tasks.map((task) => config[task]))(params);
+  await series(...tasks.map((task) => config[task]))(param);
 }
 
 main().catch((err: unknown) => {

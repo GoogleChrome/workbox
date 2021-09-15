@@ -10,7 +10,7 @@ import {log} from './lib/log';
 import {series} from './lib/series';
 import {parallel} from './lib/parallel';
 
-type TaskArgs = Record<string, unknown> & {stuff: Record<string, unknown>};
+type TaskArgs = Record<string, unknown>;
 type TaskReturn = void | Promise<void>;
 type Task = (args: TaskArgs) => TaskReturn;
 
