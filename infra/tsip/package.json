@@ -14,7 +14,8 @@
   },
   "description": "A runner for tasks that are written in TypeScript.",
   "devDependencies": {
-    "@types/yargs": "^17.0.2"
+    "@types/yargs": "^17.0.2",
+    "chalk": "^4.1.2"
   },
   "engines": {
     "node": ">=14.0.0"
@@ -25,7 +26,7 @@
   ],
   "license": "MIT",
   "main": "./src/index.ts",
-  "name": "taskts",
+  "name": "tsip",
   "type": "module",
   "types": "./src/index.ts",
   "version": "0.0.1"

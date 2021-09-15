@@ -6,13 +6,12 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {Arguments} from 'yargs';
-
 import {log} from './lib/log';
 import {series} from './lib/series';
 import {parallel} from './lib/parallel';
 
+type TaskArgs = Record<string, unknown> & {stuff: Record<string, unknown>};
 type TaskReturn = void | Promise<void>;
-type Task = (args: Arguments) => TaskReturn;
+type Task = (args: TaskArgs) => TaskReturn;
 
-export {Arguments, Task, TaskReturn, log, parallel, series};
+export {TaskArgs, Task, TaskReturn, log, parallel, series};

@@ -28,9 +28,10 @@ const pathToESBuildLoader = resolve.sync('esbuild-node-loader', {
       pathToESBuildLoader,
       pathToMain,
       ...process.argv.slice(2),
-    ]);
-    childProcess.stdout.pipe(process.stdout);
-    childProcess.stderr.pipe(process.stderr);
+    ], {
+      stdout: 'inherit',
+      stderr: 'inherit',
+    });
     await childProcess;
   } catch (err) {
     process.exit(err.exitCode);

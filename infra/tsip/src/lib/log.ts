@@ -6,10 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
+import chalk from 'chalk';
 import tinydate from 'tinydate';
 
 const timestamp = tinydate('[{HH}:{mm}:{ss}]');
 
 export function log(...args: Array<unknown>): void {
-  console.log(timestamp(new Date()), ...args);
+  console.log(chalk.dim(timestamp(new Date())), ...args);
 }

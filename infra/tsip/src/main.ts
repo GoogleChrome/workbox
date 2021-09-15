@@ -10,8 +10,8 @@ import {hideBin} from 'yargs/helpers';
 import yargs from 'yargs';
 
 import {loadConfig} from './lib/load-config';
-import {log} from './lib/log';
-import {timeSince} from './lib/time-since';
+import {series} from './lib/series';
+import {TaskArgs} from './index';
 
 async function main() {
   const argv = await yargs(hideBin(process.argv)).argv;
@@ -27,18 +27,11 @@ async function main() {
     throw new Error(`Invalid task names: ${invalidTaskNames.join(', ')}`);
   }
 
-  for (const task of tasks) {
-    const start = Date.now();
-    log(`Starting '${task}'...`);
+  const params: TaskArgs = Object.assign({stuff: {}}, argv);
+  delete params['$0'];
+  delete params['_'];
 
-    try {
-      await config[task](argv);
-      log(`'${task}' finished after ${timeSince(start)} seconds.`);
-    } catch (err: unknown) {
-      log(`'${task}' errored after ${timeSince(start)} seconds.`);
-      throw err;
-    }
-  }
+  await series(...tasks.map((task) => config[task]))(params);
 }
 
 main().catch((err: unknown) => {

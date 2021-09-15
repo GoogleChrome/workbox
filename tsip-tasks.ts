@@ -1,6 +1,7 @@
 import execa from 'execa';
 
-import {parallel} from './infra/taskts/src/lib/parallel';
+import {parallel} from './infra/tsip/src/lib/parallel';
+import {series} from './infra/tsip/src/lib/series';
 
 export async function lint_js() {
   await execa(
@@ -34,12 +35,10 @@ export function log({message}: {message: string}) {
   console.log(`Message is ${message}`);
 }
 
-export function sleep({duration = 3400}: {duration: number}) {
+export function sleep({duration = 3400}: {duration?: number} = {}) {
   return new Promise((resolve) => setTimeout(resolve, duration));
 }
 
-export default function cwd() {
-  console.log(`cwd is ${process.cwd()}`);
-}
+export default series(parallel(log, log), sleep, () => console.log(2));
 
 export const lint = parallel(lint_js, lint_ts);

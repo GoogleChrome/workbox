@@ -10,7 +10,7 @@ import path from 'path';
 import fs from 'fs/promises';
 import {Task} from '../index';
 
-const DEFAULT_CONFIG_FILE_NAME = 'taskts-config.ts';
+const DEFAULT_CONFIG_FILE_NAME = 'tsip-tasks.ts';
 
 async function fileExists(filePath: string): Promise<boolean> {
   try {
@@ -22,8 +22,8 @@ async function fileExists(filePath: string): Promise<boolean> {
 }
 
 async function getConfigFilePath(configName: string): Promise<string | null> {
-  let currentDir = path.dirname(process.cwd());
-  while (currentDir) {
+  let currentDir = process.cwd();
+  while (true) {
     const possiblePath = path.join(currentDir, configName);
     if (await fileExists(possiblePath)) {
       return possiblePath;
