@@ -449,6 +449,53 @@ describe(`QueueStore`, function () {
     });
   });
 
+  describe(`size`, function () {
+    it(`should return the number of entries in IDB with the right queue name`, async function () {
+      const queueStore1 = new QueueStore('a');
+      const queueStore2 = new QueueStore('b');
+
+      const sr1 = await StorableRequest.fromRequest(new Request('/one'));
+      const sr2 = await StorableRequest.fromRequest(new Request('/two'));
+      const sr3 = await StorableRequest.fromRequest(new Request('/three'));
+      const sr4 = await StorableRequest.fromRequest(new Request('/four'));
+      const sr5 = await StorableRequest.fromRequest(new Request('/five'));
+
+      await queueStore1.pushEntry({
+        requestData: sr1.toObject(),
+        timestamp: 1000,
+        metadata: {name: 'meta1'},
+      });
+      await queueStore2.pushEntry({
+        requestData: sr2.toObject(),
+        timestamp: 2000,
+        metadata: {name: 'meta2'},
+      });
+      await queueStore2.pushEntry({
+        requestData: sr3.toObject(),
+        timestamp: 3000,
+        metadata: {name: 'meta3'},
+      });
+      await queueStore2.pushEntry({
+        requestData: sr4.toObject(),
+        timestamp: 4000,
+        metadata: {name: 'meta4'},
+      });
+      await queueStore1.pushEntry({
+        requestData: sr5.toObject(),
+        timestamp: 5000,
+        metadata: {name: 'meta5'},
+      });
+
+      expect(await queueStore1.size()).to.equal(2);
+      expect(await queueStore2.size()).to.equal(3);
+
+      await db.clear('requests');
+
+      expect(await queueStore1.size()).to.deep.equal(0);
+      expect(await queueStore2.size()).to.deep.equal(0);
+    });
+  });
+
   describe(`delete`, function () {
     it(`should delete an entry for the given ID`, async function () {
       const queueStore = new QueueStore('a');
