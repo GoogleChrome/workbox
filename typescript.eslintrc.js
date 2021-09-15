@@ -45,5 +45,5 @@ module.exports = {
     'prefer-spread': 'off',
     'space-before-function-paren': 'off',
   },
-  ignorePatterns: ['**/_version.ts', 'test/**', 'taskts-config.ts'],
+  ignorePatterns: ['**/_version.ts', 'test/**', 'tsip-tasks.ts'],
 };
