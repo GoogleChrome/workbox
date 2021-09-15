@@ -17,7 +17,7 @@ export class TaskLogger {
   static taskColor = chalk.blueBright;
   static timeColor = chalk.magentaBright;
 
-  private taskDisplayName: string | null;
+  private readonly taskDisplayName: string | null;
   startTime?: number;
 
   constructor(task: Task | string) {
@@ -50,9 +50,9 @@ export class TaskLogger {
   }
 
   elapsed(): string {
-    let time =
+    const time =
       this.startTime !== undefined
-        ? ((Date.now() - this.startTime) / 1000).toFixed(2)
+        ? ((Date.now() - this.startTime) / 1000).toFixed(3)
         : '<unknown>';
     return TaskLogger.timeColor(time);
   }

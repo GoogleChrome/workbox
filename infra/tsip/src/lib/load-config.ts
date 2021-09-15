@@ -8,6 +8,8 @@
 
 import path from 'path';
 import fs from 'fs/promises';
+
+import {log} from './log';
 import {Task} from '../index';
 
 const DEFAULT_CONFIG_FILE_NAME = 'tsip-tasks.ts';
@@ -23,6 +25,7 @@ async function fileExists(filePath: string): Promise<boolean> {
 
 async function getConfigFilePath(configName: string): Promise<string | null> {
   let currentDir = process.cwd();
+  // eslint-disable-next-line no-constant-condition
   while (true) {
     const possiblePath = path.join(currentDir, configName);
     if (await fileExists(possiblePath)) {
@@ -52,10 +55,10 @@ export async function loadConfig(
   }
 
   const {dir, name} = path.parse(configFilePath);
-  console.log(`Using config file ${configFilePath}`);
+  log(`Using config file ${configFilePath}`);
 
   if (dir !== process.cwd()) {
-    console.log(`Changing directory to ${dir}`);
+    log(`Changing directory to ${dir}`);
     process.chdir(dir);
   }
 
