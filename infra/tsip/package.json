@@ -1,21 +1,20 @@
 {
   "author": "Google's Web DevRel Team",
   "bin": {
-    "taskts": "./src/bin.mjs"
+    "tsip": "./src/bin.mjs"
   },
   "dependencies": {
-    "@types/node": "^16.9.1",
+    "chalk": "^4.1.2",
     "esbuild-node-loader": "^0.3.1",
     "execa": "^5.1.1",
     "resolve": "^1.20.0",
-    "save-dev": "0.0.1-security",
     "tinydate": "^1.3.0",
     "yargs": "^17.1.1"
   },
   "description": "A runner for tasks that are written in TypeScript.",
   "devDependencies": {
-    "@types/yargs": "^17.0.2",
-    "chalk": "^4.1.2"
+    "@types/node": "^16.9.1",
+    "@types/yargs": "^17.0.2"
   },
   "engines": {
     "node": ">=14.0.0"
