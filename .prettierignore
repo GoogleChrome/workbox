@@ -12,5 +12,6 @@ package-lock.json
 packages/**/*.d.ts
 packages/**/*.js
 packages/**/*.mjs
+packages/workbox-build/src/schema/*.json
 temp
 test/workbox-webpack-plugin/static/injected-manifest.json

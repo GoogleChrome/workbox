@@ -1,44 +1,9 @@
 {
-  "name": "workbox",
-  "engines": {
-    "node": ">=10.0.0"
-  },
-  "scripts": {
-    "version": "gulp build && git add -A packages",
-    "gulp": "gulp",
-    "build": "gulp build",
-    "lint": "gulp lint",
-    "prettier": "prettier --ignore-unknown --write .",
-    "test_server": "gulp test_server",
-    "test_node": "gulp test_node",
-    "test_integration": "gulp test_integration",
-    "prepare": "husky install"
-  },
-  "nyc": {
-    "include": [
-      "packages/**/*"
-    ],
-    "extension": [
-      ".mjs",
-      ".js"
-    ],
-    "exclude": [
-      "packages/workbox-core/models/messages/messages.mjs"
-    ]
-  },
-  "version": "0.0.0",
-  "description": "Top-level scripts and dependencies for the workbox monorepo. Not meant to be published to npm.",
-  "private": true,
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/GoogleChrome/workbox.git"
-  },
   "author": "Google's Web DevRel Team",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/GoogleChrome/workbox/issues"
   },
-  "homepage": "https://github.com/GoogleChrome/workbox#readme",
+  "description": "Top-level scripts and dependencies for the workbox monorepo. Not meant to be published to npm.",
   "devDependencies": {
     "@babel/cli": "^7.10.5",
     "@babel/core": "^7.11.1",
@@ -121,7 +86,42 @@
     "webpack-v5": "npm:webpack@^5.9.0",
     "worker-plugin": "^5.0.0"
   },
+  "engines": {
+    "node": ">=10.0.0"
+  },
+  "homepage": "https://github.com/GoogleChrome/workbox#readme",
+  "license": "MIT",
   "lint-staged": {
     "*": "prettier --ignore-unknown --write"
-  }
+  },
+  "name": "workbox",
+  "nyc": {
+    "exclude": [
+      "packages/workbox-core/models/messages/messages.mjs"
+    ],
+    "extension": [
+      ".mjs",
+      ".js"
+    ],
+    "include": [
+      "packages/**/*"
+    ]
+  },
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GoogleChrome/workbox.git"
+  },
+  "scripts": {
+    "build": "gulp build",
+    "gulp": "gulp",
+    "lint": "gulp lint",
+    "prepare": "husky install",
+    "prettier": "prettier --ignore-unknown --write .",
+    "test_integration": "gulp test_integration",
+    "test_node": "gulp test_node",
+    "test_server": "gulp test_server",
+    "version": "gulp build && git add -A packages"
+  },
+  "version": "0.0.0"
 }
