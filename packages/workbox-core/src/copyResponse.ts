@@ -32,7 +32,7 @@ import './_version.js';
  */
 async function copyResponse(
   response: Response,
-  modifier?: (responseInit: ResponseInit) => ResponseInit
+  modifier?: (responseInit: ResponseInit) => ResponseInit,
 ): Promise<Response> {
   let origin = null;
   // If response.url isn't set, assume it's cross-origin and keep origin null.
@@ -52,7 +52,7 @@ async function copyResponse(
     headers: new Headers(clonedResponse.headers),
     status: clonedResponse.status,
     statusText: clonedResponse.statusText,
-  }
+  };
 
   // Apply any user modifications.
   const modifiedResponseInit = modifier ? modifier(responseInit) : responseInit;
@@ -60,10 +60,11 @@ async function copyResponse(
   // Create the new response from the body stream and `ResponseInit`
   // modifications. Note: not all browsers support the Response.body stream,
   // so fall back to reading the entire body into memory as a blob.
-  const body = canConstructResponseFromBodyStream() ?
-      clonedResponse.body : await clonedResponse.blob();
+  const body = canConstructResponseFromBodyStream()
+    ? clonedResponse.body
+    : await clonedResponse.blob();
 
   return new Response(body, modifiedResponseInit);
 }
 
-export {copyResponse}
+export {copyResponse};

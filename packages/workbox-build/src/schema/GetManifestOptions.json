@@ -37,18 +37,14 @@
       "type": "boolean"
     },
     "globIgnores": {
-      "default": [
-        "**/node_modules/**/*"
-      ],
+      "default": ["**/node_modules/**/*"],
       "type": "array",
       "items": {
         "type": "string"
       }
     },
     "globPatterns": {
-      "default": [
-        "**/*.{js,css,html}"
-      ],
+      "default": ["**/*.{js,css,html}"],
       "type": "array",
       "items": {
         "type": "string"
@@ -78,9 +74,7 @@
       "type": "string"
     }
   },
-  "required": [
-    "globDirectory"
-  ],
+  "required": ["globDirectory"],
   "definitions": {
     "ManifestEntry": {
       "type": "object",
@@ -89,20 +83,14 @@
           "type": "string"
         },
         "revision": {
-          "type": [
-            "null",
-            "string"
-          ]
+          "type": ["null", "string"]
         },
         "url": {
           "type": "string"
         }
       },
       "additionalProperties": false,
-      "required": [
-        "revision",
-        "url"
-      ]
+      "required": ["revision", "url"]
     },
     "RegExp": {
       "type": "object",
@@ -191,14 +179,7 @@
           ]
         },
         "method": {
-          "enum": [
-            "DELETE",
-            "GET",
-            "HEAD",
-            "PATCH",
-            "POST",
-            "PUT"
-          ],
+          "enum": ["DELETE", "GET", "HEAD", "PATCH", "POST", "PUT"],
           "type": "string"
         },
         "options": {
@@ -215,9 +196,7 @@
                 }
               },
               "additionalProperties": false,
-              "required": [
-                "name"
-              ]
+              "required": ["name"]
             },
             "broadcastUpdate": {
               "type": "object",
@@ -230,18 +209,13 @@
                 }
               },
               "additionalProperties": false,
-              "required": [
-                "options"
-              ]
+              "required": ["options"]
             },
             "cacheableResponse": {
               "$ref": "#/definitions/CacheableResponseOptions"
             },
             "cacheName": {
-              "type": [
-                "null",
-                "string"
-              ]
+              "type": ["null", "string"]
             },
             "expiration": {
               "$ref": "#/definitions/ExpirationPluginOptions"
@@ -263,9 +237,7 @@
                 }
               },
               "additionalProperties": false,
-              "required": [
-                "fallbackURL"
-              ]
+              "required": ["fallbackURL"]
             },
             "rangeRequests": {
               "type": "boolean"
@@ -294,10 +266,7 @@
         }
       },
       "additionalProperties": false,
-      "required": [
-        "handler",
-        "urlPattern"
-      ]
+      "required": ["handler", "urlPattern"]
     },
     "RouteHandlerCallback": {},
     "RouteHandlerObject": {
@@ -309,9 +278,7 @@
         }
       },
       "additionalProperties": false,
-      "required": [
-        "handle"
-      ]
+      "required": ["handle"]
     },
     "QueueOptions": {
       "type": "object",
@@ -487,10 +454,7 @@
               "$ref": "#/definitions/ReadableStream<Uint8Array>"
             },
             {
-              "type": [
-                "null",
-                "string"
-              ]
+              "type": ["null", "string"]
             }
           ]
         },
@@ -506,11 +470,7 @@
           "type": "string"
         },
         "credentials": {
-          "enum": [
-            "include",
-            "omit",
-            "same-origin"
-          ],
+          "enum": ["include", "omit", "same-origin"],
           "type": "string"
         },
         "headers": {
@@ -542,20 +502,11 @@
           "type": "string"
         },
         "mode": {
-          "enum": [
-            "cors",
-            "navigate",
-            "no-cors",
-            "same-origin"
-          ],
+          "enum": ["cors", "navigate", "no-cors", "same-origin"],
           "type": "string"
         },
         "redirect": {
-          "enum": [
-            "error",
-            "follow",
-            "manual"
-          ],
+          "enum": ["error", "follow", "manual"],
           "type": "string"
         },
         "referrer": {
@@ -600,10 +551,7 @@
         }
       },
       "additionalProperties": false,
-      "required": [
-        "__@toStringTag",
-        "byteLength"
-      ]
+      "required": ["__@toStringTag", "byteLength"]
     },
     "ArrayBufferView": {
       "type": "object",
@@ -626,11 +574,7 @@
         }
       },
       "additionalProperties": false,
-      "required": [
-        "buffer",
-        "byteLength",
-        "byteOffset"
-      ]
+      "required": ["buffer", "byteLength", "byteOffset"]
     },
     "SharedArrayBuffer": {
       "type": "object",
@@ -643,17 +587,11 @@
         },
         "__@toStringTag": {
           "type": "string",
-          "enum": [
-            "SharedArrayBuffer"
-          ]
+          "enum": ["SharedArrayBuffer"]
         }
       },
       "additionalProperties": false,
-      "required": [
-        "__@species",
-        "__@toStringTag",
-        "byteLength"
-      ]
+      "required": ["__@species", "__@toStringTag", "byteLength"]
     },
     "Blob": {
       "type": "object",
@@ -666,10 +604,7 @@
         }
       },
       "additionalProperties": false,
-      "required": [
-        "size",
-        "type"
-      ]
+      "required": ["size", "type"]
     },
     "FormData": {
       "type": "object",
@@ -687,9 +622,7 @@
         }
       },
       "additionalProperties": false,
-      "required": [
-        "locked"
-      ]
+      "required": ["locked"]
     },
     "Headers": {
       "type": "object",
@@ -718,10 +651,7 @@
         }
       },
       "additionalProperties": false,
-      "required": [
-        "aborted",
-        "onabort"
-      ]
+      "required": ["aborted", "onabort"]
     },
     "RouteMatchCallback": {}
   },

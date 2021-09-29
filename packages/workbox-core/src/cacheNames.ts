@@ -9,7 +9,6 @@
 import {cacheNames as _cacheNames} from './_private/cacheNames.js';
 import './_version.js';
 
-
 /**
  * Get the current cache names and prefix/suffix used by Workbox.
  *
@@ -43,4 +42,4 @@ const cacheNames = {
   },
 };
 
-export {cacheNames}
+export {cacheNames};

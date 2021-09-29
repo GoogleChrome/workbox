@@ -1,4 +1,4 @@
-import { Strategy } from 'workbox-strategies/Strategy.js';
+import {Strategy} from 'workbox-strategies/Strategy.js';
 
 import './_version.js';
 
@@ -18,11 +18,14 @@ declare let self: ServiceWorkerGlobalScope;
  * @param {Strategy} options.strategy Strategy to use
  */
 function warmStrategyCache(options: WarmStrategyCacheOptions): void {
-  self.addEventListener('install', event => {
-    const done = options.urls.map(path => options.strategy.handleAll({
-      event,
-      request: new Request(path),
-    })[1]);
+  self.addEventListener('install', (event) => {
+    const done = options.urls.map(
+      (path) =>
+        options.strategy.handleAll({
+          event,
+          request: new Request(path),
+        })[1],
+    );
 
     event.waitUntil(Promise.all(done));
   });

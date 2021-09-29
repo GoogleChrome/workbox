@@ -10,7 +10,6 @@ import {logger} from 'workbox-core/_private/logger.js';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
 import '../_version.js';
 
-
 export const messages = {
   strategyStart: (strategyName: string, request: Request): string =>
     `Using ${strategyName} to respond to '${getFriendlyURL(request.url)}'`,

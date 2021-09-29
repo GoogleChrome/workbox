@@ -10,9 +10,16 @@ import {assert} from 'workbox-core/_private/assert.js';
 import {MapLikeObject} from 'workbox-core/types.js';
 import '../_version.js';
 
-
-type SerializableProperties = 'method' | 'referrer' | 'referrerPolicy' | 'mode'
-    | 'credentials' | 'cache' | 'redirect' | 'integrity' | 'keepalive';
+type SerializableProperties =
+  | 'method'
+  | 'referrer'
+  | 'referrerPolicy'
+  | 'mode'
+  | 'credentials'
+  | 'cache'
+  | 'redirect'
+  | 'integrity'
+  | 'keepalive';
 
 const serializableProperties: SerializableProperties[] = [
   'method',

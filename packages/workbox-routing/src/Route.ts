@@ -9,10 +9,12 @@
 import {assert} from 'workbox-core/_private/assert.js';
 import {HTTPMethod, defaultMethod, validMethods} from './utils/constants.js';
 import {normalizeHandler} from './utils/normalizeHandler.js';
-import {RouteHandler, RouteHandlerObject, RouteMatchCallback}
-    from 'workbox-core/types.js';
+import {
+  RouteHandler,
+  RouteHandlerObject,
+  RouteMatchCallback,
+} from 'workbox-core/types.js';
 import './_version.js';
-
 
 /**
  * A `Route` consists of a pair of callback functions, "match" and "handler".
@@ -41,9 +43,10 @@ class Route {
    * against.
    */
   constructor(
-      match: RouteMatchCallback,
-      handler: RouteHandler,
-      method: HTTPMethod = defaultMethod) {
+    match: RouteMatchCallback,
+    handler: RouteHandler,
+    method: HTTPMethod = defaultMethod,
+  ) {
     if (process.env.NODE_ENV !== 'production') {
       assert!.isType(match, 'function', {
         moduleName: 'workbox-routing',
@@ -70,7 +73,7 @@ class Route {
    * function that returns a Promise resolving to a Response
    */
   setCatchHandler(handler: RouteHandler): void {
-    this.catchHandler = normalizeHandler(handler)
+    this.catchHandler = normalizeHandler(handler);
   }
 }
 

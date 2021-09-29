@@ -8,7 +8,6 @@
 
 import '../_version.js';
 
-
 export const enum pluginEvents {
   CACHE_DID_UPDATE = 'cacheDidUpdate',
   CACHE_KEY_WILL_BE_USED = 'cacheKeyWillBeUsed',

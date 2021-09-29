@@ -10,7 +10,6 @@ import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
 import {assert} from 'workbox-core/_private/assert.js';
 import '../_version.js';
 
-
 /**
  * @param {Blob} blob A source blob.
  * @param {number} [start] The offset to use as the start of the
@@ -22,7 +21,10 @@ import '../_version.js';
  * @private
  */
 function calculateEffectiveBoundaries(
-    blob: Blob, start?: number, end?: number): {start: number; end: number} {
+  blob: Blob,
+  start?: number,
+  end?: number,
+): {start: number; end: number} {
   if (process.env.NODE_ENV !== 'production') {
     assert!.isInstance(blob, Blob, {
       moduleName: 'workbox-range-requests',

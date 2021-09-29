@@ -15,7 +15,6 @@ import {warmStrategyCache} from './warmStrategyCache';
 
 import './_version.js';
 
-
 /**
  * @module workbox-recipes
  */
@@ -26,5 +25,5 @@ export {
   staticResourceCache,
   pageCache,
   offlineFallback,
-  warmStrategyCache
+  warmStrategyCache,
 };

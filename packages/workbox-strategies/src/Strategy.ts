@@ -10,8 +10,11 @@ import {cacheNames} from 'workbox-core/_private/cacheNames.js';
 import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
 import {logger} from 'workbox-core/_private/logger.js';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
-import {HandlerCallbackOptions, RouteHandlerObject, WorkboxPlugin}
-    from 'workbox-core/types.js';
+import {
+  HandlerCallbackOptions,
+  RouteHandlerObject,
+  WorkboxPlugin,
+} from 'workbox-core/types.js';
 
 import {StrategyHandler} from './StrategyHandler.js';
 
@@ -37,7 +40,7 @@ abstract class Strategy implements RouteHandlerObject {
 
   protected abstract _handle(
     request: Request,
-    handler: StrategyHandler
+    handler: StrategyHandler,
   ): Promise<Response | undefined>;
 
   /**
@@ -143,10 +146,9 @@ abstract class Strategy implements RouteHandlerObject {
    *     promises that can be used to determine when the response resolves as
    *     well as when the handler has completed all its work.
    */
-  handleAll(options: FetchEvent | HandlerCallbackOptions): [
-    Promise<Response>,
-    Promise<void>,
-   ] {
+  handleAll(
+    options: FetchEvent | HandlerCallbackOptions,
+  ): [Promise<Response>, Promise<void>] {
     // Allow for flexible options to be passed.
     if (options instanceof FetchEvent) {
       options = {
@@ -156,21 +158,31 @@ abstract class Strategy implements RouteHandlerObject {
     }
 
     const event = options.event;
-    const request = typeof options.request === 'string' ?
-        new Request(options.request) :
-        options.request;
+    const request =
+      typeof options.request === 'string'
+        ? new Request(options.request)
+        : options.request;
     const params = 'params' in options ? options.params : undefined;
 
     const handler = new StrategyHandler(this, {event, request, params});
 
     const responseDone = this._getResponse(handler, request, event);
-    const handlerDone = this._awaitComplete(responseDone, handler, request, event);
+    const handlerDone = this._awaitComplete(
+      responseDone,
+      handler,
+      request,
+      event,
+    );
 
     // Return an array of promises, suitable for use with Promise.all().
     return [responseDone, handlerDone];
   }
 
-  async _getResponse(handler: StrategyHandler, request: Request, event: ExtendableEvent): Promise<Response> {
+  async _getResponse(
+    handler: StrategyHandler,
+    request: Request,
+    event: ExtendableEvent,
+  ): Promise<Response> {
     await handler.runCallbacks('handlerWillStart', {event, request});
 
     let response: Response | undefined = undefined;
@@ -195,9 +207,13 @@ abstract class Strategy implements RouteHandlerObject {
       if (!response) {
         throw error;
       } else if (process.env.NODE_ENV !== 'production') {
-        logger.log(`While responding to '${getFriendlyURL(request.url)}', ` +
-          `an ${error instanceof Error ? error.toString() : ''} error occurred. Using a fallback response provided by ` +
-          `a handlerDidError plugin.`);
+        logger.log(
+          `While responding to '${getFriendlyURL(request.url)}', ` +
+            `an ${
+              error instanceof Error ? error.toString() : ''
+            } error occurred. Using a fallback response provided by ` +
+            `a handlerDidError plugin.`,
+        );
       }
     }
 
@@ -208,7 +224,12 @@ abstract class Strategy implements RouteHandlerObject {
     return response;
   }
 
-  async _awaitComplete(responseDone: Promise<Response>, handler: StrategyHandler, request: Request, event: ExtendableEvent): Promise<void> {
+  async _awaitComplete(
+    responseDone: Promise<Response>,
+    handler: StrategyHandler,
+    request: Request,
+    event: ExtendableEvent,
+  ): Promise<void> {
     let response;
     let error;
 
@@ -231,7 +252,6 @@ abstract class Strategy implements RouteHandlerObject {
       if (waitUntilError instanceof Error) {
         error = waitUntilError;
       }
-
     }
 
     await handler.runCallbacks('handlerDidComplete', {
@@ -248,7 +268,7 @@ abstract class Strategy implements RouteHandlerObject {
   }
 }
 
-export {Strategy}
+export {Strategy};
 
 /**
  * Classes extending the `Strategy` based class should implement this method,

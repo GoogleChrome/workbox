@@ -56,7 +56,9 @@ export class QueueDb {
    */
   async addEntry(entry: UnidentifiedQueueStoreEntry): Promise<void> {
     const db = await this.getDb();
-    const tx = db.transaction(REQUEST_OBJECT_STORE_NAME, 'readwrite', { durability: 'relaxed' });
+    const tx = db.transaction(REQUEST_OBJECT_STORE_NAME, 'readwrite', {
+      durability: 'relaxed',
+    });
     await tx.store.add(entry as QueueStoreEntry);
     await tx.done;
   }
@@ -68,7 +70,9 @@ export class QueueDb {
    */
   async getFirstEntryId(): Promise<number | undefined> {
     const db = await this.getDb();
-    const cursor = await db.transaction(REQUEST_OBJECT_STORE_NAME).store.openCursor();
+    const cursor = await db
+      .transaction(REQUEST_OBJECT_STORE_NAME)
+      .store.openCursor();
     return cursor?.value.id;
   }
 
@@ -82,7 +86,11 @@ export class QueueDb {
     queueName: string,
   ): Promise<QueueStoreEntry[]> {
     const db = await this.getDb();
-    const results = await db.getAllFromIndex(REQUEST_OBJECT_STORE_NAME, QUEUE_NAME_INDEX, IDBKeyRange.only(queueName));
+    const results = await db.getAllFromIndex(
+      REQUEST_OBJECT_STORE_NAME,
+      QUEUE_NAME_INDEX,
+      IDBKeyRange.only(queueName),
+    );
     return results ? results : new Array<QueueStoreEntry>();
   }
 
@@ -92,11 +100,13 @@ export class QueueDb {
    * @param queueName
    * @return {Promise<number>}
    */
-  async getEntryCountByQueueName(
-      queueName: string,
-  ): Promise<number> {
+  async getEntryCountByQueueName(queueName: string): Promise<number> {
     const db = await this.getDb();
-    return db.countFromIndex(REQUEST_OBJECT_STORE_NAME, QUEUE_NAME_INDEX, IDBKeyRange.only(queueName));
+    return db.countFromIndex(
+      REQUEST_OBJECT_STORE_NAME,
+      QUEUE_NAME_INDEX,
+      IDBKeyRange.only(queueName),
+    );
   }
 
   /**
@@ -114,7 +124,9 @@ export class QueueDb {
    * @param queueName
    * @returns {Promise<QueueStoreEntry | undefined>}
    */
-  async getFirstEntryByQueueName(queueName: string): Promise<QueueStoreEntry | undefined> {
+  async getFirstEntryByQueueName(
+    queueName: string,
+  ): Promise<QueueStoreEntry | undefined> {
     return await this.getEndEntryFromIndex(IDBKeyRange.only(queueName), 'next');
   }
 
@@ -123,7 +135,9 @@ export class QueueDb {
    * @param queueName
    * @returns {Promise<QueueStoreEntry | undefined>}
    */
-  async getLastEntryByQueueName(queueName: string): Promise<QueueStoreEntry | undefined> {
+  async getLastEntryByQueueName(
+    queueName: string,
+  ): Promise<QueueStoreEntry | undefined> {
     return await this.getEndEntryFromIndex(IDBKeyRange.only(queueName), 'prev');
   }
 
@@ -142,7 +156,8 @@ export class QueueDb {
   ): Promise<QueueStoreEntry | undefined> {
     const db = await this.getDb();
 
-    const cursor = await db.transaction(REQUEST_OBJECT_STORE_NAME)
+    const cursor = await db
+      .transaction(REQUEST_OBJECT_STORE_NAME)
       .store.index(QUEUE_NAME_INDEX)
       .openCursor(query, direction);
     return cursor?.value;

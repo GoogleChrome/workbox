@@ -16,7 +16,6 @@ import {StrategyHandler} from './StrategyHandler.js';
 import {messages} from './utils/messages.js';
 import './_version.js';
 
-
 export interface NetworkFirstOptions extends StrategyOptions {
   networkTimeoutSeconds?: number;
 }
@@ -109,25 +108,34 @@ class NetworkFirst extends Strategy {
       promises.push(promise);
     }
 
-    const networkPromise =
-        this._getNetworkPromise({timeoutId, request, logs, handler});
+    const networkPromise = this._getNetworkPromise({
+      timeoutId,
+      request,
+      logs,
+      handler,
+    });
 
     promises.push(networkPromise);
 
-    const response = await handler.waitUntil((async () => {
-      // Promise.race() will resolve as soon as the first promise resolves.
-      return await handler.waitUntil(Promise.race(promises)) ||
+    const response = await handler.waitUntil(
+      (async () => {
+        // Promise.race() will resolve as soon as the first promise resolves.
+        return (
+          (await handler.waitUntil(Promise.race(promises))) ||
           // If Promise.race() resolved with null, it might be due to a network
           // timeout + a cache miss. If that were to happen, we'd rather wait until
           // the networkPromise resolves instead of returning null.
           // Note that it's fine to await an already-resolved promise, so we don't
           // have to check to see if it's still "in flight".
-          await networkPromise;
-    })());
+          (await networkPromise)
+        );
+      })(),
+    );
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
-          messages.strategyStart(this.constructor.name, request));
+        messages.strategyStart(this.constructor.name, request),
+      );
       for (const log of logs) {
         logger.log(log);
       }
@@ -150,25 +158,33 @@ class NetworkFirst extends Strategy {
    *
    * @private
    */
-  private _getTimeoutPromise({request, logs, handler}: {
+  private _getTimeoutPromise({
+    request,
+    logs,
+    handler,
+  }: {
     request: Request;
     logs: any[];
     handler: StrategyHandler;
   }): {promise: Promise<Response | undefined>; id?: number} {
     let timeoutId;
-    const timeoutPromise: Promise<Response | undefined> = new Promise((resolve) => {
-      const onNetworkTimeout = async () => {
-        if (process.env.NODE_ENV !== 'production') {
-          logs.push(`Timing out the network response at ` +
-            `${this._networkTimeoutSeconds} seconds.`);
-        }
-        resolve(await handler.cacheMatch(request));
-      };
-      timeoutId = setTimeout(
+    const timeoutPromise: Promise<Response | undefined> = new Promise(
+      (resolve) => {
+        const onNetworkTimeout = async () => {
+          if (process.env.NODE_ENV !== 'production') {
+            logs.push(
+              `Timing out the network response at ` +
+                `${this._networkTimeoutSeconds} seconds.`,
+            );
+          }
+          resolve(await handler.cacheMatch(request));
+        };
+        timeoutId = setTimeout(
           onNetworkTimeout,
           this._networkTimeoutSeconds * 1000,
-      );
-    });
+        );
+      },
+    );
 
     return {
       promise: timeoutPromise,
@@ -186,12 +202,17 @@ class NetworkFirst extends Strategy {
    *
    * @private
    */
-  async _getNetworkPromise({timeoutId, request, logs, handler}: {
+  async _getNetworkPromise({
+    timeoutId,
+    request,
+    logs,
+    handler,
+  }: {
     request: Request;
     logs: any[];
     timeoutId?: number;
     handler: StrategyHandler;
-  }): Promise<Response|undefined> {
+  }): Promise<Response | undefined> {
     let error;
     let response;
     try {
@@ -210,8 +231,10 @@ class NetworkFirst extends Strategy {
       if (response) {
         logs.push(`Got response from network.`);
       } else {
-        logs.push(`Unable to get a response from the network. Will respond ` +
-          `with a cached response.`);
+        logs.push(
+          `Unable to get a response from the network. Will respond ` +
+            `with a cached response.`,
+        );
       }
     }
 
@@ -220,8 +243,9 @@ class NetworkFirst extends Strategy {
 
       if (process.env.NODE_ENV !== 'production') {
         if (response) {
-          logs.push(`Found a cached response in the '${this.cacheName}'` +
-            ` cache.`);
+          logs.push(
+            `Found a cached response in the '${this.cacheName}'` + ` cache.`,
+          );
         } else {
           logs.push(`No response found in the '${this.cacheName}' cache.`);
         }

@@ -7,16 +7,20 @@
 */
 
 import {logger} from 'workbox-core/_private/logger.js';
-import {RouteHandlerCallback, RouteHandlerCallbackOptions} from 'workbox-core/types.js';
+import {
+  RouteHandlerCallback,
+  RouteHandlerCallbackOptions,
+} from 'workbox-core/types.js';
 import {createHeaders} from './utils/createHeaders.js';
 import {concatenateToResponse} from './concatenateToResponse.js';
 import {isSupported} from './isSupported.js';
 import {StreamSource} from './_types.js';
 import './_version.js';
 
-
 interface StreamsHandlerCallback {
-  ({url, request, event, params}: RouteHandlerCallbackOptions): Promise<StreamSource> | StreamSource;
+  ({url, request, event, params}: RouteHandlerCallbackOptions):
+    | Promise<StreamSource>
+    | StreamSource;
 }
 
 /**
@@ -46,8 +50,10 @@ function strategy(
     });
 
     if (isSupported()) {
-      const {done, response} =
-          concatenateToResponse(sourcePromises, headersInit);
+      const {done, response} = concatenateToResponse(
+        sourcePromises,
+        headersInit,
+      );
 
       if (event) {
         event.waitUntil(done);
@@ -56,8 +62,10 @@ function strategy(
     }
 
     if (process.env.NODE_ENV !== 'production') {
-      logger.log(`The current browser doesn't support creating response ` +
-        `streams. Falling back to non-streaming response instead.`);
+      logger.log(
+        `The current browser doesn't support creating response ` +
+          `streams. Falling back to non-streaming response instead.`,
+      );
     }
 
     // Fallback to waiting for everything to finish, and concatenating the
@@ -83,4 +91,4 @@ function strategy(
   };
 }
 
-export {strategy}
+export {strategy};

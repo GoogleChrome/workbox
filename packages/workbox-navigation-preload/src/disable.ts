@@ -10,7 +10,6 @@ import {logger} from 'workbox-core/_private/logger.js';
 import {isSupported} from './isSupported.js';
 import './_version.js';
 
-
 // Give TypeScript the correct global.
 declare let self: ServiceWorkerGlobalScope;
 
@@ -23,11 +22,11 @@ function disable(): void {
   if (isSupported()) {
     self.addEventListener('activate', (event: ExtendableEvent) => {
       event.waitUntil(
-          self.registration.navigationPreload.disable().then(() => {
-            if (process.env.NODE_ENV !== 'production') {
-              logger.log(`Navigation preload is disabled.`);
-            }
-          })
+        self.registration.navigationPreload.disable().then(() => {
+          if (process.env.NODE_ENV !== 'production') {
+            logger.log(`Navigation preload is disabled.`);
+          }
+        }),
       );
     });
   } else {

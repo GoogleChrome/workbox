@@ -31,7 +31,10 @@ export async function bundle({
   sourcemap,
   swDest,
   unbundledCode,
-}: Omit<GeneratePartial, 'runtimeCaching'> & RequiredSWDestPartial & {unbundledCode: string}): Promise<Array<NameAndContents>> {
+}: Omit<GeneratePartial, 'runtimeCaching'> &
+  RequiredSWDestPartial & {unbundledCode: string}): Promise<
+  Array<NameAndContents>
+> {
   // We need to write this to the "real" file system, as Rollup won't read from
   // a custom file system.
   const {dir, base} = upath.parse(swDest);
@@ -52,24 +55,31 @@ export async function bundle({
       // https://github.com/GoogleChrome/workbox/issues/2111
       babelrc: false,
       configFile: false,
-      presets: [[presetEnv, {
-        targets: {
-          browsers: babelPresetEnvTargets,
-        },
-        loose: true,
-      }]],
+      presets: [
+        [
+          presetEnv,
+          {
+            targets: {
+              browsers: babelPresetEnvTargets,
+            },
+            loose: true,
+          },
+        ],
+      ],
     }),
   ];
 
   if (mode === 'production') {
-    plugins.push(terser({
-      mangle: {
-        toplevel: true,
-        properties: {
-          regex: /(^_|_$)/,
+    plugins.push(
+      terser({
+        mangle: {
+          toplevel: true,
+          properties: {
+            regex: /(^_|_$)/,
+          },
         },
-      },
-    }));
+      }),
+    );
   }
 
   const rollupConfig: {
@@ -100,7 +110,7 @@ export async function bundle({
     format: inlineWorkboxRuntime ? 'es' : 'amd',
   });
 
-  const files: Array<NameAndContents>= [];
+  const files: Array<NameAndContents> = [];
   for (const chunkOrAsset of output) {
     if (chunkOrAsset.type === 'asset') {
       files.push({

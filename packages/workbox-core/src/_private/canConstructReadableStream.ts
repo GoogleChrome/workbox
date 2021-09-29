@@ -8,7 +8,6 @@
 
 import '../_version.js';
 
-
 let supportStatus: boolean | undefined;
 
 /**

@@ -9,7 +9,6 @@
 import {WorkboxPlugin} from 'workbox-core/types.js';
 import '../_version.js';
 
-
 export const cacheOkAndOpaquePlugin: WorkboxPlugin = {
   /**
    * Returns a valid response (to allow caching) if the status is 200 (OK) or

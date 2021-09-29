@@ -9,7 +9,6 @@
 import {WorkboxPlugin} from '../types.js';
 import '../_version.js';
 
-
 export const pluginUtils = {
   filter: (plugins: WorkboxPlugin[], callbackName: string): WorkboxPlugin[] => {
     return plugins.filter((plugin) => callbackName in plugin);

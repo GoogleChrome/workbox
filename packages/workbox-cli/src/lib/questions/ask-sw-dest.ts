@@ -20,12 +20,14 @@ const name = 'swDest';
  * @return {Promise<Answers>} The answers from inquirer.
  */
 function askQuestion(defaultDir: string): Promise<Answers> {
-  return prompt([{
-    name,
-    message: `Where would you like your service worker file to be saved?`,
-    type: 'input',
-    default: upath.join(defaultDir, 'sw.js'),
-  }]);
+  return prompt([
+    {
+      name,
+      message: `Where would you like your service worker file to be saved?`,
+      type: 'input',
+      default: upath.join(defaultDir, 'sw.js'),
+    },
+  ]);
 }
 
 export async function askSWDest(defaultDir = '.'): Promise<string> {

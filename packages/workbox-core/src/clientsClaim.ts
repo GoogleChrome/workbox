@@ -8,7 +8,6 @@
 
 import './_version.js';
 
-
 // Give TypeScript the correct global.
 declare let self: ServiceWorkerGlobalScope;
 
@@ -22,4 +21,4 @@ function clientsClaim(): void {
   self.addEventListener('activate', () => self.clients.claim());
 }
 
-export {clientsClaim}
+export {clientsClaim};

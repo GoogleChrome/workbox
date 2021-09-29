@@ -6,7 +6,12 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {BasePartial, FileDetails, ManifestEntry, ManifestTransform} from '../types';
+import {
+  BasePartial,
+  FileDetails,
+  ManifestEntry,
+  ManifestTransform,
+} from '../types';
 import {additionalManifestEntriesTransform} from './additional-manifest-entries-transform';
 import {errors} from './errors';
 import {maximumSizeTransform} from './maximum-size-transform';
@@ -84,7 +89,7 @@ export async function transformManifest({
   // When this is called by the webpack plugin, transformParam will be the
   // current webpack compilation.
   transformParam?: unknown;
-  }): Promise<ManifestTransformResultWithWarnings> {
+}): Promise<ManifestTransformResultWithWarnings> {
   const allWarnings: Array<string> = [];
 
   // Take the array of fileDetail objects and convert it into an array of
@@ -109,7 +114,8 @@ export async function transformManifest({
 
   if (dontCacheBustURLsMatching) {
     transformsToApply.push(
-        noRevisionForURLsMatchingTransform(dontCacheBustURLsMatching));
+      noRevisionForURLsMatchingTransform(dontCacheBustURLsMatching),
+    );
   }
 
   // Run any manifestTransforms functions second-to-last.
@@ -120,10 +126,12 @@ export async function transformManifest({
   // Run additionalManifestEntriesTransform last.
   if (additionalManifestEntries) {
     transformsToApply.push(
-        additionalManifestEntriesTransform(additionalManifestEntries));
+      additionalManifestEntriesTransform(additionalManifestEntries),
+    );
   }
 
-  let transformedManifest: Array<ManifestEntry & {size: number}> = normalizedManifest;
+  let transformedManifest: Array<ManifestEntry & {size: number}> =
+    normalizedManifest;
   for (const transform of transformsToApply) {
     const result = await transform(transformedManifest, transformParam);
     if (!('manifest' in result)) {
@@ -138,7 +146,9 @@ export async function transformManifest({
   // properties from each entry.
   const count = transformedManifest.length;
   let size = 0;
-  for (const manifestEntry of transformedManifest as Array<ManifestEntry & {size?: number}>) {
+  for (const manifestEntry of transformedManifest as Array<
+    ManifestEntry & {size?: number}
+  >) {
     size += manifestEntry.size || 0;
     delete manifestEntry.size;
   }

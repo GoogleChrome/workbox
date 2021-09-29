@@ -16,7 +16,6 @@ import {setDefaultHandler} from './setDefaultHandler.js';
 
 import './_version.js';
 
-
 /**
  * @module workbox-routing
  */

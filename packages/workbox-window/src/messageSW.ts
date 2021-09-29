@@ -8,7 +8,6 @@
 
 import './_version.js';
 
-
 /**
  * Sends a data object to a service worker via `postMessage` and resolves with
  * a response (if any).
@@ -35,4 +34,4 @@ function messageSW(sw: ServiceWorker, data: {}): Promise<any> {
   });
 }
 
-export {messageSW}
+export {messageSW};
