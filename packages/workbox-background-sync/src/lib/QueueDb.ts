@@ -87,6 +87,19 @@ export class QueueDb {
   }
 
   /**
+   * Returns the number of entries filtered by index
+   *
+   * @param queueName
+   * @return {Promise<number>}
+   */
+  async getEntryCountByQueueName(
+      queueName: string,
+  ): Promise<number> {
+    const db = await this.getDb();
+    return db.countFromIndex(REQUEST_OBJECT_STORE_NAME, QUEUE_NAME_INDEX, IDBKeyRange.only(queueName));
+  }
+
+  /**
    * Deletes a single entry by id.
    *
    * @param {number} id the id of the entry to be deleted

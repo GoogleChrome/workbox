@@ -243,6 +243,16 @@ class Queue {
   }
 
   /**
+   * Returns the number of entries present in the queue.
+   * Note that expired entries (per `maxRetentionTime`) are also included in this count.
+   *
+   * @return {Promise<number>}
+   */
+  async size(): Promise<number> {
+    return await this._queueStore.size();
+  }
+
+  /**
    * Adds the entry to the QueueStore and registers for a sync event.
    *
    * @param {Object} entry

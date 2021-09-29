@@ -135,6 +135,17 @@ export class QueueStore {
   }
 
   /**
+   * Returns the number of entries in the store matching the `queueName`.
+   *
+   * @param {Object} options See {@link module:workbox-background-sync.Queue~size}
+   * @return {Promise<number>}
+   * @private
+   */
+  async size(): Promise<number> {
+    return await this._queueDb.getEntryCountByQueueName(this._queueName);
+  }
+
+  /**
    * Deletes the entry for the given ID.
    *
    * WARNING: this method does not ensure the deleted entry belongs to this
