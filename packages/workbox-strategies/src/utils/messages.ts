@@ -16,7 +16,7 @@ export const messages = {
   printFinalResponse: (response?: Response): void => {
     if (response) {
       logger.groupCollapsed(`View the final response here.`);
-      logger.log(response || '[No response returned]');
+      logger.log(response ||       '[No response returned]');
       logger.groupEnd();
     }
   },
