@@ -63,5 +63,8 @@
   "workbox": {
     "packageType": "node_ts"
   },
-  "types": "build/index.d.ts"
+  "types": "build/index.d.ts",
+  "devDependencies": {
+    "@types/node": "^16.10.2"
+  }
 }

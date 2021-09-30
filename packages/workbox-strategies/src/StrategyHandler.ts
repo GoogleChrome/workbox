@@ -155,9 +155,7 @@ class StrategyHandler {
       event instanceof FetchEvent &&
       event.preloadResponse
     ) {
-      const possiblePreloadResponse = (await event.preloadResponse) as
-        | Response
-        | undefined;
+      const possiblePreloadResponse = await event.preloadResponse;
       if (possiblePreloadResponse) {
         if (process.env.NODE_ENV !== 'production') {
           logger.log(

@@ -21,7 +21,9 @@ import './_version.js';
  * @return {ReadableStreamReader}
  * @private
  */
-function _getReaderFromSource(source: StreamSource): ReadableStreamReader {
+function _getReaderFromSource(
+  source: StreamSource,
+): ReadableStreamReader<unknown> {
   if (source instanceof Response) {
     return source.body!.getReader();
   }

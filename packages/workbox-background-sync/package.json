@@ -24,7 +24,7 @@
   "module": "index.mjs",
   "types": "index.d.ts",
   "dependencies": {
-    "idb": "^6.0.0",
+    "idb": "^6.1.4",
     "workbox-core": "6.3.0"
   }
 }
