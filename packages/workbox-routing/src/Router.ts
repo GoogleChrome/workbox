@@ -111,9 +111,10 @@ class Router {
     // See https://github.com/Microsoft/TypeScript/issues/28357#issuecomment-436484705
     self.addEventListener('message', ((event: ExtendableMessageEvent) => {
       // event.data is type 'any'
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       if (event.data && event.data.type === 'CACHE_URLS') {
-        // eslint-disable-line
-        const {payload}: CacheURLsMessageData = event.data; // eslint-disable-line
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const {payload}: CacheURLsMessageData = event.data;
 
         if (process.env.NODE_ENV !== 'production') {
           logger.debug(`Caching URLs from the window`, payload.urlsToCache);

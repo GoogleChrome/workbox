@@ -143,10 +143,10 @@ function getOptionsString(
       }
 
       default: {
-        // In the default case optionName is typed as 'never'.
-        //eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         throw new Error(
-          `${errors['bad-runtime-caching-config']}  ${optionName}`,
+          // In the default case optionName is typed as 'never'.
+          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+          `${errors['bad-runtime-caching-config']} ${optionName}`,
         );
       }
     }
