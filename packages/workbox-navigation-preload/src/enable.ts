@@ -10,7 +10,6 @@ import {logger} from 'workbox-core/_private/logger.js';
 import {isSupported} from './isSupported.js';
 import './_version.js';
 
-
 // Give TypeScript the correct global.
 declare let self: ServiceWorkerGlobalScope;
 
@@ -28,16 +27,18 @@ function enable(headerValue?: string): void {
   if (isSupported()) {
     self.addEventListener('activate', (event: ExtendableEvent) => {
       event.waitUntil(
-          self.registration.navigationPreload.enable().then(() => {
+        self.registration.navigationPreload.enable().then(() => {
           // Defaults to Service-Worker-Navigation-Preload: true if not set.
-            if (headerValue) {
-              void self.registration.navigationPreload.setHeaderValue(headerValue);
-            }
+          if (headerValue) {
+            void self.registration.navigationPreload.setHeaderValue(
+              headerValue,
+            );
+          }
 
-            if (process.env.NODE_ENV !== 'production') {
-              logger.log(`Navigation preload is enabled.`);
-            }
-          })
+          if (process.env.NODE_ENV !== 'production') {
+            logger.log(`Navigation preload is enabled.`);
+          }
+        }),
       );
     });
   } else {

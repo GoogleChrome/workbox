@@ -9,7 +9,6 @@
 import {openDB, DBSchema, IDBPDatabase, deleteDB} from 'idb';
 import '../_version.js';
 
-
 const DB_NAME = 'workbox-expiration';
 const CACHE_OBJECT_STORE = 'cache-entries';
 
@@ -19,7 +18,6 @@ const normalizeURL = (unNormalizedUrl: string) => {
 
   return url.href;
 };
-
 
 interface CacheTimestampsModelEntry {
   id: string;
@@ -53,7 +51,6 @@ class CacheTimestampsModel {
    */
   constructor(cacheName: string) {
     this._cacheName = cacheName;
-
   }
 
   /**
@@ -75,7 +72,6 @@ class CacheTimestampsModel {
     // instead of doing both these indexes.
     objStore.createIndex('cacheName', 'cacheName', {unique: false});
     objStore.createIndex('timestamp', 'timestamp', {unique: false});
-
   }
 
   /**
@@ -111,7 +107,9 @@ class CacheTimestampsModel {
       id: this._getId(url),
     };
     const db = await this.getDb();
-    const tx = db.transaction(CACHE_OBJECT_STORE, 'readwrite', {durability: 'relaxed'});
+    const tx = db.transaction(CACHE_OBJECT_STORE, 'readwrite', {
+      durability: 'relaxed',
+    });
     await tx.store.put(entry);
     await tx.done;
   }
@@ -141,9 +139,15 @@ class CacheTimestampsModel {
    *
    * @private
    */
-  async expireEntries(minTimestamp: number, maxCount?: number): Promise<string[]> {
+  async expireEntries(
+    minTimestamp: number,
+    maxCount?: number,
+  ): Promise<string[]> {
     const db = await this.getDb();
-    let cursor = await db.transaction(CACHE_OBJECT_STORE).store.index('timestamp').openCursor(null, 'prev')
+    let cursor = await db
+      .transaction(CACHE_OBJECT_STORE)
+      .store.index('timestamp')
+      .openCursor(null, 'prev');
     const entriesToDelete: CacheTimestampsModelEntry[] = [];
     let entriesNotDeletedCount = 0;
     while (cursor) {
@@ -153,8 +157,10 @@ class CacheTimestampsModel {
       if (result.cacheName === this._cacheName) {
         // Delete an entry if it's older than the max age or
         // if we already have the max number allowed.
-        if ((minTimestamp && result.timestamp < minTimestamp) ||
-          (maxCount && entriesNotDeletedCount >= maxCount)) {
+        if (
+          (minTimestamp && result.timestamp < minTimestamp) ||
+          (maxCount && entriesNotDeletedCount >= maxCount)
+        ) {
           // TODO(philipwalton): we should be able to delete the
           // entry right here, but doing so causes an iteration
           // bug in Safari stable (fixed in TP). Instead we can
@@ -171,7 +177,6 @@ class CacheTimestampsModel {
       }
       cursor = await cursor.continue();
     }
-
 
     // TODO(philipwalton): once the Safari bug in the following issue is fixed,
     // we should be able to remove this loop and do the entry deletion in the
@@ -202,10 +207,10 @@ class CacheTimestampsModel {
   }
 
   /**
-    * Returns an open connection to the database.
-    *
-    * @private
-    */
+   * Returns an open connection to the database.
+   *
+   * @private
+   */
   private async getDb() {
     if (!this._db) {
       this._db = await openDB(DB_NAME, 1, {

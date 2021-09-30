@@ -8,7 +8,6 @@
 
 import '../_version.js';
 
-
 // Give TypeScript the correct global.
 declare let self: ServiceWorkerGlobalScope;
 
@@ -33,21 +32,24 @@ const SUBSTRING_TO_FIND = '-precache-';
  * @memberof module:workbox-precaching
  */
 const deleteOutdatedCaches = async (
-    currentPrecacheName: string,
-  substringToFind: string = SUBSTRING_TO_FIND): Promise<string[]> => {
+  currentPrecacheName: string,
+  substringToFind: string = SUBSTRING_TO_FIND,
+): Promise<string[]> => {
   const cacheNames = await self.caches.keys();
 
   const cacheNamesToDelete = cacheNames.filter((cacheName) => {
-    return cacheName.includes(substringToFind) &&
-        cacheName.includes(self.registration.scope) &&
-        cacheName !== currentPrecacheName;
+    return (
+      cacheName.includes(substringToFind) &&
+      cacheName.includes(self.registration.scope) &&
+      cacheName !== currentPrecacheName
+    );
   });
 
   await Promise.all(
-      cacheNamesToDelete.map((cacheName) => self.caches.delete(cacheName)));
+    cacheNamesToDelete.map((cacheName) => self.caches.delete(cacheName)),
+  );
 
   return cacheNamesToDelete;
 };
 
 export {deleteOutdatedCaches};
-

@@ -10,7 +10,6 @@ import {getOrCreatePrecacheController} from './utils/getOrCreatePrecacheControll
 import {PrecacheEntry} from './_types.js';
 import './_version.js';
 
-
 /**
  * Adds items to the precache list, removing any duplicates and
  * stores the files in the
@@ -35,4 +34,4 @@ function precache(entries: Array<PrecacheEntry | string>): void {
   precacheController.precache(entries);
 }
 
-export {precache}
+export {precache};

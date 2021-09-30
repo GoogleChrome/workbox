@@ -7,7 +7,10 @@
 */
 
 import {WorkboxPlugin} from 'workbox-core/types.js';
-import {CacheableResponse, CacheableResponseOptions} from './CacheableResponse.js';
+import {
+  CacheableResponse,
+  CacheableResponseOptions,
+} from './CacheableResponse.js';
 import './_version.js';
 
 /**
@@ -49,7 +52,7 @@ class CacheableResponsePlugin implements WorkboxPlugin {
       return response;
     }
     return null;
-  }
+  };
 }
 
 export {CacheableResponsePlugin};

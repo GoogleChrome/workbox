@@ -23,7 +23,7 @@ interface OnSyncCallbackOptions {
 }
 
 interface OnSyncCallback {
-  (options: OnSyncCallbackOptions): void|Promise<void>;
+  (options: OnSyncCallbackOptions): void | Promise<void>;
 }
 
 export interface QueueOptions {
@@ -54,7 +54,9 @@ const queueNames = new Set<string>();
  * @return {Queue}
  * @private
  */
-const convertEntry = (queueStoreEntry: UnidentifiedQueueStoreEntry): QueueEntry => {
+const convertEntry = (
+  queueStoreEntry: UnidentifiedQueueStoreEntry,
+): QueueEntry => {
   const queueEntry: QueueEntry = {
     request: new StorableRequest(queueStoreEntry.requestData).toRequest(),
     timestamp: queueStoreEntry.timestamp,
@@ -99,10 +101,7 @@ class Queue {
    *     minutes) a request may be retried. After this amount of time has
    *     passed, the request will be deleted from the queue.
    */
-  constructor(name: string, {
-    onSync,
-    maxRetentionTime
-  }: QueueOptions = {}) {
+  constructor(name: string, {onSync, maxRetentionTime}: QueueOptions = {}) {
     // Ensure the store name is not already being used
     if (queueNames.has(name)) {
       throw new WorkboxError('duplicate-queue-name', {name});
@@ -262,11 +261,10 @@ class Queue {
    * @param {string} operation ('push' or 'unshift')
    * @private
    */
-  async _addRequest({
-    request,
-    metadata,
-    timestamp = Date.now(),
-  }: QueueEntry, operation: 'push' | 'unshift'): Promise<void> {
+  async _addRequest(
+    {request, metadata, timestamp = Date.now()}: QueueEntry,
+    operation: 'push' | 'unshift',
+  ): Promise<void> {
     const storableRequest = await StorableRequest.fromRequest(request.clone());
     const entry: UnidentifiedQueueStoreEntry = {
       requestData: storableRequest.toObject(),
@@ -278,12 +276,15 @@ class Queue {
       entry.metadata = metadata;
     }
 
-    await this._queueStore[
-        `${operation}Entry` as 'pushEntry' | 'unshiftEntry'](entry);
+    await this._queueStore[`${operation}Entry` as 'pushEntry' | 'unshiftEntry'](
+      entry,
+    );
 
     if (process.env.NODE_ENV !== 'production') {
-      logger.log(`Request for '${getFriendlyURL(request.url)}' has ` +
-          `been added to background sync queue '${this._name}'.`);
+      logger.log(
+        `Request for '${getFriendlyURL(request.url)}' has ` +
+          `been added to background sync queue '${this._name}'.`,
+      );
     }
 
     // Don't register for a sync if we're in the middle of a sync. Instead,
@@ -304,10 +305,13 @@ class Queue {
    * @return {Object|undefined}
    * @private
    */
-  async _removeRequest(operation: 'pop' | 'shift'): Promise<QueueEntry | undefined> {
+  async _removeRequest(
+    operation: 'pop' | 'shift',
+  ): Promise<QueueEntry | undefined> {
     const now = Date.now();
     const entry = await this._queueStore[
-        `${operation}Entry` as 'popEntry' | 'shiftEntry']();
+      `${operation}Entry` as 'popEntry' | 'shiftEntry'
+    ]();
 
     if (entry) {
       // Ignore requests older than maxRetentionTime. Call this function
@@ -335,22 +339,28 @@ class Queue {
         await fetch(entry.request.clone());
 
         if (process.env.NODE_ENV !== 'production') {
-          logger.log(`Request for '${getFriendlyURL(entry.request.url)}' ` +
-             `has been replayed in queue '${this._name}'`);
+          logger.log(
+            `Request for '${getFriendlyURL(entry.request.url)}' ` +
+              `has been replayed in queue '${this._name}'`,
+          );
         }
       } catch (error) {
         await this.unshiftRequest(entry);
 
         if (process.env.NODE_ENV !== 'production') {
-          logger.log(`Request for '${getFriendlyURL(entry.request.url)}' ` +
-             `failed to replay, putting it back in queue '${this._name}'`);
+          logger.log(
+            `Request for '${getFriendlyURL(entry.request.url)}' ` +
+              `failed to replay, putting it back in queue '${this._name}'`,
+          );
         }
         throw new WorkboxError('queue-replay-failed', {name: this._name});
       }
     }
     if (process.env.NODE_ENV !== 'production') {
-      logger.log(`All requests in queue '${this.name}' have successfully ` +
-          `replayed; the queue is now empty!`);
+      logger.log(
+        `All requests in queue '${this.name}' have successfully ` +
+          `replayed; the queue is now empty!`,
+      );
     }
   }
 
@@ -366,7 +376,9 @@ class Queue {
         // the user disabling it.
         if (process.env.NODE_ENV !== 'production') {
           logger.warn(
-              `Unable to register sync event for '${this._name}'.`, err);
+            `Unable to register sync event for '${this._name}'.`,
+            err,
+          );
         }
       }
     }
@@ -384,8 +396,9 @@ class Queue {
       self.addEventListener('sync', (event: SyncEvent) => {
         if (event.tag === `${TAG_PREFIX}:${this._name}`) {
           if (process.env.NODE_ENV !== 'production') {
-            logger.log(`Background sync for tag '${event.tag}' ` +
-                `has been received`);
+            logger.log(
+              `Background sync for tag '${event.tag}' ` + `has been received`,
+            );
           }
 
           const syncComplete = async () => {
@@ -408,8 +421,10 @@ class Queue {
               // Unless there was an error during the sync, in which
               // case the browser will automatically retry later, as long
               // as `event.lastChance` is not true.
-              if (this._requestsAddedDuringSync &&
-                  !(syncError && !event.lastChance)) {
+              if (
+                this._requestsAddedDuringSync &&
+                !(syncError && !event.lastChance)
+              ) {
                 await this.registerSync();
               }
 

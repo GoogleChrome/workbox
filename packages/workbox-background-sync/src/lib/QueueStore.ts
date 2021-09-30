@@ -8,7 +8,11 @@
 
 import {assert} from 'workbox-core/_private/assert.js';
 import '../_version.js';
-import {UnidentifiedQueueStoreEntry, QueueStoreEntry, QueueDb} from './QueueDb.js';
+import {
+  UnidentifiedQueueStoreEntry,
+  QueueStoreEntry,
+  QueueDb,
+} from './QueueDb.js';
 
 /**
  * A class to manage storing requests from a Queue in IndexedDB,
@@ -110,7 +114,9 @@ export class QueueStore {
    * @private
    */
   async popEntry(): Promise<QueueStoreEntry | undefined> {
-    return this._removeEntry(await this._queueDb.getLastEntryByQueueName(this._queueName));
+    return this._removeEntry(
+      await this._queueDb.getLastEntryByQueueName(this._queueName),
+    );
   }
 
   /**
@@ -120,7 +126,9 @@ export class QueueStore {
    * @private
    */
   async shiftEntry(): Promise<QueueStoreEntry | undefined> {
-    return this._removeEntry(await this._queueDb.getFirstEntryByQueueName(this._queueName));
+    return this._removeEntry(
+      await this._queueDb.getFirstEntryByQueueName(this._queueName),
+    );
   }
 
   /**
@@ -167,7 +175,9 @@ export class QueueStore {
    * @return {Promise<QueueStoreEntry|undefined>}
    * @private
    */
-  async _removeEntry(entry?: QueueStoreEntry): Promise<QueueStoreEntry | undefined> {
+  async _removeEntry(
+    entry?: QueueStoreEntry,
+  ): Promise<QueueStoreEntry | undefined> {
     if (entry) {
       await this.deleteEntry(entry.id);
     }

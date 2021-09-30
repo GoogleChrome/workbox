@@ -8,8 +8,7 @@
 
 import '../_version.js';
 
-
-declare let registration: ServiceWorkerRegistration|undefined;
+declare let registration: ServiceWorkerRegistration | undefined;
 
 export interface CacheNameDetails {
   googleAnalytics: string;
@@ -24,8 +23,11 @@ export interface PartialCacheNameDetails {
 }
 
 export type CacheNameDetailsProp =
-    'googleAnalytics' | 'precache' | 'prefix' | 'runtime' | 'suffix';
-
+  | 'googleAnalytics'
+  | 'precache'
+  | 'prefix'
+  | 'runtime'
+  | 'suffix';
 
 const _cacheNameDetails: CacheNameDetails = {
   googleAnalytics: 'googleAnalytics',
@@ -37,15 +39,15 @@ const _cacheNameDetails: CacheNameDetails = {
 
 const _createCacheName = (cacheName: string): string => {
   return [_cacheNameDetails.prefix, cacheName, _cacheNameDetails.suffix]
-      .filter((value) => value && value.length > 0)
-      .join('-');
+    .filter((value) => value && value.length > 0)
+    .join('-');
 };
 
 const eachCacheNameDetail = (fn: (key: CacheNameDetailsProp) => void): void => {
   for (const key of Object.keys(_cacheNameDetails)) {
     fn(key as CacheNameDetailsProp);
   }
-}
+};
 
 export const cacheNames = {
   updateDetails: (details: PartialCacheNameDetails): void => {
@@ -53,7 +55,7 @@ export const cacheNames = {
       if (typeof details[key] === 'string') {
         _cacheNameDetails[key] = details[key];
       }
-    })
+    });
   },
   getGoogleAnalyticsName: (userCacheName?: string): string => {
     return userCacheName || _createCacheName(_cacheNameDetails.googleAnalytics);

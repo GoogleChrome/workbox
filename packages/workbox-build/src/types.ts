@@ -15,7 +15,12 @@ export interface ManifestEntry {
   url: string;
 }
 
-type StrategyName = 'CacheFirst' | 'CacheOnly' | 'NetworkFirst' | 'NetworkOnly' | 'StaleWhileRevalidate';
+type StrategyName =
+  | 'CacheFirst'
+  | 'CacheOnly'
+  | 'NetworkFirst'
+  | 'NetworkOnly'
+  | 'StaleWhileRevalidate';
 
 export interface RuntimeCaching {
   handler: RouteHandler | StrategyName;
@@ -53,7 +58,7 @@ export interface ManifestTransformResult {
 
 export type ManifestTransform = (
   manifestEntries: Array<ManifestEntry & {size: number}>,
-  compilation?: unknown
+  compilation?: unknown,
 ) => Promise<ManifestTransformResult> | ManifestTransformResult;
 
 export interface BasePartial {
@@ -204,20 +209,31 @@ interface WebpackInjectManifestPartial {
   webpackCompilationPlugins?: Array<any>;
 }
 
-export type GenerateSWOptions = BasePartial & GlobPartial & GeneratePartial &
-  RequiredSWDestPartial & OptionalGlobDirectoryPartial
+export type GenerateSWOptions = BasePartial &
+  GlobPartial &
+  GeneratePartial &
+  RequiredSWDestPartial &
+  OptionalGlobDirectoryPartial;
 
-export type GetManifestOptions = BasePartial & GlobPartial &
+export type GetManifestOptions = BasePartial &
+  GlobPartial &
   RequiredGlobDirectoryPartial;
 
-export type InjectManifestOptions = BasePartial & GlobPartial & InjectPartial &
-  RequiredSWDestPartial & RequiredGlobDirectoryPartial;
+export type InjectManifestOptions = BasePartial &
+  GlobPartial &
+  InjectPartial &
+  RequiredSWDestPartial &
+  RequiredGlobDirectoryPartial;
 
-export type WebpackGenerateSWOptions = BasePartial & WebpackPartial &
-  GeneratePartial & WebpackGenerateSWPartial;
+export type WebpackGenerateSWOptions = BasePartial &
+  WebpackPartial &
+  GeneratePartial &
+  WebpackGenerateSWPartial;
 
-export type WebpackInjectManifestOptions = BasePartial & WebpackPartial &
-  InjectPartial & WebpackInjectManifestPartial;
+export type WebpackInjectManifestOptions = BasePartial &
+  WebpackPartial &
+  InjectPartial &
+  WebpackInjectManifestPartial;
 
 export interface GetManifestResult {
   count: number;

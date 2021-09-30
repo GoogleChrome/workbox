@@ -35,13 +35,17 @@ export async function writeSWUsingDefaultTemplate({
   skipWaiting,
   sourcemap,
   swDest,
-}: GenerateSWOptions & {manifestEntries: Array<ManifestEntry>}): Promise<Array<string>> {
+}: GenerateSWOptions & {manifestEntries: Array<ManifestEntry>}): Promise<
+  Array<string>
+> {
   const outputDir = upath.dirname(swDest);
   try {
     await fse.mkdirp(outputDir);
   } catch (error) {
-    throw new Error(`${errors['unable-to-make-sw-directory']}. ` +
-      `'${error instanceof Error && error.message ? error.message : ''}'`);
+    throw new Error(
+      `${errors['unable-to-make-sw-directory']}. ` +
+        `'${error instanceof Error && error.message ? error.message : ''}'`,
+    );
   }
 
   const unbundledCode = populateSWTemplate({
@@ -88,6 +92,10 @@ export async function writeSWUsingDefaultTemplate({
       // See https://github.com/GoogleChrome/workbox/issues/612
       throw new Error(errors['sw-write-failure-directory']);
     }
-    throw new Error(`${errors['sw-write-failure']} '${error instanceof Error && error.message ? error.message : ''}'`);
+    throw new Error(
+      `${errors['sw-write-failure']} '${
+        error instanceof Error && error.message ? error.message : ''
+      }'`,
+    );
   }
 }

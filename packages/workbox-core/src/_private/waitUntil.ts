@@ -7,7 +7,6 @@
 
 import '../_version.js';
 
-
 /**
  * A utility method that makes it easier to use `event.waitUntil` with
  * async functions and return the result.
@@ -17,7 +16,10 @@ import '../_version.js';
  * @return {Function}
  * @private
  */
-function waitUntil(event: ExtendableEvent, asyncFn: () => Promise<any>): Promise<any> {
+function waitUntil(
+  event: ExtendableEvent,
+  asyncFn: () => Promise<any>,
+): Promise<any> {
   const returnPromise = asyncFn();
   event.waitUntil(returnPromise);
   return returnPromise;

@@ -15,7 +15,6 @@ import {StrategyHandler} from './StrategyHandler.js';
 import {messages} from './utils/messages.js';
 import './_version.js';
 
-
 /**
  * An implementation of a
  * [cache-only]{@link https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#cache-only}
@@ -51,10 +50,12 @@ class CacheOnly extends Strategy {
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
-          messages.strategyStart(this.constructor.name, request));
+        messages.strategyStart(this.constructor.name, request),
+      );
       if (response) {
-        logger.log(`Found a cached response in the '${this.cacheName}' ` +
-          `cache.`);
+        logger.log(
+          `Found a cached response in the '${this.cacheName}' ` + `cache.`,
+        );
         messages.printFinalResponse(response);
       } else {
         logger.log(`No response found in the '${this.cacheName}' cache.`);

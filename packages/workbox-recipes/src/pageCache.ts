@@ -9,7 +9,11 @@ import {warmStrategyCache} from './warmStrategyCache';
 import {registerRoute} from 'workbox-routing/registerRoute.js';
 import {NetworkFirst} from 'workbox-strategies/NetworkFirst.js';
 import {CacheableResponsePlugin} from 'workbox-cacheable-response/CacheableResponsePlugin.js';
-import {RouteMatchCallback, RouteMatchCallbackOptions, WorkboxPlugin} from 'workbox-core/types.js';
+import {
+  RouteMatchCallback,
+  RouteMatchCallbackOptions,
+  WorkboxPlugin,
+} from 'workbox-core/types.js';
 
 import './_version.js';
 
@@ -34,15 +38,18 @@ export interface ImageCacheOptions {
  * @param {string[]} [options.warmCache] Paths to call to use to warm this cache
  */
 function pageCache(options: ImageCacheOptions = {}): void {
-  const defaultMatchCallback = ({request}: RouteMatchCallbackOptions) => request.mode === 'navigate';
+  const defaultMatchCallback = ({request}: RouteMatchCallbackOptions) =>
+    request.mode === 'navigate';
 
   const cacheName = options.cacheName || 'pages';
   const matchCallback = options.matchCallback || defaultMatchCallback;
   const networkTimeoutSeconds = options.networkTimeoutSeconds || 3;
-  const plugins = (options.plugins || []);
-  plugins.push(new CacheableResponsePlugin({
-    statuses: [0, 200],
-  }));
+  const plugins = options.plugins || [];
+  plugins.push(
+    new CacheableResponsePlugin({
+      statuses: [0, 200],
+    }),
+  );
 
   const strategy = new NetworkFirst({
     networkTimeoutSeconds,
@@ -50,12 +57,8 @@ function pageCache(options: ImageCacheOptions = {}): void {
     plugins,
   });
 
-
   // Registers the route
-  registerRoute(
-    matchCallback,
-    strategy
-  );
+  registerRoute(matchCallback, strategy);
 
   // Warms the cache
   if (options.warmCache) {
@@ -63,4 +66,4 @@ function pageCache(options: ImageCacheOptions = {}): void {
   }
 }
 
-export { pageCache }
+export {pageCache};

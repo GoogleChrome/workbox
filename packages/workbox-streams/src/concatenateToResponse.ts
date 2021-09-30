@@ -11,7 +11,6 @@ import {concatenate} from './concatenate.js';
 import {StreamSource} from './_types.js';
 import './_version.js';
 
-
 /**
  * Takes multiple source Promises, each of which could resolve to a Response, a
  * ReadableStream, or a [BodyInit](https://fetch.spec.whatwg.org/#bodyinit),
@@ -30,8 +29,9 @@ import './_version.js';
  * @memberof module:workbox-streams
  */
 function concatenateToResponse(
-    sourcePromises: Promise<StreamSource>[],
-    headersInit: HeadersInit): {done: Promise<void>; response: Response} {
+  sourcePromises: Promise<StreamSource>[],
+  headersInit: HeadersInit,
+): {done: Promise<void>; response: Response} {
   const {done, stream} = concatenate(sourcePromises);
 
   const headers = createHeaders(headersInit);

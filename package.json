@@ -1,44 +1,9 @@
 {
-  "name": "workbox",
-  "engines": {
-    "node": ">=10.0.0"
-  },
-  "scripts": {
-    "version": "gulp build && git add -A packages",
-    "gulp": "gulp",
-    "build": "gulp build",
-    "lint": "gulp lint",
-    "test_server": "gulp test_server",
-    "test_node": "gulp test_node",
-    "test_integration": "gulp test_integration",
-    "prepare": "husky install",
-    "format-staged": "git-format-staged -f 'prettier --ignore-unknown --stdin --stdin-filepath \"{}\"' ."
-  },
-  "nyc": {
-    "include": [
-      "packages/**/*"
-    ],
-    "extension": [
-      ".mjs",
-      ".js"
-    ],
-    "exclude": [
-      "packages/workbox-core/models/messages/messages.mjs"
-    ]
-  },
-  "version": "0.0.0",
-  "description": "Top-level scripts and dependencies for the workbox monorepo. Not meant to be published to npm.",
-  "private": true,
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/GoogleChrome/workbox.git"
-  },
   "author": "Google's Web DevRel Team",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/GoogleChrome/workbox/issues"
   },
-  "homepage": "https://github.com/GoogleChrome/workbox#readme",
+  "description": "Top-level scripts and dependencies for the workbox monorepo. Not meant to be published to npm.",
   "devDependencies": {
     "@babel/cli": "^7.10.5",
     "@babel/core": "^7.11.1",
@@ -83,7 +48,6 @@
     "execa": "^4.0.3",
     "express": "^4.17.1",
     "fs-extra": "^9.0.1",
-    "git-format-staged": "^2.1.2",
     "glob": "^7.1.6",
     "globby": "^11.0.1",
     "gulp": "^4.0.2",
@@ -95,6 +59,7 @@
     "jsdoc": "^3.6.5",
     "jsdoc-baseline": "^0.1.5",
     "lerna": "^3.22.1",
+    "lint-staged": "^11.1.2",
     "memory-fs": "^0.5.0",
     "minimist": "^1.2.5",
     "mocha": "^8.1.1",
@@ -120,5 +85,44 @@
     "webpack-v4": "npm:webpack@^4.44.2",
     "webpack-v5": "npm:webpack@^5.9.0",
     "worker-plugin": "^5.0.0"
-  }
+  },
+  "engines": {
+    "node": ">=10.0.0"
+  },
+  "homepage": "https://github.com/GoogleChrome/workbox#readme",
+  "license": "MIT",
+  "lint-staged": {
+    "*": "prettier --ignore-unknown --write"
+  },
+  "name": "workbox",
+  "nyc": {
+    "exclude": [
+      "packages/workbox-core/models/messages/messages.mjs"
+    ],
+    "extension": [
+      ".mjs",
+      ".js"
+    ],
+    "include": [
+      "packages/**/*"
+    ]
+  },
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GoogleChrome/workbox.git"
+  },
+  "scripts": {
+    "build": "gulp build",
+    "gulp": "gulp",
+    "lint": "gulp lint",
+    "lint-staged": "lint-staged",
+    "prepare": "husky install",
+    "prettier": "prettier --ignore-unknown --write .",
+    "test_integration": "gulp test_integration",
+    "test_node": "gulp test_node",
+    "test_server": "gulp test_server",
+    "version": "gulp build && git add -A packages"
+  },
+  "version": "0.0.0"
 }

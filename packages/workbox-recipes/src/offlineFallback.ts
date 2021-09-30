@@ -35,7 +35,7 @@ function offlineFallback(options: OfflineFallbackOptions = {}): void {
   const imageFallback = options.imageFallback || false;
   const fontFallback = options.fontFallback || false;
 
-  self.addEventListener('install', event => {
+  self.addEventListener('install', (event) => {
     const files = [pageFallback];
     if (imageFallback) {
       files.push(imageFallback);
@@ -44,27 +44,37 @@ function offlineFallback(options: OfflineFallbackOptions = {}): void {
       files.push(fontFallback);
     }
 
-    event.waitUntil(self.caches.open('workbox-offline-fallbacks').then(cache => cache.addAll(files)));
+    event.waitUntil(
+      self.caches
+        .open('workbox-offline-fallbacks')
+        .then((cache) => cache.addAll(files)),
+    );
   });
 
   const handler: RouteHandler = async (
-    options: RouteHandlerCallbackOptions
+    options: RouteHandlerCallbackOptions,
   ) => {
     const dest = options.request.destination;
     const cache = await self.caches.open('workbox-offline-fallbacks');
 
-    if (dest === "document") {
-      const match = await matchPrecache(pageFallback) || await cache.match(pageFallback);
+    if (dest === 'document') {
+      const match =
+        (await matchPrecache(pageFallback)) ||
+        (await cache.match(pageFallback));
       return match || Response.error();
     }
 
-    if (dest === "image" && imageFallback !== false) {
-      const match = await matchPrecache(imageFallback) || await cache.match(imageFallback);
+    if (dest === 'image' && imageFallback !== false) {
+      const match =
+        (await matchPrecache(imageFallback)) ||
+        (await cache.match(imageFallback));
       return match || Response.error();
     }
 
-    if (dest === "font" && fontFallback !== false) {
-      const match = await matchPrecache(fontFallback) || await cache.match(fontFallback);
+    if (dest === 'font' && fontFallback !== false) {
+      const match =
+        (await matchPrecache(fontFallback)) ||
+        (await cache.match(fontFallback));
       return match || Response.error();
     }
 
@@ -74,4 +84,4 @@ function offlineFallback(options: OfflineFallbackOptions = {}): void {
   setCatchHandler(handler);
 }
 
-export { offlineFallback }
+export {offlineFallback};

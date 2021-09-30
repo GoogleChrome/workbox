@@ -8,7 +8,6 @@
 
 import '../_version.js';
 
-
 /**
  * The Deferred class composes Promises in a way that allows for them to be
  * resolved or rejected from outside the constructor. In most cases promises
@@ -32,6 +31,5 @@ class Deferred<T> {
     });
   }
 }
-
 
 export {Deferred};

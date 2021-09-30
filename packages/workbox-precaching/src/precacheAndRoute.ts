@@ -11,7 +11,6 @@ import {precache} from './precache.js';
 import {PrecacheRouteOptions, PrecacheEntry} from './_types.js';
 import './_version.js';
 
-
 /**
  * This method will add entries to the precache list and add a route to
  * respond to fetch events.
@@ -26,9 +25,12 @@ import './_version.js';
  *
  * @memberof module:workbox-precaching
  */
-function precacheAndRoute(entries: Array<PrecacheEntry | string>, options?: PrecacheRouteOptions): void {
+function precacheAndRoute(
+  entries: Array<PrecacheEntry | string>,
+  options?: PrecacheRouteOptions,
+): void {
   precache(entries);
   addRoute(options);
 }
 
-export {precacheAndRoute}
+export {precacheAndRoute};

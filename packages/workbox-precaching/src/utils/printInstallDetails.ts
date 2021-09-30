@@ -9,7 +9,6 @@
 import {logger} from 'workbox-core/_private/logger.js';
 import '../_version.js';
 
-
 /**
  * @param {string} groupTitle
  * @param {Array<string>} urls
@@ -37,16 +36,21 @@ function _nestedGroup(groupTitle: string, urls: string[]): void {
  * @private
  * @memberof module:workbox-precaching
  */
-export function printInstallDetails(urlsToPrecache: string[], urlsAlreadyPrecached: string[]): void {
+export function printInstallDetails(
+  urlsToPrecache: string[],
+  urlsAlreadyPrecached: string[],
+): void {
   const precachedCount = urlsToPrecache.length;
   const alreadyPrecachedCount = urlsAlreadyPrecached.length;
 
   if (precachedCount || alreadyPrecachedCount) {
-    let message =
-        `Precaching ${precachedCount} file${precachedCount === 1 ? '' : 's'}.`;
+    let message = `Precaching ${precachedCount} file${
+      precachedCount === 1 ? '' : 's'
+    }.`;
 
     if (alreadyPrecachedCount > 0) {
-      message += ` ${alreadyPrecachedCount} ` +
+      message +=
+        ` ${alreadyPrecachedCount} ` +
         `file${alreadyPrecachedCount === 1 ? ' is' : 's are'} already cached.`;
     }
 

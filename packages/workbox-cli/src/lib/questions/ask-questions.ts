@@ -15,15 +15,17 @@ import {askQueryParametersInStartUrl} from './ask-start_url-query-params';
 
 interface ConfigWithConfigLocation {
   config: {
-    [key: string]: any
-  }
-  configLocation: string
+    [key: string]: any;
+  };
+  configLocation: string;
 }
 
-export async function askQuestions(options = {}): Promise<ConfigWithConfigLocation> {
+export async function askQuestions(
+  options = {},
+): Promise<ConfigWithConfigLocation> {
   const globDirectory = await askRootOfWebApp();
   const globPatterns = await askExtensionsToCache(globDirectory);
-  const swSrc = ("injectManifest" in options) ? await askSWSrc() : undefined;
+  const swSrc = 'injectManifest' in options ? await askSWSrc() : undefined;
   const swDest = await askSWDest(globDirectory);
   const configLocation = await askConfigLocation();
   const ignoreURLParametersMatching = await askQueryParametersInStartUrl();

@@ -10,7 +10,6 @@ import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
 import {assert} from 'workbox-core/_private/assert.js';
 import '../_version.js';
 
-
 /**
  * @param {string} rangeHeader A Range: header value.
  * @return {Object} An object with `start` and `end` properties, reflecting

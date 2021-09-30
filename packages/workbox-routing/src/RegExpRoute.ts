@@ -8,14 +8,16 @@
 
 import {assert} from 'workbox-core/_private/assert.js';
 import {logger} from 'workbox-core/_private/logger.js';
-import {RouteHandler, RouteMatchCallback, RouteMatchCallbackOptions}
-    from 'workbox-core/types.js';
+import {
+  RouteHandler,
+  RouteMatchCallback,
+  RouteMatchCallbackOptions,
+} from 'workbox-core/types.js';
 
 import {HTTPMethod} from './utils/constants.js';
 import {Route} from './Route.js';
 
 import './_version.js';
-
 
 /**
  * RegExpRoute makes it easy to create a regular expression based
@@ -66,12 +68,12 @@ class RegExpRoute extends Route {
       // if it's a cross-origin request.
       // See https://github.com/GoogleChrome/workbox/issues/281 for the context
       // behind this behavior.
-      if ((url.origin !== location.origin) && (result.index !== 0)) {
+      if (url.origin !== location.origin && result.index !== 0) {
         if (process.env.NODE_ENV !== 'production') {
           logger.debug(
             `The regular expression '${regExp.toString()}' only partially matched ` +
-            `against the cross-origin URL '${url.toString()}'. RegExpRoute's will only ` +
-            `handle cross-origin requests if they match the entire URL.`
+              `against the cross-origin URL '${url.toString()}'. RegExpRoute's will only ` +
+              `handle cross-origin requests if they match the entire URL.`,
           );
         }
 

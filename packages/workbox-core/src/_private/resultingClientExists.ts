@@ -8,7 +8,6 @@
 import {timeout} from './timeout.js';
 import '../_version.js';
 
-
 // Give TypeScript the correct global.
 declare let self: ServiceWorkerGlobalScope;
 
@@ -24,7 +23,9 @@ const MAX_RETRY_TIME = 2000;
  * @return {Promise<Client|undefined>}
  * @private
  */
-export async function resultingClientExists(resultingClientId?: string): Promise<Client | undefined> {
+export async function resultingClientExists(
+  resultingClientId?: string,
+): Promise<Client | undefined> {
   if (!resultingClientId) {
     return;
   }
@@ -42,10 +43,10 @@ export async function resultingClientExists(resultingClientId?: string): Promise
     resultingWindow = existingWindows.find((w) => {
       if (resultingClientId) {
         // If we have a `resultingClientId`, we can match on that.
-        return w.id === resultingClientId
+        return w.id === resultingClientId;
       } else {
         // Otherwise match on finding a window not in `existingWindowIds`.
-        return !existingWindowIds.has(w.id)
+        return !existingWindowIds.has(w.id);
       }
     });
 

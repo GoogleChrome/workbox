@@ -17,7 +17,6 @@ import {getOrCreateDefaultRouter} from './utils/getOrCreateDefaultRouter.js';
 
 import './_version.js';
 
-
 /**
  * Easily register a RegExp, string, or function with a caching
  * strategy to a singleton Router instance.
@@ -38,9 +37,10 @@ import './_version.js';
  * @memberof module:workbox-routing
  */
 function registerRoute(
-    capture: RegExp | string | RouteMatchCallback | Route,
-    handler?: RouteHandler,
-    method?: HTTPMethod): Route {
+  capture: RegExp | string | RouteMatchCallback | Route,
+  handler?: RouteHandler,
+  method?: HTTPMethod,
+): Route {
   let route;
 
   if (typeof capture === 'string') {
@@ -57,28 +57,32 @@ function registerRoute(
 
       // We want to check if Express-style wildcards are in the pathname only.
       // TODO: Remove this log message in v4.
-      const valueToCheck = capture.startsWith('http') ?
-          captureUrl.pathname : capture;
+      const valueToCheck = capture.startsWith('http')
+        ? captureUrl.pathname
+        : capture;
 
       // See https://github.com/pillarjs/path-to-regexp#parameters
       const wildcards = '[*:?+]';
-      if ((new RegExp(`${wildcards}`)).exec(valueToCheck)) {
+      if (new RegExp(`${wildcards}`).exec(valueToCheck)) {
         logger.debug(
-            `The '$capture' parameter contains an Express-style wildcard ` +
-          `character (${wildcards}). Strings are now always interpreted as ` +
-          `exact matches; use a RegExp for partial or wildcard matches.`
+          `The '$capture' parameter contains an Express-style wildcard ` +
+            `character (${wildcards}). Strings are now always interpreted as ` +
+            `exact matches; use a RegExp for partial or wildcard matches.`,
         );
       }
     }
 
     const matchCallback: RouteMatchCallback = ({url}) => {
       if (process.env.NODE_ENV !== 'production') {
-        if ((url.pathname === captureUrl.pathname) &&
-            (url.origin !== captureUrl.origin)) {
+        if (
+          url.pathname === captureUrl.pathname &&
+          url.origin !== captureUrl.origin
+        ) {
           logger.debug(
-              `${capture} only partially matches the cross-origin URL ` +
-            `${url.toString()}. This route will only handle cross-origin requests ` +
-              `if they match the entire URL.`);
+            `${capture} only partially matches the cross-origin URL ` +
+              `${url.toString()}. This route will only handle cross-origin requests ` +
+              `if they match the entire URL.`,
+          );
         }
       }
 
