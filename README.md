@@ -16,7 +16,8 @@ Workbox is a collection of JavaScript libraries for
 Development happens in the open on GitHub. We're thankful to the community for
 contributing any improvements.
 
-Please read the [guide to contributing](CONTRIBUTING.md) prior to filing any
+Please read the [guide to contributing](CONTRIBUTING.md) for information about
+setting up your environment and other requirements prior to filing any
 pull requests.
 
 ## License
