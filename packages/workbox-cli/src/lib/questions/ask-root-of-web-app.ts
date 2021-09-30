@@ -27,52 +27,64 @@ const questionManualInput = 'manualDirectoryInput';
  */
 async function getSubdirectories(): Promise<Array<string>> {
   return await new Promise((resolve, reject) => {
-    glob('*/', {
-      ignore: constants.ignoredDirectories.map((directory) => `${directory}/`),
-    }, (error, directories) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(directories);
-      }
-    });
+    glob(
+      '*/',
+      {
+        ignore: constants.ignoredDirectories.map(
+          (directory) => `${directory}/`,
+        ),
+      },
+      (error, directories) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(directories);
+        }
+      },
+    );
   });
 }
 
 /**
  * @return {Promise<Object>} The answers from inquirer.
  */
-async function askQuestion(): Promise<{ globDirectory: string; manualDirectoryInput?: string }> {
-  const subdirectories: (string | InstanceType<typeof Separator>)[] = await getSubdirectories();
+async function askQuestion(): Promise<{
+  globDirectory: string;
+  manualDirectoryInput?: string;
+}> {
+  const subdirectories: (string | InstanceType<typeof Separator>)[] =
+    await getSubdirectories();
 
   if (subdirectories.length > 0) {
     const manualEntryChoice = 'Manually enter path';
-    return prompt([{
-      name: questionRootDirectory,
-      type: 'list',
-      message: ol`What is the root of your web app (i.e. which directory do
+    return prompt([
+      {
+        name: questionRootDirectory,
+        type: 'list',
+        message: ol`What is the root of your web app (i.e. which directory do
         you deploy)?`,
-      choices: subdirectories.concat([
-        new Separator(),
-        manualEntryChoice,
-      ]),
-    }, {
-      name: questionManualInput,
-      when: (answers: { globDirectory: string }) => answers.globDirectory === manualEntryChoice,
-      message: ROOT_PROMPT,
-    }
+        choices: subdirectories.concat([new Separator(), manualEntryChoice]),
+      },
+      {
+        name: questionManualInput,
+        when: (answers: {globDirectory: string}) =>
+          answers.globDirectory === manualEntryChoice,
+        message: ROOT_PROMPT,
+      },
     ]);
   }
 
-  return prompt([{
-    name: questionRootDirectory,
-    message: ROOT_PROMPT,
-    default: '.',
-  }]);
+  return prompt([
+    {
+      name: questionRootDirectory,
+      message: ROOT_PROMPT,
+      default: '.',
+    },
+  ]);
 }
 
 export async function askRootOfWebApp(): Promise<string> {
-  const { manualDirectoryInput, globDirectory } = await askQuestion();
+  const {manualDirectoryInput, globDirectory} = await askQuestion();
 
   try {
     const stat = await fse.stat(manualDirectoryInput || globDirectory);

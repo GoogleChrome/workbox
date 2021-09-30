@@ -32,4 +32,4 @@ function createHandlerBoundToURL(url: string): RouteHandlerCallback {
   return precacheController.createHandlerBoundToURL(url);
 }
 
-export {createHandlerBoundToURL}
+export {createHandlerBoundToURL};

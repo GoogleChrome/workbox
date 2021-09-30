@@ -23,13 +23,12 @@ import {PrecacheStrategy} from './PrecacheStrategy.js';
 import {PrecacheEntry, InstallResult, CleanupResult} from './_types.js';
 import './_version.js';
 
-
 // Give TypeScript the correct global.
 declare let self: ServiceWorkerGlobalScope;
 
 declare global {
   interface ServiceWorkerGlobalScope {
-    __WB_MANIFEST: Array<PrecacheEntry|string>;
+    __WB_MANIFEST: Array<PrecacheEntry | string>;
   }
 }
 
@@ -48,7 +47,15 @@ class PrecacheController {
   private _installAndActiveListenersAdded?: boolean;
   private readonly _strategy: Strategy;
   private readonly _urlsToCacheKeys: Map<string, string> = new Map();
-  private readonly _urlsToCacheModes: Map<string, "reload" | "default" | "no-store" | "no-cache" | "force-cache" | "only-if-cached"> = new Map();
+  private readonly _urlsToCacheModes: Map<
+    string,
+    | 'reload'
+    | 'default'
+    | 'no-store'
+    | 'no-cache'
+    | 'force-cache'
+    | 'only-if-cached'
+  > = new Map();
   private readonly _cacheKeysToIntegrities: Map<string, string> = new Map();
 
   /**
@@ -61,7 +68,11 @@ class PrecacheController {
    * @param {boolean} [options.fallbackToNetwork=true] Whether to attempt to
    * get the response from the network if there's a precache miss.
    */
-  constructor({cacheName, plugins = [], fallbackToNetwork = true}: PrecacheControllerOptions = {}) {
+  constructor({
+    cacheName,
+    plugins = [],
+    fallbackToNetwork = true,
+  }: PrecacheControllerOptions = {}) {
     this._strategy = new PrecacheStrategy({
       cacheName: cacheNames.getPrecacheName(cacheName),
       plugins: [
@@ -131,11 +142,13 @@ class PrecacheController {
       }
 
       const {cacheKey, url} = createCacheKey(entry);
-      const cacheMode = (typeof entry !== 'string' && entry.revision) ?
-        'reload' : 'default';
+      const cacheMode =
+        typeof entry !== 'string' && entry.revision ? 'reload' : 'default';
 
-      if (this._urlsToCacheKeys.has(url) &&
-          this._urlsToCacheKeys.get(url) !== cacheKey) {
+      if (
+        this._urlsToCacheKeys.has(url) &&
+        this._urlsToCacheKeys.get(url) !== cacheKey
+      ) {
         throw new WorkboxError('add-to-cache-list-conflicting-entries', {
           firstEntry: this._urlsToCacheKeys.get(url),
           secondEntry: cacheKey,
@@ -143,8 +156,10 @@ class PrecacheController {
       }
 
       if (typeof entry !== 'string' && entry.integrity) {
-        if (this._cacheKeysToIntegrities.has(cacheKey) &&
-            this._cacheKeysToIntegrities.get(cacheKey) !== entry.integrity) {
+        if (
+          this._cacheKeysToIntegrities.has(cacheKey) &&
+          this._cacheKeysToIntegrities.get(cacheKey) !== entry.integrity
+        ) {
           throw new WorkboxError('add-to-cache-list-conflicting-integrities', {
             url,
           });
@@ -156,7 +171,8 @@ class PrecacheController {
       this._urlsToCacheModes.set(url, cacheMode);
 
       if (urlsToWarnAbout.length > 0) {
-        const warningMessage = `Workbox is precaching URLs without revision ` +
+        const warningMessage =
+          `Workbox is precaching URLs without revision ` +
           `info: ${urlsToWarnAbout.join(', ')}\nThis is generally NOT safe. ` +
           `Learn more at https://bit.ly/wb-precache`;
         if (process.env.NODE_ENV === 'production') {
@@ -199,11 +215,13 @@ class PrecacheController {
           credentials: 'same-origin',
         });
 
-        await Promise.all(this.strategy.handleAll({
-          params: {cacheKey},
-          request,
-          event,
-        }));
+        await Promise.all(
+          this.strategy.handleAll({
+            params: {cacheKey},
+            request,
+            event,
+          }),
+        );
       }
 
       const {updatedURLs, notUpdatedURLs} = installReportPlugin;
@@ -311,7 +329,9 @@ class PrecacheController {
    * to look up in the precache.
    * @return {Promise<Response|undefined>}
    */
-  async matchPrecache(request: string|Request): Promise<Response|undefined> {
+  async matchPrecache(
+    request: string | Request,
+  ): Promise<Response | undefined> {
     const url = request instanceof Request ? request.url : request;
     const cacheKey = this.getCacheKeyForURL(url);
     if (cacheKey) {

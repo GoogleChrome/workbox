@@ -12,7 +12,6 @@ import {generateSW} from './generate-sw';
 import {getManifest} from './get-manifest';
 import {injectManifest} from './inject-manifest';
 
-
 /**
  * @module workbox-build
  */

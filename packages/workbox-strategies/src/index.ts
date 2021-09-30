@@ -15,7 +15,6 @@ import {Strategy} from './Strategy.js';
 import {StrategyHandler} from './StrategyHandler.js';
 import './_version.js';
 
-
 /**
  * There are common caching strategies that most service workers will need
  * and use. This module provides simple implementations of these strategies.
@@ -32,4 +31,3 @@ export {
   Strategy,
   StrategyHandler,
 };
-

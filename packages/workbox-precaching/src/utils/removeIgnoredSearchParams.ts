@@ -21,7 +21,9 @@ import '../_version.js';
  * @memberof module:workbox-precaching
  */
 export function removeIgnoredSearchParams(
-    urlObject: URL, ignoreURLParametersMatching: RegExp[] = []): URL {
+  urlObject: URL,
+  ignoreURLParametersMatching: RegExp[] = [],
+): URL {
   // Convert the iterable into an array at the start of the loop to make sure
   // deletion doesn't mess up iteration.
   for (const paramName of [...urlObject.searchParams.keys()]) {

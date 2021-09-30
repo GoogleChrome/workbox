@@ -199,20 +199,24 @@ export async function generateSW(config: unknown): Promise<BuildResult> {
 
   if (options.globDirectory) {
     // Make sure we leave swDest out of the precache manifest.
-    options.globIgnores!.push(rebasePath({
-      baseDirectory: options.globDirectory,
-      file: options.swDest,
-    }));
+    options.globIgnores!.push(
+      rebasePath({
+        baseDirectory: options.globDirectory,
+        file: options.swDest,
+      }),
+    );
 
     // If we create an extra external runtime file, ignore that, too.
     // See https://rollupjs.org/guide/en/#outputchunkfilenames for naming.
     if (!options.inlineWorkboxRuntime) {
       const swDestDir = upath.dirname(options.swDest);
       const workboxRuntimeFile = upath.join(swDestDir, 'workbox-*.js');
-      options.globIgnores!.push(rebasePath({
-        baseDirectory: options.globDirectory,
-        file: workboxRuntimeFile,
-      }));
+      options.globIgnores!.push(
+        rebasePath({
+          baseDirectory: options.globDirectory,
+          file: workboxRuntimeFile,
+        }),
+      );
     }
 
     // We've previously asserted that options.globDirectory is set, so this
@@ -227,9 +231,14 @@ export async function generateSW(config: unknown): Promise<BuildResult> {
     };
   }
 
-  const filePaths = await writeSWUsingDefaultTemplate(Object.assign({
-    manifestEntries: entriesResult.manifestEntries,
-  }, options));
+  const filePaths = await writeSWUsingDefaultTemplate(
+    Object.assign(
+      {
+        manifestEntries: entriesResult.manifestEntries,
+      },
+      options,
+    ),
+  );
 
   return {
     filePaths,

@@ -8,7 +8,6 @@
 
 import './_version.js';
 
-
 // Give TypeScript the correct global.
 declare let self: ServiceWorkerGlobalScope;
 

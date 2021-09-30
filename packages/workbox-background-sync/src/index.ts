@@ -14,8 +14,4 @@ import './_version.js';
 /**
  * @module workbox-background-sync
  */
-export {
-  BackgroundSyncPlugin,
-  Queue,
-  QueueOptions,
-};
+export {BackgroundSyncPlugin, Queue, QueueOptions};

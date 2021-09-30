@@ -37,15 +37,15 @@ function googleFontsCache(options: GoogleFontCacheOptions = {}): void {
 
   // Cache the Google Fonts stylesheets with a stale-while-revalidate strategy.
   registerRoute(
-    ({ url }) => url.origin === 'https://fonts.googleapis.com',
+    ({url}) => url.origin === 'https://fonts.googleapis.com',
     new StaleWhileRevalidate({
       cacheName: sheetCacheName,
-    })
+    }),
   );
 
   // Cache the underlying font files with a cache-first strategy for 1 year.
   registerRoute(
-    ({ url }) => url.origin === 'https://fonts.gstatic.com',
+    ({url}) => url.origin === 'https://fonts.gstatic.com',
     new CacheFirst({
       cacheName: fontCacheName,
       plugins: [
@@ -57,8 +57,8 @@ function googleFontsCache(options: GoogleFontCacheOptions = {}): void {
           maxEntries,
         }),
       ],
-    })
+    }),
   );
 }
 
-export { googleFontsCache }
+export {googleFontsCache};

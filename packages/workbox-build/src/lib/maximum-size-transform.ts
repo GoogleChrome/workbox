@@ -10,7 +10,9 @@ import prettyBytes from 'pretty-bytes';
 
 import {ManifestTransform} from '../types';
 
-export function maximumSizeTransform(maximumFileSizeToCacheInBytes: number): ManifestTransform {
+export function maximumSizeTransform(
+  maximumFileSizeToCacheInBytes: number,
+): ManifestTransform {
   return (originalManifest) => {
     const warnings: Array<string> = [];
     const manifest = originalManifest.filter((entry) => {
@@ -18,9 +20,11 @@ export function maximumSizeTransform(maximumFileSizeToCacheInBytes: number): Man
         return true;
       }
 
-      warnings.push(`${entry.url} is ${prettyBytes(entry.size)}, and won't ` +
-        `be precached. Configure maximumFileSizeToCacheInBytes to change ` +
-        `this limit.`);
+      warnings.push(
+        `${entry.url} is ${prettyBytes(entry.size)}, and won't ` +
+          `be precached. Configure maximumFileSizeToCacheInBytes to change ` +
+          `this limit.`,
+      );
       return false;
     });
 

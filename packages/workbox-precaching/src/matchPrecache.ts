@@ -25,9 +25,11 @@ import './_version.js';
  *
  * @memberof module:workbox-precaching
  */
-function matchPrecache(request: string | Request): Promise<Response | undefined> {
+function matchPrecache(
+  request: string | Request,
+): Promise<Response | undefined> {
   const precacheController = getOrCreatePrecacheController();
   return precacheController.matchPrecache(request);
 }
 
-export {matchPrecache}
+export {matchPrecache};

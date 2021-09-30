@@ -8,7 +8,6 @@
 
 import './_version.js';
 
-
 export type StreamSource = Response | ReadableStream | BodyInit;
 
 // * * * IMPORTANT! * * *

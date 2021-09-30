@@ -9,7 +9,6 @@
 import {canConstructReadableStream} from 'workbox-core/_private/canConstructReadableStream.js';
 import './_version.js';
 
-
 /**
  * This is a utility method that determines whether the current browser supports
  * the features required to create streamed responses. Currently, it checks if
@@ -25,4 +24,4 @@ function isSupported(): boolean {
   return canConstructReadableStream();
 }
 
-export {isSupported}
+export {isSupported};

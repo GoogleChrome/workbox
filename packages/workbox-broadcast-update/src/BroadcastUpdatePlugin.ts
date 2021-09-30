@@ -9,7 +9,10 @@
 import {dontWaitFor} from 'workbox-core/_private/dontWaitFor.js';
 import {WorkboxPlugin} from 'workbox-core/types.js';
 
-import {BroadcastCacheUpdate, BroadcastCacheUpdateOptions} from './BroadcastCacheUpdate.js';
+import {
+  BroadcastCacheUpdate,
+  BroadcastCacheUpdateOptions,
+} from './BroadcastCacheUpdate.js';
 
 import './_version.js';
 
@@ -54,7 +57,7 @@ class BroadcastUpdatePlugin implements WorkboxPlugin {
    */
   cacheDidUpdate: WorkboxPlugin['cacheDidUpdate'] = async (options) => {
     dontWaitFor(this._broadcastUpdate.notifyIfUpdated(options));
-  }
+  };
 }
 
 export {BroadcastUpdatePlugin};

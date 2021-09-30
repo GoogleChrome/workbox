@@ -24,9 +24,8 @@ import {
 import {Strategy} from './Strategy.js';
 import './_version.js';
 
-
 function toRequest(input: RequestInfo) {
-  return (typeof input === 'string') ? new Request(input) : input;
+  return typeof input === 'string' ? new Request(input) : input;
 }
 
 /**
@@ -151,14 +150,20 @@ class StrategyHandler {
     const {event} = this;
     let request: Request = toRequest(input);
 
-    if (request.mode === 'navigate' &&
-        event instanceof FetchEvent &&
-      event.preloadResponse) {
-      const possiblePreloadResponse = await event.preloadResponse as Response | undefined;
+    if (
+      request.mode === 'navigate' &&
+      event instanceof FetchEvent &&
+      event.preloadResponse
+    ) {
+      const possiblePreloadResponse = (await event.preloadResponse) as
+        | Response
+        | undefined;
       if (possiblePreloadResponse) {
         if (process.env.NODE_ENV !== 'production') {
-          logger.log(`Using a preloaded navigation response for ` +
-            `'${getFriendlyURL(request.url)}'`);
+          logger.log(
+            `Using a preloaded navigation response for ` +
+              `'${getFriendlyURL(request.url)}'`,
+          );
         }
         return possiblePreloadResponse;
       }
@@ -167,8 +172,9 @@ class StrategyHandler {
     // If there is a fetchDidFail plugin, we need to save a clone of the
     // original request before it's either modified by a requestWillFetch
     // plugin or before the original request's body is consumed via fetch().
-    const originalRequest = this.hasCallback('fetchDidFail') ?
-        request.clone() : null;
+    const originalRequest = this.hasCallback('fetchDidFail')
+      ? request.clone()
+      : null;
 
     try {
       for (const cb of this.iterateCallbacks('requestWillFetch')) {
@@ -176,8 +182,9 @@ class StrategyHandler {
       }
     } catch (err) {
       if (err instanceof Error) {
-        throw new WorkboxError('plugin-error-request-will-fetch',
-          {thrownErrorMessage: err.message});
+        throw new WorkboxError('plugin-error-request-will-fetch', {
+          thrownErrorMessage: err.message,
+        });
       }
     }
 
@@ -190,13 +197,17 @@ class StrategyHandler {
       let fetchResponse: Response;
 
       // See https://github.com/GoogleChrome/workbox/issues/1796
-      fetchResponse = await fetch(request, request.mode === 'navigate' ?
-          undefined : this._strategy.fetchOptions);
+      fetchResponse = await fetch(
+        request,
+        request.mode === 'navigate' ? undefined : this._strategy.fetchOptions,
+      );
 
       if (process.env.NODE_ENV !== 'production') {
-        logger.debug(`Network request for ` +
+        logger.debug(
+          `Network request for ` +
             `'${getFriendlyURL(request.url)}' returned a response with ` +
-            `status '${fetchResponse.status}'.`);
+            `status '${fetchResponse.status}'.`,
+        );
       }
 
       for (const callback of this.iterateCallbacks('fetchDidSucceed')) {
@@ -209,8 +220,11 @@ class StrategyHandler {
       return fetchResponse;
     } catch (error) {
       if (process.env.NODE_ENV !== 'production') {
-        logger.log(`Network request for `+
-        `'${getFriendlyURL(request.url)}' threw an error.`, error);
+        logger.log(
+          `Network request for ` +
+            `'${getFriendlyURL(request.url)}' threw an error.`,
+          error,
+        );
       }
 
       // `originalRequest` will only exist if a `fetchDidFail` callback
@@ -277,13 +291,14 @@ class StrategyHandler {
     }
 
     for (const callback of this.iterateCallbacks('cachedResponseWillBeUsed')) {
-      cachedResponse = (await callback({
-        cacheName,
-        matchOptions,
-        cachedResponse,
-        request: effectiveRequest,
-        event: this.event,
-      })) || undefined;
+      cachedResponse =
+        (await callback({
+          cacheName,
+          matchOptions,
+          cachedResponse,
+          request: effectiveRequest,
+          event: this.event,
+        })) || undefined;
     }
     return cachedResponse;
   }
@@ -334,8 +349,10 @@ class StrategyHandler {
 
     if (!response) {
       if (process.env.NODE_ENV !== 'production') {
-        logger.error(`Cannot cache non-existent response for ` +
-          `'${getFriendlyURL(effectiveRequest.url)}'.`);
+        logger.error(
+          `Cannot cache non-existent response for ` +
+            `'${getFriendlyURL(effectiveRequest.url)}'.`,
+        );
       }
 
       throw new WorkboxError('cache-put-with-no-response', {
@@ -347,8 +364,11 @@ class StrategyHandler {
 
     if (!responseToCache) {
       if (process.env.NODE_ENV !== 'production') {
-        logger.debug(`Response '${getFriendlyURL(effectiveRequest.url)}' ` +
-        `will not be cached.`, responseToCache);
+        logger.debug(
+          `Response '${getFriendlyURL(effectiveRequest.url)}' ` +
+            `will not be cached.`,
+          responseToCache,
+        );
       }
       return false;
     }
@@ -357,24 +377,33 @@ class StrategyHandler {
     const cache = await self.caches.open(cacheName);
 
     const hasCacheUpdateCallback = this.hasCallback('cacheDidUpdate');
-    const oldResponse = hasCacheUpdateCallback ? await cacheMatchIgnoreParams(
-        // TODO(philipwalton): the `__WB_REVISION__` param is a precaching
-        // feature. Consider into ways to only add this behavior if using
-        // precaching.
-        cache, effectiveRequest.clone(), ['__WB_REVISION__'], matchOptions) :
-        null;
+    const oldResponse = hasCacheUpdateCallback
+      ? await cacheMatchIgnoreParams(
+          // TODO(philipwalton): the `__WB_REVISION__` param is a precaching
+          // feature. Consider into ways to only add this behavior if using
+          // precaching.
+          cache,
+          effectiveRequest.clone(),
+          ['__WB_REVISION__'],
+          matchOptions,
+        )
+      : null;
 
     if (process.env.NODE_ENV !== 'production') {
-      logger.debug(`Updating the '${cacheName}' cache with a new Response ` +
-        `for ${getFriendlyURL(effectiveRequest.url)}.`);
+      logger.debug(
+        `Updating the '${cacheName}' cache with a new Response ` +
+          `for ${getFriendlyURL(effectiveRequest.url)}.`,
+      );
     }
 
     try {
-      await cache.put(effectiveRequest, hasCacheUpdateCallback ?
-          responseToCache.clone() : responseToCache);
+      await cache.put(
+        effectiveRequest,
+        hasCacheUpdateCallback ? responseToCache.clone() : responseToCache,
+      );
     } catch (error) {
       if (error instanceof Error) {
-      // See https://developer.mozilla.org/en-US/docs/Web/API/DOMException#exception-QuotaExceededError
+        // See https://developer.mozilla.org/en-US/docs/Web/API/DOMException#exception-QuotaExceededError
         if (error.name === 'QuotaExceededError') {
           await executeQuotaErrorCallbacks();
         }
@@ -406,18 +435,23 @@ class StrategyHandler {
    * @param {string} mode
    * @return {Promise<Request>}
    */
-  async getCacheKey(request: Request, mode: 'read' | 'write'): Promise<Request> {
+  async getCacheKey(
+    request: Request,
+    mode: 'read' | 'write',
+  ): Promise<Request> {
     if (!this._cacheKeys[mode]) {
       let effectiveRequest = request;
 
       for (const callback of this.iterateCallbacks('cacheKeyWillBeUsed')) {
-        effectiveRequest = toRequest(await callback({
-          mode,
-          request: effectiveRequest,
-          event: this.event,
-          // params has a type any can't change right now.
-          params: this.params, // eslint-disable-line
-        }));
+        effectiveRequest = toRequest(
+          await callback({
+            mode,
+            request: effectiveRequest,
+            event: this.event,
+            // params has a type any can't change right now.
+            params: this.params, // eslint-disable-line
+          }),
+        );
       }
 
       this._cacheKeys[mode] = effectiveRequest;
@@ -483,7 +517,9 @@ class StrategyHandler {
     for (const plugin of this._strategy.plugins) {
       if (typeof plugin[name] === 'function') {
         const state = this._pluginStateMap.get(plugin);
-        const statefulCallback = (param: Omit<WorkboxPluginCallbackParam[C], 'state'>) => {
+        const statefulCallback = (
+          param: Omit<WorkboxPluginCallbackParam[C], 'state'>,
+        ) => {
           const statefulParam = {...param, state};
 
           // TODO(philipwalton): not sure why `any` is needed. It seems like
@@ -525,7 +561,7 @@ class StrategyHandler {
    */
   async doneWaiting(): Promise<void> {
     let promise;
-    while (promise = this._extendLifetimePromises.shift()) {
+    while ((promise = this._extendLifetimePromises.shift())) {
       await promise;
     }
   }
@@ -548,16 +584,19 @@ class StrategyHandler {
    *
    * @private
    */
-  async _ensureResponseSafeToCache(response: Response): Promise<Response | undefined> {
+  async _ensureResponseSafeToCache(
+    response: Response,
+  ): Promise<Response | undefined> {
     let responseToCache: Response | undefined = response;
     let pluginsUsed = false;
 
     for (const callback of this.iterateCallbacks('cacheWillUpdate')) {
-      responseToCache = (await callback({
-        request: this.request,
-        response: responseToCache,
-        event: this.event,
-      })) || undefined;
+      responseToCache =
+        (await callback({
+          request: this.request,
+          response: responseToCache,
+          event: this.event,
+        })) || undefined;
       pluginsUsed = true;
 
       if (!responseToCache) {
@@ -573,13 +612,17 @@ class StrategyHandler {
         if (responseToCache) {
           if (responseToCache.status !== 200) {
             if (responseToCache.status === 0) {
-              logger.warn(`The response for '${this.request.url}' ` +
+              logger.warn(
+                `The response for '${this.request.url}' ` +
                   `is an opaque response. The caching strategy that you're ` +
-                  `using will not cache opaque responses by default.`);
+                  `using will not cache opaque responses by default.`,
+              );
             } else {
-              logger.debug(`The response for '${this.request.url}' ` +
+              logger.debug(
+                `The response for '${this.request.url}' ` +
                   `returned a status code of '${response.status}' and won't ` +
-                  `be cached as a result.`);
+                  `be cached as a result.`,
+              );
             }
           }
         }
@@ -590,4 +633,4 @@ class StrategyHandler {
   }
 }
 
-export {StrategyHandler}
+export {StrategyHandler};

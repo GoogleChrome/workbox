@@ -8,7 +8,10 @@
 
 import {logger} from 'workbox-core/_private/logger.js';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
-import {RouteMatchCallback, RouteMatchCallbackOptions} from 'workbox-core/types.js';
+import {
+  RouteMatchCallback,
+  RouteMatchCallbackOptions,
+} from 'workbox-core/types.js';
 import {Route} from 'workbox-routing/Route.js';
 
 import {PrecacheRouteOptions} from './_types.js';
@@ -16,7 +19,6 @@ import {PrecacheController} from './PrecacheController.js';
 import {generateURLVariations} from './utils/generateURLVariations.js';
 
 import './_version.js';
-
 
 /**
  * A subclass of [Route]{@link module:workbox-routing.Route} that takes a
@@ -44,22 +46,29 @@ class PrecacheRoute extends Route {
    * This is a function that should take a URL and return an array of
    * alternative URLs that should be checked for precache matches.
    */
-  constructor(precacheController: PrecacheController, options?: PrecacheRouteOptions) {
-    const match: RouteMatchCallback = ({request}: RouteMatchCallbackOptions) => {
+  constructor(
+    precacheController: PrecacheController,
+    options?: PrecacheRouteOptions,
+  ) {
+    const match: RouteMatchCallback = ({
+      request,
+    }: RouteMatchCallbackOptions) => {
       const urlsToCacheKeys = precacheController.getURLsToCacheKeys();
       for (const possibleURL of generateURLVariations(request.url, options)) {
         const cacheKey = urlsToCacheKeys.get(possibleURL);
         if (cacheKey) {
-          const integrity = precacheController.getIntegrityForCacheKey(cacheKey);
+          const integrity =
+            precacheController.getIntegrityForCacheKey(cacheKey);
           return {cacheKey, integrity};
         }
       }
       if (process.env.NODE_ENV !== 'production') {
-        logger.debug(`Precaching did not find a match for ` +
-            getFriendlyURL(request.url));
+        logger.debug(
+          `Precaching did not find a match for ` + getFriendlyURL(request.url),
+        );
       }
       return;
-    }
+    };
 
     super(match, precacheController.strategy);
   }

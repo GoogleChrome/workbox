@@ -5,10 +5,6 @@
     "rootDir": "./src",
     "tsBuildInfoFile": "./tsconfig.tsbuildinfo"
   },
-  "include": [
-    "src/**/*.ts"
-  ],
-  "references": [
-    { "path": "../workbox-core/" }
-  ]
+  "include": ["src/**/*.ts"],
+  "references": [{"path": "../workbox-core/"}]
 }

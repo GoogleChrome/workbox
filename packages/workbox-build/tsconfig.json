@@ -9,13 +9,8 @@
     "target": "ES2018",
     "tsBuildInfoFile": "./tsconfig.tsbuildinfo"
   },
-  "files": [
-    "src/cdn-details.json"
-  ],
-  "include": [
-    "src/**/*.ts",
-    "src/schema/*.json"
-  ],
+  "files": ["src/cdn-details.json"],
+  "include": ["src/**/*.ts", "src/schema/*.json"],
   "references": [
     {"path": "../workbox-background-sync/"},
     {"path": "../workbox-broadcast-update/"},

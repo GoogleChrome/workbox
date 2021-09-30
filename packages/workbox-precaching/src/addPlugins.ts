@@ -10,7 +10,6 @@ import {WorkboxPlugin} from 'workbox-core/types.js';
 import {getOrCreatePrecacheController} from './utils/getOrCreatePrecacheController.js';
 import './_version.js';
 
-
 /**
  * Adds plugins to the precaching strategy.
  *

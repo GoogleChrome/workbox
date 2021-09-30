@@ -10,7 +10,6 @@ import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
 import {PrecacheEntry} from '../_types.js';
 import '../_version.js';
 
-
 interface CacheKey {
   cacheKey: string;
   url: string;
@@ -28,7 +27,7 @@ const REVISION_SEARCH_PARAM = '__WB_REVISION__';
  * @private
  * @memberof module:workbox-precaching
  */
-export function createCacheKey(entry: PrecacheEntry | string): CacheKey  {
+export function createCacheKey(entry: PrecacheEntry | string): CacheKey {
   if (!entry) {
     throw new WorkboxError('add-to-cache-list-unexpected-type', {entry});
   }
