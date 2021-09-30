@@ -116,6 +116,7 @@
     "build": "gulp build",
     "gulp": "gulp",
     "lint": "gulp lint",
+    "lint-staged": "lint-staged",
     "prepare": "husky install",
     "prettier": "prettier --ignore-unknown --write .",
     "test_integration": "gulp test_integration",
