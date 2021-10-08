@@ -48,3 +48,5 @@ export {
   PrecacheStrategy,
   PrecacheFallbackPlugin,
 };
+
+export * from './_types.js';

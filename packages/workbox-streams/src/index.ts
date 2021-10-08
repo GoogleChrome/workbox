@@ -17,3 +17,5 @@ import './_version.js';
  */
 
 export {concatenate, concatenateToResponse, isSupported, strategy};
+
+export * from './_types.js';
