@@ -164,7 +164,7 @@ export async function injectManifest(config: unknown): Promise<BuildResult> {
   const manifestString = stringify(manifestEntries);
   const filesToWrite: {[key: string]: string} = {};
 
-  const url = sourceMapURL.getFrom(swFileContents) as string;
+  const url = sourceMapURL.getFrom(swFileContents) as string; // eslint-disable-line
   // See https://github.com/GoogleChrome/workbox/issues/2957
   const {destPath, srcPath, warning} = translateURLToSourcemapPaths(
     url,
