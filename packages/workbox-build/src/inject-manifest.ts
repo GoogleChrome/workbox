@@ -19,6 +19,7 @@ import {escapeRegExp} from './lib/escape-regexp';
 import {getFileManifestEntries} from './lib/get-file-manifest-entries';
 import {rebasePath} from './lib/rebase-path';
 import {replaceAndUpdateSourceMap} from './lib/replace-and-update-source-map';
+import {translateURLToSourcemapPaths} from './lib/translate-url-to-sourcemap-paths';
 import {validateInjectManifestOptions} from './lib/validate-options';
 
 // eslint-disable-next-line jsdoc/newline-after-description
@@ -162,31 +163,28 @@ export async function injectManifest(config: unknown): Promise<BuildResult> {
 
   const manifestString = stringify(manifestEntries);
   const filesToWrite: {[key: string]: string} = {};
-  // sourceMapURL returns value type any and could be null.
-  // url is checked before it is used later.
-  const url: string = sourceMapURL.getFrom(swFileContents); // eslint-disable-line
+
+  const url = sourceMapURL.getFrom(swFileContents) as string; // eslint-disable-line
+  // See https://github.com/GoogleChrome/workbox/issues/2957
+  const {destPath, srcPath, warning} = translateURLToSourcemapPaths(
+    url,
+    options.swSrc,
+    options.swDest,
+  );
+  if (warning) {
+    warnings.push(warning);
+  }
+
   // If our swSrc file contains a sourcemap, we would invalidate that
   // mapping if we just replaced injectionPoint with the stringified manifest.
   // Instead, we need to update the swDest contents as well as the sourcemap
   // (assuming it's a real file, not a data: URL) at the same time.
   // See https://github.com/GoogleChrome/workbox/issues/2235
   // and https://github.com/GoogleChrome/workbox/issues/2648
-  if (url && !url.startsWith('data:')) {
-    const sourcemapSrcPath = upath.resolve(upath.dirname(options.swSrc), url);
-    const sourcemapDestPath = upath.resolve(upath.dirname(options.swDest), url);
-
-    let originalMap: RawSourceMap;
-    try {
-      // readJSON returns Promise<any>.
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      originalMap = await fse.readJSON(sourcemapSrcPath, {encoding: 'utf8'});
-    } catch (error) {
-      throw new Error(
-        `${errors['cant-find-sourcemap']} ${
-          error instanceof Error && error.message ? error.message : ''
-        }`,
-      );
-    }
+  if (srcPath && destPath) {
+    const originalMap = (await fse.readJSON(srcPath, {
+      encoding: 'utf8',
+    })) as RawSourceMap;
 
     const {map, source} = await replaceAndUpdateSourceMap({
       originalMap,
@@ -197,7 +195,7 @@ export async function injectManifest(config: unknown): Promise<BuildResult> {
     });
 
     filesToWrite[options.swDest] = source;
-    filesToWrite[sourcemapDestPath] = map;
+    filesToWrite[destPath] = map;
   } else {
     // If there's no sourcemap associated with swSrc, a simple string
     // replacement will suffice.
@@ -210,7 +208,7 @@ export async function injectManifest(config: unknown): Promise<BuildResult> {
   for (const [file, contents] of Object.entries(filesToWrite)) {
     try {
       await fse.mkdirp(upath.dirname(file));
-    } catch (error) {
+    } catch (error: unknown) {
       throw new Error(
         errors['unable-to-make-sw-directory'] +
           ` '${error instanceof Error && error.message ? error.message : ''}'`,
