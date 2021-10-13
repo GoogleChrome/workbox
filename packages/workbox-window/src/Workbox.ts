@@ -575,7 +575,7 @@ class Workbox extends WorkboxEventTarget {
       if (process.env.NODE_ENV !== 'production') {
         logger.log('Registered service worker now controlling this page.');
       }
-      this._controllingDeferred.resolve(sw!);
+      this._controllingDeferred.resolve(sw);
     }
   };
 

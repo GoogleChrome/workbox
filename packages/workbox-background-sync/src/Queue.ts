@@ -276,9 +276,7 @@ class Queue {
       entry.metadata = metadata;
     }
 
-    await this._queueStore[`${operation}Entry` as 'pushEntry' | 'unshiftEntry'](
-      entry,
-    );
+    await this._queueStore[`${operation}Entry`](entry);
 
     if (process.env.NODE_ENV !== 'production') {
       logger.log(
@@ -309,9 +307,7 @@ class Queue {
     operation: 'pop' | 'shift',
   ): Promise<QueueEntry | undefined> {
     const now = Date.now();
-    const entry = await this._queueStore[
-      `${operation}Entry` as 'popEntry' | 'shiftEntry'
-    ]();
+    const entry = await this._queueStore[`${operation}Entry`]();
 
     if (entry) {
       // Ignore requests older than maxRetentionTime. Call this function

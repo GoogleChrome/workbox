@@ -15,6 +15,13 @@ import {Strategy} from './Strategy.js';
 import {StrategyHandler} from './StrategyHandler.js';
 import './_version.js';
 
+// See https://github.com/GoogleChrome/workbox/issues/2946
+declare global {
+  interface FetchEvent {
+    readonly preloadResponse: Promise<Response | undefined>;
+  }
+}
+
 /**
  * There are common caching strategies that most service workers will need
  * and use. This module provides simple implementations of these strategies.
