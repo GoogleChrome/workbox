@@ -43,7 +43,7 @@ $ npm run gulp test
 
 Note that on Windows, `npm run gulp test` will only run a subset of our test suite. The full test suite will always be run as part of the GitHub continuous integration environment against your pull request.
 
-When you add a new or fix a bug, please check the test suite to see if its appropriate to add or modify an existing test to cover the updated functionality.
+When you add a new feature or fix a bug, please check the test suite to see if its appropriate to add or modify an existing test to cover the updated functionality.
 
 ## Running a subset of the tests
 
