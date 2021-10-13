@@ -166,6 +166,7 @@ export class QueueStore {
    * `direction` argument) matching the `queueName`.
    *
    * @return {Promise<QueueStoreEntry|undefined>}
+   * @private
    */
   async _removeEntry(
     entry?: QueueStoreEntry,

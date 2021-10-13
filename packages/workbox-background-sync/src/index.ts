@@ -6,10 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {QueueStore} from './lib/QueueStore.js';
-import {StorableRequest} from './lib/StorableRequest.js';
-import {Queue, QueueOptions} from './Queue.js';
 import {BackgroundSyncPlugin} from './BackgroundSyncPlugin.js';
+import {Queue, QueueOptions} from './Queue.js';
+import {QueueStore} from './QueueStore.js';
+import {StorableRequest} from './StorableRequest.js';
 
 import './_version.js';
 
