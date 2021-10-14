@@ -8,10 +8,10 @@
 
 import {CacheFirst} from './CacheFirst.js';
 import {CacheOnly} from './CacheOnly.js';
-import {NetworkFirst} from './NetworkFirst.js';
-import {NetworkOnly} from './NetworkOnly.js';
+import {NetworkFirst, NetworkFirstOptions} from './NetworkFirst.js';
+import {NetworkOnly, NetworkOnlyOptions} from './NetworkOnly.js';
 import {StaleWhileRevalidate} from './StaleWhileRevalidate.js';
-import {Strategy} from './Strategy.js';
+import {Strategy, StrategyOptions} from './Strategy.js';
 import {StrategyHandler} from './StrategyHandler.js';
 import './_version.js';
 
@@ -33,8 +33,11 @@ export {
   CacheFirst,
   CacheOnly,
   NetworkFirst,
+  NetworkFirstOptions,
   NetworkOnly,
+  NetworkOnlyOptions,
   StaleWhileRevalidate,
   Strategy,
   StrategyHandler,
+  StrategyOptions,
 };

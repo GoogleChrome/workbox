@@ -22,6 +22,7 @@ export declare interface PrecacheEntry {
   url: string;
   revision?: string | null;
 }
+
 export interface PrecacheRouteOptions {
   directoryIndex?: string;
   ignoreURLParametersMatching?: RegExp[];

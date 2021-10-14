@@ -6,8 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {Queue, QueueOptions} from './Queue.js';
 import {BackgroundSyncPlugin} from './BackgroundSyncPlugin.js';
+import {Queue, QueueOptions} from './Queue.js';
+import {QueueStore} from './QueueStore.js';
+import {StorableRequest} from './StorableRequest.js';
 
 import './_version.js';
 
@@ -35,4 +37,4 @@ declare global {
 /**
  * @module workbox-background-sync
  */
-export {BackgroundSyncPlugin, Queue, QueueOptions};
+export {BackgroundSyncPlugin, Queue, QueueOptions, QueueStore, StorableRequest};
