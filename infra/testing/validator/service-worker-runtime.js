@@ -136,7 +136,7 @@ function setupSpiesAndContextForGenerateSW() {
   const context = Object.assign(
     {
       importScripts,
-      define: (_, scripts, callback) => {
+      define: (scripts, callback) => {
         importScripts(...scripts);
         callback(workboxContext);
       },
