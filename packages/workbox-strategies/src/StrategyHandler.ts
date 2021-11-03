@@ -43,7 +43,7 @@ class StrategyHandler {
   public event: ExtendableEvent;
   public params?: any;
 
-  private _cacheKeys: {read?: Request; write?: Request} = {};
+  private _cacheKeys: Record<string, Request> = {};
 
   private readonly _strategy: Strategy;
   private readonly _extendLifetimePromises: Promise<any>[];
@@ -437,7 +437,8 @@ class StrategyHandler {
     request: Request,
     mode: 'read' | 'write',
   ): Promise<Request> {
-    if (!this._cacheKeys[mode]) {
+    const key = `${request.url} | ${mode}`;
+    if (!this._cacheKeys[key]) {
       let effectiveRequest = request;
 
       for (const callback of this.iterateCallbacks('cacheKeyWillBeUsed')) {
@@ -452,9 +453,9 @@ class StrategyHandler {
         );
       }
 
-      this._cacheKeys[mode] = effectiveRequest;
+      this._cacheKeys[key] = effectiveRequest;
     }
-    return this._cacheKeys[mode]!;
+    return this._cacheKeys[key];
   }
 
   /**

@@ -1295,7 +1295,7 @@ describe(`StrategyHandler`, function () {
       expect(writeCacheKey.url).to.equal(location.origin + '/test+1+write');
     });
 
-    it(`caches the key per mode to avoid repeat invocations`, async function () {
+    it(`caches the key using request + mode avoid repeat invocations`, async function () {
       const request = new Request('/test');
       const plugin = {
         cacheKeyWillBeUsed({mode, request}) {
@@ -1323,6 +1323,16 @@ describe(`StrategyHandler`, function () {
       await handler.getCacheKey(request, 'write');
       await handler.getCacheKey(request, 'write');
       expect(plugin.cacheKeyWillBeUsed.callCount).to.equal(2);
+
+      // See https://github.com/GoogleChrome/workbox/issues/2972
+      const secondRequest = new Request('/test2');
+
+      await handler.getCacheKey(secondRequest, 'read');
+      expect(plugin.cacheKeyWillBeUsed.callCount).to.equal(3);
+
+      await handler.getCacheKey(secondRequest, 'write');
+      await handler.getCacheKey(secondRequest, 'write');
+      expect(plugin.cacheKeyWillBeUsed.callCount).to.equal(4);
     });
   });
 });
