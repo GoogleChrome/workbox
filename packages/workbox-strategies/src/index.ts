@@ -18,7 +18,8 @@ import './_version.js';
 // See https://github.com/GoogleChrome/workbox/issues/2946
 declare global {
   interface FetchEvent {
-    readonly preloadResponse: Promise<Response | undefined>;
+    // See https://github.com/GoogleChrome/workbox/issues/2974
+    readonly preloadResponse: Promise<any>;
   }
 }
 
