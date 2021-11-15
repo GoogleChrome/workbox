@@ -20,7 +20,7 @@
   "bugs": "https://github.com/GoogleChrome/workbox/issues",
   "homepage": "https://github.com/GoogleChrome/workbox",
   "dependencies": {
-    "@apideck/better-ajv-errors": "^0.2.4",
+    "@apideck/better-ajv-errors": "^0.2.7",
     "@babel/core": "^7.11.1",
     "@babel/preset-env": "^7.11.0",
     "@babel/runtime": "^7.11.2",
