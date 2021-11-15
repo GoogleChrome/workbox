@@ -1,6 +1,6 @@
 {
   "name": "workbox-window",
-  "version": "6.4.0",
+  "version": "6.4.1",
   "license": "MIT",
   "author": "Google's Web DevRel Team",
   "description": "Simplifies communications with Workbox packages running in the service worker",
@@ -25,6 +25,6 @@
   "types": "index.d.ts",
   "dependencies": {
     "@types/trusted-types": "^2.0.2",
-    "workbox-core": "6.4.0"
+    "workbox-core": "6.4.1"
   }
 }

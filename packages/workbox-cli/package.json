@@ -1,6 +1,6 @@
 {
   "name": "workbox-cli",
-  "version": "6.4.0",
+  "version": "6.4.1",
   "description": "workbox-cli is the command line interface for Workbox.",
   "keywords": [
     "workbox",
@@ -38,7 +38,7 @@
     "stringify-object": "^3.3.0",
     "upath": "^1.2.0",
     "update-notifier": "^4.1.0",
-    "workbox-build": "6.4.0"
+    "workbox-build": "6.4.1"
   },
   "workbox": {
     "packageType": "node_ts"
