@@ -57,12 +57,21 @@ async function handleCDNUpload(tagName, gitBranch) {
 }
 
 async function publish_cdn() {
-  // Get all of the tags in the repo.
-  const tags = await githubHelper.getTags();
-  const missingTags = await findMissingCDNTags(tags);
+  let missingTags = [];
 
-  if (missingTags.length === 0) {
-    logHelper.log('No tags missing from CDN.');
+  // Usage: npx gulp publish_cdn --cdnTag=vX.Y.Z
+  // See https://github.com/GoogleChrome/workbox/issues/2479
+  if (global.cliOptions.cdnTag) {
+    const tags = [{name: global.cliOptions.cdnTag}];
+    missingTags = await findMissingCDNTags(tags);
+  } else {
+    // Get all of the tags in the repo.
+    const tags = await githubHelper.getTags();
+    missingTags = await findMissingCDNTags(tags);
+
+    if (missingTags.length === 0) {
+      logHelper.log('No tags missing from CDN.');
+    }
   }
 
   for (const missingTag of missingTags) {
