@@ -35,13 +35,13 @@ export interface ExpirationPluginOptions {
  * In other words, it can't be used to expire entries in strategy that uses the
  * default runtime cache name.
  *
- * Whenever a cached request is used or updated, this plugin will look
- * at the associated cache and remove any old or extra requests.
+ * Whenever a cached response is used or updated, this plugin will look
+ * at the associated cache and remove any old or extra responses.
  *
- * When using `maxAgeSeconds`, requests may be used *once* after expiring
+ * When using `maxAgeSeconds`, responses may be used *once* after expiring
  * because the expiration clean up will not have occurred until *after* the
- * cached request has been used. If the request has a "Date" header, then
- * a light weight expiration check is performed and the request will not be
+ * cached response has been used. If the response has a "Date" header, then
+ * a light weight expiration check is performed and the response will not be
  * used immediately.
  *
  * When using `maxEntries`, the entry least-recently requested will be removed
