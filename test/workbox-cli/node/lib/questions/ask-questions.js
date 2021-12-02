@@ -93,10 +93,9 @@ describe(`[workbox-cli] lib/questions/ask-questions.js`, function () {
         globPatterns: 1,
         swSrc: 2,
         swDest: 3,
-        ignoreURLParametersMatching: 5,
       },
       configLocation: 4,
     });
-    expect(stub.callCount).to.eql(6);
+    expect(stub.callCount).to.eql(5);
   });
 });
