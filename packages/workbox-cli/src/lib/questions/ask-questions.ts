@@ -23,21 +23,30 @@ interface ConfigWithConfigLocation {
 export async function askQuestions(
   options = {},
 ): Promise<ConfigWithConfigLocation> {
+  const isInjectManifest = 'injectManifest' in options;
+
   const globDirectory = await askRootOfWebApp();
   const globPatterns = await askExtensionsToCache(globDirectory);
-  const swSrc = 'injectManifest' in options ? await askSWSrc() : undefined;
+  const swSrc = isInjectManifest ? await askSWSrc() : undefined;
   const swDest = await askSWDest(globDirectory);
   const configLocation = await askConfigLocation();
-  const ignoreURLParametersMatching = await askQueryParametersInStartUrl();
+  // See https://github.com/GoogleChrome/workbox/issues/2985
+  const ignoreURLParametersMatching = isInjectManifest
+    ? undefined
+    : await askQueryParametersInStartUrl();
+
   const config: {[key: string]: any} = {
     globDirectory,
     globPatterns,
-    ignoreURLParametersMatching,
     swDest,
   };
 
   if (swSrc) {
     config.swSrc = swSrc;
+  }
+
+  if (ignoreURLParametersMatching) {
+    config.ignoreURLParametersMatching = ignoreURLParametersMatching;
   }
 
   return {
