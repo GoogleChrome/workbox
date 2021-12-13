@@ -41,7 +41,7 @@ interface PrecacheControllerOptions {
 /**
  * Performs efficient precaching of assets.
  *
- * @memberof module:workbox-precaching
+ * @memberof workbox-precaching
  */
 class PrecacheController {
   private _installAndActiveListenersAdded?: boolean;

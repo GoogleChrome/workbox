@@ -47,7 +47,7 @@ export interface ExpirationPluginOptions {
  * When using `maxEntries`, the entry least-recently requested will be removed
  * from the cache first.
  *
- * @memberof module:workbox-expiration
+ * @memberof workbox-expiration
  */
 class ExpirationPlugin implements WorkboxPlugin {
   private readonly _config: ExpirationPluginOptions;

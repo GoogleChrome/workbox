@@ -34,7 +34,7 @@ import './_version.js';
  * @return {module:workbox-routing.Route} The generated `Route`(Useful for
  * unregistering).
  *
- * @memberof module:workbox-routing
+ * @memberof workbox-routing
  */
 function registerRoute(
   capture: RegExp | string | RouteMatchCallback | Route,

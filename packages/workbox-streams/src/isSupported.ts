@@ -18,7 +18,7 @@ import './_version.js';
  * @return {boolean} `true`, if the current browser meets the requirements for
  * streaming responses, and `false` otherwise.
  *
- * @memberof module:workbox-streams
+ * @memberof workbox-streams
  */
 function isSupported(): boolean {
   return canConstructReadableStream();

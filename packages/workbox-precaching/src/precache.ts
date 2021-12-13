@@ -27,7 +27,7 @@ import './_version.js';
  *
  * @param {Array<Object|string>} [entries=[]] Array of entries to precache.
  *
- * @memberof module:workbox-precaching
+ * @memberof workbox-precaching
  */
 function precache(entries: Array<PrecacheEntry | string>): void {
   const precacheController = getOrCreatePrecacheController();

@@ -46,7 +46,7 @@ interface CacheURLsMessageData {
  * If a request matches multiple routes, the **earliest** registered route will
  * be used to respond to the request.
  *
- * @memberof module:workbox-routing
+ * @memberof workbox-routing
  */
 class Router {
   private readonly _routes: Map<HTTPMethod, Route[]>;

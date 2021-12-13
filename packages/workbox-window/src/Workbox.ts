@@ -41,7 +41,7 @@ const SKIP_WAITING_MESSAGE = {type: 'SKIP_WAITING'};
  * @fires {@link workbox-window.Workbox#controlling}
  * @fires {@link workbox-window.Workbox#activated}
  * @fires {@link workbox-window.Workbox#redundant}
- * @memberof module:workbox-window
+ * @memberof workbox-window
  */
 class Workbox extends WorkboxEventTarget {
   private readonly _scriptURL: string | TrustedScriptURL;
@@ -621,7 +621,7 @@ export {Workbox};
 /**
  * The `message` event is dispatched any time a `postMessage` is received.
  *
- * @event module:workbox-window.Workbox#message
+ * @event workbox-window.Workbox#message
  * @type {WorkboxEvent}
  * @property {*} data The `data` property from the original `message` event.
  * @property {Event} originalEvent The original [`message`]{@link https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent}
@@ -641,7 +641,7 @@ export {Workbox};
  * or after an update to the current service worker is found. In the case
  * of an update being found, the event's `isUpdate` property will be `true`.
  *
- * @event module:workbox-window.Workbox#installed
+ * @event workbox-window.Workbox#installed
  * @type {WorkboxEvent}
  * @property {ServiceWorker} sw The service worker instance.
  * @property {Event} originalEvent The original [`statechange`]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker/onstatechange}
@@ -664,7 +664,7 @@ export {Workbox};
  * was already waiting when the {@link workbox-window.Workbox#register}
  * method was called.
  *
- * @event module:workbox-window.Workbox#waiting
+ * @event workbox-window.Workbox#waiting
  * @type {WorkboxEvent}
  * @property {ServiceWorker} sw The service worker instance.
  * @property {Event|undefined} originalEvent The original
@@ -691,7 +691,7 @@ export {Workbox};
  * matches the `scriptURL` of the `Workbox` instance's
  * [registered service worker]{@link https://developers.google.com/web/tools/workbox/modules/workbox-precaching#def-registered-sw}.
  *
- * @event module:workbox-window.Workbox#controlling
+ * @event workbox-window.Workbox#controlling
  * @type {WorkboxEvent}
  * @property {ServiceWorker} sw The service worker instance.
  * @property {Event} originalEvent The original [`controllerchange`]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/oncontrollerchange}
@@ -710,7 +710,7 @@ export {Workbox};
  * {@link https://developers.google.com/web/tools/workbox/modules/workbox-precaching#def-registered-sw|registered service worker}
  * changes to `activated`.
  *
- * @event module:workbox-window.Workbox#activated
+ * @event workbox-window.Workbox#activated
  * @type {WorkboxEvent}
  * @property {ServiceWorker} sw The service worker instance.
  * @property {Event} originalEvent The original [`statechange`]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker/onstatechange}
@@ -729,7 +729,7 @@ export {Workbox};
  * [registered service worker]{@link https://developers.google.com/web/tools/workbox/modules/workbox-precaching#def-registered-sw}
  * changes to `redundant`.
  *
- * @event module:workbox-window.Workbox#redundant
+ * @event workbox-window.Workbox#redundant
  * @type {WorkboxEvent}
  * @property {ServiceWorker} sw The service worker instance.
  * @property {Event} originalEvent The original [`statechange`]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker/onstatechange}

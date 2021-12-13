@@ -35,7 +35,7 @@ function toRequest(input: RequestInfo) {
  * cache actions around plugin callbacks and keeps track of when the strategy
  * is "done" (i.e. all added `event.waitUntil()` promises have resolved).
  *
- * @memberof module:workbox-strategies
+ * @memberof workbox-strategies
  */
 class StrategyHandler {
   public request!: Request;
@@ -74,14 +74,14 @@ class StrategyHandler {
      * @name request
      * @instance
      * @type {Request}
-     * @memberof module:workbox-strategies.StrategyHandler
+     * @memberof workbox-strategies.StrategyHandler
      */
     /**
      * The event associated with this request.
      * @name event
      * @instance
      * @type {ExtendableEvent}
-     * @memberof module:workbox-strategies.StrategyHandler
+     * @memberof workbox-strategies.StrategyHandler
      */
     /**
      * A `URL` instance of `request.url` (if passed to the strategy's
@@ -91,7 +91,7 @@ class StrategyHandler {
      * @name url
      * @instance
      * @type {URL|undefined}
-     * @memberof module:workbox-strategies.StrategyHandler
+     * @memberof workbox-strategies.StrategyHandler
      */
     /**
      * A `param` value (if passed to the strategy's
@@ -103,7 +103,7 @@ class StrategyHandler {
      * @name params
      * @instance
      * @type {*|undefined}
-     * @memberof module:workbox-strategies.StrategyHandler
+     * @memberof workbox-strategies.StrategyHandler
      */
     if (process.env.NODE_ENV !== 'production') {
       assert!.isInstance(options.event, ExtendableEvent, {

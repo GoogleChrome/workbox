@@ -26,7 +26,7 @@ import './_version.js';
  * @param {Object} [options] See the {@link workbox-precaching.PrecacheRoute}
  * options.
  *
- * @memberof module:workbox-precaching
+ * @memberof workbox-precaching
  */
 function addRoute(options?: PrecacheRouteOptions): void {
   const precacheController = getOrCreatePrecacheController();

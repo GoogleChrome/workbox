@@ -115,7 +115,7 @@ import {validateInjectManifestOptions} from './lib/validate-options';
  * `count` property contains the total number of precached entries. Any
  * non-fatal warning messages will be returned via `warnings`.
  *
- * @memberof module:workbox-build
+ * @memberof workbox-build
  */
 export async function injectManifest(config: unknown): Promise<BuildResult> {
   const options = validateInjectManifestOptions(config);

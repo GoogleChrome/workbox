@@ -18,7 +18,7 @@ import './_version.js';
  * easier to add in cacheability checks to requests made via Workbox's built-in
  * strategies.
  *
- * @memberof module:workbox-cacheable-response
+ * @memberof workbox-cacheable-response
  */
 class CacheableResponsePlugin implements WorkboxPlugin {
   private readonly _cacheableResponse: CacheableResponse;

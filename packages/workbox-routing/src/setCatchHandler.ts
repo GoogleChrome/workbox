@@ -19,7 +19,7 @@ import './_version.js';
  * @param {module:workbox-routing~handlerCallback} handler A callback
  * function that returns a Promise resulting in a Response.
  *
- * @memberof module:workbox-routing
+ * @memberof workbox-routing
  */
 function setCatchHandler(handler: RouteHandler): void {
   const defaultRouter = getOrCreateDefaultRouter();

@@ -31,8 +31,8 @@ interface NetworkOnlyOptions
  *
  * If the network request fails, this will throw a `WorkboxError` exception.
  *
- * @extends module:workbox-strategies.Strategy
- * @memberof module:workbox-strategies
+ * @extends workbox-strategies.Strategy
+ * @memberof workbox-strategies
  */
 class NetworkOnly extends Strategy {
   private readonly _networkTimeoutSeconds: number;

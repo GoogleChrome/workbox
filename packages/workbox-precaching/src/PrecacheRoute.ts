@@ -26,8 +26,8 @@ import './_version.js';
  * instance and uses it to match incoming requests and handle fetching
  * responses from the precache.
  *
- * @memberof module:workbox-precaching
- * @extends module:workbox-routing.Route
+ * @memberof workbox-precaching
+ * @extends workbox-routing.Route
  */
 class PrecacheRoute extends Route {
   /**

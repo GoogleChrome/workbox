@@ -30,7 +30,7 @@ export interface ImageCacheOptions {
 /**
  * An implementation of the [image caching recipe]{@link https://developers.google.com/web/tools/workbox/guides/common-recipes#caching_images}
  *
- * @memberof module:workbox-recipes
+ * @memberof workbox-recipes
  *
  * @param {Object} [options]
  * @param {string} [options.cacheName] Name for cache. Defaults to images

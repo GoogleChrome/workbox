@@ -86,7 +86,7 @@ import {validateGetManifestOptions} from './lib/validate-options';
  * `count` property contains the total number of precached entries. Any
  * non-fatal warning messages will be returned via `warnings`.
  *
- * @memberof module:workbox-build
+ * @memberof workbox-build
  */
 export async function getManifest(config: unknown): Promise<GetManifestResult> {
   const options = validateGetManifestOptions(config);

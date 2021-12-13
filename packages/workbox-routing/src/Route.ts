@@ -23,7 +23,7 @@ import './_version.js';
  * is called when there is a match and should return a Promise that resolves
  * to a `Response`.
  *
- * @memberof module:workbox-routing
+ * @memberof workbox-routing
  */
 class Route {
   handler: RouteHandlerObject;

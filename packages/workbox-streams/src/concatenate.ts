@@ -44,7 +44,7 @@ function _getReaderFromSource(
  * @param {Array<Promise<module:workbox-streams.StreamSource>>} sourcePromises
  * @return {Object<{done: Promise, stream: ReadableStream}>}
  *
- * @memberof module:workbox-streams
+ * @memberof workbox-streams
  */
 function concatenate(sourcePromises: Promise<StreamSource>[]): {
   done: Promise<void>;

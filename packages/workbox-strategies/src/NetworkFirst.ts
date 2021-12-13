@@ -33,8 +33,8 @@ export interface NetworkFirstOptions extends StrategyOptions {
  * If the network request fails, and there is no cache match, this will throw
  * a `WorkboxError` exception.
  *
- * @extends module:workbox-strategies.Strategy
- * @memberof module:workbox-strategies
+ * @extends workbox-strategies.Strategy
+ * @memberof workbox-strategies
  */
 class NetworkFirst extends Strategy {
   private readonly _networkTimeoutSeconds: number;

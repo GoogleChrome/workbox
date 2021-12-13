@@ -25,8 +25,8 @@ import './_version.js';
  *
  * If there is no cache match, this will throw a `WorkboxError` exception.
  *
- * @extends module:workbox-strategies.Strategy
- * @memberof module:workbox-strategies
+ * @extends workbox-strategies.Strategy
+ * @memberof workbox-strategies
  */
 class CacheOnly extends Strategy {
   /**

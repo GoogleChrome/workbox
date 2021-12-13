@@ -30,8 +30,8 @@ interface PrecacheStrategyOptions extends StrategyOptions {
  * Note: an instance of this class is created automatically when creating a
  * `PrecacheController`; it's generally not necessary to create this yourself.
  *
- * @extends module:workbox-strategies.Strategy
- * @memberof module:workbox-precaching
+ * @extends workbox-strategies.Strategy
+ * @memberof workbox-precaching
  */
 class PrecacheStrategy extends Strategy {
   private readonly _fallbackToNetwork: boolean;

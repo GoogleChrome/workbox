@@ -25,7 +25,7 @@ import './_version.js';
  * response from the network if there's a precache miss.
  * @return {module:workbox-routing~handlerCallback}
  *
- * @memberof module:workbox-precaching
+ * @memberof workbox-precaching
  */
 function createHandlerBoundToURL(url: string): RouteHandlerCallback {
   const precacheController = getOrCreatePrecacheController();

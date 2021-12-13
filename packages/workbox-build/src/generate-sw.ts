@@ -191,7 +191,7 @@ import {writeSWUsingDefaultTemplate} from './lib/write-sw-using-default-template
  * `count` property contains the total number of precached entries. Any
  * non-fatal warning messages will be returned via `warnings`.
  *
- * @memberof module:workbox-build
+ * @memberof workbox-build
  */
 export async function generateSW(config: unknown): Promise<BuildResult> {
   const options = validateGenerateSWOptions(config);

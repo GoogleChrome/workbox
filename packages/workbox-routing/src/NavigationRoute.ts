@@ -31,8 +31,8 @@ export interface NavigationRouteMatchOptions {
  * You can optionally only apply this route to a subset of navigation requests
  * by using one or both of the `denylist` and `allowlist` parameters.
  *
- * @memberof module:workbox-routing
- * @extends module:workbox-routing.Route
+ * @memberof workbox-routing
+ * @extends workbox-routing.Route
  */
 class NavigationRoute extends Route {
   private readonly _allowlist: RegExp[];

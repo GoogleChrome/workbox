@@ -30,7 +30,7 @@ export interface StrategyOptions {
 /**
  * An abstract base class that all other strategy classes must extend from:
  *
- * @memberof module:workbox-strategies
+ * @memberof workbox-strategies
  */
 abstract class Strategy implements RouteHandlerObject {
   cacheName: string;
@@ -285,5 +285,5 @@ export {Strategy};
  * @param {module:workbox-strategies.StrategyHandler} handler
  * @return {Promise<Response>}
  *
- * @memberof module:workbox-strategies.Strategy
+ * @memberof workbox-strategies.Strategy
  */

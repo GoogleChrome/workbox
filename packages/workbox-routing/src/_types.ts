@@ -38,7 +38,7 @@ import './_version.js';
  *     against the current origin.
  * @return {*} To signify a match, return a truthy value.
  *
- * @memberof module:workbox-routing
+ * @memberof workbox-routing
  */
 
 /**
@@ -62,5 +62,5 @@ import './_version.js';
  *     This will be undefined if an empty array or object were returned.
  * @return {Promise<Response>} The response that will fulfill the request.
  *
- * @memberof module:workbox-routing
+ * @memberof workbox-routing
  */

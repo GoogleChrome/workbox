@@ -19,7 +19,7 @@ import './_version.js';
  * @param {Array<string>} headersToCheck
  * @return {boolean}
  *
- * @memberof module:workbox-broadcast-update
+ * @memberof workbox-broadcast-update
  */
 const responsesAreSame = (
   firstResponse: Response,

@@ -205,7 +205,7 @@ const createGtmJsRoute = (cacheName: string) => {
  *     the hit. The function is invoked with the original hit's URLSearchParams
  *     object as its only argument.
  *
- * @memberof module:workbox-google-analytics
+ * @memberof workbox-google-analytics
  */
 const initialize = (options: GoogleAnalyticsInitializeOptions = {}): void => {
   const cacheName = cacheNames.getGoogleAnalyticsName(options.cacheName);
