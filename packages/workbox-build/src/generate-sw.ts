@@ -168,7 +168,7 @@ import {writeSWUsingDefaultTemplate} from './lib/write-sw-using-default-template
  * @param {Array<RuntimeCachingEntry>} [config.runtimeCaching]
  *
  * @param {boolean} [config.skipWaiting=false] Whether to add an
- * unconditional call to [`skipWaiting()`]{@link module:workbox-core.skipWaiting}
+ * unconditional call to [`skipWaiting()`](https://developers.google.com/web/fundamentals/primers/service-workers/lifecycle#skip_the_waiting_phase)
  * to the generated service worker. If `false`, then a `message` listener will
  * be added instead, allowing you to conditionally call `skipWaiting()` by posting
  * a message containing {type: 'SKIP_WAITING'}.

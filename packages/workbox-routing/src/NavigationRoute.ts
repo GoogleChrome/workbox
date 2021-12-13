@@ -21,11 +21,11 @@ export interface NavigationRouteMatchOptions {
 
 /**
  * NavigationRoute makes it easy to create a
- * [Route]{@link module:workbox-routing.Route} that matches for browser
+ * {@link workbox-routing.Route} that matches for browser
  * [navigation requests]{@link https://developers.google.com/web/fundamentals/primers/service-workers/high-performance-loading#first_what_are_navigation_requests}.
  *
  * It will only match incoming Requests whose
- * [`mode`]{@link https://fetch.spec.whatwg.org/#concept-request-mode}
+ * {@link https://fetch.spec.whatwg.org/#concept-request-mode|mode}
  * is set to `navigate`.
  *
  * You can optionally only apply this route to a subset of navigation requests

@@ -35,12 +35,12 @@ const SKIP_WAITING_MESSAGE = {type: 'SKIP_WAITING'};
  * A class to aid in handling service worker registration, updates, and
  * reacting to service worker lifecycle events.
  *
- * @fires [message]{@link module:workbox-window.Workbox#message}
- * @fires [installed]{@link module:workbox-window.Workbox#installed}
- * @fires [waiting]{@link module:workbox-window.Workbox#waiting}
- * @fires [controlling]{@link module:workbox-window.Workbox#controlling}
- * @fires [activated]{@link module:workbox-window.Workbox#activated}
- * @fires [redundant]{@link module:workbox-window.Workbox#redundant}
+ * @fires {@link workbox-window.Workbox#message}
+ * @fires {@link workbox-window.Workbox#installed}
+ * @fires {@link workbox-window.Workbox#waiting}
+ * @fires {@link workbox-window.Workbox#controlling}
+ * @fires {@link workbox-window.Workbox#activated}
+ * @fires {@link workbox-window.Workbox#redundant}
  * @memberof module:workbox-window
  */
 class Workbox extends WorkboxEventTarget {
@@ -298,7 +298,7 @@ class Workbox extends WorkboxEventTarget {
 
   /**
    * Sends the passed data object to the service worker registered by this
-   * instance (via [`getSW()`]{@link module:workbox-window.Workbox#getSW}) and resolves
+   * instance (via {@link workbox-window.Workbox#getSW}) and resolves
    * with a response (if any).
    *
    * A response can be set in a message handler in the service worker by
@@ -633,8 +633,8 @@ export {Workbox};
 
 /**
  * The `installed` event is dispatched if the state of a
- * [`Workbox`]{@link module:workbox-window.Workbox} instance's
- * [registered service worker]{@link https://developers.google.com/web/tools/workbox/modules/workbox-precaching#def-registered-sw}
+ * {@link workbox-window.Workbox} instance's
+ * {@link https://developers.google.com/web/tools/workbox/modules/workbox-precaching#def-registered-sw|registered service worker}
  * changes to `installed`.
  *
  * Then can happen either the very first time a service worker is installed,
@@ -656,12 +656,12 @@ export {Workbox};
 
 /**
  * The `waiting` event is dispatched if the state of a
- * [`Workbox`]{@link module:workbox-window.Workbox} instance's
+ * {@link workbox-window.Workbox} instance's
  * [registered service worker]{@link https://developers.google.com/web/tools/workbox/modules/workbox-precaching#def-registered-sw}
  * changes to `installed` and then doesn't immediately change to `activating`.
  * It may also be dispatched if a service worker with the same
  * [`scriptURL`]{@link https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorker/scriptURL}
- * was already waiting when the [`register()`]{@link module:workbox-window.Workbox#register}
+ * was already waiting when the {@link workbox-window.Workbox#register}
  * method was called.
  *
  * @event module:workbox-window.Workbox#waiting
@@ -706,8 +706,8 @@ export {Workbox};
 
 /**
  * The `activated` event is dispatched if the state of a
- * [`Workbox`]{@link module:workbox-window.Workbox} instance's
- * [registered service worker]{@link https://developers.google.com/web/tools/workbox/modules/workbox-precaching#def-registered-sw}
+ * {@link workbox-window.Workbox} instance's
+ * {@link https://developers.google.com/web/tools/workbox/modules/workbox-precaching#def-registered-sw|registered service worker}
  * changes to `activated`.
  *
  * @event module:workbox-window.Workbox#activated
@@ -725,7 +725,7 @@ export {Workbox};
 
 /**
  * The `redundant` event is dispatched if the state of a
- * [`Workbox`]{@link module:workbox-window.Workbox} instance's
+ * {@link workbox-window.Workbox} instance's
  * [registered service worker]{@link https://developers.google.com/web/tools/workbox/modules/workbox-precaching#def-registered-sw}
  * changes to `redundant`.
  *

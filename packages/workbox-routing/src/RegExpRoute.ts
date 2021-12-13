@@ -21,7 +21,7 @@ import './_version.js';
 
 /**
  * RegExpRoute makes it easy to create a regular expression based
- * [Route]{@link module:workbox-routing.Route}.
+ * {@link workbox-routing.Route}.
  *
  * For same-origin requests the RegExp only needs to match part of the URL. For
  * requests against third-party servers, you must define a RegExp that matches
@@ -37,7 +37,7 @@ class RegExpRoute extends Route {
    * If the regular expression contains
    * [capture groups]{@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp#grouping-back-references},
    * the captured values will be passed to the
-   * [handler's]{@link module:workbox-routing~handlerCallback} `params`
+   * {@link workbox-routing~handlerCallback} `params`
    * argument.
    *
    * @param {RegExp} regExp The regular expression to match against URLs.

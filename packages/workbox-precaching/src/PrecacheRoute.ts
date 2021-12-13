@@ -21,8 +21,8 @@ import {generateURLVariations} from './utils/generateURLVariations.js';
 import './_version.js';
 
 /**
- * A subclass of [Route]{@link module:workbox-routing.Route} that takes a
- * [PrecacheController]{@link module:workbox-precaching.PrecacheController}
+ * A subclass of {@link workbox-routing.Route} that takes a
+ * {@link workbox-precaching.PrecacheController}
  * instance and uses it to match incoming requests and handle fetching
  * responses from the precache.
  *

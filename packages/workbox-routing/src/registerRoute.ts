@@ -22,7 +22,7 @@ import './_version.js';
  * strategy to a singleton Router instance.
  *
  * This method will generate a Route for you if needed and
- * call [registerRoute()]{@link module:workbox-routing.Router#registerRoute}.
+ * call {@link workbox-routing.Router#registerRoute}.
  *
  * @param {RegExp|string|module:workbox-routing.Route~matchCallback|module:workbox-routing.Route} capture
  * If the capture param is a `Route`, all other arguments will be ignored.

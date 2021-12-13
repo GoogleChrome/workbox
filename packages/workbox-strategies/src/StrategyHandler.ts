@@ -30,8 +30,8 @@ function toRequest(input: RequestInfo) {
 
 /**
  * A class created every time a Strategy instance instance calls
- * [handle()]{@link module:workbox-strategies.Strategy~handle} or
- * [handleAll()]{@link module:workbox-strategies.Strategy~handleAll} that wraps all fetch and
+ * {@link workbox-strategies.Strategy~handle} or
+ * {@link workbox-strategies.Strategy~handleAll} that wraps all fetch and
  * cache actions around plugin callbacks and keeps track of when the strategy
  * is "done" (i.e. all added `event.waitUntil()` promises have resolved).
  *
@@ -64,9 +64,8 @@ class StrategyHandler {
    * @param {ExtendableEvent} options.event The event associated with the
    *     request.
    * @param {URL} [options.url]
-   * @param {*} [options.params]
-   *     [match callback]{@link module:workbox-routing~matchCallback},
-   *     (if applicable).
+   * @param {*} [options.params] The return value from the
+   *     {@link workbox-routing~matchCallback} (if applicable).
    */
   constructor(strategy: Strategy, options: HandlerCallbackOptions) {
     /**
@@ -99,7 +98,7 @@ class StrategyHandler {
      * `handle()` or `handleAll()` method).
      * Note: the `param` param will be present if the strategy was invoked
      * from a workbox `Route` object and the
-     * [match callback]{@link module:workbox-routing~matchCallback} returned
+     * {@link workbox-routing~matchCallback} returned
      * a truthy value (it will be that value).
      * @name params
      * @instance
@@ -484,7 +483,7 @@ class StrategyHandler {
    * Note: since this method runs all plugins, it's not suitable for cases
    * where the return value of a callback needs to be applied prior to calling
    * the next callback. See
-   * [`iterateCallbacks()`]{@link module:workbox-strategies.StrategyHandler#iterateCallbacks}
+   * {@link workbox-strategies.StrategyHandler#iterateCallbacks}
    * below for how to handle that case.
    *
    * @param {string} name The name of the callback to run within each plugin.
@@ -539,7 +538,7 @@ class StrategyHandler {
    * `FetchEvent`).
    *
    * Note: you can await
-   * [`doneWaiting()`]{@link module:workbox-strategies.StrategyHandler~doneWaiting}
+   * {@link workbox-strategies.StrategyHandler~doneWaiting}
    * to know when all added promises have settled.
    *
    * @param {Promise} promise A promise to add to the extend lifetime promises
@@ -552,7 +551,7 @@ class StrategyHandler {
 
   /**
    * Returns a promise that resolves once all promises passed to
-   * [`waitUntil()`]{@link module:workbox-strategies.StrategyHandler~waitUntil}
+   * {@link workbox-strategies.StrategyHandler~waitUntil}
    * have settled.
    *
    * Note: any work done after `doneWaiting()` settles should be manually

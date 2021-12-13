@@ -98,7 +98,7 @@ class PrecacheController {
   /**
    * Adds items to the precache list, removing any duplicates and
    * stores the files in the
-   * ["precache cache"]{@link module:workbox-core.cacheNames} when the service
+   * {@link workbox-core.cacheNames|"precache cache"} when the service
    * worker installs.
    *
    * This method can be called multiple times.
