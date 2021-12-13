@@ -36,7 +36,7 @@ interface StreamsHandlerCallback {
  * Promise which resolves to one).
  * @param {HeadersInit} [headersInit] If there's no `Content-Type` specified,
  * `'text/html'` will be used by default.
- * @return {module:workbox-routing~handlerCallback}
+ * @return {workbox-routing~handlerCallback}
  * @memberof workbox-streams
  */
 function strategy(

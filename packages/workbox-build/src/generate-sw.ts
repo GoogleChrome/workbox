@@ -34,7 +34,7 @@ import {writeSWUsingDefaultTemplate} from './lib/write-sw-using-default-template
  * that will be created by the build process, relative to the current working
  * directory. It must end in '.js'.
  *
- * @param {Array<module:workbox-build.ManifestEntry>} [config.additionalManifestEntries]
+ * @param {Array<workbox-build.ManifestEntry>} [config.additionalManifestEntries]
  * A list of entries to be precached, in addition to any entries that are
  * generated as part of the build configuration.
  *
@@ -105,7 +105,7 @@ import {writeSWUsingDefaultTemplate} from './lib/write-sw-using-default-template
  * worker. Keeping the runtime separate means that users will not have to
  * re-download the Workbox code each time your top-level service worker changes.
  *
- * @param {Array<module:workbox-build.ManifestTransform>} [config.manifestTransforms] One or more
+ * @param {Array<workbox-build.ManifestTransform>} [config.manifestTransforms] One or more
  * functions which will be applied sequentially against the generated manifest.
  * If `modifyURLPrefix` or `dontCacheBustURLsMatching` are also specified, their
  * corresponding transformations will be applied first.

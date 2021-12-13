@@ -282,7 +282,7 @@ export {Strategy};
  * @abstract
  * @function
  * @param {Request} request
- * @param {module:workbox-strategies.StrategyHandler} handler
+ * @param {workbox-strategies.StrategyHandler} handler
  * @return {Promise<Response>}
  *
  * @memberof workbox-strategies.Strategy

@@ -25,7 +25,7 @@ const REVISION_SEARCH_PARAM = '__WB_REVISION__';
  * @return {string} A URL with versioning info.
  *
  * @private
- * @memberof module:workbox-precaching
+ * @memberof workbox-precaching
  */
 export function createCacheKey(entry: PrecacheEntry | string): CacheKey {
   if (!entry) {

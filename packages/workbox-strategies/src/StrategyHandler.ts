@@ -58,7 +58,7 @@ class StrategyHandler {
    * The constructor also initializes the state that will be passed to each of
    * the plugins handling this request.
    *
-   * @param {module:workbox-strategies.Strategy} strategy
+   * @param {workbox-strategies.Strategy} strategy
    * @param {Object} options
    * @param {Request|string} options.request A request to run this strategy for.
    * @param {ExtendableEvent} options.event The event associated with the

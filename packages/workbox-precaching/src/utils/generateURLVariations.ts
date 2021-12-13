@@ -18,7 +18,7 @@ import '../_version.js';
  * @param {Object} options
  *
  * @private
- * @memberof module:workbox-precaching
+ * @memberof workbox-precaching
  */
 export function* generateURLVariations(
   url: string,

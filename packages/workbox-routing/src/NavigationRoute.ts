@@ -48,7 +48,7 @@ class NavigationRoute extends Route {
    * and [`search`]{@link https://developer.mozilla.org/en-US/docs/Web/API/HTMLHyperlinkElementUtils/search}
    * portions of the requested URL.
    *
-   * @param {module:workbox-routing~handlerCallback} handler A callback
+   * @param {workbox-routing~handlerCallback} handler A callback
    * function that returns a Promise resulting in a Response.
    * @param {Object} options
    * @param {Array<RegExp>} [options.denylist] If any of these patterns match,

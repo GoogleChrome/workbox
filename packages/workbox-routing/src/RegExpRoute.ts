@@ -41,7 +41,7 @@ class RegExpRoute extends Route {
    * argument.
    *
    * @param {RegExp} regExp The regular expression to match against URLs.
-   * @param {module:workbox-routing~handlerCallback} handler A callback
+   * @param {workbox-routing~handlerCallback} handler A callback
    * function that returns a Promise resulting in a Response.
    * @param {string} [method='GET'] The HTTP method to match the Route
    * against.

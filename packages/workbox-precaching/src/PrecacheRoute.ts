@@ -42,7 +42,7 @@ class PrecacheRoute extends Route {
    * array of regex's to remove search params when looking for a cache match.
    * @param {boolean} [options.cleanURLs=true] The `cleanURLs` option will
    * check the cache for the URL with a `.html` added to the end of the end.
-   * @param {module:workbox-precaching~urlManipulation} [options.urlManipulation]
+   * @param {workbox-precaching~urlManipulation} [options.urlManipulation]
    * This is a function that should take a URL and return an array of
    * alternative URLs that should be checked for precache matches.
    */
