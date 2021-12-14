@@ -30,7 +30,7 @@ export interface StrategyOptions {
 /**
  * An abstract base class that all other strategy classes must extend from:
  *
- * @memberof module:workbox-strategies
+ * @memberof workbox-strategies
  */
 abstract class Strategy implements RouteHandlerObject {
   cacheName: string;
@@ -54,7 +54,7 @@ abstract class Strategy implements RouteHandlerObject {
    * @param {Object} [options]
    * @param {string} [options.cacheName] Cache name to store and retrieve
    * requests. Defaults to the cache names provided by
-   * [workbox-core]{@link module:workbox-core.cacheNames}.
+   * {@link workbox-core.cacheNames}.
    * @param {Array<Object>} [options.plugins] [Plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}
    * to use in conjunction with this caching strategy.
    * @param {Object} [options.fetchOptions] Values passed along to the
@@ -69,7 +69,7 @@ abstract class Strategy implements RouteHandlerObject {
     /**
      * Cache name to store and retrieve
      * requests. Defaults to the cache names provided by
-     * [workbox-core]{@link module:workbox-core.cacheNames}.
+     * {@link workbox-core.cacheNames}.
      *
      * @type {string}
      */
@@ -105,7 +105,7 @@ abstract class Strategy implements RouteHandlerObject {
    * a `Response`, invoking all relevant plugin callbacks.
    *
    * When a strategy instance is registered with a Workbox
-   * [route]{@link module:workbox-routing.Route}, this method is automatically
+   * {@link workbox-routing.Route}, this method is automatically
    * called when the route matches.
    *
    * Alternatively, this method can be used in a standalone `FetchEvent`
@@ -125,9 +125,9 @@ abstract class Strategy implements RouteHandlerObject {
   }
 
   /**
-   * Similar to [`handle()`]{@link module:workbox-strategies.Strategy~handle}, but
+   * Similar to {@link workbox-strategies.Strategy~handle}, but
    * instead of just returning a `Promise` that resolves to a `Response` it
-   * it will return an tuple of [response, done] promises, where the former
+   * it will return an tuple of `[response, done]` promises, where the former
    * (`response`) is equivalent to what `handle()` returns, and the latter is a
    * Promise that will resolve once any promises that were added to
    * `event.waitUntil()` as part of performing the strategy have completed.
@@ -272,7 +272,7 @@ export {Strategy};
 
 /**
  * Classes extending the `Strategy` based class should implement this method,
- * and leverage the [`handler`]{@link module:workbox-strategies.StrategyHandler}
+ * and leverage the {@link workbox-strategies.StrategyHandler}
  * arg to perform all fetching and cache logic, which will ensure all relevant
  * cache, cache options, fetch options and plugins are used (per the current
  * strategy instance).
@@ -282,8 +282,8 @@ export {Strategy};
  * @abstract
  * @function
  * @param {Request} request
- * @param {module:workbox-strategies.StrategyHandler} handler
+ * @param {workbox-strategies.StrategyHandler} handler
  * @return {Promise<Response>}
  *
- * @memberof module:workbox-strategies.Strategy
+ * @memberof workbox-strategies.Strategy
  */

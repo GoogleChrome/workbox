@@ -21,7 +21,7 @@ import {noRevisionForURLsMatchingTransform} from './no-revision-for-urls-matchin
 /**
  * A `ManifestTransform` function can be used to modify the modify the `url` or
  * `revision` properties of some or all of the
- * {@link module:workbox-build.ManifestEntry|ManifestEntries} in the manifest.
+ * {@link workbox-build.ManifestEntry|ManifestEntries} in the manifest.
  *
  * Deleting the `revision` property of an entry will cause
  * the corresponding `url` to be precached without cache-busting parameters
@@ -59,15 +59,15 @@ import {noRevisionForURLsMatchingTransform} from './no-revision-for-urls-matchin
  * };
  *
  * @callback ManifestTransform
- * @param {Array<module:workbox-build.ManifestEntry>} manifestEntries The full
+ * @param {Array<workbox-build.ManifestEntry>} manifestEntries The full
  * array of entries, prior to the current transformation.
  * @param {Object} [compilation] When used in the webpack plugins, this param
  * will be set to the current `compilation`.
- * @return {Promise<module:workbox-build.ManifestTransformResult>}
+ * @return {Promise<workbox-build.ManifestTransformResult>}
  * The array of entries with the transformation applied, and optionally, any
  * warnings that should be reported back to the build tool.
  *
- * @memberof module:workbox-build
+ * @memberof workbox-build
  */
 
 interface ManifestTransformResultWithWarnings {

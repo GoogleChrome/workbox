@@ -72,7 +72,7 @@ const convertEntry = (
  * later. All parts of the storing and replaying process are observable via
  * callbacks.
  *
- * @memberof module:workbox-background-sync
+ * @memberof workbox-background-sync
  */
 class Queue {
   private readonly _name: string;

@@ -19,10 +19,10 @@ import './_version.js';
  * Without a default handler, unmatched requests will go against the
  * network as if there were no service worker present.
  *
- * @param {module:workbox-routing~handlerCallback} handler A callback
+ * @param {workbox-routing~handlerCallback} handler A callback
  * function that returns a Promise resulting in a Response.
  *
- * @memberof module:workbox-routing
+ * @memberof workbox-routing
  */
 function setDefaultHandler(handler: RouteHandler): void {
   const defaultRouter = getOrCreateDefaultRouter();

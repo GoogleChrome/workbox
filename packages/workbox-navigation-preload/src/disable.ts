@@ -16,7 +16,7 @@ declare let self: ServiceWorkerGlobalScope;
 /**
  * If the browser supports Navigation Preload, then this will disable it.
  *
- * @memberof module:workbox-navigation-preload
+ * @memberof workbox-navigation-preload
  */
 function disable(): void {
   if (isSupported()) {

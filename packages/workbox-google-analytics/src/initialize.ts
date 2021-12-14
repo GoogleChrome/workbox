@@ -40,7 +40,7 @@ export interface GoogleAnalyticsInitializeOptions {
  * `qt` param based on the current time, as well as applies any other
  * user-defined hit modifications.
  *
- * @param {Object} config See {@link module:workbox-google-analytics.initialize}.
+ * @param {Object} config See {@link workbox-google-analytics.initialize}.
  * @return {Function} The requestWillDequeue callback function.
  *
  * @private
@@ -205,7 +205,7 @@ const createGtmJsRoute = (cacheName: string) => {
  *     the hit. The function is invoked with the original hit's URLSearchParams
  *     object as its only argument.
  *
- * @memberof module:workbox-google-analytics
+ * @memberof workbox-google-analytics
  */
 const initialize = (options: GoogleAnalyticsInitializeOptions = {}): void => {
   const cacheName = cacheNames.getGoogleAnalyticsName(options.cacheName);

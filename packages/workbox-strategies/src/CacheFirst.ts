@@ -26,14 +26,14 @@ import './_version.js';
  * If the network request fails, and there is no cache match, this will throw
  * a `WorkboxError` exception.
  *
- * @extends module:workbox-strategies.Strategy
- * @memberof module:workbox-strategies
+ * @extends workbox-strategies.Strategy
+ * @memberof workbox-strategies
  */
 class CacheFirst extends Strategy {
   /**
    * @private
    * @param {Request|string} request A request to run this strategy for.
-   * @param {module:workbox-strategies.StrategyHandler} handler The event that
+   * @param {workbox-strategies.StrategyHandler} handler The event that
    *     triggered the request.
    * @return {Promise<Response>}
    */

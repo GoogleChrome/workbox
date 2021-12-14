@@ -29,7 +29,7 @@ const SUBSTRING_TO_FIND = '-precache-';
  * @return {Array<string>} A list of all the cache names that were deleted.
  *
  * @private
- * @memberof module:workbox-precaching
+ * @memberof workbox-precaching
  */
 const deleteOutdatedCaches = async (
   currentPrecacheName: string,

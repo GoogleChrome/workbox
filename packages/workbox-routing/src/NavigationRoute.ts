@@ -21,18 +21,18 @@ export interface NavigationRouteMatchOptions {
 
 /**
  * NavigationRoute makes it easy to create a
- * [Route]{@link module:workbox-routing.Route} that matches for browser
+ * {@link workbox-routing.Route} that matches for browser
  * [navigation requests]{@link https://developers.google.com/web/fundamentals/primers/service-workers/high-performance-loading#first_what_are_navigation_requests}.
  *
  * It will only match incoming Requests whose
- * [`mode`]{@link https://fetch.spec.whatwg.org/#concept-request-mode}
+ * {@link https://fetch.spec.whatwg.org/#concept-request-mode|mode}
  * is set to `navigate`.
  *
  * You can optionally only apply this route to a subset of navigation requests
  * by using one or both of the `denylist` and `allowlist` parameters.
  *
- * @memberof module:workbox-routing
- * @extends module:workbox-routing.Route
+ * @memberof workbox-routing
+ * @extends workbox-routing.Route
  */
 class NavigationRoute extends Route {
   private readonly _allowlist: RegExp[];
@@ -48,7 +48,7 @@ class NavigationRoute extends Route {
    * and [`search`]{@link https://developer.mozilla.org/en-US/docs/Web/API/HTMLHyperlinkElementUtils/search}
    * portions of the requested URL.
    *
-   * @param {module:workbox-routing~handlerCallback} handler A callback
+   * @param {workbox-routing~handlerCallback} handler A callback
    * function that returns a Promise resulting in a Response.
    * @param {Object} options
    * @param {Array<RegExp>} [options.denylist] If any of these patterns match,

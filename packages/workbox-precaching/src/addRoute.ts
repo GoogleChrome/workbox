@@ -23,10 +23,10 @@ import './_version.js';
  * responded to, allowing the event to fall through to other `fetch` event
  * listeners.
  *
- * @param {Object} [options] See
- * [PrecacheRoute options]{@link module:workbox-precaching.PrecacheRoute}.
+ * @param {Object} [options] See the {@link workbox-precaching.PrecacheRoute}
+ * options.
  *
- * @memberof module:workbox-precaching
+ * @memberof workbox-precaching
  */
 function addRoute(options?: PrecacheRouteOptions): void {
   const precacheController = getOrCreatePrecacheController();

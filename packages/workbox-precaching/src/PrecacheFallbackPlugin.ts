@@ -25,7 +25,7 @@ import './_version.js';
  * constructor, the default instance will be used. Generally speaking, most
  * developers will end up using the default.
  *
- * @memberof module:workbox-precaching
+ * @memberof workbox-precaching
  */
 class PrecacheFallbackPlugin implements WorkboxPlugin {
   private readonly _fallbackURL: string;

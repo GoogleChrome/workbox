@@ -46,7 +46,7 @@ import {validateInjectManifestOptions} from './lib/validate-options';
  * that will be read during the build process, relative to the current working
  * directory.
  *
- * @param {Array<module:workbox-build.ManifestEntry>} [config.additionalManifestEntries]
+ * @param {Array<workbox-build.ManifestEntry>} [config.additionalManifestEntries]
  * A list of entries to be precached, in addition to any entries that are
  * generated as part of the build configuration.
  *
@@ -82,7 +82,7 @@ import {validateInjectManifestOptions} from './lib/validate-options';
  * find inside of the `swSrc` file. Once found, it will be replaced by the
  * generated precache manifest.
  *
- * @param {Array<module:workbox-build.ManifestTransform>} [config.manifestTransforms] One or more
+ * @param {Array<workbox-build.ManifestTransform>} [config.manifestTransforms] One or more
  * functions which will be applied sequentially against the generated manifest.
  * If `modifyURLPrefix` or `dontCacheBustURLsMatching` are also specified, their
  * corresponding transformations will be applied first.
@@ -115,7 +115,7 @@ import {validateInjectManifestOptions} from './lib/validate-options';
  * `count` property contains the total number of precached entries. Any
  * non-fatal warning messages will be returned via `warnings`.
  *
- * @memberof module:workbox-build
+ * @memberof workbox-build
  */
 export async function injectManifest(config: unknown): Promise<BuildResult> {
   const options = validateInjectManifestOptions(config);

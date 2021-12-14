@@ -23,7 +23,7 @@ import './_version.js';
  * is called when there is a match and should return a Promise that resolves
  * to a `Response`.
  *
- * @memberof module:workbox-routing
+ * @memberof workbox-routing
  */
 class Route {
   handler: RouteHandlerObject;
@@ -34,10 +34,10 @@ class Route {
   /**
    * Constructor for Route class.
    *
-   * @param {module:workbox-routing~matchCallback} match
+   * @param {workbox-routing~matchCallback} match
    * A callback function that determines whether the route matches a given
    * `fetch` event by returning a non-falsy value.
-   * @param {module:workbox-routing~handlerCallback} handler A callback
+   * @param {workbox-routing~handlerCallback} handler A callback
    * function that returns a Promise resolving to a Response.
    * @param {string} [method='GET'] The HTTP method to match the Route
    * against.
@@ -69,7 +69,7 @@ class Route {
 
   /**
    *
-   * @param {module:workbox-routing-handlerCallback} handler A callback
+   * @param {workbox-routing-handlerCallback} handler A callback
    * function that returns a Promise resolving to a Response
    */
   setCatchHandler(handler: RouteHandler): void {
