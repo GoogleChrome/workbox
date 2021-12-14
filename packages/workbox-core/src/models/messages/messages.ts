@@ -366,4 +366,17 @@ export const messages: MessageMap = {
       `responses. It was passed a response with origin ${origin}.`
     );
   },
+
+  'opaque-streams-source': ({type}) => {
+    const message =
+      `One of the workbox-streams sources resulted in an ` +
+      `'${type}' response.`;
+    if (type === 'opaqueredirect') {
+      return (
+        `${message} Please do not use a navigation request that results ` +
+        `in a redirect as a source.`
+      );
+    }
+    return `${message} Please ensure your sources are CORS-enabled.`;
+  },
 };
