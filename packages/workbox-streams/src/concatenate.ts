@@ -6,10 +6,12 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {logger} from 'workbox-core/_private/logger.js';
 import {assert} from 'workbox-core/_private/assert.js';
 import {Deferred} from 'workbox-core/_private/Deferred.js';
+import {logger} from 'workbox-core/_private/logger.js';
 import {StreamSource} from './_types.js';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
+
 import './_version.js';
 
 /**
@@ -25,7 +27,11 @@ function _getReaderFromSource(
   source: StreamSource,
 ): ReadableStreamReader<unknown> {
   if (source instanceof Response) {
-    return source.body!.getReader();
+    // See https://github.com/GoogleChrome/workbox/issues/2998
+    if (source.body) {
+      return source.body.getReader();
+    }
+    throw new WorkboxError('opaque-streams-source', {type: source.type});
   }
   if (source instanceof ReadableStream) {
     return source.getReader();

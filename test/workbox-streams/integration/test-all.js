@@ -7,8 +7,10 @@
 */
 
 const {expect} = require('chai');
-const activateAndControlSW = require('../../../infra/testing/activate-and-control');
 const {runUnitTests} = require('../../../infra/testing/webdriver/runUnitTests');
+const activateAndControlSW = require('../../../infra/testing/activate-and-control');
+const crossOriginServer = require('../../../infra/testing/server/cross-origin-server');
+const upath = require('upath');
 
 // Store local references of these globals.
 const {webdriver, server} = global.__workbox;
@@ -23,10 +25,19 @@ describe(`[workbox-streams] Integration Tests`, function () {
   const testServerAddress = server.getAddress();
   const testingURL = `${testServerAddress}/test/workbox-streams/static/`;
   const swURL = `${testingURL}sw.js`;
+  let crossOriginURL;
 
   before(async function () {
     await webdriver.get(testingURL);
     await activateAndControlSW(swURL);
+    const crossOrigin = await crossOriginServer.start(
+      upath.join('..', 'static'),
+    );
+    crossOriginURL = `${crossOrigin}/4.txt`;
+  });
+
+  after(function () {
+    crossOriginServer.stop();
   });
 
   for (const testCase of ['concatenate', 'concatenateToResponse', 'strategy']) {
@@ -58,4 +69,29 @@ describe(`[workbox-streams] Integration Tests`, function () {
       }
     });
   }
+
+  it(`should error when a stream source results in an opaque response`, async function () {
+    const {text} = await webdriver.executeAsyncScript(
+      async (crossOriginURL, cb) => {
+        try {
+          const url = new URL('/crossOriginURL', location);
+          url.searchParams.set('cross-origin-url', crossOriginURL);
+
+          const response = await fetch(url);
+          const text = await response.text();
+          cb({text});
+        } catch (error) {
+          cb({text: error.name});
+        }
+      },
+      crossOriginURL,
+    );
+
+    if (text === 'No streams support') {
+      this.skip();
+    } else {
+      // The exception name varies from browser to browser.
+      expect(text).to.be.oneOf(['TypeError', 'AbortError']);
+    }
+  });
 });
