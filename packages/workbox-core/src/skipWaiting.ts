@@ -18,18 +18,20 @@ declare let self: ServiceWorkerGlobalScope;
  *
  * Calling self.skipWaiting() is equivalent, and should be used instead.
  *
- * @memberof module:workbox-core
+ * @memberof workbox-core
  */
 function skipWaiting(): void {
   // Just call self.skipWaiting() directly.
   // See https://github.com/GoogleChrome/workbox/issues/2525
   if (process.env.NODE_ENV !== 'production') {
-    logger.warn(`skipWaiting() from workbox-core is no longer recommended ` +
+    logger.warn(
+      `skipWaiting() from workbox-core is no longer recommended ` +
         `and will be removed in Workbox v7. Using self.skipWaiting() instead ` +
-        `is equivalent.`);
+        `is equivalent.`,
+    );
   }
 
   void self.skipWaiting();
 }
 
-export {skipWaiting}
+export {skipWaiting};

@@ -10,9 +10,16 @@ import {assert} from 'workbox-core/_private/assert.js';
 import {MapLikeObject} from 'workbox-core/types.js';
 import '../_version.js';
 
-
-type SerializableProperties = 'method' | 'referrer' | 'referrerPolicy' | 'mode'
-    | 'credentials' | 'cache' | 'redirect' | 'integrity' | 'keepalive';
+type SerializableProperties =
+  | 'method'
+  | 'referrer'
+  | 'referrerPolicy'
+  | 'mode'
+  | 'credentials'
+  | 'cache'
+  | 'redirect'
+  | 'integrity'
+  | 'keepalive';
 
 const serializableProperties: SerializableProperties[] = [
   'method',
@@ -36,7 +43,8 @@ export interface RequestData extends MapLikeObject {
  * A class to make it easier to serialize and de-serialize requests so they
  * can be stored in IndexedDB.
  *
- * @private
+ * Most developers will not need to access this class directly;
+ * it is exposed for advanced use cases.
  */
 class StorableRequest {
   private readonly _requestData: RequestData;
@@ -47,8 +55,6 @@ class StorableRequest {
    *
    * @param {Request} request
    * @return {Promise<StorableRequest>}
-   *
-   * @private
    */
   static async fromRequest(request: Request): Promise<StorableRequest> {
     const requestData: RequestData = {
@@ -87,7 +93,6 @@ class StorableRequest {
    * @param {Object} requestData An object of request data that includes the
    *     `url` plus any relevant properties of
    *     [requestInit]{@link https://fetch.spec.whatwg.org/#requestinit}.
-   * @private
    */
   constructor(requestData: RequestData) {
     if (process.env.NODE_ENV !== 'production') {
@@ -118,8 +123,6 @@ class StorableRequest {
    * Returns a deep clone of the instances `_requestData` object.
    *
    * @return {Object}
-   *
-   * @private
    */
   toObject(): RequestData {
     const requestData = Object.assign({}, this._requestData);
@@ -135,8 +138,6 @@ class StorableRequest {
    * Converts this instance to a Request.
    *
    * @return {Request}
-   *
-   * @private
    */
   toRequest(): Request {
     return new Request(this._requestData.url, this._requestData);
@@ -146,8 +147,6 @@ class StorableRequest {
    * Creates and returns a deep clone of the instance.
    *
    * @return {StorableRequest}
-   *
-   * @private
    */
   clone(): StorableRequest {
     return new StorableRequest(this.toObject());

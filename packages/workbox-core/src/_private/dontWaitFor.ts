@@ -14,5 +14,5 @@ import '../_version.js';
  **/
 export function dontWaitFor(promise: Promise<any>): void {
   // Effective no-op.
-  void promise.then(() => { });
+  void promise.then(() => {});
 }

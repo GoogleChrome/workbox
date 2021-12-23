@@ -34,7 +34,7 @@ import {writeSWUsingDefaultTemplate} from './lib/write-sw-using-default-template
  * that will be created by the build process, relative to the current working
  * directory. It must end in '.js'.
  *
- * @param {Array<module:workbox-build.ManifestEntry>} [config.additionalManifestEntries]
+ * @param {Array<workbox-build.ManifestEntry>} [config.additionalManifestEntries]
  * A list of entries to be precached, in addition to any entries that are
  * generated as part of the build configuration.
  *
@@ -105,7 +105,7 @@ import {writeSWUsingDefaultTemplate} from './lib/write-sw-using-default-template
  * worker. Keeping the runtime separate means that users will not have to
  * re-download the Workbox code each time your top-level service worker changes.
  *
- * @param {Array<module:workbox-build.ManifestTransform>} [config.manifestTransforms] One or more
+ * @param {Array<workbox-build.ManifestTransform>} [config.manifestTransforms] One or more
  * functions which will be applied sequentially against the generated manifest.
  * If `modifyURLPrefix` or `dontCacheBustURLsMatching` are also specified, their
  * corresponding transformations will be applied first.
@@ -168,7 +168,7 @@ import {writeSWUsingDefaultTemplate} from './lib/write-sw-using-default-template
  * @param {Array<RuntimeCachingEntry>} [config.runtimeCaching]
  *
  * @param {boolean} [config.skipWaiting=false] Whether to add an
- * unconditional call to [`skipWaiting()`]{@link module:workbox-core.skipWaiting}
+ * unconditional call to [`skipWaiting()`](https://developers.google.com/web/fundamentals/primers/service-workers/lifecycle#skip_the_waiting_phase)
  * to the generated service worker. If `false`, then a `message` listener will
  * be added instead, allowing you to conditionally call `skipWaiting()` by posting
  * a message containing {type: 'SKIP_WAITING'}.
@@ -191,7 +191,7 @@ import {writeSWUsingDefaultTemplate} from './lib/write-sw-using-default-template
  * `count` property contains the total number of precached entries. Any
  * non-fatal warning messages will be returned via `warnings`.
  *
- * @memberof module:workbox-build
+ * @memberof workbox-build
  */
 export async function generateSW(config: unknown): Promise<BuildResult> {
   const options = validateGenerateSWOptions(config);
@@ -199,20 +199,24 @@ export async function generateSW(config: unknown): Promise<BuildResult> {
 
   if (options.globDirectory) {
     // Make sure we leave swDest out of the precache manifest.
-    options.globIgnores!.push(rebasePath({
-      baseDirectory: options.globDirectory,
-      file: options.swDest,
-    }));
+    options.globIgnores!.push(
+      rebasePath({
+        baseDirectory: options.globDirectory,
+        file: options.swDest,
+      }),
+    );
 
     // If we create an extra external runtime file, ignore that, too.
     // See https://rollupjs.org/guide/en/#outputchunkfilenames for naming.
     if (!options.inlineWorkboxRuntime) {
       const swDestDir = upath.dirname(options.swDest);
       const workboxRuntimeFile = upath.join(swDestDir, 'workbox-*.js');
-      options.globIgnores!.push(rebasePath({
-        baseDirectory: options.globDirectory,
-        file: workboxRuntimeFile,
-      }));
+      options.globIgnores!.push(
+        rebasePath({
+          baseDirectory: options.globDirectory,
+          file: workboxRuntimeFile,
+        }),
+      );
     }
 
     // We've previously asserted that options.globDirectory is set, so this
@@ -227,9 +231,14 @@ export async function generateSW(config: unknown): Promise<BuildResult> {
     };
   }
 
-  const filePaths = await writeSWUsingDefaultTemplate(Object.assign({
-    manifestEntries: entriesResult.manifestEntries,
-  }, options));
+  const filePaths = await writeSWUsingDefaultTemplate(
+    Object.assign(
+      {
+        manifestEntries: entriesResult.manifestEntries,
+      },
+      options,
+    ),
+  );
 
   return {
     filePaths,

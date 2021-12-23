@@ -9,7 +9,6 @@
 import {getOrCreatePrecacheController} from './utils/getOrCreatePrecacheController.js';
 import './_version.js';
 
-
 /**
  * Takes in a URL, and returns the corresponding URL that could be used to
  * lookup the entry in the precache.
@@ -27,11 +26,11 @@ import './_version.js';
  * @param {string} url The URL whose cache key to look up.
  * @return {string} The cache key that corresponds to that URL.
  *
- * @memberof module:workbox-precaching
+ * @memberof workbox-precaching
  */
 function getCacheKeyForURL(url: string): string | undefined {
   const precacheController = getOrCreatePrecacheController();
   return precacheController.getCacheKeyForURL(url);
 }
 
-export {getCacheKeyForURL}
+export {getCacheKeyForURL};

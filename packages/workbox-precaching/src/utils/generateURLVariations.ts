@@ -10,7 +10,6 @@ import {removeIgnoredSearchParams} from './removeIgnoredSearchParams.js';
 import {PrecacheRouteOptions} from '../_types.js';
 import '../_version.js';
 
-
 /**
  * Generator function that yields possible variations on the original URL to
  * check, one at a time.
@@ -19,20 +18,25 @@ import '../_version.js';
  * @param {Object} options
  *
  * @private
- * @memberof module:workbox-precaching
+ * @memberof workbox-precaching
  */
-export function* generateURLVariations(url: string, {
-  ignoreURLParametersMatching = [/^utm_/, /^fbclid$/],
-  directoryIndex = 'index.html',
-  cleanURLs = true,
-  urlManipulation,
-}: PrecacheRouteOptions = {}): Generator<string, void, unknown> {
+export function* generateURLVariations(
+  url: string,
+  {
+    ignoreURLParametersMatching = [/^utm_/, /^fbclid$/],
+    directoryIndex = 'index.html',
+    cleanURLs = true,
+    urlManipulation,
+  }: PrecacheRouteOptions = {},
+): Generator<string, void, unknown> {
   const urlObject = new URL(url, location.href);
   urlObject.hash = '';
   yield urlObject.href;
 
-  const urlWithoutIgnoredParams =
-      removeIgnoredSearchParams(urlObject, ignoreURLParametersMatching);
+  const urlWithoutIgnoredParams = removeIgnoredSearchParams(
+    urlObject,
+    ignoreURLParametersMatching,
+  );
   yield urlWithoutIgnoredParams.href;
 
   if (directoryIndex && urlWithoutIgnoredParams.pathname.endsWith('/')) {

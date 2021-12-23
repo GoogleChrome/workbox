@@ -811,4 +811,23 @@ describe(`Queue`, function () {
       expect(await db.getAll('requests')).to.have.lengthOf(2);
     });
   });
+
+  describe(`size()`, function () {
+    it(`returns the number of requests in the QueueStore instance`, async function () {
+      const queue = new Queue('a');
+
+      const request1 = new Request('/one', {method: 'POST', body: '...'});
+      const request2 = new Request('/two', {method: 'POST', body: '...'});
+      const request3 = new Request('/three', {method: 'POST', body: '...'});
+
+      await queue.pushRequest({request: request1});
+      await queue.pushRequest({request: request2});
+      await queue.pushRequest({
+        request: request3,
+        metadata: {meta: 'data'},
+      });
+
+      expect(await queue.size()).to.equal(3);
+    });
+  });
 });

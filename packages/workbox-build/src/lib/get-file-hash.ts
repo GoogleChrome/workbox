@@ -16,6 +16,9 @@ export function getFileHash(file: string): string {
     const buffer = fse.readFileSync(file);
     return getStringHash(buffer);
   } catch (err) {
-    throw new Error(errors['unable-to-get-file-hash'] + ` '${err instanceof Error && err.message ? err.message : ''}'`);
+    throw new Error(
+      errors['unable-to-get-file-hash'] +
+        ` '${err instanceof Error && err.message ? err.message : ''}'`,
+    );
   }
 }

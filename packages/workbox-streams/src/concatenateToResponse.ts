@@ -11,7 +11,6 @@ import {concatenate} from './concatenate.js';
 import {StreamSource} from './_types.js';
 import './_version.js';
 
-
 /**
  * Takes multiple source Promises, each of which could resolve to a Response, a
  * ReadableStream, or a [BodyInit](https://fetch.spec.whatwg.org/#bodyinit),
@@ -22,16 +21,17 @@ import './_version.js';
  * stream's data returned in sequence, along with a Promise which signals when
  * the stream is finished (useful for passing to a FetchEvent's waitUntil()).
  *
- * @param {Array<Promise<module:workbox-streams.StreamSource>>} sourcePromises
+ * @param {Array<Promise<workbox-streams.StreamSource>>} sourcePromises
  * @param {HeadersInit} [headersInit] If there's no `Content-Type` specified,
  * `'text/html'` will be used by default.
  * @return {Object<{done: Promise, response: Response}>}
  *
- * @memberof module:workbox-streams
+ * @memberof workbox-streams
  */
 function concatenateToResponse(
-    sourcePromises: Promise<StreamSource>[],
-    headersInit: HeadersInit): {done: Promise<void>; response: Response} {
+  sourcePromises: Promise<StreamSource>[],
+  headersInit: HeadersInit,
+): {done: Promise<void>; response: Response} {
   const {done, stream} = concatenate(sourcePromises);
 
   const headers = createHeaders(headersInit);

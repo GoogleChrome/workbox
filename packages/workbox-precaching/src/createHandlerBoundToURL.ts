@@ -23,13 +23,13 @@ import './_version.js';
  * `Response`.
  * @param {boolean} [fallbackToNetwork=true] Whether to attempt to get the
  * response from the network if there's a precache miss.
- * @return {module:workbox-routing~handlerCallback}
+ * @return {workbox-routing~handlerCallback}
  *
- * @memberof module:workbox-precaching
+ * @memberof workbox-precaching
  */
 function createHandlerBoundToURL(url: string): RouteHandlerCallback {
   const precacheController = getOrCreatePrecacheController();
   return precacheController.createHandlerBoundToURL(url);
 }
 
-export {createHandlerBoundToURL}
+export {createHandlerBoundToURL};

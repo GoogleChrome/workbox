@@ -1,4 +1,3 @@
-
 /*
   Copyright 2019 Google LLC
   Use of this source code is governed by an MIT-style
@@ -14,7 +13,6 @@ import {PrecacheRouteOptions} from './_types.js';
 
 import './_version.js';
 
-
 /**
  * Add a `fetch` listener to the service worker that will
  * respond to
@@ -25,10 +23,10 @@ import './_version.js';
  * responded to, allowing the event to fall through to other `fetch` event
  * listeners.
  *
- * @param {Object} [options] See
- * [PrecacheRoute options]{@link module:workbox-precaching.PrecacheRoute}.
+ * @param {Object} [options] See the {@link workbox-precaching.PrecacheRoute}
+ * options.
  *
- * @memberof module:workbox-precaching
+ * @memberof workbox-precaching
  */
 function addRoute(options?: PrecacheRouteOptions): void {
   const precacheController = getOrCreatePrecacheController();
@@ -37,4 +35,4 @@ function addRoute(options?: PrecacheRouteOptions): void {
   registerRoute(precacheRoute);
 }
 
-export {addRoute}
+export {addRoute};

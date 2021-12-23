@@ -60,7 +60,7 @@ function defaultPayloadGenerator(
  * For efficiency's sake, the underlying response bodies are not compared;
  * only specific response headers are checked.
  *
- * @memberof module:workbox-broadcast-update
+ * @memberof workbox-broadcast-update
  */
 class BroadcastCacheUpdate {
   private readonly _headersToCheck: string[];

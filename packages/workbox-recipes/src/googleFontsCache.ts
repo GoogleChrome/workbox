@@ -22,7 +22,7 @@ export interface GoogleFontCacheOptions {
 /**
  * An implementation of the [Google fonts]{@link https://developers.google.com/web/tools/workbox/guides/common-recipes#google_fonts} caching recipe
  *
- * @memberof module:workbox-recipes
+ * @memberof workbox-recipes
  *
  * @param {Object} [options]
  * @param {string} [options.cachePrefix] Cache prefix for caching stylesheets and webfonts. Defaults to google-fonts
@@ -37,15 +37,15 @@ function googleFontsCache(options: GoogleFontCacheOptions = {}): void {
 
   // Cache the Google Fonts stylesheets with a stale-while-revalidate strategy.
   registerRoute(
-    ({ url }) => url.origin === 'https://fonts.googleapis.com',
+    ({url}) => url.origin === 'https://fonts.googleapis.com',
     new StaleWhileRevalidate({
       cacheName: sheetCacheName,
-    })
+    }),
   );
 
   // Cache the underlying font files with a cache-first strategy for 1 year.
   registerRoute(
-    ({ url }) => url.origin === 'https://fonts.gstatic.com',
+    ({url}) => url.origin === 'https://fonts.gstatic.com',
     new CacheFirst({
       cacheName: fontCacheName,
       plugins: [
@@ -57,8 +57,8 @@ function googleFontsCache(options: GoogleFontCacheOptions = {}): void {
           maxEntries,
         }),
       ],
-    })
+    }),
   );
 }
 
-export { googleFontsCache }
+export {googleFontsCache};

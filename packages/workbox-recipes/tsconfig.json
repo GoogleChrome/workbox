@@ -5,15 +5,13 @@
     "rootDir": "./src",
     "tsBuildInfoFile": "./tsconfig.tsbuildinfo"
   },
-  "include": [
-    "src/**/*.ts"
-  ],
+  "include": ["src/**/*.ts"],
   "references": [
-    { "path": "../workbox-core/" },
-    { "path": "../workbox-routing/" },
-    { "path": "../workbox-strategies/" },
-    { "path": "../workbox-cacheable-response/" },
-    { "path": "../workbox-expiration/" },
-    { "path": "../workbox-precaching/" }
+    {"path": "../workbox-core/"},
+    {"path": "../workbox-routing/"},
+    {"path": "../workbox-strategies/"},
+    {"path": "../workbox-cacheable-response/"},
+    {"path": "../workbox-expiration/"},
+    {"path": "../workbox-precaching/"}
   ]
 }

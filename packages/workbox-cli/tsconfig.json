@@ -8,10 +8,6 @@
     "target": "ES2018",
     "tsBuildInfoFile": "./tsconfig.tsbuildinfo"
   },
-  "include": [
-    "src/**/*.ts"
-  ],
-  "references": [
-    {"path": "../workbox-build/"},
-  ]
+  "include": ["src/**/*.ts"],
+  "references": [{"path": "../workbox-build/"}]
 }

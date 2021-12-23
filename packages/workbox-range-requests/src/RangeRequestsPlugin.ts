@@ -10,7 +10,6 @@ import {WorkboxPlugin} from 'workbox-core/types.js';
 import {createPartialResponse} from './createPartialResponse.js';
 import './_version.js';
 
-
 /**
  * The range request plugin makes it easy for a request with a 'Range' header to
  * be fulfilled by a cached response.
@@ -18,7 +17,7 @@ import './_version.js';
  * It does this by intercepting the `cachedResponseWillBeUsed` plugin callback
  * and returning the appropriate subset of the cached response body.
  *
- * @memberof module:workbox-range-requests
+ * @memberof workbox-range-requests
  */
 class RangeRequestsPlugin implements WorkboxPlugin {
   /**
@@ -32,8 +31,10 @@ class RangeRequestsPlugin implements WorkboxPlugin {
    *
    * @private
    */
-  cachedResponseWillBeUsed: WorkboxPlugin['cachedResponseWillBeUsed'] =
-      async ({request, cachedResponse}) => {
+  cachedResponseWillBeUsed: WorkboxPlugin['cachedResponseWillBeUsed'] = async ({
+    request,
+    cachedResponse,
+  }) => {
     // Only return a sliced response if there's something valid in the cache,
     // and there's a Range: header in the request.
     if (cachedResponse && request.headers.has('range')) {
@@ -43,7 +44,7 @@ class RangeRequestsPlugin implements WorkboxPlugin {
     // If there was no Range: header, or if cachedResponse wasn't valid, just
     // pass it through as-is.
     return cachedResponse;
-  }
+  };
 }
 
 export {RangeRequestsPlugin};

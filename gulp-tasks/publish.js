@@ -11,6 +11,7 @@ const execa = require('execa');
 const fse = require('fs-extra');
 const ol = require('common-tags').oneLine;
 
+const {build} = require('./build');
 const {build_packages_clean} = require('./build-packages');
 const {publish_cdn} = require('./publish-cdn');
 const {publish_github} = require('./publish-github');
@@ -39,6 +40,7 @@ module.exports = {
     publish_sign_in_check,
     build_packages_clean,
     publish_clean,
+    build,
     test,
     publish_lerna,
     publish_github,

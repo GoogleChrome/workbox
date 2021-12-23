@@ -9,7 +9,6 @@
 import {PrecacheController} from '../PrecacheController.js';
 import '../_version.js';
 
-
 let precacheController: PrecacheController | undefined;
 
 /**

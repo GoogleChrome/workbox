@@ -10,18 +10,19 @@ import {logger} from '../_private/logger.js';
 import {quotaErrorCallbacks} from '../models/quotaErrorCallbacks.js';
 import '../_version.js';
 
-
 /**
  * Runs all of the callback functions, one at a time sequentially, in the order
  * in which they were registered.
  *
- * @memberof module:workbox-core
+ * @memberof workbox-core
  * @private
  */
 async function executeQuotaErrorCallbacks(): Promise<void> {
   if (process.env.NODE_ENV !== 'production') {
-    logger.log(`About to run ${quotaErrorCallbacks.size} ` +
-        `callbacks to clean up caches.`);
+    logger.log(
+      `About to run ${quotaErrorCallbacks.size} ` +
+        `callbacks to clean up caches.`,
+    );
   }
 
   for (const callback of quotaErrorCallbacks) {

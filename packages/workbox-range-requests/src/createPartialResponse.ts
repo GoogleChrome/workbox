@@ -29,10 +29,12 @@ import './_version.js';
  * `Range:` header, or a `416 Range Not Satisfiable` response if the
  * conditions of the `Range:` header can't be met.
  *
- * @memberof module:workbox-range-requests
+ * @memberof workbox-range-requests
  */
 async function createPartialResponse(
-    request: Request, originalResponse: Response): Promise<Response> {
+  request: Request,
+  originalResponse: Response,
+): Promise<Response> {
   try {
     if (process.env.NODE_ENV !== 'production') {
       assert!.isInstance(request, Request, {
@@ -63,10 +65,15 @@ async function createPartialResponse(
     const originalBlob = await originalResponse.blob();
 
     const effectiveBoundaries = calculateEffectiveBoundaries(
-        originalBlob, boundaries.start, boundaries.end);
+      originalBlob,
+      boundaries.start,
+      boundaries.end,
+    );
 
-    const slicedBlob = originalBlob.slice(effectiveBoundaries.start,
-        effectiveBoundaries.end);
+    const slicedBlob = originalBlob.slice(
+      effectiveBoundaries.start,
+      effectiveBoundaries.end,
+    );
     const slicedBlobSize = slicedBlob.size;
 
     const slicedResponse = new Response(slicedBlob, {
@@ -78,15 +85,19 @@ async function createPartialResponse(
     });
 
     slicedResponse.headers.set('Content-Length', String(slicedBlobSize));
-    slicedResponse.headers.set('Content-Range',
-        `bytes ${effectiveBoundaries.start}-${effectiveBoundaries.end - 1}/` +
-      `${originalBlob.size}`);
+    slicedResponse.headers.set(
+      'Content-Range',
+      `bytes ${effectiveBoundaries.start}-${effectiveBoundaries.end - 1}/` +
+        `${originalBlob.size}`,
+    );
 
     return slicedResponse;
   } catch (error) {
     if (process.env.NODE_ENV !== 'production') {
-      logger.warn(`Unable to construct a partial response; returning a ` +
-        `416 Range Not Satisfiable response instead.`);
+      logger.warn(
+        `Unable to construct a partial response; returning a ` +
+          `416 Range Not Satisfiable response instead.`,
+      );
       logger.groupCollapsed(`View details here.`);
       logger.log(error);
       logger.log(request);

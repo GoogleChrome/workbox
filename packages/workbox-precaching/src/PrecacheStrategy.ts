@@ -22,16 +22,16 @@ interface PrecacheStrategyOptions extends StrategyOptions {
 }
 
 /**
- * A [Strategy]{@link module:workbox-strategies.Strategy} implementation
+ * A {@link workbox-strategies.Strategy} implementation
  * specifically designed to work with
- * [PrecacheController]{@link module:workbox-precaching.PrecacheController}
+ * {@link workbox-precaching.PrecacheController}
  * to both cache and fetch precached assets.
  *
  * Note: an instance of this class is created automatically when creating a
  * `PrecacheController`; it's generally not necessary to create this yourself.
  *
- * @extends module:workbox-strategies.Strategy
- * @memberof module:workbox-precaching
+ * @extends workbox-strategies.Strategy
+ * @memberof workbox-precaching
  */
 class PrecacheStrategy extends Strategy {
   private readonly _fallbackToNetwork: boolean;
@@ -57,14 +57,14 @@ class PrecacheStrategy extends Strategy {
    * @param {Object} [options]
    * @param {string} [options.cacheName] Cache name to store and retrieve
    * requests. Defaults to the cache names provided by
-   * [workbox-core]{@link module:workbox-core.cacheNames}.
-   * @param {Array<Object>} [options.plugins] [Plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}
+   * {@link workbox-core.cacheNames}.
+   * @param {Array<Object>} [options.plugins] {@link https://developers.google.com/web/tools/workbox/guides/using-plugins|Plugins}
    * to use in conjunction with this caching strategy.
    * @param {Object} [options.fetchOptions] Values passed along to the
-   * [`init`]{@link https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch#Parameters}
+   * {@link https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch#Parameters|init}
    * of all fetch() requests made by this strategy.
    * @param {Object} [options.matchOptions] The
-   * [`CacheQueryOptions`]{@link https://w3c.github.io/ServiceWorker/#dictdef-cachequeryoptions}
+   * {@link https://w3c.github.io/ServiceWorker/#dictdef-cachequeryoptions|CacheQueryOptions}
    * for any `cache.match()` or `cache.put()` calls made by this strategy.
    * @param {boolean} [options.fallbackToNetwork=true] Whether to attempt to
    * get the response from the network if there's a precache miss.
@@ -86,7 +86,7 @@ class PrecacheStrategy extends Strategy {
   /**
    * @private
    * @param {Request|string} request A request to run this strategy for.
-   * @param {module:workbox-strategies.StrategyHandler} handler The event that
+   * @param {workbox-strategies.StrategyHandler} handler The event that
    *     triggered the request.
    * @return {Promise<Response>}
    */

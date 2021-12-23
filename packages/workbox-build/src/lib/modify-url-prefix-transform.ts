@@ -10,10 +10,14 @@ import {errors} from './errors';
 import {escapeRegExp} from './escape-regexp';
 import {ManifestTransform} from '../types';
 
-export function modifyURLPrefixTransform(modifyURLPrefix: {[key: string]: string}): ManifestTransform {
-  if (!modifyURLPrefix ||
-      typeof modifyURLPrefix !== 'object' ||
-      Array.isArray(modifyURLPrefix)) {
+export function modifyURLPrefixTransform(modifyURLPrefix: {
+  [key: string]: string;
+}): ManifestTransform {
+  if (
+    !modifyURLPrefix ||
+    typeof modifyURLPrefix !== 'object' ||
+    Array.isArray(modifyURLPrefix)
+  ) {
     throw new Error(errors['modify-url-prefix-bad-prefixes']);
   }
 

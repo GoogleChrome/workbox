@@ -7,7 +7,6 @@
 
 import '../_version.js';
 
-
 function stripParams(fullURL: string, ignoreParams: string[]) {
   const strippedURL = new URL(fullURL);
   for (const param of ignoreParams) {
@@ -15,7 +14,6 @@ function stripParams(fullURL: string, ignoreParams: string[]) {
   }
   return strippedURL.href;
 }
-
 
 /**
  * Matches an item in the cache, ignoring specific URL params. This is similar
