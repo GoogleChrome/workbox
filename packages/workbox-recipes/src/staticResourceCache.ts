@@ -27,7 +27,7 @@ export interface StaticResourceOptions {
 /**
  * An implementation of the [CSS and JavaScript files recipe]{@link https://developers.google.com/web/tools/workbox/guides/common-recipes#cache_css_and_javascript_files}
  *
- * @memberof workbox-recipes
+ * @memberof module:workbox-recipes
  *
  * @param {Object} [options]
  * @param {string} [options.cacheName] Name for cache. Defaults to static-resources

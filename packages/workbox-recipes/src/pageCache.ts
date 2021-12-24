@@ -28,7 +28,7 @@ export interface ImageCacheOptions {
 /**
  * An implementation of a page caching recipe with a network timeout
  *
- * @memberof workbox-recipes
+ * @memberof module:workbox-recipes
  *
  * @param {Object} [options]
  * @param {string} [options.cacheName] Name for cache. Defaults to pages

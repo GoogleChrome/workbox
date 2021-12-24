@@ -16,7 +16,7 @@ import './_version.js';
  * there's a quota error.
  *
  * @param {Function} callback
- * @memberof workbox-core
+ * @memberof module:workbox-core
  */
 // Can't change Function type
 // eslint-disable-next-line @typescript-eslint/ban-types

@@ -23,7 +23,7 @@ import './_version.js';
  * to look up in the precache.
  * @return {Promise<Response|undefined>}
  *
- * @memberof workbox-precaching
+ * @memberof module:workbox-precaching
  */
 function matchPrecache(
   request: string | Request,

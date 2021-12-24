@@ -18,7 +18,7 @@ import '../_version.js';
  * @return {URL} The URL with any ignored search parameters removed.
  *
  * @private
- * @memberof workbox-precaching
+ * @memberof module:workbox-precaching
  */
 export function removeIgnoredSearchParams(
   urlObject: URL,

@@ -22,7 +22,7 @@ export interface GoogleFontCacheOptions {
 /**
  * An implementation of the [Google fonts]{@link https://developers.google.com/web/tools/workbox/guides/common-recipes#google_fonts} caching recipe
  *
- * @memberof workbox-recipes
+ * @memberof module:workbox-recipes
  *
  * @param {Object} [options]
  * @param {string} [options.cachePrefix] Cache prefix for caching stylesheets and webfonts. Defaults to google-fonts

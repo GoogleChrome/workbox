@@ -22,7 +22,7 @@ import './_version.js';
  * @return {Object} An object with `precache`, `runtime`, `prefix`, and
  *     `googleAnalytics` properties.
  *
- * @memberof workbox-core
+ * @memberof module:workbox-core
  */
 const cacheNames = {
   get googleAnalytics(): string {

@@ -29,7 +29,7 @@ import './_version.js';
  * `Range:` header, or a `416 Range Not Satisfiable` response if the
  * conditions of the `Range:` header can't be met.
  *
- * @memberof workbox-range-requests
+ * @memberof module:workbox-range-requests
  */
 async function createPartialResponse(
   request: Request,

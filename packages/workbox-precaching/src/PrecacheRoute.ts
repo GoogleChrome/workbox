@@ -21,13 +21,13 @@ import {generateURLVariations} from './utils/generateURLVariations.js';
 import './_version.js';
 
 /**
- * A subclass of {@link workbox-routing.Route} that takes a
- * {@link workbox-precaching.PrecacheController}
+ * A subclass of [Route]{@link module:workbox-routing.Route} that takes a
+ * [PrecacheController]{@link module:workbox-precaching.PrecacheController}
  * instance and uses it to match incoming requests and handle fetching
  * responses from the precache.
  *
- * @memberof workbox-precaching
- * @extends workbox-routing.Route
+ * @memberof module:workbox-precaching
+ * @extends module:workbox-routing.Route
  */
 class PrecacheRoute extends Route {
   /**
@@ -42,7 +42,7 @@ class PrecacheRoute extends Route {
    * array of regex's to remove search params when looking for a cache match.
    * @param {boolean} [options.cleanURLs=true] The `cleanURLs` option will
    * check the cache for the URL with a `.html` added to the end of the end.
-   * @param {workbox-precaching~urlManipulation} [options.urlManipulation]
+   * @param {module:workbox-precaching~urlManipulation} [options.urlManipulation]
    * This is a function that should take a URL and return an array of
    * alternative URLs that should be checked for precache matches.
    */

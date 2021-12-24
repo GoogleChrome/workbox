@@ -34,7 +34,7 @@ function _nestedGroup(groupTitle: string, urls: string[]): void {
  * @param {Array<string>} urlsAlreadyPrecached
  *
  * @private
- * @memberof workbox-precaching
+ * @memberof module:workbox-precaching
  */
 export function printInstallDetails(
   urlsToPrecache: string[],

@@ -28,7 +28,7 @@ import './_version.js';
  *
  * @param {Response} response
  * @param {Function} modifier
- * @memberof workbox-core
+ * @memberof module:workbox-core
  */
 async function copyResponse(
   response: Response,

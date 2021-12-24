@@ -26,16 +26,16 @@ const BUILD_DIR = 'build';
  * Workbox from its official CDN URL.
  *
  * This method is exposed for the benefit of developers using
- * [injectManifest()]{@link workbox-build.injectManifest} who would
+ * [injectManifest()]{@link module:workbox-build.injectManifest} who would
  * prefer not to use the CDN copies of Workbox. Developers using
- * [generateSW()]{@link workbox-build.generateSW} don't need to
+ * [generateSW()]{@link module:workbox-build.generateSW} don't need to
  * explicitly call this method.
  *
  * @param {string} destDirectory The path to the parent directory under which
  * the new directory of libraries will be created.
  * @return {Promise<string>} The name of the newly created directory.
  *
- * @alias workbox-build.copyWorkboxLibraries
+ * @alias module:workbox-build.copyWorkboxLibraries
  */
 export async function copyWorkboxLibraries(
   destDirectory: string,

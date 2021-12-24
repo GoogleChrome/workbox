@@ -21,7 +21,7 @@ declare let self: ServiceWorkerGlobalScope;
  * the value of the `Service-Worker-Navigation-Preload` header which will be
  * sent to the server when making the navigation request.
  *
- * @memberof workbox-navigation-preload
+ * @memberof module:workbox-navigation-preload
  */
 function enable(headerValue?: string): void {
   if (isSupported()) {

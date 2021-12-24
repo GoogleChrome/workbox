@@ -18,7 +18,7 @@ declare let self: ServiceWorkerGlobalScope;
  *
  * Calling self.skipWaiting() is equivalent, and should be used instead.
  *
- * @memberof workbox-core
+ * @memberof module:workbox-core
  */
 function skipWaiting(): void {
   // Just call self.skipWaiting() directly.

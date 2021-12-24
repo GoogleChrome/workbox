@@ -20,7 +20,7 @@ import '../_version.js';
  * @return {boolean} `true`, if the current browser meets the requirements for
  * streaming responses, and `false` otherwise.
  *
- * @memberof workbox-streams
+ * @memberof module:workbox-streams
  */
 function createHeaders(headersInit = {}): Headers {
   // See https://github.com/GoogleChrome/workbox/issues/1461

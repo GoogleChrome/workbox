@@ -130,7 +130,7 @@ export class QueueStore {
   /**
    * Returns all entries in the store matching the `queueName`.
    *
-   * @param {Object} options See {@link workbox-background-sync.Queue~getAll}
+   * @param {Object} options See {@link module:workbox-background-sync.Queue~getAll}
    * @return {Promise<Array<Object>>}
    */
   async getAll(): Promise<QueueStoreEntry[]> {
@@ -140,7 +140,7 @@ export class QueueStore {
   /**
    * Returns the number of entries in the store matching the `queueName`.
    *
-   * @param {Object} options See {@link workbox-background-sync.Queue~size}
+   * @param {Object} options See {@link module:workbox-background-sync.Queue~size}
    * @return {Promise<number>}
    */
   async size(): Promise<number> {

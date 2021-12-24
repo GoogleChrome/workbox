@@ -41,7 +41,7 @@ interface PrecacheControllerOptions {
 /**
  * Performs efficient precaching of assets.
  *
- * @memberof workbox-precaching
+ * @memberof module:workbox-precaching
  */
 class PrecacheController {
   private _installAndActiveListenersAdded?: boolean;
@@ -88,7 +88,7 @@ class PrecacheController {
   }
 
   /**
-   * @type {workbox-precaching.PrecacheStrategy} The strategy created by this controller and
+   * @type {module:workbox-precaching.PrecacheStrategy} The strategy created by this controller and
    * used to cache assets and respond to fetch events.
    */
   get strategy(): Strategy {
@@ -98,7 +98,7 @@ class PrecacheController {
   /**
    * Adds items to the precache list, removing any duplicates and
    * stores the files in the
-   * {@link workbox-core.cacheNames|"precache cache"} when the service
+   * ["precache cache"]{@link module:workbox-core.cacheNames} when the service
    * worker installs.
    *
    * This method can be called multiple times.
@@ -119,7 +119,7 @@ class PrecacheController {
    * This method will add items to the precache list, removing duplicates
    * and ensuring the information is valid.
    *
-   * @param {Array<workbox-precaching.PrecacheController.PrecacheEntry|string>} entries
+   * @param {Array<module:workbox-precaching.PrecacheController.PrecacheEntry|string>} entries
    *     Array of entries to precache.
    */
   addToCacheList(entries: Array<PrecacheEntry | string>): void {
@@ -194,7 +194,7 @@ class PrecacheController {
    * to call it yourself in your event handlers.
    *
    * @param {ExtendableEvent} event
-   * @return {Promise<workbox-precaching.InstallResult>}
+   * @return {Promise<module:workbox-precaching.InstallResult>}
    */
   install(event: ExtendableEvent): Promise<InstallResult> {
     // waitUntil returns Promise<any>
@@ -242,7 +242,7 @@ class PrecacheController {
    * to call it yourself in your event handlers.
    *
    * @param {ExtendableEvent} event
-   * @return {Promise<workbox-precaching.CleanupResult>}
+   * @return {Promise<module:workbox-precaching.CleanupResult>}
    */
   activate(event: ExtendableEvent): Promise<CleanupResult> {
     // waitUntil returns Promise<any>
@@ -347,7 +347,7 @@ class PrecacheController {
    *
    * @param {string} url The precached URL which will be used to lookup the
    * `Response`.
-   * @return {workbox-routing~handlerCallback}
+   * @return {module:workbox-routing~handlerCallback}
    */
   createHandlerBoundToURL(url: string): RouteHandlerCallback {
     const cacheKey = this.getCacheKeyForURL(url);

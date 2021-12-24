@@ -26,7 +26,7 @@ interface CacheExpirationConfig {
  * limit on the number of responses stored in a
  * [`Cache`](https://developer.mozilla.org/en-US/docs/Web/API/Cache).
  *
- * @memberof workbox-expiration
+ * @memberof module:workbox-expiration
  */
 class CacheExpiration {
   private _isRunning = false;

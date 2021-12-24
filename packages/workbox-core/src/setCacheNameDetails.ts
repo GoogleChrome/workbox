@@ -26,7 +26,7 @@ import './_version.js';
  * @param {Object} [details.googleAnalytics] The cache name to use for
  *     `workbox-google-analytics` caching.
  *
- * @memberof workbox-core
+ * @memberof module:workbox-core
  */
 function setCacheNameDetails(details: PartialCacheNameDetails): void {
   if (process.env.NODE_ENV !== 'production') {

@@ -11,7 +11,7 @@ export interface WarmStrategyCacheOptions {
 declare let self: ServiceWorkerGlobalScope;
 
 /**
- * @memberof workbox-recipes
+ * @memberof module:workbox-recipes
  
  * @param {Object} options 
  * @param {string[]} options.urls Paths to warm the strategy's cache with

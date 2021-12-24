@@ -30,12 +30,12 @@ function toRequest(input: RequestInfo) {
 
 /**
  * A class created every time a Strategy instance instance calls
- * {@link workbox-strategies.Strategy~handle} or
- * {@link workbox-strategies.Strategy~handleAll} that wraps all fetch and
+ * [handle()]{@link module:workbox-strategies.Strategy~handle} or
+ * [handleAll()]{@link module:workbox-strategies.Strategy~handleAll} that wraps all fetch and
  * cache actions around plugin callbacks and keeps track of when the strategy
  * is "done" (i.e. all added `event.waitUntil()` promises have resolved).
  *
- * @memberof workbox-strategies
+ * @memberof module:workbox-strategies
  */
 class StrategyHandler {
   public request!: Request;
@@ -58,14 +58,15 @@ class StrategyHandler {
    * The constructor also initializes the state that will be passed to each of
    * the plugins handling this request.
    *
-   * @param {workbox-strategies.Strategy} strategy
+   * @param {module:workbox-strategies.Strategy} strategy
    * @param {Object} options
    * @param {Request|string} options.request A request to run this strategy for.
    * @param {ExtendableEvent} options.event The event associated with the
    *     request.
    * @param {URL} [options.url]
-   * @param {*} [options.params] The return value from the
-   *     {@link workbox-routing~matchCallback} (if applicable).
+   * @param {*} [options.params]
+   *     [match callback]{@link module:workbox-routing~matchCallback},
+   *     (if applicable).
    */
   constructor(strategy: Strategy, options: HandlerCallbackOptions) {
     /**
@@ -74,14 +75,14 @@ class StrategyHandler {
      * @name request
      * @instance
      * @type {Request}
-     * @memberof workbox-strategies.StrategyHandler
+     * @memberof module:workbox-strategies.StrategyHandler
      */
     /**
      * The event associated with this request.
      * @name event
      * @instance
      * @type {ExtendableEvent}
-     * @memberof workbox-strategies.StrategyHandler
+     * @memberof module:workbox-strategies.StrategyHandler
      */
     /**
      * A `URL` instance of `request.url` (if passed to the strategy's
@@ -91,19 +92,19 @@ class StrategyHandler {
      * @name url
      * @instance
      * @type {URL|undefined}
-     * @memberof workbox-strategies.StrategyHandler
+     * @memberof module:workbox-strategies.StrategyHandler
      */
     /**
      * A `param` value (if passed to the strategy's
      * `handle()` or `handleAll()` method).
      * Note: the `param` param will be present if the strategy was invoked
      * from a workbox `Route` object and the
-     * {@link workbox-routing~matchCallback} returned
+     * [match callback]{@link module:workbox-routing~matchCallback} returned
      * a truthy value (it will be that value).
      * @name params
      * @instance
      * @type {*|undefined}
-     * @memberof workbox-strategies.StrategyHandler
+     * @memberof module:workbox-strategies.StrategyHandler
      */
     if (process.env.NODE_ENV !== 'production') {
       assert!.isInstance(options.event, ExtendableEvent, {
@@ -483,7 +484,7 @@ class StrategyHandler {
    * Note: since this method runs all plugins, it's not suitable for cases
    * where the return value of a callback needs to be applied prior to calling
    * the next callback. See
-   * {@link workbox-strategies.StrategyHandler#iterateCallbacks}
+   * [`iterateCallbacks()`]{@link module:workbox-strategies.StrategyHandler#iterateCallbacks}
    * below for how to handle that case.
    *
    * @param {string} name The name of the callback to run within each plugin.
@@ -538,7 +539,7 @@ class StrategyHandler {
    * `FetchEvent`).
    *
    * Note: you can await
-   * {@link workbox-strategies.StrategyHandler~doneWaiting}
+   * [`doneWaiting()`]{@link module:workbox-strategies.StrategyHandler~doneWaiting}
    * to know when all added promises have settled.
    *
    * @param {Promise} promise A promise to add to the extend lifetime promises
@@ -551,7 +552,7 @@ class StrategyHandler {
 
   /**
    * Returns a promise that resolves once all promises passed to
-   * {@link workbox-strategies.StrategyHandler~waitUntil}
+   * [`waitUntil()`]{@link module:workbox-strategies.StrategyHandler~waitUntil}
    * have settled.
    *
    * Note: any work done after `doneWaiting()` settles should be manually

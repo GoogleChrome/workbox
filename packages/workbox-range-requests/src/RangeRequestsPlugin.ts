@@ -17,7 +17,7 @@ import './_version.js';
  * It does this by intercepting the `cachedResponseWillBeUsed` plugin callback
  * and returning the appropriate subset of the cached response body.
  *
- * @memberof workbox-range-requests
+ * @memberof module:workbox-range-requests
  */
 class RangeRequestsPlugin implements WorkboxPlugin {
   /**

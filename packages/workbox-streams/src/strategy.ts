@@ -31,13 +31,13 @@ interface StreamsHandlerCallback {
  * and create a final response that concatenates their values together.
  *
  * @param {Array<function({event, request, url, params})>} sourceFunctions
- * An array of functions similar to {@link workbox-routing~handlerCallback}
- * but that instead return a {@link workbox-streams.StreamSource} (or a
+ * An array of functions similar to {@link module:workbox-routing~handlerCallback}
+ * but that instead return a {@link module:workbox-streams.StreamSource} (or a
  * Promise which resolves to one).
  * @param {HeadersInit} [headersInit] If there's no `Content-Type` specified,
  * `'text/html'` will be used by default.
- * @return {workbox-routing~handlerCallback}
- * @memberof workbox-streams
+ * @return {module:workbox-routing~handlerCallback}
+ * @memberof module:workbox-streams
  */
 function strategy(
   sourceFunctions: StreamsHandlerCallback[],

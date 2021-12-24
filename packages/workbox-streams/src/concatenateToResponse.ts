@@ -21,12 +21,12 @@ import './_version.js';
  * stream's data returned in sequence, along with a Promise which signals when
  * the stream is finished (useful for passing to a FetchEvent's waitUntil()).
  *
- * @param {Array<Promise<workbox-streams.StreamSource>>} sourcePromises
+ * @param {Array<Promise<module:workbox-streams.StreamSource>>} sourcePromises
  * @param {HeadersInit} [headersInit] If there's no `Content-Type` specified,
  * `'text/html'` will be used by default.
  * @return {Object<{done: Promise, response: Response}>}
  *
- * @memberof workbox-streams
+ * @memberof module:workbox-streams
  */
 function concatenateToResponse(
   sourcePromises: Promise<StreamSource>[],

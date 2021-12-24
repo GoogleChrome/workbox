@@ -19,5 +19,5 @@ export type StreamSource = Response | ReadableStream | BodyInit;
 
 /**
  * @typedef {Response|ReadableStream|BodyInit} StreamSource
- * @memberof workbox-streams
+ * @memberof module:workbox-streams
  */

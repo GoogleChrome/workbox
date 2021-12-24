@@ -21,7 +21,7 @@ import {validateGetManifestOptions} from './lib/validate-options';
  * @param {string} config.globDirectory The local directory you wish to match
  * `globPatterns` against. The path is relative to the current directory.
  *
- * @param {Array<workbox-build.ManifestEntry>} [config.additionalManifestEntries]
+ * @param {Array<module:workbox-build.ManifestEntry>} [config.additionalManifestEntries]
  * A list of entries to be precached, in addition to any entries that are
  * generated as part of the build configuration.
  *
@@ -53,7 +53,7 @@ import {validateGetManifestOptions} from './lib/validate-options';
  * definition of `strict` in the `glob`
  * [documentation](https://github.com/isaacs/node-glob#options).
  *
- * @param {Array<workbox-build.ManifestTransform>} [config.manifestTransforms] One or more
+ * @param {Array<module:workbox-build.ManifestTransform>} [config.manifestTransforms] One or more
  * functions which will be applied sequentially against the generated manifest.
  * If `modifyURLPrefix` or `dontCacheBustURLsMatching` are also specified, their
  * corresponding transformations will be applied first.
@@ -79,14 +79,14 @@ import {validateGetManifestOptions} from './lib/validate-options';
  * version the URL. If used with a single string, it will be interpreted as
  * unique versioning information that you've generated for a given URL.
  *
- * @return {Promise<{count: number, manifestEntries: Array<workbox-build.ManifestEntry>, size: number, warnings: Array<string>}>}
+ * @return {Promise<{count: number, manifestEntries: Array<module:workbox-build.ManifestEntry>, size: number, warnings: Array<string>}>}
  * A promise that resolves once the precache manifest (available in the
  * `manifestEntries` property) has been determined. The `size` property
  * contains the aggregate size of all the precached entries, in bytes, and the
  * `count` property contains the total number of precached entries. Any
  * non-fatal warning messages will be returned via `warnings`.
  *
- * @memberof workbox-build
+ * @memberof module:workbox-build
  */
 export async function getManifest(config: unknown): Promise<GetManifestResult> {
   const options = validateGetManifestOptions(config);

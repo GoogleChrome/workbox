@@ -16,14 +16,14 @@ import './_version.js';
  * respond to fetch events.
  *
  * This is a convenience method that will call
- * {@link workbox-precaching.precache} and
- * {@link workbox-precaching.addRoute} in a single call.
+ * [precache()]{@link module:workbox-precaching.precache} and
+ * [addRoute()]{@link module:workbox-precaching.addRoute} in a single call.
  *
  * @param {Array<Object|string>} entries Array of entries to precache.
- * @param {Object} [options] See the
- * {@link workbox-precaching.PrecacheRoute} options.
+ * @param {Object} [options] See
+ * [PrecacheRoute options]{@link module:workbox-precaching.PrecacheRoute}.
  *
- * @memberof workbox-precaching
+ * @memberof module:workbox-precaching
  */
 function precacheAndRoute(
   entries: Array<PrecacheEntry | string>,
