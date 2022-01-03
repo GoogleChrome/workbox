@@ -36,7 +36,7 @@ function checkConditions(
 ): boolean {
   for (const condition of conditions) {
     if (typeof condition === 'function') {
-      return condition(asset.name)
+      return condition(asset.name);
     } else {
       if (ModuleFilenameHelpers.matchPart(asset.name, condition)) {
         return true;

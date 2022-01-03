@@ -359,4 +359,4 @@ class GenerateSW {
   }
 }
 
-export {GenerateSW}
+export {GenerateSW};
