@@ -42,17 +42,17 @@ export function populateSWTemplate({
     directoryIndex,
     // An array of RegExp objects can't be serialized by JSON.stringify()'s
     // default behavior, so if it's given, convert it manually.
-    ignoreURLParametersMatching: ignoreURLParametersMatching ?
-      [] as Array<RegExp> :
-      undefined,
+    ignoreURLParametersMatching: ignoreURLParametersMatching
+      ? ([] as Array<RegExp>)
+      : undefined,
   };
 
   let precacheOptionsString = JSON.stringify(precacheOptions, null, 2);
   if (ignoreURLParametersMatching) {
     precacheOptionsString = precacheOptionsString.replace(
-        `"ignoreURLParametersMatching": []`,
-        `"ignoreURLParametersMatching": [` +
-      `${ignoreURLParametersMatching.join(', ')}]`,
+      `"ignoreURLParametersMatching": []`,
+      `"ignoreURLParametersMatching": [` +
+        `${ignoreURLParametersMatching.join(', ')}]`,
     );
   }
 
@@ -60,12 +60,13 @@ export function populateSWTemplate({
   if (offlineGoogleAnalytics) {
     // If offlineGoogleAnalytics is a truthy value, we need to convert it to the
     // format expected by the template.
-    offlineAnalyticsConfigString = offlineGoogleAnalytics === true ?
-      // If it's the literal value true, then use an empty config string.
-      '{}' :
-      // Otherwise, convert the config object into a more complex string, taking
-      // into account the fact that functions might need to be stringified.
-      stringifyWithoutComments(offlineGoogleAnalytics);
+    offlineAnalyticsConfigString =
+      offlineGoogleAnalytics === true
+        ? // If it's the literal value true, then use an empty config string.
+          '{}'
+        : // Otherwise, convert the config object into a more complex string, taking
+          // into account the fact that functions might need to be stringified.
+          stringifyWithoutComments(offlineGoogleAnalytics);
   }
 
   const moduleRegistry = new ModuleRegistry();
@@ -96,6 +97,9 @@ export function populateSWTemplate({
     return workboxImportStatements.join('\n') + populatedTemplate;
   } catch (error) {
     throw new Error(
-      `${errors['populating-sw-tmpl-failed']} '${error instanceof Error && error.message ? error.message : ''}'`);
+      `${errors['populating-sw-tmpl-failed']} '${
+        error instanceof Error && error.message ? error.message : ''
+      }'`,
+    );
   }
 }

@@ -11,7 +11,6 @@ import {RouteHandler, RouteHandlerObject} from 'workbox-core/types.js';
 
 import '../_version.js';
 
-
 /**
  * @param {function()|Object} handler Either a function, or an object with a
  * 'handle' method.
@@ -19,9 +18,7 @@ import '../_version.js';
  *
  * @private
  */
-export const normalizeHandler = (
-  handler: RouteHandler
-): RouteHandlerObject => {
+export const normalizeHandler = (handler: RouteHandler): RouteHandlerObject => {
   if (handler && typeof handler === 'object') {
     if (process.env.NODE_ENV !== 'production') {
       assert!.hasMethod(handler, 'handle', {

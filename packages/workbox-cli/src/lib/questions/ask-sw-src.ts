@@ -16,13 +16,15 @@ const name = 'swSrc';
  * @return {Promise<Answers>} The answers from inquirer.
  */
 function askQuestion(): Promise<Answers> {
-  return prompt([{
-    name,
-    message: ol`Where's your existing service worker file? To be used with
+  return prompt([
+    {
+      name,
+      message: ol`Where's your existing service worker file? To be used with
       injectManifest, it should include a call to
       'self.__WB_MANIFEST'`,
-    type: 'input',
-  }]);
+      type: 'input',
+    },
+  ]);
 }
 
 export async function askSWSrc(): Promise<string | null> {

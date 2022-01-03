@@ -10,7 +10,6 @@ import {messageGenerator} from '../models/messages/messageGenerator.js';
 import {MapLikeObject} from '../types.js';
 import '../_version.js';
 
-
 /**
  * Workbox errors should be thrown with this class.
  * This allows use to ensure the type easily in tests,

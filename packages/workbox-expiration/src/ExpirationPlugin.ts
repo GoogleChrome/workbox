@@ -35,19 +35,19 @@ export interface ExpirationPluginOptions {
  * In other words, it can't be used to expire entries in strategy that uses the
  * default runtime cache name.
  *
- * Whenever a cached request is used or updated, this plugin will look
- * at the associated cache and remove any old or extra requests.
+ * Whenever a cached response is used or updated, this plugin will look
+ * at the associated cache and remove any old or extra responses.
  *
- * When using `maxAgeSeconds`, requests may be used *once* after expiring
+ * When using `maxAgeSeconds`, responses may be used *once* after expiring
  * because the expiration clean up will not have occurred until *after* the
- * cached request has been used. If the request has a "Date" header, then
- * a light weight expiration check is performed and the request will not be
+ * cached response has been used. If the response has a "Date" header, then
+ * a light weight expiration check is performed and the response will not be
  * used immediately.
  *
  * When using `maxEntries`, the entry least-recently requested will be removed
  * from the cache first.
  *
- * @memberof module:workbox-expiration
+ * @memberof workbox-expiration
  */
 class ExpirationPlugin implements WorkboxPlugin {
   private readonly _config: ExpirationPluginOptions;
@@ -146,7 +146,7 @@ class ExpirationPlugin implements WorkboxPlugin {
     event,
     request,
     cacheName,
-    cachedResponse
+    cachedResponse,
   }) => {
     if (!cachedResponse) {
       return null;
@@ -169,16 +169,18 @@ class ExpirationPlugin implements WorkboxPlugin {
         if (process.env.NODE_ENV !== 'production') {
           // The event may not be a fetch event; only log the URL if it is.
           if ('request' in event) {
-            logger.warn(`Unable to ensure service worker stays alive when ` +
-              `updating cache entry for ` +
-              `'${getFriendlyURL((event as FetchEvent).request.url)}'.`);
+            logger.warn(
+              `Unable to ensure service worker stays alive when ` +
+                `updating cache entry for ` +
+                `'${getFriendlyURL((event as FetchEvent).request.url)}'.`,
+            );
           }
         }
       }
     }
 
     return isFresh ? cachedResponse : null;
-  }
+  };
 
   /**
    * @param {Response} cachedResponse
@@ -204,7 +206,7 @@ class ExpirationPlugin implements WorkboxPlugin {
     // If we have a valid headerTime, then our response is fresh iff the
     // headerTime plus maxAgeSeconds is greater than the current time.
     const now = Date.now();
-    return dateHeaderTimestamp >= now - (this._maxAgeSeconds * 1000);
+    return dateHeaderTimestamp >= now - this._maxAgeSeconds * 1000;
   }
 
   /**
@@ -246,7 +248,7 @@ class ExpirationPlugin implements WorkboxPlugin {
    */
   cacheDidUpdate: WorkboxPlugin['cacheDidUpdate'] = async ({
     cacheName,
-    request
+    request,
   }) => {
     if (process.env.NODE_ENV !== 'production') {
       assert!.isType(cacheName, 'string', {
@@ -266,8 +268,7 @@ class ExpirationPlugin implements WorkboxPlugin {
     const cacheExpiration = this._getCacheExpiration(cacheName);
     await cacheExpiration.updateTimestamp(request.url);
     await cacheExpiration.expireEntries();
-  }
-
+  };
 
   /**
    * This is a helper method that performs two operations:

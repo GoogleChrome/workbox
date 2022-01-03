@@ -8,7 +8,6 @@
 
 import '../_version.js';
 
-
 /**
  * Returns true if two URLs have the same `.href` property. The URLS can be
  * relative, and if they are the current location href is used to resolve URLs.

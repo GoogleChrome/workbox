@@ -10,7 +10,10 @@ import crypto from 'crypto';
 
 import {FileDetails} from '../types';
 
-export function getCompositeDetails(compositeURL: string, dependencyDetails: Array<FileDetails>): FileDetails {
+export function getCompositeDetails(
+  compositeURL: string,
+  dependencyDetails: Array<FileDetails>,
+): FileDetails {
   let totalSize = 0;
   let compositeHash = '';
 

@@ -12,7 +12,6 @@ import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
 import {logger} from 'workbox-core/_private/logger.js';
 import './_version.js';
 
-
 export interface CacheableResponseOptions {
   statuses?: number[];
   headers?: {[headerName: string]: string};
@@ -24,7 +23,7 @@ export interface CacheableResponseOptions {
  * [`Response`](https://developer.mozilla.org/en-US/docs/Web/API/Response)
  * to be considered cacheable.
  *
- * @memberof module:workbox-cacheable-response
+ * @memberof workbox-cacheable-response
  */
 class CacheableResponse {
   private readonly _statuses?: CacheableResponseOptions['statuses'];
@@ -110,15 +109,17 @@ class CacheableResponse {
 
     if (process.env.NODE_ENV !== 'production') {
       if (!cacheable) {
-        logger.groupCollapsed(`The request for ` +
-          `'${getFriendlyURL(response.url)}' returned a response that does ` +
-          `not meet the criteria for being cached.`);
+        logger.groupCollapsed(
+          `The request for ` +
+            `'${getFriendlyURL(response.url)}' returned a response that does ` +
+            `not meet the criteria for being cached.`,
+        );
 
         logger.groupCollapsed(`View cacheability criteria here.`);
-        logger.log(`Cacheable statuses: ` +
-          JSON.stringify(this._statuses));
-        logger.log(`Cacheable headers: ` +
-          JSON.stringify(this._headers, null, 2));
+        logger.log(`Cacheable statuses: ` + JSON.stringify(this._statuses));
+        logger.log(
+          `Cacheable headers: ` + JSON.stringify(this._headers, null, 2),
+        );
         logger.groupEnd();
 
         const logFriendlyHeaders: {[key: string]: string} = {};
@@ -128,8 +129,9 @@ class CacheableResponse {
 
         logger.groupCollapsed(`View response status and headers here.`);
         logger.log(`Response status: ${response.status}`);
-        logger.log(`Response headers: ` +
-          JSON.stringify(logFriendlyHeaders, null, 2));
+        logger.log(
+          `Response headers: ` + JSON.stringify(logFriendlyHeaders, null, 2),
+        );
         logger.groupEnd();
 
         logger.groupCollapsed(`View full response details here.`);

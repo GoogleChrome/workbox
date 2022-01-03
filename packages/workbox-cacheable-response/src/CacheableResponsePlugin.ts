@@ -7,7 +7,10 @@
 */
 
 import {WorkboxPlugin} from 'workbox-core/types.js';
-import {CacheableResponse, CacheableResponseOptions} from './CacheableResponse.js';
+import {
+  CacheableResponse,
+  CacheableResponseOptions,
+} from './CacheableResponse.js';
 import './_version.js';
 
 /**
@@ -15,7 +18,7 @@ import './_version.js';
  * easier to add in cacheability checks to requests made via Workbox's built-in
  * strategies.
  *
- * @memberof module:workbox-cacheable-response
+ * @memberof workbox-cacheable-response
  */
 class CacheableResponsePlugin implements WorkboxPlugin {
   private readonly _cacheableResponse: CacheableResponse;
@@ -49,7 +52,7 @@ class CacheableResponsePlugin implements WorkboxPlugin {
       return response;
     }
     return null;
-  }
+  };
 }
 
 export {CacheableResponsePlugin};

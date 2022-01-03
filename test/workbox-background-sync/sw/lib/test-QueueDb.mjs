@@ -350,6 +350,26 @@ describe(`QueueDb`, () => {
     });
   });
 
+  describe('getEntryCountByQueueName', () => {
+    it(`should return the number of entries in IDB filtered by index`, async () => {
+      const queueDb = new QueueDb();
+
+      await queueDb.addEntry(entry1);
+      await queueDb.addEntry(entry2);
+      await queueDb.addEntry(entry3);
+      await queueDb.addEntry(entry4);
+      await queueDb.addEntry(entry5);
+
+      expect(await queueDb.getEntryCountByQueueName('a')).to.equal(3);
+      expect(await queueDb.getEntryCountByQueueName('b')).to.equal(2);
+
+      await db.clear('requests');
+
+      expect(await queueDb.getEntryCountByQueueName('a')).to.equal(0);
+      expect(await queueDb.getEntryCountByQueueName('b')).to.equal(0);
+    });
+  });
+
   describe('deleteEntry', () => {
     it(`should delete an entry for the given ID`, async () => {
       const queueDb = new QueueDb();

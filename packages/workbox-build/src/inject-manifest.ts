@@ -19,6 +19,7 @@ import {escapeRegExp} from './lib/escape-regexp';
 import {getFileManifestEntries} from './lib/get-file-manifest-entries';
 import {rebasePath} from './lib/rebase-path';
 import {replaceAndUpdateSourceMap} from './lib/replace-and-update-source-map';
+import {translateURLToSourcemapPaths} from './lib/translate-url-to-sourcemap-paths';
 import {validateInjectManifestOptions} from './lib/validate-options';
 
 // eslint-disable-next-line jsdoc/newline-after-description
@@ -45,7 +46,7 @@ import {validateInjectManifestOptions} from './lib/validate-options';
  * that will be read during the build process, relative to the current working
  * directory.
  *
- * @param {Array<module:workbox-build.ManifestEntry>} [config.additionalManifestEntries]
+ * @param {Array<workbox-build.ManifestEntry>} [config.additionalManifestEntries]
  * A list of entries to be precached, in addition to any entries that are
  * generated as part of the build configuration.
  *
@@ -81,7 +82,7 @@ import {validateInjectManifestOptions} from './lib/validate-options';
  * find inside of the `swSrc` file. Once found, it will be replaced by the
  * generated precache manifest.
  *
- * @param {Array<module:workbox-build.ManifestTransform>} [config.manifestTransforms] One or more
+ * @param {Array<workbox-build.ManifestTransform>} [config.manifestTransforms] One or more
  * functions which will be applied sequentially against the generated manifest.
  * If `modifyURLPrefix` or `dontCacheBustURLsMatching` are also specified, their
  * corresponding transformations will be applied first.
@@ -114,28 +115,35 @@ import {validateInjectManifestOptions} from './lib/validate-options';
  * `count` property contains the total number of precached entries. Any
  * non-fatal warning messages will be returned via `warnings`.
  *
- * @memberof module:workbox-build
+ * @memberof workbox-build
  */
 export async function injectManifest(config: unknown): Promise<BuildResult> {
   const options = validateInjectManifestOptions(config);
 
   // Make sure we leave swSrc and swDest out of the precache manifest.
   for (const file of [options.swSrc, options.swDest]) {
-    options.globIgnores!.push(rebasePath({
-      file,
-      baseDirectory: options.globDirectory,
-    }));
+    options.globIgnores!.push(
+      rebasePath({
+        file,
+        baseDirectory: options.globDirectory,
+      }),
+    );
   }
 
   const globalRegexp = new RegExp(escapeRegExp(options.injectionPoint!), 'g');
 
-  const {count, size, manifestEntries, warnings} =
-    await getFileManifestEntries(options);
+  const {count, size, manifestEntries, warnings} = await getFileManifestEntries(
+    options,
+  );
   let swFileContents: string;
   try {
     swFileContents = await fse.readFile(options.swSrc, 'utf8');
   } catch (error) {
-    throw new Error(`${errors['invalid-sw-src']} ${error instanceof Error && error.message ? error.message : ''}`);
+    throw new Error(
+      `${errors['invalid-sw-src']} ${
+        error instanceof Error && error.message ? error.message : ''
+      }`,
+    );
   }
 
   const injectionResults = swFileContents.match(globalRegexp);
@@ -148,31 +156,35 @@ export async function injectManifest(config: unknown): Promise<BuildResult> {
     throw new Error(`${errors['injection-point-not-found']} ${injectionPoint}`);
   }
 
-  assert(injectionResults.length === 1, `${errors['multiple-injection-points']} ${injectionPoint}`);
+  assert(
+    injectionResults.length === 1,
+    `${errors['multiple-injection-points']} ${injectionPoint}`,
+  );
 
   const manifestString = stringify(manifestEntries);
   const filesToWrite: {[key: string]: string} = {};
-  // sourceMapURL returns value type any and could be null.
-  // url is checked before it is used later.
-  const url: string = sourceMapURL.getFrom(swFileContents); // eslint-disable-line
+
+  const url = sourceMapURL.getFrom(swFileContents) as string; // eslint-disable-line
+  // See https://github.com/GoogleChrome/workbox/issues/2957
+  const {destPath, srcPath, warning} = translateURLToSourcemapPaths(
+    url,
+    options.swSrc,
+    options.swDest,
+  );
+  if (warning) {
+    warnings.push(warning);
+  }
+
   // If our swSrc file contains a sourcemap, we would invalidate that
   // mapping if we just replaced injectionPoint with the stringified manifest.
   // Instead, we need to update the swDest contents as well as the sourcemap
   // (assuming it's a real file, not a data: URL) at the same time.
   // See https://github.com/GoogleChrome/workbox/issues/2235
   // and https://github.com/GoogleChrome/workbox/issues/2648
-  if (url && !url.startsWith('data:')) {
-    const sourcemapSrcPath = upath.resolve(upath.dirname(options.swSrc), url);
-    const sourcemapDestPath = upath.resolve(upath.dirname(options.swDest), url);
-
-    let originalMap: RawSourceMap;
-    try {
-      // readJSON returns Promise<any>.
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      originalMap = await fse.readJSON(sourcemapSrcPath, {encoding: 'utf8'});
-    } catch (error) {
-      throw new Error(`${errors['cant-find-sourcemap']} ${error instanceof Error && error.message ? error.message : ''}`);
-    }
+  if (srcPath && destPath) {
+    const originalMap = (await fse.readJSON(srcPath, {
+      encoding: 'utf8',
+    })) as RawSourceMap;
 
     const {map, source} = await replaceAndUpdateSourceMap({
       originalMap,
@@ -183,20 +195,24 @@ export async function injectManifest(config: unknown): Promise<BuildResult> {
     });
 
     filesToWrite[options.swDest] = source;
-    filesToWrite[sourcemapDestPath] = map;
+    filesToWrite[destPath] = map;
   } else {
     // If there's no sourcemap associated with swSrc, a simple string
     // replacement will suffice.
     filesToWrite[options.swDest] = swFileContents.replace(
-        globalRegexp, manifestString);
+      globalRegexp,
+      manifestString,
+    );
   }
 
   for (const [file, contents] of Object.entries(filesToWrite)) {
     try {
       await fse.mkdirp(upath.dirname(file));
-    } catch (error) {
-      throw new Error(errors['unable-to-make-sw-directory'] +
-          ` '${error instanceof Error && error.message ? error.message : ''}'`);
+    } catch (error: unknown) {
+      throw new Error(
+        errors['unable-to-make-sw-directory'] +
+          ` '${error instanceof Error && error.message ? error.message : ''}'`,
+      );
     }
 
     await fse.writeFile(file, contents);

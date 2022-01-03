@@ -23,11 +23,13 @@ import './_version.js';
  * to look up in the precache.
  * @return {Promise<Response|undefined>}
  *
- * @memberof module:workbox-precaching
+ * @memberof workbox-precaching
  */
-function matchPrecache(request: string | Request): Promise<Response | undefined> {
+function matchPrecache(
+  request: string | Request,
+): Promise<Response | undefined> {
   const precacheController = getOrCreatePrecacheController();
   return precacheController.matchPrecache(request);
 }
 
-export {matchPrecache}
+export {matchPrecache};

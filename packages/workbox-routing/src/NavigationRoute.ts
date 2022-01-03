@@ -21,18 +21,18 @@ export interface NavigationRouteMatchOptions {
 
 /**
  * NavigationRoute makes it easy to create a
- * [Route]{@link module:workbox-routing.Route} that matches for browser
+ * {@link workbox-routing.Route} that matches for browser
  * [navigation requests]{@link https://developers.google.com/web/fundamentals/primers/service-workers/high-performance-loading#first_what_are_navigation_requests}.
  *
  * It will only match incoming Requests whose
- * [`mode`]{@link https://fetch.spec.whatwg.org/#concept-request-mode}
+ * {@link https://fetch.spec.whatwg.org/#concept-request-mode|mode}
  * is set to `navigate`.
  *
  * You can optionally only apply this route to a subset of navigation requests
  * by using one or both of the `denylist` and `allowlist` parameters.
  *
- * @memberof module:workbox-routing
- * @extends module:workbox-routing.Route
+ * @memberof workbox-routing
+ * @extends workbox-routing.Route
  */
 class NavigationRoute extends Route {
   private readonly _allowlist: RegExp[];
@@ -48,7 +48,7 @@ class NavigationRoute extends Route {
    * and [`search`]{@link https://developer.mozilla.org/en-US/docs/Web/API/HTMLHyperlinkElementUtils/search}
    * portions of the requested URL.
    *
-   * @param {module:workbox-routing~handlerCallback} handler A callback
+   * @param {workbox-routing~handlerCallback} handler A callback
    * function that returns a Promise resulting in a Response.
    * @param {Object} options
    * @param {Array<RegExp>} [options.denylist] If any of these patterns match,
@@ -57,8 +57,10 @@ class NavigationRoute extends Route {
    * match the URL's pathname and search parameter, the route will handle the
    * request (assuming the denylist doesn't match).
    */
-  constructor(handler: RouteHandler,
-      {allowlist = [/./], denylist = []}: NavigationRouteMatchOptions = {}) {
+  constructor(
+    handler: RouteHandler,
+    {allowlist = [/./], denylist = []}: NavigationRouteMatchOptions = {},
+  ) {
     if (process.env.NODE_ENV !== 'production') {
       assert!.isArrayOfClass(allowlist, RegExp, {
         moduleName: 'workbox-routing',
@@ -74,7 +76,10 @@ class NavigationRoute extends Route {
       });
     }
 
-    super((options: RouteMatchCallbackOptions) => this._match(options), handler);
+    super(
+      (options: RouteMatchCallbackOptions) => this._match(options),
+      handler,
+    );
 
     this._allowlist = allowlist;
     this._denylist = denylist;
@@ -100,9 +105,11 @@ class NavigationRoute extends Route {
     for (const regExp of this._denylist) {
       if (regExp.test(pathnameAndSearch)) {
         if (process.env.NODE_ENV !== 'production') {
-          logger.log(`The navigation route ${pathnameAndSearch} is not ` +
+          logger.log(
+            `The navigation route ${pathnameAndSearch} is not ` +
               `being used, since the URL matches this denylist pattern: ` +
-            `${regExp.toString()}`);
+              `${regExp.toString()}`,
+          );
         }
         return false;
       }
@@ -110,16 +117,19 @@ class NavigationRoute extends Route {
 
     if (this._allowlist.some((regExp) => regExp.test(pathnameAndSearch))) {
       if (process.env.NODE_ENV !== 'production') {
-        logger.debug(`The navigation route ${pathnameAndSearch} ` +
-            `is being used.`);
+        logger.debug(
+          `The navigation route ${pathnameAndSearch} ` + `is being used.`,
+        );
       }
       return true;
     }
 
     if (process.env.NODE_ENV !== 'production') {
-      logger.log(`The navigation route ${pathnameAndSearch} is not ` +
+      logger.log(
+        `The navigation route ${pathnameAndSearch} is not ` +
           `being used, since the URL being navigated to doesn't ` +
-          `match the allowlist.`);
+          `match the allowlist.`,
+      );
     }
     return false;
   }

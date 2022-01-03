@@ -15,7 +15,6 @@ import {CacheTimestampsModel} from './models/CacheTimestampsModel.js';
 
 import './_version.js';
 
-
 interface CacheExpirationConfig {
   maxEntries?: number;
   maxAgeSeconds?: number;
@@ -27,7 +26,7 @@ interface CacheExpirationConfig {
  * limit on the number of responses stored in a
  * [`Cache`](https://developer.mozilla.org/en-US/docs/Web/API/Cache).
  *
- * @memberof module:workbox-expiration
+ * @memberof workbox-expiration
  */
 class CacheExpiration {
   private _isRunning = false;
@@ -104,11 +103,14 @@ class CacheExpiration {
     }
     this._isRunning = true;
 
-    const minTimestamp = this._maxAgeSeconds ?
-        Date.now() - (this._maxAgeSeconds * 1000) : 0;
+    const minTimestamp = this._maxAgeSeconds
+      ? Date.now() - this._maxAgeSeconds * 1000
+      : 0;
 
     const urlsExpired = await this._timestampModel.expireEntries(
-        minTimestamp, this._maxEntries);
+      minTimestamp,
+      this._maxEntries,
+    );
 
     // Delete URLs from the cache
     const cache = await self.caches.open(this._cacheName);
@@ -119,12 +121,14 @@ class CacheExpiration {
     if (process.env.NODE_ENV !== 'production') {
       if (urlsExpired.length > 0) {
         logger.groupCollapsed(
-            `Expired ${urlsExpired.length} ` +
-          `${urlsExpired.length === 1 ? 'entry' : 'entries'} and removed ` +
-          `${urlsExpired.length === 1 ? 'it' : 'them'} from the ` +
-          `'${this._cacheName}' cache.`);
-        logger.log(`Expired the following ${urlsExpired.length === 1 ?
-            'URL' : 'URLs'}:`);
+          `Expired ${urlsExpired.length} ` +
+            `${urlsExpired.length === 1 ? 'entry' : 'entries'} and removed ` +
+            `${urlsExpired.length === 1 ? 'it' : 'them'} from the ` +
+            `'${this._cacheName}' cache.`,
+        );
+        logger.log(
+          `Expired the following ${urlsExpired.length === 1 ? 'URL' : 'URLs'}:`,
+        );
         urlsExpired.forEach((url) => logger.log(`    ${url}`));
         logger.groupEnd();
       } else {
@@ -181,8 +185,8 @@ class CacheExpiration {
       return false;
     } else {
       const timestamp = await this._timestampModel.getTimestamp(url);
-      const expireOlderThan = Date.now() - (this._maxAgeSeconds * 1000);
-      return timestamp !== undefined ? (timestamp < expireOlderThan) : true;
+      const expireOlderThan = Date.now() - this._maxAgeSeconds * 1000;
+      return timestamp !== undefined ? timestamp < expireOlderThan : true;
     }
   }
 

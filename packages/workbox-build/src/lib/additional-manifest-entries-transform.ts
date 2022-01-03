@@ -13,10 +13,12 @@ type AdditionalManifestEntriesTransform = {
   (manifest: Array<ManifestEntry & {size: number}>): {
     manifest: Array<ManifestEntry & {size: number}>;
     warnings: string[];
-  }
-}
+  };
+};
 
-export function additionalManifestEntriesTransform(additionalManifestEntries: Array<ManifestEntry | string>): AdditionalManifestEntriesTransform {
+export function additionalManifestEntriesTransform(
+  additionalManifestEntries: Array<ManifestEntry | string>,
+): AdditionalManifestEntriesTransform {
   return (manifest: Array<ManifestEntry & {size: number}>) => {
     const warnings: Array<string> = [];
     const stringEntries = new Set<string>();

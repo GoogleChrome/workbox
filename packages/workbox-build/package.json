@@ -1,6 +1,6 @@
 {
   "name": "workbox-build",
-  "version": "6.2.4",
+  "version": "6.4.2",
   "description": "A module that integrates into your build process, helping you generate a manifest of local files that workbox-sw should precache.",
   "keywords": [
     "workbox",
@@ -20,14 +20,14 @@
   "bugs": "https://github.com/GoogleChrome/workbox/issues",
   "homepage": "https://github.com/GoogleChrome/workbox",
   "dependencies": {
-    "@apideck/better-ajv-errors": "^0.2.4",
+    "@apideck/better-ajv-errors": "^0.3.1",
     "@babel/core": "^7.11.1",
     "@babel/preset-env": "^7.11.0",
     "@babel/runtime": "^7.11.2",
     "@rollup/plugin-babel": "^5.2.0",
     "@rollup/plugin-node-resolve": "^11.2.1",
     "@rollup/plugin-replace": "^2.4.1",
-    "@surma/rollup-plugin-off-main-thread": "^1.4.1",
+    "@surma/rollup-plugin-off-main-thread": "^2.2.3",
     "ajv": "^8.6.0",
     "common-tags": "^1.8.0",
     "fast-json-stable-stringify": "^2.1.0",
@@ -43,25 +43,28 @@
     "strip-comments": "^2.0.1",
     "tempy": "^0.6.0",
     "upath": "^1.2.0",
-    "workbox-background-sync": "6.2.4",
-    "workbox-broadcast-update": "6.2.4",
-    "workbox-cacheable-response": "6.2.4",
-    "workbox-core": "6.2.4",
-    "workbox-expiration": "6.2.4",
-    "workbox-google-analytics": "6.2.4",
-    "workbox-navigation-preload": "6.2.4",
-    "workbox-precaching": "6.2.4",
-    "workbox-range-requests": "6.2.4",
-    "workbox-recipes": "6.2.4",
-    "workbox-routing": "6.2.4",
-    "workbox-strategies": "6.2.4",
-    "workbox-streams": "6.2.4",
-    "workbox-sw": "6.2.4",
-    "workbox-window": "6.2.4"
+    "workbox-background-sync": "6.4.2",
+    "workbox-broadcast-update": "6.4.2",
+    "workbox-cacheable-response": "6.4.2",
+    "workbox-core": "6.4.2",
+    "workbox-expiration": "6.4.2",
+    "workbox-google-analytics": "6.4.2",
+    "workbox-navigation-preload": "6.4.2",
+    "workbox-precaching": "6.4.2",
+    "workbox-range-requests": "6.4.2",
+    "workbox-recipes": "6.4.2",
+    "workbox-routing": "6.4.2",
+    "workbox-strategies": "6.4.2",
+    "workbox-streams": "6.4.2",
+    "workbox-sw": "6.4.2",
+    "workbox-window": "6.4.2"
   },
   "main": "build/index.js",
   "workbox": {
     "packageType": "node_ts"
   },
-  "types": "build/index.d.ts"
+  "types": "build/index.d.ts",
+  "devDependencies": {
+    "@types/node": "^16.10.2"
+  }
 }

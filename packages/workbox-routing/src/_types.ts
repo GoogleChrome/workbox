@@ -24,7 +24,7 @@ import './_version.js';
  * object will always be available.
  *
  * If the match callback returns a truthy value, the matching route's
- * [handler callback]{@link module:workbox-routing~handlerCallback} will be
+ * {@link workbox-routing~handlerCallback} will be
  * invoked immediately. If the value returned is a non-empty array or object,
  * that value will be set on the handler's `context.params` argument.
  *
@@ -38,17 +38,17 @@ import './_version.js';
  *     against the current origin.
  * @return {*} To signify a match, return a truthy value.
  *
- * @memberof module:workbox-routing
+ * @memberof workbox-routing
  */
 
 /**
  * The "handler" callback is invoked whenever a `Router` matches a URL to a
- * `Route` via its [match]{@link module:workbox-routing~handlerCallback}
+ * `Route` via its {@link workbox-routing~matchCallback}
  * callback. This callback should return a Promise that resolves with a
  * `Response`.
  *
  * If a non-empty array or object is returned by the
- * [match callback]{@link module:workbox-routing~matchCallback} it
+ * {@link workbox-routing~matchCallback} it
  * will be passed in as the handler's `context.params` argument.
  *
  * @callback ~handlerCallback
@@ -58,9 +58,9 @@ import './_version.js';
  * @param {ExtendableEvent} context.event The corresponding event that triggered
  *     the request.
  * @param {Object} [context.params] Array or Object parameters returned by the
- *     Route's [match callback]{@link module:workbox-routing~matchCallback}.
+ *     Route's {@link workbox-routing~matchCallback}.
  *     This will be undefined if an empty array or object were returned.
  * @return {Promise<Response>} The response that will fulfill the request.
  *
- * @memberof module:workbox-routing
+ * @memberof workbox-routing
  */

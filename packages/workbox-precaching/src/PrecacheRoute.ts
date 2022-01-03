@@ -8,7 +8,10 @@
 
 import {logger} from 'workbox-core/_private/logger.js';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
-import {RouteMatchCallback, RouteMatchCallbackOptions} from 'workbox-core/types.js';
+import {
+  RouteMatchCallback,
+  RouteMatchCallbackOptions,
+} from 'workbox-core/types.js';
 import {Route} from 'workbox-routing/Route.js';
 
 import {PrecacheRouteOptions} from './_types.js';
@@ -17,15 +20,14 @@ import {generateURLVariations} from './utils/generateURLVariations.js';
 
 import './_version.js';
 
-
 /**
- * A subclass of [Route]{@link module:workbox-routing.Route} that takes a
- * [PrecacheController]{@link module:workbox-precaching.PrecacheController}
+ * A subclass of {@link workbox-routing.Route} that takes a
+ * {@link workbox-precaching.PrecacheController}
  * instance and uses it to match incoming requests and handle fetching
  * responses from the precache.
  *
- * @memberof module:workbox-precaching
- * @extends module:workbox-routing.Route
+ * @memberof workbox-precaching
+ * @extends workbox-routing.Route
  */
 class PrecacheRoute extends Route {
   /**
@@ -40,26 +42,33 @@ class PrecacheRoute extends Route {
    * array of regex's to remove search params when looking for a cache match.
    * @param {boolean} [options.cleanURLs=true] The `cleanURLs` option will
    * check the cache for the URL with a `.html` added to the end of the end.
-   * @param {module:workbox-precaching~urlManipulation} [options.urlManipulation]
+   * @param {workbox-precaching~urlManipulation} [options.urlManipulation]
    * This is a function that should take a URL and return an array of
    * alternative URLs that should be checked for precache matches.
    */
-  constructor(precacheController: PrecacheController, options?: PrecacheRouteOptions) {
-    const match: RouteMatchCallback = ({request}: RouteMatchCallbackOptions) => {
+  constructor(
+    precacheController: PrecacheController,
+    options?: PrecacheRouteOptions,
+  ) {
+    const match: RouteMatchCallback = ({
+      request,
+    }: RouteMatchCallbackOptions) => {
       const urlsToCacheKeys = precacheController.getURLsToCacheKeys();
       for (const possibleURL of generateURLVariations(request.url, options)) {
         const cacheKey = urlsToCacheKeys.get(possibleURL);
         if (cacheKey) {
-          const integrity = precacheController.getIntegrityForCacheKey(cacheKey);
+          const integrity =
+            precacheController.getIntegrityForCacheKey(cacheKey);
           return {cacheKey, integrity};
         }
       }
       if (process.env.NODE_ENV !== 'production') {
-        logger.debug(`Precaching did not find a match for ` +
-            getFriendlyURL(request.url));
+        logger.debug(
+          `Precaching did not find a match for ` + getFriendlyURL(request.url),
+        );
       }
       return;
-    }
+    };
 
     super(match, precacheController.strategy);
   }

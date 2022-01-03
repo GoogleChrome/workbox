@@ -8,8 +8,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-
-import meow from 'meow'
+import meow from 'meow';
 import updateNotifier from 'update-notifier';
 
 import {app} from './app';

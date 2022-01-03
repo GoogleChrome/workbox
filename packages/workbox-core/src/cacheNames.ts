@@ -9,7 +9,6 @@
 import {cacheNames as _cacheNames} from './_private/cacheNames.js';
 import './_version.js';
 
-
 /**
  * Get the current cache names and prefix/suffix used by Workbox.
  *
@@ -23,7 +22,7 @@ import './_version.js';
  * @return {Object} An object with `precache`, `runtime`, `prefix`, and
  *     `googleAnalytics` properties.
  *
- * @memberof module:workbox-core
+ * @memberof workbox-core
  */
 const cacheNames = {
   get googleAnalytics(): string {
@@ -43,4 +42,4 @@ const cacheNames = {
   },
 };
 
-export {cacheNames}
+export {cacheNames};

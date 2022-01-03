@@ -11,27 +11,31 @@ import {logger} from 'workbox-core/_private/logger.js';
 import {deleteOutdatedCaches} from './utils/deleteOutdatedCaches.js';
 import './_version.js';
 
-
 /**
  * Adds an `activate` event listener which will clean up incompatible
  * precaches that were created by older versions of Workbox.
  *
- * @memberof module:workbox-precaching
+ * @memberof workbox-precaching
  */
 function cleanupOutdatedCaches(): void {
   // See https://github.com/Microsoft/TypeScript/issues/28357#issuecomment-436484705
   self.addEventListener('activate', ((event: ExtendableEvent) => {
     const cacheName = cacheNames.getPrecacheName();
 
-    event.waitUntil(deleteOutdatedCaches(cacheName).then((cachesDeleted) => {
-      if (process.env.NODE_ENV !== 'production') {
-        if (cachesDeleted.length > 0) {
-          logger.log(`The following out-of-date precaches were cleaned up ` +
-              `automatically:`, cachesDeleted);
+    event.waitUntil(
+      deleteOutdatedCaches(cacheName).then((cachesDeleted) => {
+        if (process.env.NODE_ENV !== 'production') {
+          if (cachesDeleted.length > 0) {
+            logger.log(
+              `The following out-of-date precaches were cleaned up ` +
+                `automatically:`,
+              cachesDeleted,
+            );
+          }
         }
-      }
-    }));
+      }),
+    );
   }) as EventListener);
 }
 
-export {cleanupOutdatedCaches}
+export {cleanupOutdatedCaches};

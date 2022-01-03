@@ -28,7 +28,6 @@ import {
 } from './utils/constants.js';
 import './_version.js';
 
-
 export interface GoogleAnalyticsInitializeOptions {
   cacheName?: string;
   parameterOverrides?: {[paramName: string]: string};
@@ -41,7 +40,7 @@ export interface GoogleAnalyticsInitializeOptions {
  * `qt` param based on the current time, as well as applies any other
  * user-defined hit modifications.
  *
- * @param {Object} config See {@link module:workbox-google-analytics.initialize}.
+ * @param {Object} config See {@link workbox-google-analytics.initialize}.
  * @return {Function} The requestWillDequeue callback function.
  *
  * @private
@@ -56,9 +55,10 @@ const createOnSyncCallback = (config: GoogleAnalyticsInitializeOptions) => {
       try {
         // Measurement protocol requests can set their payload parameters in
         // either the URL query string (for GET requests) or the POST body.
-        const params = request.method === 'POST' ?
-            new URLSearchParams(await request.clone().text()) :
-            url.searchParams;
+        const params =
+          request.method === 'POST'
+            ? new URLSearchParams(await request.clone().text())
+            : url.searchParams;
 
         // Calculate the qt param, accounting for the fact that an existing
         // qt param may be present and should be updated rather than replaced.
@@ -83,32 +83,38 @@ const createOnSyncCallback = (config: GoogleAnalyticsInitializeOptions) => {
 
         // Retry the fetch. Ignore URL search params from the URL as they're
         // now in the post body.
-        await fetch(new Request(url.origin + url.pathname, {
-          body: params.toString(),
-          method: 'POST',
-          mode: 'cors',
-          credentials: 'omit',
-          headers: {'Content-Type': 'text/plain'},
-        }));
-
+        await fetch(
+          new Request(url.origin + url.pathname, {
+            body: params.toString(),
+            method: 'POST',
+            mode: 'cors',
+            credentials: 'omit',
+            headers: {'Content-Type': 'text/plain'},
+          }),
+        );
 
         if (process.env.NODE_ENV !== 'production') {
-          logger.log(`Request for '${getFriendlyURL(url.href)}' ` +
-             `has been replayed`);
+          logger.log(
+            `Request for '${getFriendlyURL(url.href)}' ` + `has been replayed`,
+          );
         }
       } catch (err) {
         await queue.unshiftRequest(entry);
 
         if (process.env.NODE_ENV !== 'production') {
-          logger.log(`Request for '${getFriendlyURL(url.href)}' ` +
-             `failed to replay, putting it back in the queue.`);
+          logger.log(
+            `Request for '${getFriendlyURL(url.href)}' ` +
+              `failed to replay, putting it back in the queue.`,
+          );
         }
         throw err;
       }
     }
     if (process.env.NODE_ENV !== 'production') {
-      logger.log(`All Google Analytics request successfully replayed; ` +
-          `the queue is now empty!`);
+      logger.log(
+        `All Google Analytics request successfully replayed; ` +
+          `the queue is now empty!`,
+      );
     }
   };
 };
@@ -123,17 +129,14 @@ const createOnSyncCallback = (config: GoogleAnalyticsInitializeOptions) => {
  */
 const createCollectRoutes = (bgSyncPlugin: BackgroundSyncPlugin) => {
   const match = ({url}: RouteMatchCallbackOptions) =>
-      url.hostname === GOOGLE_ANALYTICS_HOST &&
-      COLLECT_PATHS_REGEX.test(url.pathname);
+    url.hostname === GOOGLE_ANALYTICS_HOST &&
+    COLLECT_PATHS_REGEX.test(url.pathname);
 
   const handler = new NetworkOnly({
     plugins: [bgSyncPlugin],
   });
 
-  return [
-    new Route(match, handler, 'GET'),
-    new Route(match, handler, 'POST'),
-  ];
+  return [new Route(match, handler, 'GET'), new Route(match, handler, 'POST')];
 };
 
 /**
@@ -146,8 +149,8 @@ const createCollectRoutes = (bgSyncPlugin: BackgroundSyncPlugin) => {
  */
 const createAnalyticsJsRoute = (cacheName: string) => {
   const match = ({url}: RouteMatchCallbackOptions) =>
-      url.hostname === GOOGLE_ANALYTICS_HOST &&
-      url.pathname === ANALYTICS_JS_PATH;
+    url.hostname === GOOGLE_ANALYTICS_HOST &&
+    url.pathname === ANALYTICS_JS_PATH;
 
   const handler = new NetworkFirst({cacheName});
 
@@ -164,8 +167,7 @@ const createAnalyticsJsRoute = (cacheName: string) => {
  */
 const createGtagJsRoute = (cacheName: string) => {
   const match = ({url}: RouteMatchCallbackOptions) =>
-      url.hostname === GTM_HOST &&
-      url.pathname === GTAG_JS_PATH;
+    url.hostname === GTM_HOST && url.pathname === GTAG_JS_PATH;
 
   const handler = new NetworkFirst({cacheName});
 
@@ -182,8 +184,7 @@ const createGtagJsRoute = (cacheName: string) => {
  */
 const createGtmJsRoute = (cacheName: string) => {
   const match = ({url}: RouteMatchCallbackOptions) =>
-      url.hostname === GTM_HOST &&
-      url.pathname === GTM_JS_PATH;
+    url.hostname === GTM_HOST && url.pathname === GTM_JS_PATH;
 
   const handler = new NetworkFirst({cacheName});
 
@@ -204,7 +205,7 @@ const createGtmJsRoute = (cacheName: string) => {
  *     the hit. The function is invoked with the original hit's URLSearchParams
  *     object as its only argument.
  *
- * @memberof module:workbox-google-analytics
+ * @memberof workbox-google-analytics
  */
 const initialize = (options: GoogleAnalyticsInitializeOptions = {}): void => {
   const cacheName = cacheNames.getGoogleAnalyticsName(options.cacheName);
@@ -229,6 +230,4 @@ const initialize = (options: GoogleAnalyticsInitializeOptions = {}): void => {
   router.addFetchListener();
 };
 
-export {
-  initialize,
-};
+export {initialize};
