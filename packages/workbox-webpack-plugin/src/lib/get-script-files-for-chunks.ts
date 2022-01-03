@@ -30,20 +30,20 @@ export function getScriptFilesForChunks(
       }
     } else {
       compilation.warnings.push(
-        new WebpackError(
+        new Error(
           `${chunkName} was provided to ` +
-          `importScriptsViaChunks, but didn't match any named chunks.`,
-        ),
+            `importScriptsViaChunks, but didn't match any named chunks.`,
+        ) as WebpackError,
       );
     }
   }
 
   if (scriptFiles.size === 0) {
     compilation.warnings.push(
-      new WebpackError(
+      new Error(
         `There were no assets matching ` +
-        `importScriptsViaChunks: [${chunkNames.join(' ')}].`,
-      ),
+          `importScriptsViaChunks: [${chunkNames.join(' ')}].`,
+      ) as WebpackError,
     );
   }
 

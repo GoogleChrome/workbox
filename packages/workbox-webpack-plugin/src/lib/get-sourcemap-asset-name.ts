@@ -22,13 +22,17 @@ import type {Compilation} from 'webpack';
  * @param {string} swContents The contents of the swSrc file, which may or
  * may not include a valid sourcemap comment.
  * @param {string} swDest The configured swDest value.
- * @return {string|undefined} If the swContents contains a valid soucemap
+ * @return {string|undefined} If the swContents contains a valid sourcemap
  * comment pointing to an asset present in the compilation, this will return the
  * name of that asset. Otherwise, it will return undefined.
  *
  * @private
  */
-export function getSourcemapAssetName(compilation: Compilation, swContents: string, swDest: string): string | undefined {
+export function getSourcemapAssetName(
+  compilation: Compilation,
+  swContents: string,
+  swDest: string,
+): string | undefined {
   // eslint-disable-next-line
   const url = sourceMapURL.getFrom(swContents);
   if (url) {
@@ -39,7 +43,8 @@ export function getSourcemapAssetName(compilation: Compilation, swContents: stri
     // See https://github.com/GoogleChrome/workbox/issues/2250
     const swAssetDirname = upath.dirname(swDest);
     const sourcemapURLAssetName = upath.normalize(
-        upath.join(swAssetDirname, url));
+      upath.join(swAssetDirname, url),
+    );
 
     // Not sure if there's a better way to check for asset existence?
     if (compilation.getAsset(sourcemapURLAssetName)) {

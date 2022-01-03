@@ -36,7 +36,7 @@ function checkConditions(
 ): boolean {
   for (const condition of conditions) {
     if (typeof condition === 'function') {
-      return condition(asset.name)
+      return condition(asset.name);
     } else {
       if (ModuleFilenameHelpers.matchPart(asset.name, condition)) {
         return true;
@@ -137,11 +137,11 @@ function filterAssets(
         }
       } else {
         compilation.warnings.push(
-          new WebpackError(
+          new Error(
             `The chunk '${name}' was ` +
-            `provided in your Workbox chunks config, but was not found in the ` +
-            `compilation.`,
-          ),
+              `provided in your Workbox chunks config, but was not found in the ` +
+              `compilation.`,
+          ) as WebpackError,
         );
       }
     }
@@ -188,8 +188,7 @@ function filterAssets(
 
     // Treat an empty config.includes as an implicit inclusion.
     const isIncluded =
-      !Array.isArray(config.include) ||
-      checkConditions(asset, config.include);
+      !Array.isArray(config.include) || checkConditions(asset, config.include);
     if (!isIncluded) {
       continue;
     }
@@ -229,7 +228,7 @@ export async function getManifestEntriesFromCompilation(
 
   // See https://github.com/GoogleChrome/workbox/issues/2790
   for (const warning of warnings) {
-    compilation.warnings.push(new WebpackError(warning));
+    compilation.warnings.push(new Error(warning) as WebpackError);
   }
 
   // Ensure that the entries are properly sorted by URL.
