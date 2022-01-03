@@ -22,7 +22,7 @@ import type {Compilation} from 'webpack';
  * @param {string} swContents The contents of the swSrc file, which may or
  * may not include a valid sourcemap comment.
  * @param {string} swDest The configured swDest value.
- * @return {string|undefined} If the swContents contains a valid soucemap
+ * @return {string|undefined} If the swContents contains a valid sourcemap
  * comment pointing to an asset present in the compilation, this will return the
  * name of that asset. Otherwise, it will return undefined.
  *

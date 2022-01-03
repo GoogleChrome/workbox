@@ -12,7 +12,6 @@
   "include": [
     "src/**/*.ts"
   ],
-  "exclude": ["../workbox-cli/src/index.d.ts"],
   "references": [
     {"path": "../workbox-build/"}
   ]
