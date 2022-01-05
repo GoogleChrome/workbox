@@ -59,11 +59,11 @@
     "workbox-sw": "6.4.2",
     "workbox-window": "6.4.2"
   },
-  "main": "build/index.js",
+  "main": "index.js",
   "workbox": {
     "packageType": "node_ts"
   },
-  "types": "build/index.d.ts",
+  "types": "index.d.ts",
   "devDependencies": {
     "@types/node": "^16.10.2"
   }

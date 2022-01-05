@@ -23,7 +23,6 @@ tsconfig.tsbuildinfo
 packages/workbox-*/**/*.d.ts
 !packages/workbox-*/src/**/*.d.ts
 packages/workbox-*/**/*.js
-!packages/workbox-build/**/*.js
 !packages/workbox-webpack-plugin/**/*.js
 
 # Individual package ignores during TypeScript migration
@@ -41,3 +40,10 @@ packages/workbox-routing/**/*.mjs
 packages/workbox-strategies/**/*.mjs
 packages/workbox-streams/**/*.mjs
 packages/workbox-window/**/*.mjs
+
+# Included JSON files
+packages/workbox-*/**/*.json
+!packages/workbox-*/src/**/*.json
+!packages/workbox-*/package-lock.json
+!packages/workbox-*/package.json
+!packages/workbox-*/tsconfig.json

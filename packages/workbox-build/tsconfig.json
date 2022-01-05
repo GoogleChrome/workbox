@@ -3,7 +3,7 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "module": "CommonJS",
-    "outDir": "./build",
+    "outDir": "./",
     "resolveJsonModule": true,
     "rootDir": "./src",
     "target": "ES2018",
