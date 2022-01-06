@@ -10,7 +10,7 @@ const expect = require('chai').expect;
 
 const {
   getStringHash,
-} = require('../../../../packages/workbox-build/build/lib/get-string-hash');
+} = require('../../../../packages/workbox-build/lib/get-string-hash');
 
 describe(`[workbox-build] lib/get-string-hash.js`, function () {
   it(`should return the expected hashes`, function () {

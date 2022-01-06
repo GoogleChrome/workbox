@@ -11,11 +11,11 @@ const upath = require('upath');
 const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 
-const {errors} = require('../../../../packages/workbox-build/build/lib/errors');
+const {errors} = require('../../../../packages/workbox-build/lib/errors');
 
 describe(`[workbox-build] lib/write-sw-using-default-template.js`, function () {
   const MODULE_PATH =
-    '../../../../packages/workbox-build/build/lib/write-sw-using-default-template';
+    '../../../../packages/workbox-build/lib/write-sw-using-default-template';
 
   it(`should reject with an error when fs-extra.mkdirp() fails`, async function () {
     const {writeSWUsingDefaultTemplate} = proxyquire(MODULE_PATH, {

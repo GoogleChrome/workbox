@@ -8,10 +8,10 @@
 
 const expect = require('chai').expect;
 
-const {errors} = require('../../../../packages/workbox-build/build/lib/errors');
+const {errors} = require('../../../../packages/workbox-build/lib/errors');
 const {
   modifyURLPrefixTransform,
-} = require('../../../../packages/workbox-build/build/lib/modify-url-prefix-transform');
+} = require('../../../../packages/workbox-build/lib/modify-url-prefix-transform');
 
 describe(`[workbox-build] lib/modify-url-prefix-transform.js`, function () {
   function getManifest() {

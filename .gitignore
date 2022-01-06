@@ -28,6 +28,7 @@ packages/workbox-*/**/*.js
 # Individual package ignores during TypeScript migration
 packages/workbox-background-sync/**/*.mjs
 packages/workbox-broadcast-update/**/*.mjs
+packages/workbox-build/**/*.mjs
 packages/workbox-cacheable-response/**/*.mjs
 packages/workbox-core/**/*.mjs
 packages/workbox-expiration/**/*.mjs

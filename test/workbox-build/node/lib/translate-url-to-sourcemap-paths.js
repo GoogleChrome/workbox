@@ -9,11 +9,11 @@
 const expect = require('chai').expect;
 const proxyquire = require('proxyquire');
 
-const {errors} = require('../../../../packages/workbox-build/build/lib/errors');
+const {errors} = require('../../../../packages/workbox-build/lib/errors');
 
 describe(`[workbox-build] lib/translate-url-to-sourcemap-paths.ts`, function () {
   const MODULE_PATH =
-    '../../../../packages/workbox-build/build/lib/translate-url-to-sourcemap-paths';
+    '../../../../packages/workbox-build/lib/translate-url-to-sourcemap-paths';
   const URL = 'sw.js.map';
   const SWSRC = 'src/sw.js';
   const SWDEST = 'dist/sw.js';

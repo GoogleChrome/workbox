@@ -11,7 +11,7 @@ const upath = require('upath');
 
 const {
   ModuleRegistry,
-} = require('../../../../packages/workbox-build/build/lib/module-registry');
+} = require('../../../../packages/workbox-build/lib/module-registry');
 
 describe(`[workbox-build] lib/module-registry.js`, function () {
   let moduleRegistry;

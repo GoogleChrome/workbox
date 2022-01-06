@@ -8,8 +8,8 @@
 
 const expect = require('chai').expect;
 
-const cdnUtils = require('../../../../packages/workbox-build/build/lib/cdn-utils');
-const {errors} = require('../../../../packages/workbox-build/build/lib/errors');
+const cdnUtils = require('../../../../packages/workbox-build/lib/cdn-utils');
+const {errors} = require('../../../../packages/workbox-build/lib/errors');
 
 describe(`[workbox-build] lib/cdn-utils.js`, function () {
   const CDN_ORIGIN = 'https://storage.googleapis.com/workbox-cdn/releases';

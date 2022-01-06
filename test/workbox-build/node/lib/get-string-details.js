@@ -10,7 +10,7 @@ const expect = require('chai').expect;
 
 const {
   getStringDetails,
-} = require('../../../../packages/workbox-build/build/lib/get-string-details');
+} = require('../../../../packages/workbox-build/lib/get-string-details');
 
 describe(`[workbox-build] lib/get-string-details.js`, function () {
   it(`should return the expected details`, function () {

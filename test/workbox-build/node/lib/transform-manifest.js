@@ -10,7 +10,7 @@ const expect = require('chai').expect;
 
 const {
   transformManifest,
-} = require('../../../../packages/workbox-build/build/lib/transform-manifest');
+} = require('../../../../packages/workbox-build/lib/transform-manifest');
 
 describe(`[workbox-build] lib/transform-manifest.js`, function () {
   const MAXIMUM_FILE_SIZE = 1234;

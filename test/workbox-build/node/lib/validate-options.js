@@ -32,8 +32,7 @@ class AJVPassesValidation {
 
 // The integration tests will exercise the actual validation logic.
 describe(`[workbox-build] entry-points/options/validate-options.js`, function () {
-  const MODULE_PATH =
-    '../../../../packages/workbox-build/build/lib/validate-options';
+  const MODULE_PATH = '../../../../packages/workbox-build/lib/validate-options';
   const testCases = [
     'validateGenerateSWOptions',
     'validateGetManifestOptions',

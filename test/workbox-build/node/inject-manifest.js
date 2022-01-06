@@ -12,13 +12,13 @@ const fse = require('fs-extra');
 const upath = require('upath');
 const tempy = require('tempy');
 
-const {errors} = require('../../../packages/workbox-build/build/lib/errors');
+const {errors} = require('../../../packages/workbox-build/lib/errors');
 const {
   injectManifest,
-} = require('../../../packages/workbox-build/build/inject-manifest');
+} = require('../../../packages/workbox-build/inject-manifest');
 const {
   WorkboxConfigError,
-} = require('../../../packages/workbox-build/build/lib/validate-options');
+} = require('../../../packages/workbox-build/lib/validate-options');
 const validateServiceWorkerRuntime = require('../../../infra/testing/validator/service-worker-runtime');
 
 chai.use(chaiAsPromised);

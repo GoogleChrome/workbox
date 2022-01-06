@@ -10,13 +10,13 @@ const expect = require('chai').expect;
 const sinon = require('sinon');
 const vm = require('vm');
 
-const {errors} = require('../../../../packages/workbox-build/build/lib/errors');
+const {errors} = require('../../../../packages/workbox-build/lib/errors');
 const {
   ModuleRegistry,
-} = require('../../../../packages/workbox-build/build/lib/module-registry');
+} = require('../../../../packages/workbox-build/lib/module-registry');
 const {
   runtimeCachingConverter,
-} = require('../../../../packages/workbox-build/build/lib/runtime-caching-converter');
+} = require('../../../../packages/workbox-build/lib/runtime-caching-converter');
 
 const moduleRegistry = new ModuleRegistry();
 

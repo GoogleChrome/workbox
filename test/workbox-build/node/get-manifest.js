@@ -17,12 +17,10 @@ chai.use(chaiAsPromised);
 chai.use(chaiMatchPattern);
 const {expect} = chai;
 
-const {
-  getManifest,
-} = require('../../../packages/workbox-build/build/get-manifest');
+const {getManifest} = require('../../../packages/workbox-build/get-manifest');
 const {
   WorkboxConfigError,
-} = require('../../../packages/workbox-build/build/lib/validate-options');
+} = require('../../../packages/workbox-build/lib/validate-options');
 
 describe(`[workbox-build] get-manifest.js (End to End)`, function () {
   const SRC_DIR = upath.join(__dirname, '..', 'static', 'example-project-1');

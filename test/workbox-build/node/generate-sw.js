@@ -12,13 +12,11 @@ const fse = require('fs-extra');
 const upath = require('upath');
 const tempy = require('tempy');
 
-const {errors} = require('../../../packages/workbox-build/build/lib/errors');
-const {
-  generateSW,
-} = require('../../../packages/workbox-build/build/generate-sw');
+const {errors} = require('../../../packages/workbox-build/lib/errors');
+const {generateSW} = require('../../../packages/workbox-build/generate-sw');
 const {
   WorkboxConfigError,
-} = require('../../../packages/workbox-build/build/lib/validate-options');
+} = require('../../../packages/workbox-build/lib/validate-options');
 const confirmDirectoryContains = require('../../../infra/testing/confirm-directory-contains');
 const validateServiceWorkerRuntime = require('../../../infra/testing/validator/service-worker-runtime');
 

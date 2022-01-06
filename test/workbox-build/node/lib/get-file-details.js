@@ -10,11 +10,10 @@ const expect = require('chai').expect;
 const upath = require('upath');
 const proxyquire = require('proxyquire');
 
-const {errors} = require('../../../../packages/workbox-build/build/lib/errors');
+const {errors} = require('../../../../packages/workbox-build/lib/errors');
 
 describe(`[workbox-build] lib/get-file-details.js`, function () {
-  const MODULE_PATH =
-    '../../../../packages/workbox-build/build/lib/get-file-details';
+  const MODULE_PATH = '../../../../packages/workbox-build/lib/get-file-details';
   const GLOB_DIRECTORY = './';
   const GLOB_PATTERN = 'file*';
   const DIRECTORY = 'directory';

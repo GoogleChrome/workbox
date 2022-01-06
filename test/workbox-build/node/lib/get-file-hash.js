@@ -9,11 +9,10 @@
 const expect = require('chai').expect;
 const proxyquire = require('proxyquire');
 
-const {errors} = require('../../../../packages/workbox-build/build/lib/errors');
+const {errors} = require('../../../../packages/workbox-build/lib/errors');
 
 describe(`[workbox-build] lib/get-file-hash.js`, function () {
-  const MODULE_PATH =
-    '../../../../packages/workbox-build/build/lib/get-file-hash';
+  const MODULE_PATH = '../../../../packages/workbox-build/lib/get-file-hash';
   const FILE = 'file.txt';
 
   it(`should throw when there's a fs.readFileSync() error`, function () {
