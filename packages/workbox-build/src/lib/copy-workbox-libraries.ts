@@ -41,7 +41,7 @@ export async function copyWorkboxLibraries(
   destDirectory: string,
 ): Promise<string> {
   // eslint-disable-next-line  @typescript-eslint/no-unsafe-assignment
-  const thisPkg: WorkboxPackageJSON = require('../../package.json');
+  const thisPkg: WorkboxPackageJSON = require('../package.json');
   // Use the version string from workbox-build in the name of the parent
   // directory. This should be safe, because lerna will bump workbox-build's
   // pkg.version whenever one of the dependent libraries gets bumped, and we
