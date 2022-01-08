@@ -280,7 +280,6 @@ class InjectManifest {
     try {
       this.config = validateWebpackInjectManifestOptions(this.config);
     } catch (error) {
-      // eslint-disable-next-line
       if (error instanceof Error) {
         throw new Error(
           `Please check your ${this.constructor.name} plugin ` +
@@ -380,12 +379,9 @@ class InjectManifest {
     if (
       this.config.compileSrc &&
       // See https://github.com/GoogleChrome/workbox/issues/2729
-      // (TODO: Switch to ?. once our linter supports it.)
       !(
-        compilation.options &&
-        compilation.options.devtool === 'eval-cheap-source-map' &&
-        compilation.options.optimization &&
-        compilation.options.optimization.minimize
+        compilation.options?.devtool === 'eval-cheap-source-map' &&
+        compilation.options.optimization?.minimize
       )
     ) {
       // See https://github.com/GoogleChrome/workbox/issues/2263
