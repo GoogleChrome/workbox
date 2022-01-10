@@ -11,7 +11,7 @@ import {logger} from 'workbox-core/_private/logger.js';
 import {assert} from 'workbox-core/_private/assert.js';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
 import {QueueStore} from './lib/QueueStore.js';
-import {UnidentifiedQueueStoreEntry} from './lib/QueueDb.js';
+import {QueueStoreEntry, UnidentifiedQueueStoreEntry} from './lib/QueueDb.js';
 import {StorableRequest} from './lib/StorableRequest.js';
 import './_version.js';
 
@@ -276,7 +276,14 @@ class Queue {
       entry.metadata = metadata;
     }
 
-    await this._queueStore[`${operation}Entry`](entry);
+    switch (operation) {
+      case 'push':
+        await this._queueStore.pushEntry(entry);
+        break;
+      case 'unshift':
+        await this._queueStore.unshiftEntry(entry);
+        break;
+    }
 
     if (process.env.NODE_ENV !== 'production') {
       logger.log(
@@ -307,7 +314,15 @@ class Queue {
     operation: 'pop' | 'shift',
   ): Promise<QueueEntry | undefined> {
     const now = Date.now();
-    const entry = await this._queueStore[`${operation}Entry`]();
+    let entry: QueueStoreEntry | undefined;
+    switch (operation) {
+      case 'pop':
+        entry = await this._queueStore.popEntry();
+        break;
+      case 'shift':
+        entry = await this._queueStore.shiftEntry();
+        break;
+    }
 
     if (entry) {
       // Ignore requests older than maxRetentionTime. Call this function
