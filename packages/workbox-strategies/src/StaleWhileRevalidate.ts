@@ -84,6 +84,7 @@ class StaleWhileRevalidate extends Strategy {
       // Swallow this error because a 'no-response' error will be thrown in
       // main handler return flow. This will be in the `waitUntil()` flow.
     });
+    void handler.waitUntil(fetchAndCachePromise);
 
     let response = await handler.cacheMatch(request);
 
