@@ -80,9 +80,9 @@ class Queue {
   private readonly _onSync: OnSyncCallback;
   private readonly _maxRetentionTime: number;
   private readonly _queueStore: QueueStore;
+  private readonly _forceSyncFallback: boolean;
   private _syncInProgress = false;
   private _requestsAddedDuringSync = false;
-  private _forceSyncFallback: boolean;
 
   /**
    * Creates an instance of Queue with the given options
