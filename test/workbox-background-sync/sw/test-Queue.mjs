@@ -205,6 +205,13 @@ describe(`Queue`, function () {
         expect(onSync.calledOnce).to.be.true;
       }
     });
+
+    it(`should run 'onSync' on instantiation when forceSyncFallback is set`, async function () {
+      const onSync = sandbox.spy();
+      new Queue('foo', {onSync, forceSyncFallback: true});
+
+      expect(onSync.calledOnce).to.be.true;
+    });
   });
 
   describe(`pushRequest`, function () {
