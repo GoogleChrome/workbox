@@ -1,8 +1,8 @@
-import path from 'path';
+import {resolve} from 'path';
 
-const projectRoot = path.resolve(__dirname, '..', '..');
+const projectRoot = resolve(__dirname, '..', '..');
 
-function trimPrefix(str: string) {
+function trimPrefix(str: string): string {
   if (str.startsWith(projectRoot)) {
     return str.slice(projectRoot.length);
   } else {
@@ -10,7 +10,10 @@ function trimPrefix(str: string) {
   }
 }
 
-export function generateIntegrationURL(baseURL: string, dirname: string) {
+export function generateIntegrationURL(
+  baseURL: string,
+  dirname: string,
+): string {
   const path = trimPrefix(dirname);
   return `${baseURL}/random-prefix-${Math.random()}${path}/integration.html`;
 }

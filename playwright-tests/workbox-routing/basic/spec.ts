@@ -4,7 +4,7 @@ import {fetchAsString, fetchStatus} from '../../lib/fetchAsString';
 import {generateIntegrationURL} from '../../lib/generateIntegrationURL';
 import {registerAndControl} from '../../lib/registerAndControl';
 
-test('use a route created by a Route object', async ({baseURL, page}) => {
+test('use a route created by a Route object', async ({baseURL = '', page}) => {
   const url = generateIntegrationURL(baseURL, __dirname);
   await page.goto(url);
   await registerAndControl(page);
@@ -14,7 +14,10 @@ test('use a route created by a Route object', async ({baseURL, page}) => {
   expect(value).toBe(testURL);
 });
 
-test('use a same-origin route created by a string', async ({baseURL, page}) => {
+test('use a same-origin route created by a string', async ({
+  baseURL = '',
+  page,
+}) => {
   const url = generateIntegrationURL(baseURL, __dirname);
   await page.goto(url);
   await registerAndControl(page);
@@ -25,7 +28,7 @@ test('use a same-origin route created by a string', async ({baseURL, page}) => {
 });
 
 test('use a cross-origin route created by a string', async ({
-  baseURL,
+  baseURL = '',
   page,
 }) => {
   const url = generateIntegrationURL(baseURL, __dirname);
@@ -37,7 +40,7 @@ test('use a cross-origin route created by a string', async ({
   expect(value).toBe(testURL);
 });
 
-test('return a 404 when no route matches', async ({baseURL, page}) => {
+test('return a 404 when no route matches', async ({baseURL = '', page}) => {
   const url = generateIntegrationURL(baseURL, __dirname);
   await page.goto(url);
   await registerAndControl(page);
