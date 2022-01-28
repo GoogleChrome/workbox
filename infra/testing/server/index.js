@@ -31,6 +31,13 @@ function initApp() {
   // Exposed the `.body` property on requests for application/json.
   app.use(bodyParser.json());
 
+  app.use((req, _, next) => {
+    if (req.url.startsWith('/random-prefix-')) {
+      req.url = '/' + req.url.split('/').slice(2).join('/');
+    }
+    next();
+  });
+
   requestCounters = new Set();
   app.use((req, res, next) => {
     for (const requestCounter of requestCounters) {
