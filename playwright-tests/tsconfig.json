@@ -1,8 +1,6 @@
 {
   "compilerOptions": {
-    "lib": [
-      "DOM",
-    ],
+    "lib": ["DOM"],
     "module": "esnext",
     "moduleResolution": "node",
     "noFallthroughCasesInSwitch": true,
