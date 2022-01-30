@@ -13,16 +13,20 @@ export class IframeManager {
 
   async createIframeClient(url: string): Promise<Frame> {
     const name = `${PREFIX}${++this._count}`;
-    await this._page.evaluate(async (url) => {
-      await new Promise<void>((resolve) => {
-        const el = document.createElement('iframe');
-        el.addEventListener('load', () => {
-          resolve();
+    await this._page.evaluate(
+      async ([url, name]) => {
+        await new Promise<void>((resolve) => {
+          const el = document.createElement('iframe');
+          el.addEventListener('load', () => {
+            resolve();
+          });
+          el.src = url;
+          el.name = name;
+          document.body.appendChild(el);
         });
-        el.src = url;
-        document.body.appendChild(el);
-      });
-    }, url);
+      },
+      [url, name],
+    );
 
     const frame = this._page.frame(name);
     if (!frame) {

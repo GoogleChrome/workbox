@@ -17,7 +17,7 @@ test('broadcast a message after a cache update to a regular request', async ({
 }) => {
   const url = generateIntegrationURL(baseURL, __dirname);
   await page.goto(url);
-  await registerAndControl(page);
+  const scope = await registerAndControl(page);
 
   const apiURL = `${baseURL}/__WORKBOX/uniqueETag`;
   const firstResponse = await fetchAsString(page, apiURL);
@@ -43,7 +43,7 @@ test('broadcast a message after a cache update to a regular request', async ({
     type: 'CACHE_UPDATED',
     meta: 'workbox-broadcast-update',
     payload: {
-      cacheName: 'bcu-integration-test',
+      cacheName: `workbox-runtime-${scope}`,
       updatedURL: apiURL,
     },
   });
@@ -59,7 +59,7 @@ test('broadcast a message after a cache update to a navigation request', async (
     'unique-with-message.html',
   );
   await page.goto(url);
-  await registerAndControl(page);
+  const scope = await registerAndControl(page);
 
   await page.goto(url);
   const firstBody = await page.innerText('body');
@@ -79,7 +79,7 @@ test('broadcast a message after a cache update to a navigation request', async (
       type: 'CACHE_UPDATED',
       meta: 'workbox-broadcast-update',
       payload: {
-        cacheName: 'bcu-integration-test',
+        cacheName: `workbox-runtime-${scope}`,
         updatedURL: url,
       },
     },
@@ -96,7 +96,7 @@ test(`broadcast a message to all open clients by default`, async ({
     'unique-with-message.html',
   );
   await page.goto(url);
-  await registerAndControl(page);
+  const scope = await registerAndControl(page);
   const iframeManager = new IframeManager(page);
 
   await page.goto(url);
@@ -114,7 +114,7 @@ test(`broadcast a message to all open clients by default`, async ({
       type: 'CACHE_UPDATED',
       meta: 'workbox-broadcast-update',
       payload: {
-        cacheName: 'bcu-integration-test',
+        cacheName: `workbox-runtime-${scope}`,
         updatedURL: url,
       },
     },
@@ -130,7 +130,7 @@ test(`broadcast a message to all open clients by default`, async ({
       type: 'CACHE_UPDATED',
       meta: 'workbox-broadcast-update',
       payload: {
-        cacheName: 'bcu-integration-test',
+        cacheName: `workbox-runtime-${scope}`,
         updatedURL: url,
       },
     },

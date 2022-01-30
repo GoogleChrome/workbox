@@ -126,5 +126,8 @@
     "test_server": "gulp test_server",
     "version": "gulp build && git add -A packages"
   },
-  "version": "0.0.0"
+  "version": "0.0.0",
+  "volta": {
+    "node": "16.13.2"
+  }
 }
