@@ -31,6 +31,7 @@ module.exports = {
     '@typescript-eslint/prefer-readonly': 'error',
     '@typescript-eslint/prefer-regexp-exec': 'off',
     '@typescript-eslint/require-await': 'off',
+    '@typescript-eslint/restrict-template-expressions': 'off',
     '@typescript-eslint/unbound-method': 'off',
     'block-scoped-var': 'error',
     'eol-last': 'error',

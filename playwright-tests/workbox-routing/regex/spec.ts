@@ -4,7 +4,7 @@ import {fetchAsString} from '../../lib/fetchAsString';
 import {generateIntegrationURL} from '../../lib/generateIntegrationURL';
 import {registerAndControl} from '../../lib/registerAndControl';
 
-test('use a route created by a RegExp', async ({baseURL = '', page}) => {
+test('use a route created by a RegExp', async ({baseURL, page}) => {
   const url = generateIntegrationURL(baseURL, __dirname);
   await page.goto(url);
   await registerAndControl(page);

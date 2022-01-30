@@ -121,6 +121,7 @@
     "prepare": "husky install",
     "prettier": "prettier --ignore-unknown --write .",
     "test_integration": "gulp test_integration",
+    "test_playwright": "playwright test --config=playwright-tests/playwright.config.ts",
     "test_node": "gulp test_node",
     "test_server": "gulp test_server",
     "version": "gulp build && git add -A packages"

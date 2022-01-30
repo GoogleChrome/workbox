@@ -11,9 +11,10 @@ function trimPrefix(str: string): string {
 }
 
 export function generateIntegrationURL(
-  baseURL: string,
+  baseURL = '',
   dirname: string,
+  htmlFile = 'integration.html',
 ): string {
   const path = trimPrefix(dirname);
-  return `${baseURL}/random-prefix-${Math.random()}${path}/integration.html`;
+  return `${baseURL}/random-prefix-${Math.random()}${path}/${htmlFile}`;
 }

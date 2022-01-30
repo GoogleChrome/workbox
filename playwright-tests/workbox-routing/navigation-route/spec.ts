@@ -3,7 +3,7 @@ import {test, expect} from '@playwright/test';
 import {generateIntegrationURL} from '../../lib/generateIntegrationURL';
 import {registerAndControl} from '../../lib/registerAndControl';
 
-test('use NavigationRoute for all navigations', async ({page, baseURL}) => {
+test('use NavigationRoute for all navigations', async ({baseURL, page}) => {
   const url = generateIntegrationURL(baseURL, __dirname);
   await page.goto(url);
   await registerAndControl(page);
