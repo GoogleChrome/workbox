@@ -1,9 +1,10 @@
 import {test, expect} from '@playwright/test';
 
-import {fetchAsString} from '../../lib/fetchAsString';
-import {generateIntegrationURL} from '../../lib/generateIntegrationURL';
-import {IframeManager} from '../../lib/iframeManager';
-import {registerAndControl} from '../../lib/registerAndControl';
+import {fetchAsString} from '../lib/fetchHelper';
+import {generateIntegrationURL} from '../lib/generateIntegrationURL';
+import {IframeManager} from '../lib/iframeManager';
+import {registerAndControl} from '../lib/registerAndControl';
+import {waitForSWMessage} from '../lib/waitForSWMessage';
 
 declare global {
   interface Window {
@@ -23,17 +24,7 @@ test('broadcast a message after a cache update to a regular request', async ({
   const firstResponse = await fetchAsString(page, apiURL);
   expect(firstResponse).toMatch(/ETag is \d+\./);
 
-  const messageDataPromise = page.evaluate(async () => {
-    const promiseForData = new Promise<Record<string, any>>((resolve) => {
-      navigator.serviceWorker.addEventListener(
-        'message',
-        (event: MessageEvent<Record<string, any>>) => {
-          resolve(event.data);
-        },
-      );
-    });
-    return await promiseForData;
-  });
+  const messageDataPromise = waitForSWMessage<Record<string, any>>(page);
 
   const secondResponse = await fetchAsString(page, apiURL);
   expect(secondResponse).toBe(firstResponse);

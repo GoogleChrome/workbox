@@ -1,5 +1,6 @@
 import {resolve} from 'path';
 
+let count = 0;
 const projectRoot = resolve(__dirname, '..', '..');
 
 function trimPrefix(str: string): string {
@@ -16,5 +17,5 @@ export function generateIntegrationURL(
   htmlFile = 'integration.html',
 ): string {
   const path = trimPrefix(dirname);
-  return `${baseURL}/random-prefix-${Math.random()}${path}/${htmlFile}`;
+  return `${baseURL}/random-prefix-${++count}${path}/${htmlFile}`;
 }

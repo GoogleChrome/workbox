@@ -1,6 +1,6 @@
 import {test, expect} from '@playwright/test';
 
-import {fetchAsString} from '../../lib/fetchAsString';
+import {fetchAsString} from '../../lib/fetchHelper';
 import {generateIntegrationURL} from '../../lib/generateIntegrationURL';
 import {registerAndControl} from '../../lib/registerAndControl';
 
