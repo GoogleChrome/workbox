@@ -7,9 +7,10 @@
 */
 
 importScripts('/__WORKBOX/buildFile/workbox-core');
-importScripts('/__WORKBOX/buildFile/workbox-cacheable-response');
+importScripts('/__WORKBOX/buildFile/workbox-expiration');
 importScripts('/__WORKBOX/buildFile/workbox-routing');
 importScripts('/__WORKBOX/buildFile/workbox-strategies');
+importScripts('/infra/testing/comlink/sw-interface.js');
 
 const notifyOnCompletion = {
   handlerDidComplete: async ({event, request}) => {
@@ -19,23 +20,12 @@ const notifyOnCompletion = {
 };
 
 workbox.routing.registerRoute(
-  ({url}) => url.pathname.includes('cacheable-404'),
-  new workbox.strategies.CacheFirst({
-    plugins: [
-      new workbox.cacheableResponse.CacheableResponsePlugin({
-        statuses: [404],
-      }),
-      notifyOnCompletion,
-    ],
-  }),
-);
-
-workbox.routing.registerRoute(
   ({url}) => url.pathname.endsWith('.txt'),
   new workbox.strategies.CacheFirst({
+    cacheName: self.registration.scope,
     plugins: [
-      new workbox.cacheableResponse.CacheableResponsePlugin({
-        statuses: [200],
+      new workbox.expiration.ExpirationPlugin({
+        maxEntries: 3,
       }),
       notifyOnCompletion,
     ],

@@ -12,7 +12,7 @@ test('not cache a 200, but not 404 response', async ({baseURL, page}) => {
   const scope = await registerAndControl(page);
 
   const [message, firstStatus, secondStatus] = await Promise.all([
-    waitForSWMessage<{handlerDidComplete: string}>(page),
+    waitForSWMessage<{cachedURL: string}>(page),
     fetchStatus(page, 'example-1.txt'),
     fetchStatus(page, '/bad/url/does/not/exist'),
   ]);
@@ -22,7 +22,7 @@ test('not cache a 200, but not 404 response', async ({baseURL, page}) => {
 
   const cachedURLs = await getURLsInRuntimeCache(page, scope);
 
-  expect(cachedURLs).toStrictEqual([message.handlerDidComplete]);
+  expect(cachedURLs).toStrictEqual([message.cachedURL]);
 });
 
 test('cache a 404 response when configured', async ({baseURL, page}) => {
@@ -31,7 +31,7 @@ test('cache a 404 response when configured', async ({baseURL, page}) => {
   const scope = await registerAndControl(page);
 
   const [message, status] = await Promise.all([
-    waitForSWMessage<{handlerDidComplete: string}>(page),
+    waitForSWMessage<{cachedURL: string}>(page),
     fetchStatus(page, '/this/is/a/cacheable-404'),
   ]);
 
@@ -39,5 +39,5 @@ test('cache a 404 response when configured', async ({baseURL, page}) => {
 
   const cachedURLs = await getURLsInRuntimeCache(page, scope);
 
-  expect(cachedURLs).toStrictEqual([message.handlerDidComplete]);
+  expect(cachedURLs).toStrictEqual([message.cachedURL]);
 });
