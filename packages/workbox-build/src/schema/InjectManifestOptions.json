@@ -3,6 +3,7 @@
   "type": "object",
   "properties": {
     "additionalManifestEntries": {
+      "description": "A list of entries to be precached, in addition to any entries that are\ngenerated as part of the build configuration.",
       "type": "array",
       "items": {
         "anyOf": [
@@ -16,27 +17,33 @@
       }
     },
     "dontCacheBustURLsMatching": {
+      "description": "Assets that match this will be assumed to be uniquely versioned via their\nURL, and exempted from the normal HTTP cache-busting that's done when\npopulating the precache. While not required, it's recommended that if your\nexisting build process already inserts a `[hash]` value into each filename,\nyou provide a RegExp that will detect that, as it will reduce the bandwidth\nconsumed when precaching.",
       "$ref": "#/definitions/RegExp"
     },
     "manifestTransforms": {
+      "description": "One or more functions which will be applied sequentially against the\ngenerated manifest. If `modifyURLPrefix` or `dontCacheBustURLsMatching` are\nalso specified, their corresponding transformations will be applied first.",
       "type": "array",
       "items": {}
     },
     "maximumFileSizeToCacheInBytes": {
+      "description": "This value can be used to determine the maximum size of files that will be\nprecached. This prevents you from inadvertently precaching very large files\nthat might have accidentally matched one of your patterns.",
       "default": 2097152,
       "type": "number"
     },
     "modifyURLPrefix": {
+      "description": "A mapping of prefixes that, if present in an entry in the precache\nmanifest, will be replaced with the corresponding value. This can be used\nto, for example, remove or add a path prefix from a manifest entry if your\nweb hosting setup doesn't match your local filesystem setup. As an\nalternative with more flexibility, you can use the `manifestTransforms`\noption and provide a function that modifies the entries in the manifest\nusing whatever logic you provide.",
       "type": "object",
       "additionalProperties": {
         "type": "string"
       }
     },
     "globFollow": {
+      "description": "Determines whether or not symlinks are followed when generating the\nprecache manifest. For more information, see the definition of `follow` in\nthe `glob` [documentation](https://github.com/isaacs/node-glob#options).",
       "default": true,
       "type": "boolean"
     },
     "globIgnores": {
+      "description": "A set of patterns matching files to always exclude when generating the\nprecache manifest. For more information, see the definition of `ignore` in\nthe `glob` [documentation](https://github.com/isaacs/node-glob#options).",
       "default": [
         "**/node_modules/**/*"
       ],
@@ -46,6 +53,7 @@
       }
     },
     "globPatterns": {
+      "description": "Files matching any of these patterns will be included in the precache\nmanifest. For more information, see the\n[`glob` primer](https://github.com/isaacs/node-glob#glob-primer).",
       "default": [
         "**/*.{js,css,html}"
       ],
@@ -55,10 +63,12 @@
       }
     },
     "globStrict": {
+      "description": "If true, an error reading a directory when generating a precache manifest\nwill cause the build to fail. If false, the problematic directory will be\nskipped. For more information, see the definition of `strict` in the `glob`\n[documentation](https://github.com/isaacs/node-glob#options).",
       "default": true,
       "type": "boolean"
     },
     "templatedURLs": {
+      "description": "If a URL is rendered based on some server-side logic, its contents may\ndepend on multiple files or on some other unique string value. The keys in\nthis object are server-rendered URLs. If the values are an array of\nstrings, they will be interpreted as `glob` patterns, and the contents of\nany files matching the patterns will be used to uniquely version the URL.\nIf used with a single string, it will be interpreted as unique versioning\ninformation that you've generated for a given URL.",
       "type": "object",
       "additionalProperties": {
         "anyOf": [
@@ -75,16 +85,20 @@
       }
     },
     "injectionPoint": {
+      "description": "The string to find inside of the `swSrc` file. Once found, it will be\nreplaced by the generated precache manifest.",
       "default": "self.__WB_MANIFEST",
       "type": "string"
     },
     "swSrc": {
+      "description": "The path and filename of the service worker file that will be read during\nthe build process, relative to the current working directory.",
       "type": "string"
     },
     "swDest": {
+      "description": "The path and filename of the service worker file that will be created by\nthe build process, relative to the current working directory. It must end\nin '.js'.",
       "type": "string"
     },
     "globDirectory": {
+      "description": "The local directory you wish to match `globPatterns` against. The path is\nrelative to the current directory.",
       "type": "string"
     }
   },
@@ -183,6 +197,7 @@
       "type": "object",
       "properties": {
         "handler": {
+          "description": "This determines how the runtime route will generate a response.\nTo use one of the built-in {@link workbox-strategies}, provide its name,\nlike `'NetworkFirst'`.\nAlternatively, this can be a {@link workbox-core.RouteHandler} callback\nfunction with custom response logic.",
           "anyOf": [
             {
               "$ref": "#/definitions/RouteHandlerCallback"
@@ -203,6 +218,8 @@
           ]
         },
         "method": {
+          "description": "The HTTP method to match against. The default value of `'GET'` is normally\nsufficient, unless you explicitly need to match `'POST'`, `'PUT'`, or\nanother type of request.",
+          "default": "GET",
           "enum": [
             "DELETE",
             "GET",
@@ -217,6 +234,7 @@
           "type": "object",
           "properties": {
             "backgroundSync": {
+              "description": "Configuring this will add a\n{@link workbox-background-sync.BackgroundSyncPlugin} instance to the\n{@link workbox-strategies} configured in `handler`.",
               "type": "object",
               "properties": {
                 "name": {
@@ -232,6 +250,7 @@
               ]
             },
             "broadcastUpdate": {
+              "description": "Configuring this will add a\n{@link workbox-broadcast-update.BroadcastUpdatePlugin} instance to the\n{@link workbox-strategies} configured in `handler`.",
               "type": "object",
               "properties": {
                 "channelName": {
@@ -247,27 +266,33 @@
               ]
             },
             "cacheableResponse": {
+              "description": "Configuring this will add a\n{@link workbox-cacheable-response.CacheableResponsePlugin} instance to\nthe {@link workbox-strategies} configured in `handler`.",
               "$ref": "#/definitions/CacheableResponseOptions"
             },
             "cacheName": {
+              "description": "If provided, this will set the `cacheName` property of the\n{@link workbox-strategies} configured in `handler`.",
               "type": [
                 "null",
                 "string"
               ]
             },
             "expiration": {
+              "description": "Configuring this will add a\n{@link workbox-expiration.ExpirationPlugin} instance to\nthe {@link workbox-strategies} configured in `handler`.",
               "$ref": "#/definitions/ExpirationPluginOptions"
             },
             "networkTimeoutSeconds": {
+              "description": "If provided, this will set the `cacheName` property of the\n{@link workbox-strategies} configured in `handler`. Note that only\n`'NetworkFirst'` and `'NetworkOnly'` support `networkTimeoutSeconds`.",
               "type": "number"
             },
             "plugins": {
+              "description": "Configuring this allows the use of one or more Workbox plugins that\ndon't have \"shortcut\" options (like `expiration` for\n{@link workbox-expiration.ExpirationPlugin}). The plugins provided here\nwill be added to the {@link workbox-strategies} configured in `handler`.",
               "type": "array",
               "items": {
                 "$ref": "#/definitions/WorkboxPlugin"
               }
             },
             "precacheFallback": {
+              "description": "Configuring this will add a\n{@link workbox-precaching.PrecacheFallbackPlugin} instance to\nthe {@link workbox-strategies} configured in `handler`.",
               "type": "object",
               "properties": {
                 "fallbackURL": {
@@ -280,18 +305,22 @@
               ]
             },
             "rangeRequests": {
+              "description": "Enabling this will add a\n{@link workbox-range-requests.RangeRequestsPlugin} instance to\nthe {@link workbox-strategies} configured in `handler`.",
               "type": "boolean"
             },
             "fetchOptions": {
+              "description": "Configuring this will pass along the `fetchOptions` value to\nthe {@link workbox-strategies} configured in `handler`.",
               "$ref": "#/definitions/RequestInit"
             },
             "matchOptions": {
+              "description": "Configuring this will pass along the `matchOptions` value to\nthe {@link workbox-strategies} configured in `handler`.",
               "$ref": "#/definitions/CacheQueryOptions"
             }
           },
           "additionalProperties": false
         },
         "urlPattern": {
+          "description": "This match criteria determines whether the configured handler will\ngenerate a response for any requests that don't match one of the precached\nURLs. If multiple `RuntimeCaching` routes are defined, then the first one\nwhose `urlPattern` matches will be the one that responds.\n\nThis value directly maps to the first parameter passed to\n{@link workbox-routing.registerRoute}. It's recommended to use a\n{@link workbox-core.RouteMatchCallback} function for greatest flexibility.",
           "anyOf": [
             {
               "$ref": "#/definitions/RegExp"
