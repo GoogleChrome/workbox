@@ -10,13 +10,7 @@ importScripts('/__WORKBOX/buildFile/workbox-core');
 importScripts('/__WORKBOX/buildFile/workbox-cacheable-response');
 importScripts('/__WORKBOX/buildFile/workbox-routing');
 importScripts('/__WORKBOX/buildFile/workbox-strategies');
-
-const notifyOnCompletion = {
-  handlerDidComplete: async ({event, request}) => {
-    const client = await self.clients.get(event.clientId);
-    client.postMessage({cachedURL: request.url});
-  },
-};
+importScripts('../lib/sw/notifyOnCompletionPlugin.js');
 
 workbox.routing.registerRoute(
   ({url}) => url.pathname.includes('cacheable-404'),
@@ -25,7 +19,7 @@ workbox.routing.registerRoute(
       new workbox.cacheableResponse.CacheableResponsePlugin({
         statuses: [404],
       }),
-      notifyOnCompletion,
+      self.__notifyOnCompletionPlugin,
     ],
   }),
 );
@@ -37,7 +31,7 @@ workbox.routing.registerRoute(
       new workbox.cacheableResponse.CacheableResponsePlugin({
         statuses: [200],
       }),
-      notifyOnCompletion,
+      self.__notifyOnCompletionPlugin,
     ],
   }),
 );

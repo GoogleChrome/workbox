@@ -10,14 +10,7 @@ importScripts('/__WORKBOX/buildFile/workbox-core');
 importScripts('/__WORKBOX/buildFile/workbox-expiration');
 importScripts('/__WORKBOX/buildFile/workbox-routing');
 importScripts('/__WORKBOX/buildFile/workbox-strategies');
-importScripts('/infra/testing/comlink/sw-interface.js');
-
-const notifyOnCompletion = {
-  handlerDidComplete: async ({event, request}) => {
-    const client = await self.clients.get(event.clientId);
-    client.postMessage({cachedURL: request.url});
-  },
-};
+importScripts('../../lib/sw/notifyOnCompletionPlugin.js');
 
 workbox.routing.registerRoute(
   ({url}) => url.pathname.endsWith('.txt'),
@@ -27,7 +20,7 @@ workbox.routing.registerRoute(
       new workbox.expiration.ExpirationPlugin({
         maxEntries: 3,
       }),
-      notifyOnCompletion,
+      self.__notifyOnCompletionPlugin,
     ],
   }),
 );
