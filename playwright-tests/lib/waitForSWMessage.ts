@@ -1,7 +1,7 @@
-import {Page} from '@playwright/test';
+import {Frame, Page} from '@playwright/test';
 
-export async function waitForSWMessage<T>(page: Page): Promise<T> {
-  return await page.evaluate(async () => {
+export async function waitForSWMessage<T>(client: Frame | Page): Promise<T> {
+  return await client.evaluate(async () => {
     const promiseForData = new Promise<T>((resolve) => {
       navigator.serviceWorker.addEventListener(
         'message',

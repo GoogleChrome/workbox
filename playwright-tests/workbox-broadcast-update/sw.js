@@ -14,6 +14,7 @@ importScripts('/__WORKBOX/buildFile/workbox-strategies');
 workbox.routing.registerRoute(
   ({url}) => url.searchParams.has('notifyAllClientsTest'),
   new workbox.strategies.NetworkFirst({
+    cacheName: self.registration.scope,
     plugins: [
       new workbox.broadcastUpdate.BroadcastUpdatePlugin({
         notifyAllClients: false,
@@ -25,6 +26,7 @@ workbox.routing.registerRoute(
 workbox.routing.registerRoute(
   ({url}) => url.pathname === '/__WORKBOX/uniqueETag',
   new workbox.strategies.StaleWhileRevalidate({
+    cacheName: self.registration.scope,
     plugins: [new workbox.broadcastUpdate.BroadcastUpdatePlugin()],
   }),
 );
@@ -32,6 +34,7 @@ workbox.routing.registerRoute(
 workbox.routing.registerRoute(
   ({request}) => request.mode === 'navigate',
   new workbox.strategies.StaleWhileRevalidate({
+    cacheName: self.registration.scope,
     plugins: [new workbox.broadcastUpdate.BroadcastUpdatePlugin()],
   }),
 );

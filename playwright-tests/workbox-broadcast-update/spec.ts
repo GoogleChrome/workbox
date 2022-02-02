@@ -16,25 +16,26 @@ test('broadcast a message after a cache update to a regular request', async ({
   baseURL,
   page,
 }) => {
+  const apiURL = `${baseURL}/__WORKBOX/uniqueETag`;
   const url = generateIntegrationURL(baseURL, __dirname);
   await page.goto(url);
   const scope = await registerAndControl(page);
 
-  const apiURL = `${baseURL}/__WORKBOX/uniqueETag`;
   const firstResponse = await fetchAsString(page, apiURL);
+
   expect(firstResponse).toMatch(/ETag is \d+\./);
 
-  const messageDataPromise = waitForSWMessage<Record<string, any>>(page);
+  const [messageData, secondResponse] = await Promise.all([
+    waitForSWMessage<Record<string, any>>(page),
+    fetchAsString(page, apiURL),
+  ]);
 
-  const secondResponse = await fetchAsString(page, apiURL);
   expect(secondResponse).toBe(firstResponse);
-
-  const messageData = await messageDataPromise;
   expect(messageData).toStrictEqual({
     type: 'CACHE_UPDATED',
     meta: 'workbox-broadcast-update',
     payload: {
-      cacheName: `workbox-runtime-${scope}`,
+      cacheName: scope,
       updatedURL: apiURL,
     },
   });
@@ -70,7 +71,7 @@ test('broadcast a message after a cache update to a navigation request', async (
       type: 'CACHE_UPDATED',
       meta: 'workbox-broadcast-update',
       payload: {
-        cacheName: `workbox-runtime-${scope}`,
+        cacheName: scope,
         updatedURL: url,
       },
     },
@@ -81,54 +82,34 @@ test(`broadcast a message to all open clients by default`, async ({
   baseURL,
   page,
 }) => {
-  const url = generateIntegrationURL(
-    baseURL,
-    __dirname,
-    'unique-with-message.html',
-  );
+  const apiURL = `${baseURL}/__WORKBOX/uniqueETag`;
+  const url = generateIntegrationURL(baseURL, __dirname);
   await page.goto(url);
   const scope = await registerAndControl(page);
+
   const iframeManager = new IframeManager(page);
-
-  await page.goto(url);
-  await page.waitForFunction((url) => window.caches.match(url), url);
-
   const iframe = await iframeManager.createIframeClient(url);
 
-  const pageMessagesHandle = await page.waitForFunction(() => {
-    return window.__messages.length > 0 ? window.__messages : false;
-  });
-  const pageMessages = await pageMessagesHandle.jsonValue();
+  await fetchAsString(page, apiURL);
 
-  expect(pageMessages).toStrictEqual([
-    {
-      type: 'CACHE_UPDATED',
-      meta: 'workbox-broadcast-update',
-      payload: {
-        cacheName: `workbox-runtime-${scope}`,
-        updatedURL: url,
-      },
-    },
+  const [pageMessage, iframeMessage] = await Promise.all([
+    waitForSWMessage<Record<string, any>>(page),
+    waitForSWMessage<Record<string, any>>(iframe),
+    fetchAsString(iframe, apiURL),
   ]);
 
-  const iframeMessagesHandle = await iframe.waitForFunction(() => {
-    return window.__messages.length > 0 ? window.__messages : false;
-  });
-  const iframeMessages = await iframeMessagesHandle.jsonValue();
-
-  expect(iframeMessages).toStrictEqual([
-    {
-      type: 'CACHE_UPDATED',
-      meta: 'workbox-broadcast-update',
-      payload: {
-        cacheName: `workbox-runtime-${scope}`,
-        updatedURL: url,
-      },
+  expect(pageMessage).toStrictEqual({
+    type: 'CACHE_UPDATED',
+    meta: 'workbox-broadcast-update',
+    payload: {
+      cacheName: scope,
+      updatedURL: apiURL,
     },
-  ]);
+  });
+  expect(iframeMessage).toStrictEqual(pageMessage);
 });
 
-test(`broadcast a message to the client that made the request when notifyAllClients is false`, async ({
+test(`broadcast a message to only the client that made the request when notifyAllClients is false`, async ({
   baseURL,
   page,
 }) => {
@@ -144,27 +125,22 @@ test(`broadcast a message to the client that made the request when notifyAllClie
   const iframeManager = new IframeManager(page);
   const iframe = await iframeManager.createIframeClient(url);
 
-  await page.evaluate((apiURL) => fetch(apiURL), apiURL);
-  await page.waitForFunction((apiURL) => window.caches.match(apiURL), apiURL);
+  await fetchAsString(page, apiURL);
 
-  await iframe.evaluate((apiURL) => fetch(apiURL), apiURL);
-
-  const iframeMessagesHandle = await iframe.waitForFunction(() => {
-    return window.__messages.length > 0 ? window.__messages : false;
-  });
-  const iframeMessages = await iframeMessagesHandle.jsonValue();
-
-  expect(iframeMessages).toStrictEqual([
-    {
-      type: 'CACHE_UPDATED',
-      meta: 'workbox-broadcast-update',
-      payload: {
-        cacheName: `workbox-runtime-${scope}`,
-        updatedURL: apiURL,
-      },
-    },
+  const [iframeMessage] = await Promise.all([
+    waitForSWMessage<Record<string, any>>(iframe),
+    fetchAsString(iframe, apiURL),
   ]);
 
-  const pageMessages = await page.evaluate(() => window.__messages);
-  expect(pageMessages).toStrictEqual([]);
+  expect(iframeMessage).toStrictEqual({
+    type: 'CACHE_UPDATED',
+    meta: 'workbox-broadcast-update',
+    payload: {
+      cacheName: scope,
+      updatedURL: apiURL,
+    },
+  });
+
+  const windowMessages = await page.evaluate(() => window.__messages);
+  expect(windowMessages).toStrictEqual([]);
 });
