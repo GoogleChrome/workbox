@@ -26,7 +26,7 @@ test('honor the maxEntries configuration', async ({baseURL, page}) => {
     fetchAsString(page, 'example-3.txt'),
   ]);
 
-  const firstCachedURLs = await getURLsInRuntimeCache(page, scope, scope);
+  const firstCachedURLs = await getURLsInRuntimeCache(page, scope);
   expect(firstCachedURLs).toStrictEqual([
     firstMessage.cachedURL,
     secondMessage.cachedURL,
@@ -43,7 +43,7 @@ test('honor the maxEntries configuration', async ({baseURL, page}) => {
     fetchAsString(page, 'example-5.txt'),
   ]);
 
-  const secondCachedURLs = await getURLsInRuntimeCache(page, scope, scope);
+  const secondCachedURLs = await getURLsInRuntimeCache(page, scope);
   expect(secondCachedURLs).toStrictEqual([
     thirdMessage.cachedURL,
     fourthMessage.cachedURL,
@@ -55,7 +55,7 @@ test('honor the maxEntries configuration', async ({baseURL, page}) => {
     fetchAsString(page, 'example-1.txt'),
   ]);
 
-  const thirdCachedURLs = await getURLsInRuntimeCache(page, scope, scope);
+  const thirdCachedURLs = await getURLsInRuntimeCache(page, scope);
   expect(thirdCachedURLs).toStrictEqual([
     fourthMessage.cachedURL,
     fifthMessage.cachedURL,
