@@ -14,7 +14,7 @@ test('should clean up when deleteCacheAndMetadata() is called', async ({
   const url = generateIntegrationURL(baseURL, __dirname);
   await page.goto(url);
   // Expose the idb library in our test page.
-  page.addScriptTag({
+  await page.addScriptTag({
     url: '/node_modules/idb/build/iife/index-min.js',
   });
   const scope = await registerAndControl(page);
