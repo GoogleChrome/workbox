@@ -177,16 +177,34 @@ interface WebpackPartial {
   // an Array<RegExp> can't be serialized into JSON.
   // The default value of [/\.map$/, /^manifest.*\.js$/] will be assigned by
   // the validation function, and we need to reflect that in the docs.
-  exclude?: Array<
-    //eslint-disable-next-line @typescript-eslint/ban-types
-    string | RegExp | ((arg0: any) => boolean)
-  >;
+  /**
+   * One or more specifiers used to exclude assets from the precache manifest.
+   * This is interpreted following
+   * [the same rules](https://webpack.js.org/configuration/module/#condition)
+   * as `webpack`'s standard `exclude` option.
+   * If not provided, the default value is `[/\.map$/, /^manifest.*\.js$]`.
+   */
+  //eslint-disable-next-line @typescript-eslint/ban-types
+  exclude?: Array<string | RegExp | ((arg0: any) => boolean)>;
+  /**
+   * One or more chunk names whose corresponding output files should be excluded
+   * from the precache manifest.
+   */
   excludeChunks?: Array<string>;
-
-  include?: Array<
-    //eslint-disable-next-line @typescript-eslint/ban-types
-    string | RegExp | ((arg0: any) => boolean)
-  >;
+  /**
+   * One or more specifiers used to include assets in the precache manifest.
+   * This is interpreted following
+   * [the same rules](https://webpack.js.org/configuration/module/#condition)
+   * as `webpack`'s standard `include` option.
+   */
+  //eslint-disable-next-line @typescript-eslint/ban-types
+  include?: Array<string | RegExp | ((arg0: any) => boolean)>;
+  /**
+   * If set to 'production', then an optimized service worker bundle that
+   * excludes debugging info will be produced. If not explicitly configured
+   * here, the `mode` value configured in the current `webpack` compilation
+   * will be used.
+   */
   mode?: string | null;
 }
 
