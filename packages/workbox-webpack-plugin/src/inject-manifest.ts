@@ -71,7 +71,7 @@ class InjectManifest {
    * [asset's metadata](https://github.com/webpack/webpack/issues/9038) is used
    * to determine whether it's immutable or not.)
    *
-   * @param {Array<string|RegExp>} [config.exclude=[/\.map$/, /^manifest.*\.js$]]
+   * @param {Array<string|RegExp|Function>} [config.exclude=[/\.map$/, /^manifest.*\.js$]]
    * One or more specifiers used to exclude assets from the precache manifest.
    * This is interpreted following
    * [the same rules](https://webpack.js.org/configuration/module/#condition)
@@ -80,7 +80,7 @@ class InjectManifest {
    * @param {Array<string>} [config.excludeChunks] One or more chunk names whose
    * corresponding output files should be excluded from the precache manifest.
    *
-   * @param {Array<string|RegExp>} [config.include]
+   * @param {Array<string|RegExp|Function>} [config.include]
    * One or more specifiers used to include assets in the precache manifest.
    * This is interpreted following
    * [the same rules](https://webpack.js.org/configuration/module/#condition)
