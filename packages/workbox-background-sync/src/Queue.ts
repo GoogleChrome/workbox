@@ -11,7 +11,7 @@ import {logger} from 'workbox-core/_private/logger.js';
 import {assert} from 'workbox-core/_private/assert.js';
 import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
 import {QueueStore} from './lib/QueueStore.js';
-import {UnidentifiedQueueStoreEntry} from './lib/QueueDb.js';
+import {QueueStoreEntry, UnidentifiedQueueStoreEntry} from './lib/QueueDb.js';
 import {StorableRequest} from './lib/StorableRequest.js';
 import './_version.js';
 
@@ -27,8 +27,9 @@ interface OnSyncCallback {
 }
 
 export interface QueueOptions {
-  onSync?: OnSyncCallback;
+  forceSyncFallback?: boolean;
   maxRetentionTime?: number;
+  onSync?: OnSyncCallback;
 }
 
 interface QueueEntry {
@@ -79,6 +80,7 @@ class Queue {
   private readonly _onSync: OnSyncCallback;
   private readonly _maxRetentionTime: number;
   private readonly _queueStore: QueueStore;
+  private readonly _forceSyncFallback: boolean;
   private _syncInProgress = false;
   private _requestsAddedDuringSync = false;
 
@@ -100,8 +102,17 @@ class Queue {
    * @param {number} [options.maxRetentionTime=7 days] The amount of time (in
    *     minutes) a request may be retried. After this amount of time has
    *     passed, the request will be deleted from the queue.
+   * @param {boolean} [options.forceSyncFallback=false] If `true`, instead
+   *     of attempting to use background sync events, always attempt to replay
+   *     queued request at service worker startup. Most folks will not need
+   *     this, unless you explicitly target a runtime like Electron that
+   *     exposes the interfaces for background sync, but does not have a working
+   *     implementation.
    */
-  constructor(name: string, {onSync, maxRetentionTime}: QueueOptions = {}) {
+  constructor(
+    name: string,
+    {forceSyncFallback, onSync, maxRetentionTime}: QueueOptions = {},
+  ) {
     // Ensure the store name is not already being used
     if (queueNames.has(name)) {
       throw new WorkboxError('duplicate-queue-name', {name});
@@ -112,6 +123,7 @@ class Queue {
     this._name = name;
     this._onSync = onSync || this.replayRequests;
     this._maxRetentionTime = maxRetentionTime || MAX_RETENTION_TIME;
+    this._forceSyncFallback = Boolean(forceSyncFallback);
     this._queueStore = new QueueStore(this._name);
 
     this._addSyncListener();
@@ -276,7 +288,14 @@ class Queue {
       entry.metadata = metadata;
     }
 
-    await this._queueStore[`${operation}Entry`](entry);
+    switch (operation) {
+      case 'push':
+        await this._queueStore.pushEntry(entry);
+        break;
+      case 'unshift':
+        await this._queueStore.unshiftEntry(entry);
+        break;
+    }
 
     if (process.env.NODE_ENV !== 'production') {
       logger.log(
@@ -307,7 +326,15 @@ class Queue {
     operation: 'pop' | 'shift',
   ): Promise<QueueEntry | undefined> {
     const now = Date.now();
-    const entry = await this._queueStore[`${operation}Entry`]();
+    let entry: QueueStoreEntry | undefined;
+    switch (operation) {
+      case 'pop':
+        entry = await this._queueStore.popEntry();
+        break;
+      case 'shift':
+        entry = await this._queueStore.shiftEntry();
+        break;
+    }
 
     if (entry) {
       // Ignore requests older than maxRetentionTime. Call this function
@@ -364,7 +391,8 @@ class Queue {
    * Registers a sync event with a tag unique to this instance.
    */
   async registerSync(): Promise<void> {
-    if ('sync' in self.registration) {
+    // See https://github.com/GoogleChrome/workbox/issues/2393
+    if ('sync' in self.registration && !this._forceSyncFallback) {
       try {
         await self.registration.sync.register(`${TAG_PREFIX}:${this._name}`);
       } catch (err) {
@@ -382,13 +410,14 @@ class Queue {
 
   /**
    * In sync-supporting browsers, this adds a listener for the sync event.
-   * In non-sync-supporting browsers, this will retry the queue on service
-   * worker startup.
+   * In non-sync-supporting browsers, or if _forceSyncFallback is true, this
+   * will retry the queue on service worker startup.
    *
    * @private
    */
   private _addSyncListener() {
-    if ('sync' in self.registration) {
+    // See https://github.com/GoogleChrome/workbox/issues/2393
+    if ('sync' in self.registration && !this._forceSyncFallback) {
       self.addEventListener('sync', (event: SyncEvent) => {
         if (event.tag === `${TAG_PREFIX}:${this._name}`) {
           if (process.env.NODE_ENV !== 'production') {
@@ -435,8 +464,9 @@ class Queue {
       if (process.env.NODE_ENV !== 'production') {
         logger.log(`Background sync replaying without background sync event`);
       }
-      // If the browser doesn't support background sync, retry
-      // every time the service worker starts up as a fallback.
+      // If the browser doesn't support background sync, or the developer has
+      // opted-in to not using it, retry every time the service worker starts up
+      // as a fallback.
       void this._onSync({queue: this});
     }
   }
