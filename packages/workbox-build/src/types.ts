@@ -177,9 +177,16 @@ interface WebpackPartial {
   // an Array<RegExp> can't be serialized into JSON.
   // The default value of [/\.map$/, /^manifest.*\.js$/] will be assigned by
   // the validation function, and we need to reflect that in the docs.
-  exclude?: Array<string | RegExp | ((arg0: string) => boolean)>;
+  exclude?: Array<
+    //eslint-disable-next-line @typescript-eslint/ban-types
+    string | RegExp | ((arg0: any) => boolean)
+  >;
   excludeChunks?: Array<string>;
-  include?: Array<string | RegExp | ((arg0: string) => boolean)>;
+
+  include?: Array<
+    //eslint-disable-next-line @typescript-eslint/ban-types
+    string | RegExp | ((arg0: any) => boolean)
+  >;
   mode?: string | null;
 }
 

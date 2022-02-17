@@ -14,12 +14,10 @@ import stringify from 'fast-json-stable-stringify';
 import upath from 'upath';
 import webpack from 'webpack';
 
-//import {CommonConfig} from './types';
 import {getManifestEntriesFromCompilation} from './lib/get-manifest-entries-from-compilation';
 import {getSourcemapAssetName} from './lib/get-sourcemap-asset-name';
 import {relativeToOutputPath} from './lib/relative-to-output-path';
 import {WebpackInjectManifestOptions} from 'workbox-build';
-
 // Used to keep track of swDest files written by *any* instance of this plugin.
 // See https://github.com/GoogleChrome/workbox/issues/2181
 const _generatedAssetNames = new Set<string>();
@@ -222,7 +220,9 @@ class InjectManifest {
 
     if (Array.isArray(this.config.webpackCompilationPlugins)) {
       for (const plugin of this.config.webpackCompilationPlugins) {
-        plugin.apply(childCompiler); //eslint-disable-line
+        if (plugin instanceof webpack.EntryPlugin) {
+          plugin.apply(childCompiler);
+        }
       }
     }
 
@@ -283,7 +283,6 @@ class InjectManifest {
       if (error instanceof Error) {
         throw new Error(
           `Please check your ${this.constructor.name} plugin ` +
-            // eslint-disable-next-line
             `configuration:\n${error.message}`,
         );
       }
@@ -398,9 +397,8 @@ class InjectManifest {
       _generatedAssetNames.add(sourcemapAssetName);
       const sourcemapAsset = compilation.getAsset(sourcemapAssetName);
       const {source, map} = await replaceAndUpdateSourceMap({
-        // eslint-disable-next-line
         jsFilename: config.swDest!,
-        // eslint-disable-next-line
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         originalMap: JSON.parse(sourcemapAsset!.source.source().toString()),
         originalSource: swAssetString,
         replaceString: manifestString,

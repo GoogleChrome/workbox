@@ -31,6 +31,9 @@
   "peerDependencies": {
     "webpack": "^4.4.0 || ^5.9.0"
   },
+  "devDependencies": {
+    "@types/webpack": "^5.28.0"
+  },
   "author": "Google's Web DevRel Team",
   "license": "MIT",
   "repository": "googlechrome/workbox",

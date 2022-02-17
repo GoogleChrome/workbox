@@ -22,7 +22,6 @@
     "@types/fs-extra": "^9.0.5",
     "@types/lodash": "^4.14.165",
     "@types/stringify-object": "^3.3.0",
-    "@types/webpack": "^5.28.0",
     "@typescript-eslint/eslint-plugin": "^4.32.0",
     "@typescript-eslint/parser": "^4.32.0",
     "acorn": "^8.0.1",

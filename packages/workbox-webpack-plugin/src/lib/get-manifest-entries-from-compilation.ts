@@ -6,8 +6,13 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {Asset, Chunk, Compilation, ModuleFilenameHelpers} from 'webpack';
-import {WebpackError} from 'webpack';
+import {
+  Asset,
+  Chunk,
+  Compilation,
+  ModuleFilenameHelpers,
+  WebpackError,
+} from 'webpack';
 import {transformManifest} from 'workbox-build/build/lib/transform-manifest';
 
 import {
@@ -32,11 +37,17 @@ import {resolveWebpackURL} from './resolve-webpack-url';
  */
 function checkConditions(
   asset: Asset,
-  conditions: Array<string | RegExp | ((arg0: string) => boolean)> = [],
+  compilation: Compilation,
+
+  conditions: Array<
+    //eslint-disable-next-line @typescript-eslint/ban-types
+    string | RegExp | ((arg0: any) => boolean)
+  > = [],
 ): boolean {
   for (const condition of conditions) {
     if (typeof condition === 'function') {
-      return condition(asset.name);
+      return condition({asset, compilation});
+      //return compilation !== null;
     } else {
       if (ModuleFilenameHelpers.matchPart(asset.name, condition)) {
         return true;
@@ -181,14 +192,15 @@ function filterAssets(
     }
 
     // Next, check asset-level checks via includes/excludes:
-    const isExcluded = checkConditions(asset, config.exclude);
+    const isExcluded = checkConditions(asset, compilation, config.exclude);
     if (isExcluded) {
       continue;
     }
 
     // Treat an empty config.includes as an implicit inclusion.
     const isIncluded =
-      !Array.isArray(config.include) || checkConditions(asset, config.include);
+      !Array.isArray(config.include) ||
+      checkConditions(asset, compilation, config.include);
     if (!isIncluded) {
       continue;
     }
