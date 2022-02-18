@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import sourceMapURL from 'source-map-url';
+import {getSourceMapURL} from 'workbox-build/build/lib/get-source-map-url';
 import upath from 'upath';
 import type {Compilation} from 'webpack';
 
@@ -33,8 +33,7 @@ export function getSourcemapAssetName(
   swContents: string,
   swDest: string,
 ): string | undefined {
-  // eslint-disable-next-line
-  const url = sourceMapURL.getFrom(swContents);
+  const url = getSourceMapURL(swContents);
   if (url) {
     // Translate the relative URL to what the presumed name for the webpack
     // asset should be.
