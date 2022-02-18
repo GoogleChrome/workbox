@@ -38,7 +38,7 @@ const validateServiceWorkerRuntime = require('../../../../infra/testing/validato
 const webpackBuildCheck = require('../../../../infra/testing/webpack-build-check');
 const {
   GenerateSW,
-} = require('../../../../packages/workbox-webpack-plugin/src/index');
+} = require('../../../../packages/workbox-webpack-plugin/build/generate-sw');
 
 describe(`[workbox-webpack-plugin] GenerateSW with webpack v4`, function () {
   const WEBPACK_ENTRY_FILENAME = 'webpackEntry.js';

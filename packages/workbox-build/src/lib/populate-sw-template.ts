@@ -31,9 +31,9 @@ export function populateSWTemplate({
   offlineGoogleAnalytics,
   runtimeCaching = [],
   skipWaiting,
-}: GeneratePartial & {manifestEntries: Array<ManifestEntry>}): string {
+}: GeneratePartial & {manifestEntries?: Array<ManifestEntry>}): string {
   // There needs to be at least something to precache, or else runtime caching.
-  if (!(manifestEntries.length > 0 || runtimeCaching.length > 0)) {
+  if (!(manifestEntries?.length > 0 || runtimeCaching.length > 0)) {
     throw new Error(errors['no-manifest-entries-or-runtime-caching']);
   }
 

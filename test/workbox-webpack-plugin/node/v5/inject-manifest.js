@@ -38,7 +38,7 @@ const validateServiceWorkerRuntime = require('../../../../infra/testing/validato
 const webpackBuildCheck = require('../../../../infra/testing/webpack-build-check');
 const {
   InjectManifest,
-} = require('../../../../packages/workbox-webpack-plugin/src/index');
+} = require('../../../../packages/workbox-webpack-plugin/build/inject-manifest');
 
 chai.use(chaiMatchPattern);
 const {expect} = chai;

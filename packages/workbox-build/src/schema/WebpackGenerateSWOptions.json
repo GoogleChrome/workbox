@@ -445,11 +445,14 @@
     "QueueOptions": {
       "type": "object",
       "properties": {
-        "onSync": {
-          "$ref": "#/definitions/OnSyncCallback"
+        "forceSyncFallback": {
+          "type": "boolean"
         },
         "maxRetentionTime": {
           "type": "number"
+        },
+        "onSync": {
+          "$ref": "#/definitions/OnSyncCallback"
         }
       },
       "additionalProperties": false
