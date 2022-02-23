@@ -9,7 +9,6 @@
 import {RawSourceMap} from 'source-map';
 import assert from 'assert';
 import fse from 'fs-extra';
-import sourceMapURL from 'source-map-url';
 import stringify from 'fast-json-stable-stringify';
 import upath from 'upath';
 
@@ -17,6 +16,7 @@ import {BuildResult} from './types';
 import {errors} from './lib/errors';
 import {escapeRegExp} from './lib/escape-regexp';
 import {getFileManifestEntries} from './lib/get-file-manifest-entries';
+import {getSourceMapURL} from './lib/get-source-map-url';
 import {rebasePath} from './lib/rebase-path';
 import {replaceAndUpdateSourceMap} from './lib/replace-and-update-source-map';
 import {translateURLToSourcemapPaths} from './lib/translate-url-to-sourcemap-paths';
@@ -164,7 +164,7 @@ export async function injectManifest(config: unknown): Promise<BuildResult> {
   const manifestString = stringify(manifestEntries);
   const filesToWrite: {[key: string]: string} = {};
 
-  const url = sourceMapURL.getFrom(swFileContents) as string; // eslint-disable-line
+  const url = getSourceMapURL(swFileContents);
   // See https://github.com/GoogleChrome/workbox/issues/2957
   const {destPath, srcPath, warning} = translateURLToSourcemapPaths(
     url,

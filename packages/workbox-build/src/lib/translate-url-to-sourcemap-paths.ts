@@ -12,7 +12,7 @@ import upath from 'upath';
 import {errors} from './errors';
 
 export function translateURLToSourcemapPaths(
-  url: string,
+  url: string | null,
   swSrc: string,
   swDest: string,
 ): {
