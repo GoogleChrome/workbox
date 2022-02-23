@@ -1,6 +1,6 @@
 {
   "name": "workbox-strategies",
-  "version": "6.4.2",
+  "version": "6.5.0",
   "license": "MIT",
   "author": "Google's Web DevRel Team",
   "description": "A service worker helper library implementing common caching strategies.",
@@ -23,6 +23,6 @@
   "module": "index.mjs",
   "types": "index.d.ts",
   "dependencies": {
-    "workbox-core": "6.4.2"
+    "workbox-core": "6.5.0"
   }
 }
