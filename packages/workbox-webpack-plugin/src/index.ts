@@ -12,8 +12,8 @@ import {InjectManifest} from './inject-manifest';
 /**
  * @module workbox-webpack-plugin
  */
+export {GenerateSW, InjectManifest};
 
-export {
-  GenerateSW,
-  InjectManifest,
-};
+// TODO: remove this in v7.
+// See https://github.com/GoogleChrome/workbox/issues/3033
+export default {GenerateSW, InjectManifest};
