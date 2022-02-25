@@ -7,7 +7,7 @@
 */
 
 import {getFileManifestEntries} from './lib/get-file-manifest-entries';
-import {GetManifestResult} from './types';
+import {GetManifestOptions, GetManifestResult} from './types';
 import {validateGetManifestOptions} from './lib/validate-options';
 
 // eslint-disable-next-line jsdoc/newline-after-description
@@ -88,7 +88,9 @@ import {validateGetManifestOptions} from './lib/validate-options';
  *
  * @memberof workbox-build
  */
-export async function getManifest(config: unknown): Promise<GetManifestResult> {
+export async function getManifest(
+  config: GetManifestOptions,
+): Promise<GetManifestResult> {
   const options = validateGetManifestOptions(config);
 
   return await getFileManifestEntries(options);

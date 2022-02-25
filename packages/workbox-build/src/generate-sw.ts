@@ -8,7 +8,7 @@
 
 import upath from 'upath';
 
-import {BuildResult, GetManifestOptions} from './types';
+import {BuildResult, GetManifestOptions, GenerateSWOptions} from './types';
 import {getFileManifestEntries} from './lib/get-file-manifest-entries';
 import {rebasePath} from './lib/rebase-path';
 import {validateGenerateSWOptions} from './lib/validate-options';
@@ -193,7 +193,9 @@ import {writeSWUsingDefaultTemplate} from './lib/write-sw-using-default-template
  *
  * @memberof workbox-build
  */
-export async function generateSW(config: unknown): Promise<BuildResult> {
+export async function generateSW(
+  config: GenerateSWOptions,
+): Promise<BuildResult> {
   const options = validateGenerateSWOptions(config);
   let entriesResult;
 
