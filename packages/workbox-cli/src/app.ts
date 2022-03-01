@@ -23,7 +23,7 @@ import {SupportedFlags} from './bin.js';
 
 interface BuildCommand {
   command: 'generateSW' | 'injectManifest';
-  config: any;
+  config: workboxBuild.GenerateSWOptions | workboxBuild.InjectManifestOptions;
   watch: boolean;
 }
 
@@ -34,7 +34,7 @@ interface BuildCommand {
  */
 async function runBuildCommand({command, config, watch}: BuildCommand) {
   const {count, filePaths, size, warnings} = await workboxBuild[command](
-    config,
+    config as any,
   );
 
   for (const warning of warnings) {
