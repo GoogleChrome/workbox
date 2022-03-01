@@ -23,7 +23,7 @@ import {SupportedFlags} from './bin.js';
 
 interface BuildCommand {
   command: 'generateSW' | 'injectManifest';
-  config: workboxBuild.GenerateSWOptions | workboxBuild.InjectManifestOptions;
+  config: any;
   watch: boolean;
 }
 
