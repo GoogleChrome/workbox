@@ -12,7 +12,7 @@ import fse from 'fs-extra';
 import stringify from 'fast-json-stable-stringify';
 import upath from 'upath';
 
-import {BuildResult} from './types';
+import {BuildResult, InjectManifestOptions} from './types';
 import {errors} from './lib/errors';
 import {escapeRegExp} from './lib/escape-regexp';
 import {getFileManifestEntries} from './lib/get-file-manifest-entries';
@@ -117,7 +117,9 @@ import {validateInjectManifestOptions} from './lib/validate-options';
  *
  * @memberof workbox-build
  */
-export async function injectManifest(config: unknown): Promise<BuildResult> {
+export async function injectManifest(
+  config: InjectManifestOptions,
+): Promise<BuildResult> {
   const options = validateInjectManifestOptions(config);
 
   // Make sure we leave swSrc and swDest out of the precache manifest.
