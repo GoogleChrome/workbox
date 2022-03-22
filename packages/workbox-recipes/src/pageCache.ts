@@ -17,7 +17,7 @@ import {
 
 import './_version.js';
 
-export interface ImageCacheOptions {
+export interface PageCacheOptions {
   cacheName?: string;
   matchCallback?: RouteMatchCallback;
   networkTimeoutSeconds?: number;
@@ -37,7 +37,7 @@ export interface ImageCacheOptions {
  * @param {WorkboxPlugin[]} [options.plugins] Additional plugins to use for this recipe
  * @param {string[]} [options.warmCache] Paths to call to use to warm this cache
  */
-function pageCache(options: ImageCacheOptions = {}): void {
+function pageCache(options: PageCacheOptions = {}): void {
   const defaultMatchCallback = ({request}: RouteMatchCallbackOptions) =>
     request.mode === 'navigate';
 

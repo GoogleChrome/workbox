@@ -17,7 +17,7 @@ import {isSupported} from './isSupported.js';
 import {StreamSource} from './_types.js';
 import './_version.js';
 
-interface StreamsHandlerCallback {
+export interface StreamsHandlerCallback {
   ({url, request, event, params}: RouteHandlerCallbackOptions):
     | Promise<StreamSource>
     | StreamSource;

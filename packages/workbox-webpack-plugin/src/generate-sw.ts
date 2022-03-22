@@ -24,7 +24,7 @@ const {RawSource} = webpack.sources || require('webpack-sources');
 // See https://github.com/GoogleChrome/workbox/issues/2181
 const _generatedAssetNames = new Set<string>();
 
-interface GenerateSWConfig extends WebpackGenerateSWOptions {
+export interface GenerateSWConfig extends WebpackGenerateSWOptions {
   manifestEntries?: Array<ManifestEntry>;
 }
 
@@ -36,7 +36,7 @@ interface GenerateSWConfig extends WebpackGenerateSWOptions {
  * [`plugins` array](https://webpack.js.org/concepts/plugins/#usage) of a
  * webpack config.
  *
- * @example
+ * ```
  * // The following lists some common options; see the rest of the documentation
  * // for the full set of options and defaults.
  * new GenerateSW({
@@ -64,6 +64,7 @@ interface GenerateSWConfig extends WebpackGenerateSWOptions {
  *   }],
  *   skipWaiting: ...,
  * });
+ * ```
  *
  * @memberof module:workbox-webpack-plugin
  */

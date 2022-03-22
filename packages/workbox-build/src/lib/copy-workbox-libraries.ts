@@ -26,9 +26,9 @@ const BUILD_DIR = 'build';
  * Workbox from its official CDN URL.
  *
  * This method is exposed for the benefit of developers using
- * [injectManifest()]{@link workbox-build.injectManifest} who would
+ * {@link workbox-build.injectManifest} who would
  * prefer not to use the CDN copies of Workbox. Developers using
- * [generateSW()]{@link workbox-build.generateSW} don't need to
+ * {@link workbox-build.generateSW} don't need to
  * explicitly call this method.
  *
  * @param {string} destDirectory The path to the parent directory under which

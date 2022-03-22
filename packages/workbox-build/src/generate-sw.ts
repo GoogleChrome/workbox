@@ -24,7 +24,7 @@ import {writeSWUsingDefaultTemplate} from './lib/write-sw-using-default-template
  * Based on the precache manifest and the additional configuration, it writes
  * a ready-to-use service worker file to disk at `swDest`.
  *
- * @example
+ * ```
  * // The following lists some common options; see the rest of the documentation
  * // for the full set of options and defaults.
  * const {count, size, warnings} = await generateSW({
@@ -55,6 +55,7 @@ import {writeSWUsingDefaultTemplate} from './lib/write-sw-using-default-template
  *   skipWaiting: ...,
  *   swDest: '...',
  * });
+ * ```
  *
  * @memberof workbox-build
  */

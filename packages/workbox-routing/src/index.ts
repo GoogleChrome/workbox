@@ -6,7 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {NavigationRoute} from './NavigationRoute.js';
+import {
+  NavigationRoute,
+  NavigationRouteMatchOptions,
+} from './NavigationRoute.js';
 import {RegExpRoute} from './RegExpRoute.js';
 import {registerRoute} from './registerRoute.js';
 import {Route} from './Route.js';
@@ -28,4 +31,5 @@ export {
   Router,
   setCatchHandler,
   setDefaultHandler,
+  NavigationRouteMatchOptions,
 };

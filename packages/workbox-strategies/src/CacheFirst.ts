@@ -16,7 +16,7 @@ import {messages} from './utils/messages.js';
 import './_version.js';
 
 /**
- * An implementation of a [cache-first]{@link https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#cache-falling-back-to-network}
+ * An implementation of a [cache-first](https://developer.chrome.com/docs/workbox/caching-strategies-overview/#cache-first-falling-back-to-network)
  * request strategy.
  *
  * A cache first strategy is useful for assets that have been revisioned,

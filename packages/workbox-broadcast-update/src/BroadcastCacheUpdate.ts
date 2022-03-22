@@ -97,8 +97,8 @@ class BroadcastCacheUpdate {
   /**
    * Compares two [Responses](https://developer.mozilla.org/en-US/docs/Web/API/Response)
    * and sends a message (via `postMessage()`) to all window clients if the
-   * responses differ (note: neither of the Responses can be
-   * {@link http://stackoverflow.com/questions/39109789|opaque}).
+   * responses differ. Neither of the Responses can be
+   * [opaque](https://developer.chrome.com/docs/workbox/caching-resources-during-runtime/#opaque-responses).
    *
    * The message that's posted has the following format (where `payload` can
    * be customized via the `generatePayload` option the instance is created

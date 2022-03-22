@@ -31,8 +31,7 @@ import './_version.js';
  * is required if `capture` is not a `Route` object.
  * @param {string} [method='GET'] The HTTP method to match the Route
  * against.
- * @return {workbox-routing.Route} The generated `Route`(Useful for
- * unregistering).
+ * @return {workbox-routing.Route} The generated `Route`.
  *
  * @memberof workbox-routing
  */

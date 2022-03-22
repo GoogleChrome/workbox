@@ -6,12 +6,15 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {googleFontsCache} from './googleFontsCache';
-import {imageCache} from './imageCache';
-import {staticResourceCache} from './staticResourceCache';
-import {pageCache} from './pageCache';
-import {offlineFallback} from './offlineFallback';
-import {warmStrategyCache} from './warmStrategyCache';
+import {googleFontsCache, GoogleFontCacheOptions} from './googleFontsCache';
+import {imageCache, ImageCacheOptions} from './imageCache';
+import {
+  staticResourceCache,
+  StaticResourceOptions,
+} from './staticResourceCache';
+import {pageCache, PageCacheOptions} from './pageCache';
+import {offlineFallback, OfflineFallbackOptions} from './offlineFallback';
+import {warmStrategyCache, WarmStrategyCacheOptions} from './warmStrategyCache';
 
 import './_version.js';
 
@@ -20,10 +23,16 @@ import './_version.js';
  */
 
 export {
+  GoogleFontCacheOptions,
   googleFontsCache,
   imageCache,
-  staticResourceCache,
-  pageCache,
+  ImageCacheOptions,
   offlineFallback,
+  OfflineFallbackOptions,
+  pageCache,
+  PageCacheOptions,
+  staticResourceCache,
+  StaticResourceOptions,
   warmStrategyCache,
+  WarmStrategyCacheOptions,
 };

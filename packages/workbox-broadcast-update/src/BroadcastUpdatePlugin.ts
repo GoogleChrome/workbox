@@ -26,9 +26,9 @@ class BroadcastUpdatePlugin implements WorkboxPlugin {
   private readonly _broadcastUpdate: BroadcastCacheUpdate;
 
   /**
-   * Construct a BroadcastCacheUpdate instance with the passed options and
-   * calls its {@link workbox-broadcast-update.BroadcastCacheUpdate~notifyIfUpdated}
-   * method whenever the plugin's `cacheDidUpdate` callback is invoked.
+   * Construct a {@link workbox-broadcast-update.BroadcastUpdate} instance with
+   * the passed options and calls its `notifyIfUpdated` method whenever the
+   * plugin's `cacheDidUpdate` callback is invoked.
    *
    * @param {Object} [options]
    * @param {Array<string>} [options.headersToCheck=['content-length', 'etag', 'last-modified']]
