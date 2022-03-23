@@ -15,7 +15,7 @@ import {validateGetManifestOptions} from './lib/validate-options';
  * manifest", along with details about the number of entries and their size,
  * based on the options you provide.
  *
- * @example
+ * ```
  * // The following lists some common options; see the rest of the documentation
  * // for the full set of options and defaults.
  * const {count, manifestEntries, size, warnings} = await getManifest({
@@ -24,6 +24,7 @@ import {validateGetManifestOptions} from './lib/validate-options';
  *   globPatterns: ['...', '...'],
  *   maximumFileSizeToCacheInBytes: ...,
  * });
+ * ```
  *
  * @memberof workbox-build
  */

@@ -18,7 +18,7 @@ import './_version.js';
 
 /**
  * An implementation of a
- * [stale-while-revalidate]{@link https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#stale-while-revalidate}
+ * [stale-while-revalidate](https://developer.chrome.com/docs/workbox/reference/workbox-strategies/#type-StaleWhileRevalidate)
  * request strategy.
  *
  * Resources are requested from both the cache and the network in parallel.
@@ -27,9 +27,9 @@ import './_version.js';
  * with each successful request.
  *
  * By default, this strategy will cache responses with a 200 status code as
- * well as [opaque responses]{@link https://developers.google.com/web/tools/workbox/guides/handle-third-party-requests}.
+ * well as [opaque responses](https://developer.chrome.com/docs/workbox/caching-resources-during-runtime/#opaque-responses).
  * Opaque responses are cross-origin requests where the response doesn't
- * support [CORS]{@link https://enable-cors.org/}.
+ * support [CORS](https://enable-cors.org/).
  *
  * If the network request fails, and there is no cache match, this will throw
  * a `WorkboxError` exception.

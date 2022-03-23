@@ -35,7 +35,7 @@ import {validateInjectManifestOptions} from './lib/validate-options';
  * This method will not compile or bundle your `swSrc` file; it just handles
  * injecting the manifest.
  *
- * @example
+ * ```
  * // The following lists some common options; see the rest of the documentation
  * // for the full set of options and defaults.
  * const {count, size, warnings} = await injectManifest({
@@ -46,6 +46,7 @@ import {validateInjectManifestOptions} from './lib/validate-options';
  *   swDest: '...',
  *   swSrc: '...',
  * });
+ * ```
  *
  * @memberof workbox-build
  */

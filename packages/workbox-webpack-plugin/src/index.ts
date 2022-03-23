@@ -6,13 +6,13 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {GenerateSW} from './generate-sw';
+import {GenerateSW, GenerateSWConfig} from './generate-sw';
 import {InjectManifest} from './inject-manifest';
 
 /**
  * @module workbox-webpack-plugin
  */
-export {GenerateSW, InjectManifest};
+export {GenerateSW, GenerateSWConfig, InjectManifest};
 
 // TODO: remove this in v7.
 // See https://github.com/GoogleChrome/workbox/issues/3033

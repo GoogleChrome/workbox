@@ -22,13 +22,13 @@ export interface NetworkFirstOptions extends StrategyOptions {
 
 /**
  * An implementation of a
- * [network first]{@link https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#network-falling-back-to-cache}
+ * [network first](https://developer.chrome.com/docs/workbox/caching-strategies-overview/#network-first-falling-back-to-cache)
  * request strategy.
  *
  * By default, this strategy will cache responses with a 200 status code as
- * well as [opaque responses]{@link https://developers.google.com/web/tools/workbox/guides/handle-third-party-requests}.
+ * well as [opaque responses](https://developer.chrome.com/docs/workbox/caching-resources-during-runtime/#opaque-responses).
  * Opaque responses are are cross-origin requests where the response doesn't
- * support [CORS]{@link https://enable-cors.org/}.
+ * support [CORS](https://enable-cors.org/).
  *
  * If the network request fails, and there is no cache match, this will throw
  * a `WorkboxError` exception.

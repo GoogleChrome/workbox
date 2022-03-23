@@ -41,7 +41,7 @@ const {RawSource} = webpack.sources || require('webpack-sources');
  * In addition to injecting the manifest, this plugin will perform a compilation
  * of the `swSrc` file, using the options from the main webpack configuration.
  *
- * @example
+ * ```
  * // The following lists some common options; see the rest of the documentation
  * // for the full set of options and defaults.
  * new InjectManifest({
@@ -49,6 +49,7 @@ const {RawSource} = webpack.sources || require('webpack-sources');
  *   maximumFileSizeToCacheInBytes: ...,
  *   swSrc: '...',
  * });
+ * ```
  *
  * @memberof module:workbox-webpack-plugin
  */

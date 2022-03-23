@@ -21,7 +21,7 @@ import {noRevisionForURLsMatchingTransform} from './no-revision-for-urls-matchin
 /**
  * A `ManifestTransform` function can be used to modify the modify the `url` or
  * `revision` properties of some or all of the
- * {@link workbox-build.ManifestEntry|ManifestEntries} in the manifest.
+ * {@link workbox-build.ManifestEntry} in the manifest.
  *
  * Deleting the `revision` property of an entry will cause
  * the corresponding `url` to be precached without cache-busting parameters

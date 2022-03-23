@@ -66,8 +66,7 @@ class Workbox extends WorkboxEventTarget {
   /**
    * Creates a new Workbox instance with a script URL and service worker
    * options. The script URL and options are the same as those used when
-   * calling `navigator.serviceWorker.register(scriptURL, options)`. See:
-   * https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register
+   * calling [navigator.serviceWorker.register(scriptURL, options)](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerContainer/register).
    *
    * @param {string|TrustedScriptURL} scriptURL The service worker script
    *     associated with this instance. Using a

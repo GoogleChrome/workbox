@@ -23,11 +23,11 @@ interface NetworkOnlyOptions
 
 /**
  * An implementation of a
- * [network-only]{@link https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#network-only}
+ * [network-only](https://developer.chrome.com/docs/workbox/caching-strategies-overview/#network-only)
  * request strategy.
  *
  * This class is useful if you want to take advantage of any
- * [Workbox plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}.
+ * [Workbox plugins](https://developer.chrome.com/docs/workbox/using-plugins/).
  *
  * If the network request fails, this will throw a `WorkboxError` exception.
  *
