@@ -54,7 +54,7 @@ const {RawSource} = webpack.sources || require('webpack-sources');
  * @memberof module:workbox-webpack-plugin
  */
 class InjectManifest {
-  private config: WebpackInjectManifestOptions;
+  protected config: WebpackInjectManifestOptions;
   private alreadyCalled: boolean;
 
   /**

@@ -69,7 +69,7 @@ export interface GenerateSWConfig extends WebpackGenerateSWOptions {
  * @memberof module:workbox-webpack-plugin
  */
 class GenerateSW {
-  private config: GenerateSWConfig;
+  protected config: GenerateSWConfig;
   private alreadyCalled: boolean;
 
   /**
