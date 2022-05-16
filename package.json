@@ -59,7 +59,6 @@
     "jsdoc": "^3.6.5",
     "jsdoc-baseline": "^0.1.5",
     "lerna": "^3.22.1",
-    "lint-staged": "^12.4.1",
     "memory-fs": "^0.5.0",
     "minimist": "^1.2.6",
     "mocha": "^8.1.1",
