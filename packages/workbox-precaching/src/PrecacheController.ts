@@ -197,31 +197,63 @@ class PrecacheController {
    * @return {Promise<workbox-precaching.InstallResult>}
    */
   install(event: ExtendableEvent): Promise<InstallResult> {
+    function MakeQuerablePromise(promise): Promise<InstallResult> {
+        // Don't modify any promise that has been already modified.
+        if (promise.isFulfilled) return promise;
+
+        // Set initial state
+        var isPending = true;
+        var isRejected = false;
+        var isFulfilled = false;
+
+        // Observe the promise, saving the fulfillment in a closure scope.
+        var result = promise.then(
+            function(v) {
+                isFulfilled = true;
+                isPending = false;
+                return v;
+            },
+            function(e) {
+                isRejected = true;
+                isPending = false;
+                throw e;
+            }
+        );
+
+        result.isFulfilled = function() { return isFulfilled; };
+        result.isPending = function() { return isPending; };
+        result.isRejected = function() { return isRejected; };
+        return result;
+    }
     // waitUntil returns Promise<any>
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return waitUntil(event, async () => {
       const installReportPlugin = new PrecacheInstallReportPlugin();
       this.strategy.plugins.push(installReportPlugin);
-
-      // Cache entries one at a time.
+      var promises = [];
+      // Cache entries 10 at a time.
+      const fetchQueueDepth = 10;
       // See https://github.com/GoogleChrome/workbox/issues/2528
       for (const [url, cacheKey] of this._urlsToCacheKeys) {
-        const integrity = this._cacheKeysToIntegrities.get(cacheKey);
-        const cacheMode = this._urlsToCacheModes.get(url);
-
-        const request = new Request(url, {
-          integrity,
-          cache: cacheMode,
-          credentials: 'same-origin',
-        });
-
-        await Promise.all(
-          this.strategy.handleAll({
-            params: {cacheKey},
+          const integrity = this._cacheKeysToIntegrities.get(cacheKey);
+          const cacheMode = this._urlsToCacheModes.get(url);
+          const request = new Request(url, {
+            integrity,
+            cache: cacheMode,
+            credentials: 'same-origin',
+          });
+          const result = Promise.all(this.strategy.handleAll({
+            params: { cacheKey },
             request,
             event,
-          }),
-        );
+          }));
+          promises.push(MakeQuerablePromise(result));
+          if (promises.length >= fetchQueueDepth) {
+            await Promise.any(promises);
+          }
+          promises = promises.filter(function(value){
+            return value.isPending();
+          });
       }
 
       const {updatedURLs, notUpdatedURLs} = installReportPlugin;
