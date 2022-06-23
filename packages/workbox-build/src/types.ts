@@ -77,7 +77,7 @@ export interface RuntimeCaching {
      */
     expiration?: ExpirationPluginOptions;
     /**
-     * If provided, this will set the `cacheName` property of the
+     * If provided, this will set the `networkTimeoutSeconds` property of the
      * {@link workbox-strategies} configured in `handler`. Note that only
      * `'NetworkFirst'` and `'NetworkOnly'` support `networkTimeoutSeconds`.
      */
