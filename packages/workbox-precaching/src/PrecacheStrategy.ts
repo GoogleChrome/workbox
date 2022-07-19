@@ -133,7 +133,10 @@ class PrecacheStrategy extends Strategy {
         !integrityInRequest || integrityInRequest === integrityInManifest;
       response = await handler.fetch(
         new Request(request, {
-          integrity: integrityInRequest || integrityInManifest,
+          integrity:
+            request.mode !== 'no-cors'
+              ? integrityInRequest || integrityInManifest
+              : undefined,
         }),
       );
 
@@ -142,7 +145,11 @@ class PrecacheStrategy extends Strategy {
       // and there's either a) no integrity property in the incoming request
       // or b) there is an integrity, and it matches the precache manifest.
       // See https://github.com/GoogleChrome/workbox/issues/2858
-      if (integrityInManifest && noIntegrityConflict) {
+      if (
+        integrityInManifest &&
+        noIntegrityConflict &&
+        request.mode !== 'no-cors'
+      ) {
         this._useDefaultCacheabilityPluginIfNeeded();
         const wasCached = await handler.cachePut(request, response.clone());
         if (process.env.NODE_ENV !== 'production') {
