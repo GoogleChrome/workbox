@@ -131,6 +131,9 @@ class PrecacheStrategy extends Strategy {
       const integrityInRequest = request.integrity;
       const noIntegrityConflict =
         !integrityInRequest || integrityInRequest === integrityInManifest;
+
+      // Do not add integrity if the original request is no-cors
+      // See https://github.com/GoogleChrome/workbox/issues/3096
       response = await handler.fetch(
         new Request(request, {
           integrity:
@@ -145,6 +148,8 @@ class PrecacheStrategy extends Strategy {
       // and there's either a) no integrity property in the incoming request
       // or b) there is an integrity, and it matches the precache manifest.
       // See https://github.com/GoogleChrome/workbox/issues/2858
+      // Also if the original request users no-cors we don't use integrity.
+      // See https://github.com/GoogleChrome/workbox/issues/3096
       if (
         integrityInManifest &&
         noIntegrityConflict &&
