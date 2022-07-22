@@ -107,13 +107,9 @@ async function test_integration() {
 
   // Install the latest Chrome and Firefox webdrivers without referencing
   // package-lock.json, to ensure that they're up to date.
-  await execa(
-    'npm',
-    ['install', '--no-save', 'chromedriver@98.0.1', 'geckodriver'],
-    {
-      preferLocal: true,
-    },
-  );
+  await execa('npm', ['install', '--no-save', 'chromedriver', 'geckodriver'], {
+    preferLocal: true,
+  });
 
   logHelper.log(`Downloading browsers...`);
   const expiration = 24;
