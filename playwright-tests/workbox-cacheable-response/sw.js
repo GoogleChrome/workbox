@@ -15,6 +15,7 @@ importScripts('../lib/sw/notifyOnCompletionPlugin.js');
 workbox.routing.registerRoute(
   ({url}) => url.pathname.includes('cacheable-404'),
   new workbox.strategies.CacheFirst({
+    cacheName: self.registration.scope,
     plugins: [
       new workbox.cacheableResponse.CacheableResponsePlugin({
         statuses: [404],
@@ -27,6 +28,7 @@ workbox.routing.registerRoute(
 workbox.routing.registerRoute(
   ({url}) => url.pathname.endsWith('.txt'),
   new workbox.strategies.CacheFirst({
+    cacheName: self.registration.scope,
     plugins: [
       new workbox.cacheableResponse.CacheableResponsePlugin({
         statuses: [200],
