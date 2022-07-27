@@ -18,7 +18,7 @@ import './_version.js';
 
 /**
  * An implementation of a
- * [stale-while-revalidate](https://developer.chrome.com/docs/workbox/reference/workbox-strategies/#type-StaleWhileRevalidate)
+ * [stale-while-revalidate](https://developer.chrome.com/docs/workbox/caching-strategies-overview/#stale-while-revalidate)
  * request strategy.
  *
  * Resources are requested from both the cache and the network in parallel.

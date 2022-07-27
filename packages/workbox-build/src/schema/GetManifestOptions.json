@@ -266,7 +266,7 @@
               "$ref": "#/definitions/ExpirationPluginOptions"
             },
             "networkTimeoutSeconds": {
-              "description": "If provided, this will set the `cacheName` property of the\n{@link workbox-strategies} configured in `handler`. Note that only\n`'NetworkFirst'` and `'NetworkOnly'` support `networkTimeoutSeconds`.",
+              "description": "If provided, this will set the `networkTimeoutSeconds` property of the\n{@link workbox-strategies} configured in `handler`. Note that only\n`'NetworkFirst'` and `'NetworkOnly'` support `networkTimeoutSeconds`.",
               "type": "number"
             },
             "plugins": {
