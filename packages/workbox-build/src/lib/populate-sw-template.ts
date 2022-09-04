@@ -19,6 +19,7 @@ export function populateSWTemplate({
   cacheId,
   cleanupOutdatedCaches,
   clientsClaim,
+  cleanURLs,
   directoryIndex,
   disableDevLogs,
   ignoreURLParametersMatching,
@@ -31,6 +32,7 @@ export function populateSWTemplate({
   offlineGoogleAnalytics,
   runtimeCaching = [],
   skipWaiting,
+  urlManipulation,
 }: GeneratePartial & {manifestEntries?: Array<ManifestEntry>}): string {
   // There needs to be at least something to precache, or else runtime caching.
   if (!(manifestEntries?.length > 0 || runtimeCaching.length > 0)) {
@@ -45,6 +47,8 @@ export function populateSWTemplate({
     ignoreURLParametersMatching: ignoreURLParametersMatching
       ? ([] as Array<RegExp>)
       : undefined,
+    cleanURLs,
+    urlManipulation: urlManipulation ? 'urlManipulation' : undefined,
   };
 
   let precacheOptionsString = JSON.stringify(precacheOptions, null, 2);
@@ -53,6 +57,12 @@ export function populateSWTemplate({
       `"ignoreURLParametersMatching": []`,
       `"ignoreURLParametersMatching": [` +
         `${ignoreURLParametersMatching.join(', ')}]`,
+    );
+  }
+  if (urlManipulation) {
+    precacheOptionsString = precacheOptionsString.replace(
+      `"urlManipulation": "urlManipulation"`,
+      `"urlManipulation": ${urlManipulation.toString()}`,
     );
   }
 

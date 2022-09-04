@@ -8,6 +8,7 @@ import {RouteHandler, RouteMatchCallback} from 'workbox-core/types';
 import {CacheableResponseOptions} from 'workbox-cacheable-response/CacheableResponse';
 import {ExpirationPluginOptions} from 'workbox-expiration/ExpirationPlugin';
 import {WorkboxPlugin} from 'workbox-core/types';
+import {urlManipulation} from 'workbox-precaching';
 
 export interface ManifestEntry {
   integrity?: string;
@@ -215,6 +216,11 @@ export interface GeneratePartial {
    */
   clientsClaim?: boolean;
   /**
+   * check the cache for the URL with a `.html` added to the end of the end.
+   * @default true
+   */
+  cleanURLs?: boolean;
+  /**
    * If a navigation request for a URL ending in `/` fails to match a precached
    * URL, this value will be appended to the URL and that will be checked for a
    * precache match. This should be set to what your web server is using for its
@@ -361,6 +367,7 @@ export interface GeneratePartial {
    * @default true
    */
   sourcemap?: boolean;
+  urlManipulation?: urlManipulation;
 }
 
 // This needs to be set when using GetManifest or InjectManifest, but is
