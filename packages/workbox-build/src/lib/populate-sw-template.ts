@@ -6,14 +6,12 @@
   https://opensource.org/licenses/MIT.
 */
 
-import template from 'lodash/template';
-
 import {errors} from './errors';
 import {GeneratePartial, ManifestEntry} from '../types';
 import {ModuleRegistry} from './module-registry';
 import {runtimeCachingConverter} from './runtime-caching-converter';
 import {stringifyWithoutComments} from './stringify-without-comments';
-import {swTemplate} from '../templates/sw-template';
+import {useSwTemplate} from '../templates/sw-template';
 
 export function populateSWTemplate({
   cacheId,
@@ -72,7 +70,7 @@ export function populateSWTemplate({
   const moduleRegistry = new ModuleRegistry();
 
   try {
-    const populatedTemplate = template(swTemplate)({
+    const populatedTemplate = useSwTemplate({
       cacheId,
       cleanupOutdatedCaches,
       clientsClaim,
