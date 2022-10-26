@@ -20,7 +20,6 @@
     "@types/common-tags": "^1.8.0",
     "@types/estree": "0.0.45",
     "@types/fs-extra": "^9.0.5",
-    "@types/lodash": "^4.14.165",
     "@types/stringify-object": "^3.3.0",
     "@typescript-eslint/eslint-plugin": "^4.32.0",
     "@typescript-eslint/parser": "^4.32.0",

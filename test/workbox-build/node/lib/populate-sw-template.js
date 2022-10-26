@@ -20,8 +20,10 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function () {
     const manifestEntries = ['ignored'];
 
     const {populateSWTemplate} = proxyquire(MODULE_PATH, {
-      'lodash/template': () => {
-        throw new Error();
+      '../templates/sw-template': {
+        useSwTemplate: () => {
+          throw new Error();
+        },
       },
     });
 
@@ -35,7 +37,9 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function () {
 
   it(`should throw an error if both manifestEntries and runtimeCaching are empty`, function () {
     const {populateSWTemplate} = proxyquire(MODULE_PATH, {
-      'lodash/template': () => {},
+      '../templates/sw-template': {
+        useSwTemplate: () => '',
+      },
     });
 
     try {
@@ -50,29 +54,24 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function () {
 
   it(`should pass the expected options to the template using mostly defaults`, function () {
     const runtimeCachingPlaceholder = 'runtime-caching-placeholder';
-    const swTemplate = 'template';
     const precacheOptionsString = '{}';
     const manifestEntries = ['ignored'];
 
-    const innerStub = sinon.stub().returns('');
-    const outerStub = sinon.stub().returns(innerStub);
+    const useSwTemplateStub = sinon.stub().returns('');
     const {populateSWTemplate} = proxyquire(MODULE_PATH, {
-      'lodash/template': outerStub,
       './runtime-caching-converter': {
         runtimeCachingConverter: () => runtimeCachingPlaceholder,
       },
-      '../templates/sw-template': {swTemplate},
+      '../templates/sw-template': {useSwTemplate: useSwTemplateStub},
     });
 
     populateSWTemplate({manifestEntries});
 
-    expect(outerStub.alwaysCalledWith(swTemplate)).to.be.true;
-
     // Doing a strict comparison with functions isn't easy.
-    expect(innerStub.args[0][0].use).to.be.a('function');
-    delete innerStub.args[0][0].use;
+    expect(useSwTemplateStub.args[0][0].use).to.be.a('function');
+    delete useSwTemplateStub.args[0][0].use;
 
-    expect(innerStub.args[0]).to.eql([
+    expect(useSwTemplateStub.args[0]).to.eql([
       {
         manifestEntries,
         cacheId: undefined,
@@ -111,7 +110,6 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function () {
     const runtimeCaching = [];
     const runtimeCachingPlaceholder = 'runtime-caching-placeholder';
     const skipWaiting = true;
-    const swTemplate = 'template';
     const precacheOptionsString =
       '{\n  "directoryIndex": "index.html",\n  "ignoreURLParametersMatching": [/a/, /b/]\n}';
 
@@ -119,14 +117,12 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function () {
     // from an initial string, and passing variables to that template function
     // to get back a final, populated template string.
     // We need to stub out both of those steps to test the full flow.
-    const templatePopulationStub = sinon.stub().returns('');
-    const templateCreationStub = sinon.stub().returns(templatePopulationStub);
+    const useSwTemplateStub = sinon.stub().returns('');
     const {populateSWTemplate} = proxyquire(MODULE_PATH, {
-      'lodash/template': templateCreationStub,
       './runtime-caching-converter': {
         runtimeCachingConverter: () => runtimeCachingPlaceholder,
       },
-      '../templates/sw-template': {swTemplate},
+      '../templates/sw-template': {useSwTemplate: useSwTemplateStub},
     });
 
     populateSWTemplate({
@@ -148,13 +144,11 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function () {
       skipWaiting,
     });
 
-    expect(templateCreationStub.alwaysCalledWith(swTemplate)).to.be.true;
-
     // Doing a strict comparison with functions isn't easy.
-    expect(templatePopulationStub.args[0][0].use).to.be.a('function');
-    delete templatePopulationStub.args[0][0].use;
+    expect(useSwTemplateStub.args[0][0].use).to.be.a('function');
+    delete useSwTemplateStub.args[0][0].use;
 
-    expect(templatePopulationStub.args[0]).to.eql([
+    expect(useSwTemplateStub.args[0]).to.eql([
       {
         cacheId,
         cleanupOutdatedCaches,
@@ -176,7 +170,6 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function () {
 
   it(`should handle a complex offlineGoogleAnalytics value when populating the template`, function () {
     const runtimeCachingPlaceholder = 'runtime-caching-placeholder';
-    const swTemplate = 'template';
     const precacheOptionsString = '{}';
     const offlineGoogleAnalytics = {
       parameterOverrides: {
@@ -190,25 +183,21 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function () {
     const offlineAnalyticsConfigString = `{\n\tparameterOverrides: {\n\t\tcd1: 'offline'\n\t},\n\thitFilter: (params) => {\n        \n        params.set('cm1', params.get('qt'));\n      }\n}`;
     const manifestEntries = ['ignored'];
 
-    const innerStub = sinon.stub().returns('');
-    const outerStub = sinon.stub().returns(innerStub);
+    const useSwTemplateStub = sinon.stub().returns('');
     const {populateSWTemplate} = proxyquire(MODULE_PATH, {
-      'lodash/template': outerStub,
       './runtime-caching-converter': {
         runtimeCachingConverter: () => runtimeCachingPlaceholder,
       },
-      '../templates/sw-template': {swTemplate},
+      '../templates/sw-template': {useSwTemplate: useSwTemplateStub},
     });
 
     populateSWTemplate({manifestEntries, offlineGoogleAnalytics});
 
-    expect(outerStub.alwaysCalledWith(swTemplate)).to.be.true;
-
     // Doing a strict comparison with functions isn't easy.
-    expect(innerStub.args[0][0].use).to.be.a('function');
-    delete innerStub.args[0][0].use;
+    expect(useSwTemplateStub.args[0][0].use).to.be.a('function');
+    delete useSwTemplateStub.args[0][0].use;
 
-    expect(innerStub.args[0]).to.eql([
+    expect(useSwTemplateStub.args[0]).to.eql([
       {
         manifestEntries,
         cacheId: undefined,
