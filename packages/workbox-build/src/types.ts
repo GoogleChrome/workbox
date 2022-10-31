@@ -8,6 +8,7 @@ import {RouteHandler, RouteMatchCallback} from 'workbox-core/types';
 import {CacheableResponseOptions} from 'workbox-cacheable-response/CacheableResponse';
 import {ExpirationPluginOptions} from 'workbox-expiration/ExpirationPlugin';
 import {WorkboxPlugin} from 'workbox-core/types';
+import {BuildOptions} from 'esbuild';
 
 export interface ManifestEntry {
   integrity?: string;
@@ -225,6 +226,14 @@ export interface GeneratePartial {
    * @default false
    */
   disableDevLogs?: boolean;
+  /**
+   * Controls whether or not to bundle using esbuild instead of rollup.
+   * When `true`, the call to `workbox-build`'s `writeSWUsingDefaultTemplate()` will
+   * use esbuild to bundle with default setting. When set to an `Object`, that
+   * object will be passed in to the `writeSWUsingDefaultTemplate()` call, allowing you to
+   * customize the behavior.
+   */
+  esbuildOptions?: boolean | BuildOptions;
   // We can't use the @default annotation here to assign the value via AJV, as
   // an Array<RegExp> can't be serialized into JSON.
   /**

@@ -42,6 +42,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
     'directoryIndex',
     'disableDevLogs',
     'dontCacheBustURLsMatching',
+    'esbuildOptions',
     'globDirectory',
     'globFollow',
     'globIgnores',

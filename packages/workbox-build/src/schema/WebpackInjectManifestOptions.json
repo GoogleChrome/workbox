@@ -162,6 +162,489 @@
         "unicode"
       ]
     },
+    "BuildOptions": {
+      "type": "object",
+      "properties": {
+        "bundle": {
+          "description": "Documentation: https://esbuild.github.io/api/#bundle",
+          "type": "boolean"
+        },
+        "splitting": {
+          "description": "Documentation: https://esbuild.github.io/api/#splitting",
+          "type": "boolean"
+        },
+        "preserveSymlinks": {
+          "description": "Documentation: https://esbuild.github.io/api/#preserve-symlinks",
+          "type": "boolean"
+        },
+        "outfile": {
+          "description": "Documentation: https://esbuild.github.io/api/#outfile",
+          "type": "string"
+        },
+        "metafile": {
+          "description": "Documentation: https://esbuild.github.io/api/#metafile",
+          "type": "boolean"
+        },
+        "outdir": {
+          "description": "Documentation: https://esbuild.github.io/api/#outdir",
+          "type": "string"
+        },
+        "outbase": {
+          "description": "Documentation: https://esbuild.github.io/api/#outbase",
+          "type": "string"
+        },
+        "external": {
+          "description": "Documentation: https://esbuild.github.io/api/#external",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "loader": {
+          "description": "Documentation: https://esbuild.github.io/api/#loader",
+          "type": "object",
+          "additionalProperties": {
+            "enum": [
+              "base64",
+              "binary",
+              "copy",
+              "css",
+              "dataurl",
+              "default",
+              "file",
+              "js",
+              "json",
+              "jsx",
+              "text",
+              "ts",
+              "tsx"
+            ],
+            "type": "string"
+          }
+        },
+        "resolveExtensions": {
+          "description": "Documentation: https://esbuild.github.io/api/#resolve-extensions",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "mainFields": {
+          "description": "Documentation: https://esbuild.github.io/api/#main-fields",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "conditions": {
+          "description": "Documentation: https://esbuild.github.io/api/#conditions",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "write": {
+          "description": "Documentation: https://esbuild.github.io/api/#write",
+          "type": "boolean"
+        },
+        "allowOverwrite": {
+          "description": "Documentation: https://esbuild.github.io/api/#allow-overwrite",
+          "type": "boolean"
+        },
+        "tsconfig": {
+          "description": "Documentation: https://esbuild.github.io/api/#tsconfig",
+          "type": "string"
+        },
+        "outExtension": {
+          "description": "Documentation: https://esbuild.github.io/api/#out-extension",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "publicPath": {
+          "description": "Documentation: https://esbuild.github.io/api/#public-path",
+          "type": "string"
+        },
+        "entryNames": {
+          "description": "Documentation: https://esbuild.github.io/api/#entry-names",
+          "type": "string"
+        },
+        "chunkNames": {
+          "description": "Documentation: https://esbuild.github.io/api/#chunk-names",
+          "type": "string"
+        },
+        "assetNames": {
+          "description": "Documentation: https://esbuild.github.io/api/#asset-names",
+          "type": "string"
+        },
+        "inject": {
+          "description": "Documentation: https://esbuild.github.io/api/#inject",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "banner": {
+          "description": "Documentation: https://esbuild.github.io/api/#banner",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "footer": {
+          "description": "Documentation: https://esbuild.github.io/api/#footer",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "incremental": {
+          "description": "Documentation: https://esbuild.github.io/api/#incremental",
+          "type": "boolean"
+        },
+        "entryPoints": {
+          "description": "Documentation: https://esbuild.github.io/api/#entry-points",
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "$ref": "#/definitions/Record<string,string>"
+            }
+          ]
+        },
+        "stdin": {
+          "description": "Documentation: https://esbuild.github.io/api/#stdin",
+          "$ref": "#/definitions/StdinOptions"
+        },
+        "plugins": {
+          "description": "Documentation: https://esbuild.github.io/plugins/",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Plugin"
+          }
+        },
+        "absWorkingDir": {
+          "description": "Documentation: https://esbuild.github.io/api/#working-directory",
+          "type": "string"
+        },
+        "nodePaths": {
+          "description": "Documentation: https://esbuild.github.io/api/#node-paths",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "watch": {
+          "description": "Documentation: https://esbuild.github.io/api/#watch",
+          "anyOf": [
+            {
+              "$ref": "#/definitions/WatchMode"
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        },
+        "sourcemap": {
+          "description": "Documentation: https://esbuild.github.io/api/#sourcemap",
+          "enum": [
+            "both",
+            "external",
+            false,
+            "inline",
+            "linked",
+            true
+          ]
+        },
+        "legalComments": {
+          "description": "Documentation: https://esbuild.github.io/api/#legal-comments",
+          "enum": [
+            "eof",
+            "external",
+            "inline",
+            "linked",
+            "none"
+          ],
+          "type": "string"
+        },
+        "sourceRoot": {
+          "description": "Documentation: https://esbuild.github.io/api/#source-root",
+          "type": "string"
+        },
+        "sourcesContent": {
+          "description": "Documentation: https://esbuild.github.io/api/#sources-content",
+          "type": "boolean"
+        },
+        "format": {
+          "description": "Documentation: https://esbuild.github.io/api/#format",
+          "enum": [
+            "cjs",
+            "esm",
+            "iife"
+          ],
+          "type": "string"
+        },
+        "globalName": {
+          "description": "Documentation: https://esbuild.github.io/api/#global-name",
+          "type": "string"
+        },
+        "target": {
+          "description": "Documentation: https://esbuild.github.io/api/#target",
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "supported": {
+          "description": "Documentation: https://esbuild.github.io/api/#supported",
+          "$ref": "#/definitions/Record<string,boolean>"
+        },
+        "platform": {
+          "description": "Documentation: https://esbuild.github.io/api/#platform",
+          "enum": [
+            "browser",
+            "neutral",
+            "node"
+          ],
+          "type": "string"
+        },
+        "mangleProps": {
+          "description": "Documentation: https://esbuild.github.io/api/#mangle-props",
+          "$ref": "#/definitions/RegExp"
+        },
+        "reserveProps": {
+          "description": "Documentation: https://esbuild.github.io/api/#mangle-props",
+          "$ref": "#/definitions/RegExp"
+        },
+        "mangleQuoted": {
+          "description": "Documentation: https://esbuild.github.io/api/#mangle-props",
+          "type": "boolean"
+        },
+        "mangleCache": {
+          "description": "Documentation: https://esbuild.github.io/api/#mangle-props",
+          "$ref": "#/definitions/Record<string,string|false>"
+        },
+        "drop": {
+          "description": "Documentation: https://esbuild.github.io/api/#drop",
+          "type": "array",
+          "items": {
+            "enum": [
+              "console",
+              "debugger"
+            ],
+            "type": "string"
+          }
+        },
+        "minify": {
+          "description": "Documentation: https://esbuild.github.io/api/#minify",
+          "type": "boolean"
+        },
+        "minifyWhitespace": {
+          "description": "Documentation: https://esbuild.github.io/api/#minify",
+          "type": "boolean"
+        },
+        "minifyIdentifiers": {
+          "description": "Documentation: https://esbuild.github.io/api/#minify",
+          "type": "boolean"
+        },
+        "minifySyntax": {
+          "description": "Documentation: https://esbuild.github.io/api/#minify",
+          "type": "boolean"
+        },
+        "charset": {
+          "description": "Documentation: https://esbuild.github.io/api/#charset",
+          "enum": [
+            "ascii",
+            "utf8"
+          ],
+          "type": "string"
+        },
+        "treeShaking": {
+          "description": "Documentation: https://esbuild.github.io/api/#tree-shaking",
+          "type": "boolean"
+        },
+        "ignoreAnnotations": {
+          "description": "Documentation: https://esbuild.github.io/api/#ignore-annotations",
+          "type": "boolean"
+        },
+        "jsx": {
+          "description": "Documentation: https://esbuild.github.io/api/#jsx",
+          "enum": [
+            "automatic",
+            "preserve",
+            "transform"
+          ],
+          "type": "string"
+        },
+        "jsxFactory": {
+          "description": "Documentation: https://esbuild.github.io/api/#jsx-factory",
+          "type": "string"
+        },
+        "jsxFragment": {
+          "description": "Documentation: https://esbuild.github.io/api/#jsx-fragment",
+          "type": "string"
+        },
+        "jsxImportSource": {
+          "description": "Documentation: https://esbuild.github.io/api/#jsx-import-source",
+          "type": "string"
+        },
+        "jsxDev": {
+          "description": "Documentation: https://esbuild.github.io/api/#jsx-development",
+          "type": "boolean"
+        },
+        "jsxSideEffects": {
+          "description": "Documentation: https://esbuild.github.io/api/#jsx-side-effects",
+          "type": "boolean"
+        },
+        "define": {
+          "description": "Documentation: https://esbuild.github.io/api/#define",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "pure": {
+          "description": "Documentation: https://esbuild.github.io/api/#pure",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "keepNames": {
+          "description": "Documentation: https://esbuild.github.io/api/#keep-names",
+          "type": "boolean"
+        },
+        "color": {
+          "description": "Documentation: https://esbuild.github.io/api/#color",
+          "type": "boolean"
+        },
+        "logLevel": {
+          "description": "Documentation: https://esbuild.github.io/api/#log-level",
+          "enum": [
+            "debug",
+            "error",
+            "info",
+            "silent",
+            "verbose",
+            "warning"
+          ],
+          "type": "string"
+        },
+        "logLimit": {
+          "description": "Documentation: https://esbuild.github.io/api/#log-limit",
+          "type": "number"
+        },
+        "logOverride": {
+          "description": "Documentation: https://esbuild.github.io/api/#log-override",
+          "$ref": "#/definitions/Record<string,LogLevel>"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Record<string,string>": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "StdinOptions": {
+      "type": "object",
+      "properties": {
+        "contents": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "patternProperties": {
+                "^[0-9]+$": {
+                  "type": "number"
+                }
+              }
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "resolveDir": {
+          "type": "string"
+        },
+        "sourcefile": {
+          "type": "string"
+        },
+        "loader": {
+          "enum": [
+            "base64",
+            "binary",
+            "copy",
+            "css",
+            "dataurl",
+            "default",
+            "file",
+            "js",
+            "json",
+            "jsx",
+            "text",
+            "ts",
+            "tsx"
+          ],
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "contents"
+      ]
+    },
+    "Plugin": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "setup": {
+          "type": "object",
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "setup"
+      ]
+    },
+    "WatchMode": {
+      "type": "object",
+      "properties": {
+        "onRebuild": {
+          "type": "object",
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "Record<string,boolean>": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "Record<string,string|false>": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "Record<string,LogLevel>": {
+      "type": "object",
+      "additionalProperties": false
+    },
     "GoogleAnalyticsInitializeOptions": {
       "type": "object",
       "properties": {
@@ -724,10 +1207,6 @@
       ]
     },
     "Headers": {
-      "type": "object",
-      "additionalProperties": false
-    },
-    "Record<string,string>": {
       "type": "object",
       "additionalProperties": false
     },

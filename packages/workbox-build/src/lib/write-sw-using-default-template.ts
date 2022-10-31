@@ -9,7 +9,7 @@
 import fse from 'fs-extra';
 import upath from 'upath';
 
-import {bundle} from './bundle';
+import {bundle, esbuildBundle} from './bundle';
 import {errors} from './errors';
 import {GenerateSWOptions, ManifestEntry} from '../types';
 import {populateSWTemplate} from './populate-sw-template';
@@ -21,6 +21,7 @@ export async function writeSWUsingDefaultTemplate({
   clientsClaim,
   directoryIndex,
   disableDevLogs,
+  esbuildOptions,
   ignoreURLParametersMatching,
   importScripts,
   inlineWorkboxRuntime,
@@ -67,14 +68,22 @@ export async function writeSWUsingDefaultTemplate({
   });
 
   try {
-    const files = await bundle({
-      babelPresetEnvTargets,
-      inlineWorkboxRuntime,
-      mode,
-      sourcemap,
-      swDest,
-      unbundledCode,
-    });
+    const files = esbuildOptions
+      ? await esbuildBundle({
+          esbuildOptions,
+          mode,
+          sourcemap,
+          swDest,
+          unbundledCode,
+        })
+      : await bundle({
+          babelPresetEnvTargets,
+          inlineWorkboxRuntime,
+          mode,
+          sourcemap,
+          swDest,
+          unbundledCode,
+        });
 
     const filePaths: Array<string> = [];
 

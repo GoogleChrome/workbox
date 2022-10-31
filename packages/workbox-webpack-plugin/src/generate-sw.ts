@@ -7,7 +7,7 @@
 */
 
 import {validateWebpackGenerateSWOptions} from 'workbox-build/build/lib/validate-options';
-import {bundle} from 'workbox-build/build/lib/bundle';
+import {bundle, esbuildBundle} from 'workbox-build/build/lib/bundle';
 import {populateSWTemplate} from 'workbox-build/build/lib/populate-sw-template';
 import prettyBytes from 'pretty-bytes';
 import webpack from 'webpack';
@@ -211,14 +211,22 @@ class GenerateSW {
 
     const unbundledCode = populateSWTemplate(config);
 
-    const files = await bundle({
-      babelPresetEnvTargets: config.babelPresetEnvTargets,
-      inlineWorkboxRuntime: config.inlineWorkboxRuntime,
-      mode: config.mode,
-      sourcemap: config.sourcemap,
-      swDest: relativeToOutputPath(compilation, config.swDest!),
-      unbundledCode,
-    });
+    const files = config.esbuildOptions
+      ? await esbuildBundle({
+          esbuildOptions: config.esbuildOptions,
+          mode: config.mode,
+          sourcemap: config.sourcemap,
+          swDest: relativeToOutputPath(compilation, config.swDest!),
+          unbundledCode,
+        })
+      : await bundle({
+          babelPresetEnvTargets: config.babelPresetEnvTargets,
+          inlineWorkboxRuntime: config.inlineWorkboxRuntime,
+          mode: config.mode,
+          sourcemap: config.sourcemap,
+          swDest: relativeToOutputPath(compilation, config.swDest!),
+          unbundledCode,
+        });
 
     for (const file of files) {
       compilation.emitAsset(
