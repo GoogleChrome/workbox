@@ -1,1 +1,1 @@
-This module's documentation can be found at https://developers.google.com/web/tools/workbox/modules/workbox-window
+This module's documentation can be found at https://developer.chrome.com/docs/workbox/modules/workbox-window/
