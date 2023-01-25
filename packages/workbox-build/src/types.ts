@@ -77,7 +77,7 @@ export interface RuntimeCaching {
      */
     expiration?: ExpirationPluginOptions;
     /**
-     * If provided, this will set the `cacheName` property of the
+     * If provided, this will set the `networkTimeoutSeconds` property of the
      * {@link workbox-strategies} configured in `handler`. Note that only
      * `'NetworkFirst'` and `'NetworkOnly'` support `networkTimeoutSeconds`.
      */
@@ -166,13 +166,23 @@ export interface BasePartial {
    */
   maximumFileSizeToCacheInBytes?: number;
   /**
-   * A mapping of prefixes that, if present in an entry in the precache
-   * manifest, will be replaced with the corresponding value. This can be used
-   * to, for example, remove or add a path prefix from a manifest entry if your
+   * An object mapping string prefixes to replacement string values. This can be
+   * used to, e.g., remove or add a path prefix from a manifest entry if your
    * web hosting setup doesn't match your local filesystem setup. As an
    * alternative with more flexibility, you can use the `manifestTransforms`
    * option and provide a function that modifies the entries in the manifest
    * using whatever logic you provide.
+   *
+   * Example usage:
+   *
+   * ```
+   * // Replace a '/dist/' prefix with '/', and also prepend
+   * // '/static' to every URL.
+   * modifyURLPrefix: {
+   *   '/dist/': '/',
+   *   '': '/static',
+   * }
+   * ```
    */
   modifyURLPrefix?: {
     [key: string]: string;
@@ -269,6 +279,11 @@ export interface GeneratePartial {
    * [Single Page App](https://en.wikipedia.org/wiki/Single-page_application).
    * If both `navigateFallbackDenylist` and `navigateFallbackAllowlist` are
    * configured, the denylist takes precedent.
+   *
+   * *Note*: These RegExps may be evaluated against every destination URL during
+   * a navigation. Avoid using
+   * [complex RegExps](https://github.com/GoogleChrome/workbox/issues/3077),
+   * or else your users may see delays when navigating your site.
    */
   navigateFallbackAllowlist?: Array<RegExp>;
   /**
@@ -278,6 +293,11 @@ export interface GeneratePartial {
    * [Single Page App](https://en.wikipedia.org/wiki/Single-page_application).
    * If both `navigateFallbackDenylist` and `navigateFallbackAllowlist` are
    * configured, the denylist takes precedence.
+   *
+   * *Note*: These RegExps may be evaluated against every destination URL during
+   * a navigation. Avoid using
+   * [complex RegExps](https://github.com/GoogleChrome/workbox/issues/3077),
+   * or else your users may see delays when navigating your site.
    */
   navigateFallbackDenylist?: Array<RegExp>;
   /**

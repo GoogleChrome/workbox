@@ -48,6 +48,11 @@ class NavigationRoute extends Route {
    * and [`search`]{@link https://developer.mozilla.org/en-US/docs/Web/API/HTMLHyperlinkElementUtils/search}
    * portions of the requested URL.
    *
+   * *Note*: These RegExps may be evaluated against every destination URL during
+   * a navigation. Avoid using
+   * [complex RegExps](https://github.com/GoogleChrome/workbox/issues/3077),
+   * or else your users may see delays when navigating your site.
+   *
    * @param {workbox-routing~handlerCallback} handler A callback
    * function that returns a Promise resulting in a Response.
    * @param {Object} options

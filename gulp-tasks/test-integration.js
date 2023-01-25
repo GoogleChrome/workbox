@@ -113,10 +113,9 @@ async function test_integration() {
 
   logHelper.log(`Downloading browsers...`);
   const expiration = 24;
+  // We are only running tests in stable, see bellow for reasons.
   await seleniumAssistant.downloadLocalBrowser('chrome', 'stable', expiration);
-  await seleniumAssistant.downloadLocalBrowser('chrome', 'beta', expiration);
   await seleniumAssistant.downloadLocalBrowser('firefox', 'stable', expiration);
-  await seleniumAssistant.downloadLocalBrowser('firefox', 'beta', expiration);
 
   const packagesToTest = glob.sync(`test/${global.packageOrStar}/integration`);
   if (packagesToTest.length === 0) {
