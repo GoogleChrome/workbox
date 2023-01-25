@@ -7,15 +7,18 @@
 */
 
 const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
 const chaiMatchPattern = require('chai-match-pattern');
 const fse = require('fs-extra');
 const upath = require('upath');
 const tempy = require('tempy');
 
+chai.use(chaiAsPromised);
 chai.use(chaiMatchPattern);
 const {expect} = chai;
 
-const getManifest = require('../../../packages/workbox-build/src/get-manifest');
+const {getManifest} = require('../../../packages/workbox-build/build/get-manifest');
+const {WorkboxConfigError} = require('../../../packages/workbox-build/build/lib/validate-options');
 
 describe(`[workbox-build] get-manifest.js (End to End)`, function() {
   const SRC_DIR = upath.join(__dirname, '..', 'static', 'example-project-1');
@@ -53,34 +56,24 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function() {
 
   describe('[workbox-build] unsupported parameters', function() {
     for (const unsupportedParam of UNSUPPORTED_PARAMS) {
-      it(`should reject with a ValidationError when '${unsupportedParam}' is present`, async function() {
+      it(`should fail validation when '${unsupportedParam}' is present`, async function() {
         const options = Object.assign({}, BASE_OPTIONS);
         options[unsupportedParam] = unsupportedParam;
 
-        try {
-          await getManifest(options);
-          throw new Error('Unexpected success.');
-        } catch (error) {
-          expect(error.name).to.eql('ValidationError');
-          expect(error.details[0].context.key).to.eql(unsupportedParam);
-        }
+        await expect(getManifest(options)).to.eventually.be.rejectedWith(
+            WorkboxConfigError, unsupportedParam);
       });
     }
   });
 
   describe('[workbox-build] invalid parameter values', function() {
     for (const param of SUPPORTED_PARAMS) {
-      it(`should reject with a ValidationError when '${param}' is null`, async function() {
+      it(`should fail validation when '${param}' is an unexpected value`, async function() {
         const options = Object.assign({}, BASE_OPTIONS);
-        options[param] = null;
+        options[param] = () => {};
 
-        try {
-          await getManifest(options);
-          throw new Error('Unexpected success.');
-        } catch (error) {
-          expect(error.name).to.eql('ValidationError');
-          expect(error.details[0].context.key).to.eql(param);
-        }
+        await expect(getManifest(options)).to.eventually.be.rejectedWith(
+            WorkboxConfigError, param);
       });
     }
   });
@@ -330,13 +323,8 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function() {
           [option]: value,
         });
 
-        try {
-          await getManifest(options);
-          throw new Error('Unexpected success.');
-        } catch (error) {
-          expect(error.name).to.eql('ValidationError');
-          expect(error.details[0].context.key).to.eql(option);
-        }
+        await expect(getManifest(options)).to.eventually.be.rejectedWith(
+            WorkboxConfigError, option);
       });
     }
   });

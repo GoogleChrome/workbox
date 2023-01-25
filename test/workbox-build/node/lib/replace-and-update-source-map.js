@@ -8,7 +8,7 @@
 
 const expect = require('chai').expect;
 
-const replaceAndUpdateSourceMap = require('../../../../packages/workbox-build/src/lib/replace-and-update-source-map');
+const {replaceAndUpdateSourceMap} = require('../../../../packages/workbox-build/build/lib/replace-and-update-source-map');
 
 describe(`[workbox-build] lib/replace-and-update-source-map`, function() {
   // Test case borrowed from https://github.com/Rich-Harris/magic-string/blob/a312519cfe9caa78ade7f09cc2b07459d3d17f4d/test/MagicString.js#L225

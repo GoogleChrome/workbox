@@ -6,14 +6,19 @@
   https://opensource.org/licenses/MIT.
 */
 
-const expect = require('chai').expect;
+const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
 const fse = require('fs-extra');
 const upath = require('upath');
 const tempy = require('tempy');
 
-const errors = require('../../../packages/workbox-build/src/lib/errors');
-const injectManifest = require('../../../packages/workbox-build/src/inject-manifest');
+const {errors} = require('../../../packages/workbox-build/build/lib/errors');
+const {injectManifest} = require('../../../packages/workbox-build/build/inject-manifest');
+const {WorkboxConfigError} = require('../../../packages/workbox-build/build/lib/validate-options');
 const validateServiceWorkerRuntime = require('../../../infra/testing/validator/service-worker-runtime');
+
+chai.use(chaiAsPromised);
+const {expect} = chai;
 
 describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
   const GLOB_DIR = upath.join(__dirname, '..', 'static', 'example-project-1');
@@ -57,51 +62,36 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
 
   describe('[workbox-build] required parameters', function() {
     for (const requiredParam of REQUIRED_PARAMS) {
-      it(`should reject with a ValidationError when '${requiredParam}' is missing`, async function() {
+      it(`should reject when '${requiredParam}' is missing`, async function() {
         const options = Object.assign({}, BASE_OPTIONS);
         delete options[requiredParam];
 
-        try {
-          await injectManifest(options);
-          throw new Error('Unexpected success.');
-        } catch (error) {
-          expect(error.name).to.eql('ValidationError');
-          expect(error.details[0].context.key).to.eql(requiredParam);
-        }
+        await expect(injectManifest(options)).to.eventually.be.rejectedWith(
+            WorkboxConfigError, requiredParam);
       });
     }
   });
 
   describe('[workbox-build] unsupported parameters', function() {
     for (const unsupportedParam of UNSUPPORTED_PARAMS) {
-      it(`should reject with a ValidationError when '${unsupportedParam}' is present`, async function() {
+      it(`should reject when '${unsupportedParam}' is present`, async function() {
         const options = Object.assign({}, BASE_OPTIONS);
         options[unsupportedParam] = unsupportedParam;
 
-        try {
-          await injectManifest(options);
-          throw new Error('Unexpected success.');
-        } catch (error) {
-          expect(error.name).to.eql('ValidationError');
-          expect(error.details[0].context.key).to.eql(unsupportedParam);
-        }
+        await expect(injectManifest(options)).to.eventually.be.rejectedWith(
+            WorkboxConfigError, unsupportedParam);
       });
     }
   });
 
   describe('[workbox-build] invalid parameter values', function() {
     for (const param of SUPPORTED_PARAMS) {
-      it(`should reject with a ValidationError when '${param}' is null`, async function() {
+      it(`should reject when '${param}' is null`, async function() {
         const options = Object.assign({}, BASE_OPTIONS);
         options[param] = null;
 
-        try {
-          await injectManifest(options);
-          throw new Error('Unexpected success.');
-        } catch (error) {
-          expect(error.name).to.eql('ValidationError');
-          expect(error.details[0].context.key).to.eql(param);
-        }
+        await expect(injectManifest(options)).to.eventually.be.rejectedWith(
+            WorkboxConfigError, param);
       });
     }
   });
@@ -112,12 +102,8 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
         swSrc: 'DOES_NOT_EXIST',
       });
 
-      try {
-        await injectManifest(options);
-        throw new Error('Unexpected success.');
-      } catch (error) {
-        expect(error.message).to.have.string(errors['invalid-sw-src']);
-      }
+      await expect(injectManifest(options)).to.eventually.be.rejectedWith(
+          errors['invalid-sw-src']);
     });
 
     it(`should throw the expected error when there is no match for 'injectionPoint'`, async function() {
@@ -125,12 +111,8 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
         swSrc: upath.join(SW_SRC_DIR, 'bad-no-injection.js'),
       });
 
-      try {
-        await injectManifest(options);
-        throw new Error('Unexpected success.');
-      } catch (error) {
-        expect(error.message).to.have.string(errors['injection-point-not-found']);
-      }
+      await expect(injectManifest(options)).to.eventually.be.rejectedWith(
+          errors['injection-point-not-found']);
     });
 
     it(`should throw the expected error when there is no match for 'injectionPoint' and 'swSrc' and 'swDest' are the same`, async function() {
@@ -140,12 +122,8 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
         swDest: swFile,
       });
 
-      try {
-        await injectManifest(options);
-        throw new Error('Unexpected success.');
-      } catch (error) {
-        expect(error.message).to.have.string(errors['same-src-and-dest']);
-      }
+      await expect(injectManifest(options)).to.eventually.be.rejectedWith(
+          errors['same-src-and-dest']);
     });
 
     it(`should throw the expected error when there are multiple matches for 'injectionPoint'`, async function() {
@@ -153,12 +131,8 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
         swSrc: upath.join(SW_SRC_DIR, 'bad-multiple-injection.js'),
       });
 
-      try {
-        await injectManifest(options);
-        throw new Error('Unexpected success.');
-      } catch (error) {
-        expect(error.message).to.have.string(errors['multiple-injection-points']);
-      }
+      await expect(injectManifest(options)).to.eventually.be.rejectedWith(
+          errors['multiple-injection-points']);
     });
   });
 
@@ -450,13 +424,8 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function() {
           [option]: value,
         });
 
-        try {
-          await injectManifest(options);
-          throw new Error('Unexpected success.');
-        } catch (error) {
-          expect(error.name).to.eql('ValidationError');
-          expect(error.details[0].context.key).to.eql(option);
-        }
+        await expect(injectManifest(options)).to.eventually.be.rejectedWith(
+            WorkboxConfigError, option);
       });
     }
   });

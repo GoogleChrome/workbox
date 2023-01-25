@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig",
   "compilerOptions": {
+    "esModuleInterop": true,
     "module": "CommonJS",
     "outDir": "build",
     "rootDir": "src",
@@ -9,5 +10,8 @@
   },
   "include": [
     "src/**/*.ts"
+  ],
+  "references": [
+    {"path": "../workbox-build/"},
   ]
 }

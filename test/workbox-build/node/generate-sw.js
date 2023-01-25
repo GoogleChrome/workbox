@@ -6,15 +6,20 @@
   https://opensource.org/licenses/MIT.
 */
 
-const expect = require('chai').expect;
+const chai = require('chai');
+const chaiAsPromised = require('chai-as-promised');
 const fse = require('fs-extra');
 const upath = require('upath');
 const tempy = require('tempy');
 
+const {errors} = require('../../../packages/workbox-build/build/lib/errors');
+const {generateSW} = require('../../../packages/workbox-build/build/generate-sw');
+const {WorkboxConfigError} = require('../../../packages/workbox-build/build/lib/validate-options');
 const confirmDirectoryContains = require('../../../infra/testing/confirm-directory-contains');
-const errors = require('../../../packages/workbox-build/src/lib/errors');
-const generateSW = require('../../../packages/workbox-build/src/generate-sw');
 const validateServiceWorkerRuntime = require('../../../infra/testing/validator/service-worker-runtime');
+
+chai.use(chaiAsPromised);
+const {expect} = chai;
 
 describe(`[workbox-build] generate-sw.js (End to End)`, function() {
   const GLOB_DIR = upath.join(__dirname, '..', 'static', 'example-project-1');
@@ -64,64 +69,46 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
 
   describe('[workbox-build] required parameters', function() {
     for (const requiredParam of REQUIRED_PARAMS) {
-      it(`should reject with a ValidationError when '${requiredParam}' is missing`, async function() {
+      it(`should fail validation when '${requiredParam}' is missing`, async function() {
         const options = Object.assign({}, BASE_OPTIONS);
         delete options[requiredParam];
 
-        try {
-          await generateSW(options);
-          throw new Error('Unexpected success.');
-        } catch (error) {
-          expect(error.name).to.eql('ValidationError', error.message);
-          expect(error.details[0].context.key).to.eql(requiredParam);
-        }
+        await expect(generateSW(options)).to.eventually.be.rejectedWith(
+            WorkboxConfigError, requiredParam);
       });
     }
   });
 
   describe('[workbox-build] unsupported parameters', function() {
     for (const unsupportedParam of UNSUPPORTED_PARAMS) {
-      it(`should reject with a ValidationError when '${unsupportedParam}' is present`, async function() {
+      it(`should fail validation when '${unsupportedParam}' is present`, async function() {
         const options = Object.assign({}, BASE_OPTIONS);
         options[unsupportedParam] = unsupportedParam;
 
-        try {
-          await generateSW(options);
-          throw new Error('Unexpected success.');
-        } catch (error) {
-          expect(error.name).to.eql('ValidationError', error.message);
-          expect(error.details[0].context.key).to.eql(unsupportedParam);
-        }
+        await expect(generateSW(options)).to.eventually.be.rejectedWith(
+            WorkboxConfigError, unsupportedParam);
       });
     }
   });
 
   describe('[workbox-build] invalid parameter values', function() {
     for (const param of SUPPORTED_PARAMS) {
-      it(`should reject with a ValidationError when '${param}' is null`, async function() {
+      it(`should fail validation when '${param}' is an unexpected value`, async function() {
         const options = Object.assign({}, BASE_OPTIONS);
-        options[param] = null;
+        options[param] = () => {};
 
-        try {
-          await generateSW(options);
-          throw new Error('Unexpected success.');
-        } catch (error) {
-          expect(error.name).to.eql('ValidationError', error.message);
-          expect(error.details[0].context.key).to.eql(param);
-        }
+        await expect(generateSW(options)).to.eventually.be.rejectedWith(
+            WorkboxConfigError, param);
       });
     }
 
     it(`should reject when there are no manifest entries or runtimeCaching`, async function() {
       const options = Object.assign({}, BASE_OPTIONS);
-      delete options.globDirectory;
+      // This temporary directory will be empty.
+      options.globDirectory = tempy.directory();
 
-      try {
-        await generateSW(options);
-        throw new Error('Unexpected success.');
-      } catch (error) {
-        expect(error.message).to.eql(errors['no-manifest-entries-or-runtime-caching']);
-      }
+      await expect(generateSW(options)).to.eventually.be.rejectedWith(
+          errors['no-manifest-entries-or-runtime-caching']);
     });
   });
 
@@ -362,7 +349,10 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
         }, {
           url: 'webpackEntry.js',
           revision: /^[0-9a-f]{32}$/,
-        }, '/one', {
+        }, {
+          revision: null,
+          url: '/one',
+        }, {
           revision: null,
           url: '/two',
         }, {
@@ -695,12 +685,8 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
         runtimeCaching: [{handler}],
       });
 
-      try {
-        await generateSW(options);
-        throw new Error('Unexpected success.');
-      } catch (error) {
-        expect(error.message).to.include(errors['urlPattern-is-required']);
-      }
+      await expect(generateSW(options)).to.eventually.be.rejectedWith(
+          WorkboxConfigError, 'urlPattern');
     });
 
     it(`should reject when 'handler' is missing from 'runtimeCaching'`, async function() {
@@ -709,12 +695,8 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
         runtimeCaching: [{urlPattern}],
       });
 
-      try {
-        await generateSW(options);
-        throw new Error('Unexpected success.');
-      } catch (error) {
-        expect(error.message).to.include(errors['handler-is-required']);
-      }
+      await expect(generateSW(options)).to.eventually.be.rejectedWith(
+          WorkboxConfigError, 'handler');
     });
 
     it(`should reject when 'handler' is not a valid strategy name`, async function() {
@@ -726,13 +708,8 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
         }],
       });
 
-      try {
-        await generateSW(options);
-        throw new Error('Unexpected success.');
-      } catch (error) {
-        expect(error.name).to.eql('ValidationError', error.message);
-        expect(error.details[0].context.key).to.eql('handler');
-      }
+      await expect(generateSW(options)).to.eventually.be.rejectedWith(
+          WorkboxConfigError, 'handler');
     });
 
     // See https://github.com/GoogleChrome/workbox/issues/2078
@@ -940,12 +917,8 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
         swDest,
       });
 
-      try {
-        await generateSW(options);
-        throw new Error('Unexpected success.');
-      } catch (error) {
-        expect(error.message).to.include(errors['invalid-network-timeout-seconds']);
-      }
+      await expect(generateSW(options)).to.eventually.be.rejectedWith(
+          errors['invalid-network-timeout-seconds']);
     });
 
     it(`should support 'networkTimeoutSeconds' when handler is 'NetworkFirst'`, async function() {
@@ -1014,13 +987,8 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
         }],
       });
 
-      try {
-        await generateSW(options);
-        throw new Error('Unexpected success.');
-      } catch (error) {
-        expect(error.name).to.eql('ValidationError', error.message);
-        expect(error.details[0].context.main).to.eql('expiration');
-      }
+      await expect(generateSW(options)).to.eventually.be.rejectedWith(
+          WorkboxConfigError, errors['cache-name-required']);
     });
 
     it(`should ignore swDest and workbox-*.js when generating manifest entries`, async function() {
@@ -1066,33 +1034,23 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function() {
   });
 
   describe(`[workbox-build] behavior with 'navigationPreload'`, function() {
-    it(`should reject with a ValidationError when 'navigationPreload' is true and 'runtimeCaching' is undefined`, async function() {
+    it(`should reject when 'navigationPreload' is true and 'runtimeCaching' is undefined`, async function() {
       const options = Object.assign({}, BASE_OPTIONS, {
         navigationPreload: true,
       });
 
-      try {
-        await generateSW(options);
-        throw new Error('Unexpected success.');
-      } catch (error) {
-        expect(error.name).to.eql('ValidationError', error.message);
-        expect(error.details[0].context.key).to.eql('runtimeCaching');
-      }
+      await expect(generateSW(options)).to.eventually.be.rejectedWith(
+          WorkboxConfigError, errors['nav-preload-runtime-caching']);
     });
 
-    it(`should reject with a ValidationError when 'navigationPreload' is true and 'runtimeCaching' is invalid`, async function() {
+    it(`should reject when 'navigationPreload' is true and 'runtimeCaching' is undefined`, async function() {
       const options = Object.assign({}, BASE_OPTIONS, {
-        runtimeCaching: 'invalid',
+        runtimeCaching: undefined,
         navigationPreload: true,
       });
 
-      try {
-        await generateSW(options);
-        throw new Error('Unexpected success.');
-      } catch (error) {
-        expect(error.name).to.eql('ValidationError', error.message);
-        expect(error.details[0].context.key).to.eql('runtimeCaching');
-      }
+      await expect(generateSW(options)).to.eventually.be.rejectedWith(
+          WorkboxConfigError, errors['nav-preload-runtime-caching']);
     });
 
     it(`should generate when 'navigationPreload' is true and 'runtimeCaching' is valid`, async function() {

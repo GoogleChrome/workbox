@@ -29,7 +29,7 @@ import {
 import './_version.js';
 
 
-interface GoogleAnalyticsInitializeOptions {
+export interface GoogleAnalyticsInitializeOptions {
   cacheName?: string;
   parameterOverrides?: {[paramName: string]: string};
   hitFilter?: (params: URLSearchParams) => void;
@@ -206,7 +206,7 @@ const createGtmJsRoute = (cacheName: string) => {
  *
  * @memberof module:workbox-google-analytics
  */
-const initialize = (options: GoogleAnalyticsInitializeOptions = {}) => {
+const initialize = (options: GoogleAnalyticsInitializeOptions = {}): void => {
   const cacheName = cacheNames.getGoogleAnalyticsName(options.cacheName);
 
   const bgSyncPlugin = new BackgroundSyncPlugin(QUEUE_NAME, {

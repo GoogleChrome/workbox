@@ -52,7 +52,7 @@ class StaleWhileRevalidate extends Strategy {
    * `fetch()` requests made by this strategy.
    * @param {Object} [options.matchOptions] [`CacheQueryOptions`](https://w3c.github.io/ServiceWorker/#dictdef-cachequeryoptions)
    */
-  constructor(options: StrategyOptions) {
+  constructor(options: StrategyOptions = {}) {
     super(options);
 
     // If this instance contains no plugins with a 'cacheWillUpdate' callback,
@@ -106,7 +106,9 @@ class StaleWhileRevalidate extends Strategy {
         // https://github.com/microsoft/TypeScript/issues/20006
         response = (await fetchAndCachePromise as Response | undefined);
       } catch (err) {
-        error = err;
+        if (err instanceof Error) {
+          error = err;
+        }
       }
     }
 

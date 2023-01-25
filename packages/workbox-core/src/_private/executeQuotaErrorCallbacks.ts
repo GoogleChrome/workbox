@@ -18,7 +18,7 @@ import '../_version.js';
  * @memberof module:workbox-core
  * @private
  */
-async function executeQuotaErrorCallbacks() {
+async function executeQuotaErrorCallbacks(): Promise<void> {
   if (process.env.NODE_ENV !== 'production') {
     logger.log(`About to run ${quotaErrorCallbacks.size} ` +
         `callbacks to clean up caches.`);

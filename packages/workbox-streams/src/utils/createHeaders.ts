@@ -22,7 +22,7 @@ import '../_version.js';
  *
  * @memberof module:workbox-streams
  */
-function createHeaders(headersInit = {}) {
+function createHeaders(headersInit = {}): Headers {
   // See https://github.com/GoogleChrome/workbox/issues/1461
   const headers = new Headers(headersInit);
   if (!headers.has('content-type')) {

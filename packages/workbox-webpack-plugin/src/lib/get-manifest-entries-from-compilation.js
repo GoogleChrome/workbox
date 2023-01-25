@@ -7,7 +7,8 @@
 */
 
 const {matchPart} = require('webpack').ModuleFilenameHelpers;
-const transformManifest = require('workbox-build/build/lib/transform-manifest');
+const {transformManifest} =
+    require('workbox-build/build/lib/transform-manifest');
 
 const getAssetHash = require('./get-asset-hash');
 const resolveWebpackURL = require('./resolve-webpack-url');
@@ -200,7 +201,10 @@ module.exports = async (compilation, config) => {
     transformParam: compilation,
   });
 
-  compilation.warnings = compilation.warnings.concat(warnings || []);
+  // See https://github.com/GoogleChrome/workbox/issues/2790
+  for (const warning of warnings) {
+    compilation.warnings.push(new Error(warning));
+  }
 
   // Ensure that the entries are properly sorted by URL.
   const sortedEntries = manifestEntries.sort(

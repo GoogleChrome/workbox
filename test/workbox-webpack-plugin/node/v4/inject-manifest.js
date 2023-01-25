@@ -72,7 +72,7 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v4`, function() {
           const statsJson = stats.toJson();
           expect(statsJson.warnings).to.be.empty;
           expect(statsJson.errors).to.have.members([
-            `Please check your InjectManifest plugin configuration:\n"invalid" is not allowed`,
+            `Please check your InjectManifest plugin configuration:\n[WebpackInjectManifest] 'invalid' property is not expected to be here. Did you mean property 'include'?`,
           ]);
 
           done();
@@ -683,6 +683,100 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v4`, function() {
                 url: 'webpackEntry.js',
               }], {}]],
             },
+          });
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+
+    // See https://github.com/GoogleChrome/workbox/issues/2729
+    it(`should produce valid JavaScript when eval-cheap-source-map and minimization are used`, function(done) {
+      const outputDir = tempy.directory();
+
+      const config = {
+        mode: 'development',
+        entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        output: {
+          filename: WEBPACK_ENTRY_FILENAME,
+          path: outputDir,
+        },
+        devtool: 'eval-cheap-source-map',
+        optimization: {
+          minimize: true,
+        },
+        plugins: [
+          new InjectManifest({
+            swSrc: upath.join(__dirname, '..', '..', 'static', 'module-import-sw.js'),
+            swDest: 'service-worker.js',
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError, stats) => {
+        const swFile = upath.join(outputDir, 'service-worker.js');
+        try {
+          webpackBuildCheck(webpackError, stats);
+
+          const files = await globby('**', {cwd: outputDir});
+          expect(files).to.have.length(2);
+
+          await validateServiceWorkerRuntime({
+            swFile,
+            entryPoint: 'injectManifest',
+            // We can't verify expectedMethodCalls here, since we're using
+            // a compiled ES module import, not the workbox-sw interfaces.
+            // This test just confirms that the compilation produces valid JS.
+          });
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+
+    // See https://github.com/GoogleChrome/workbox/issues/2729
+    it(`should produce valid JavaScript when eval-cheap-source-map is used without minimization`, function(done) {
+      const outputDir = tempy.directory();
+
+      const config = {
+        mode: 'development',
+        entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        output: {
+          filename: WEBPACK_ENTRY_FILENAME,
+          path: outputDir,
+        },
+        devtool: 'eval-cheap-source-map',
+        optimization: {
+          minimize: false,
+        },
+        plugins: [
+          new InjectManifest({
+            swSrc: upath.join(__dirname, '..', '..', 'static', 'module-import-sw.js'),
+            swDest: 'service-worker.js',
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError, stats) => {
+        const swFile = upath.join(outputDir, 'service-worker.js');
+        try {
+          webpackBuildCheck(webpackError, stats);
+
+          const files = await globby('**', {cwd: outputDir});
+          expect(files).to.have.length(2);
+
+          await validateServiceWorkerRuntime({
+            swFile,
+            entryPoint: 'injectManifest',
+            // We can't verify expectedMethodCalls here, since we're using
+            // a compiled ES module import, not the workbox-sw interfaces.
+            // This test just confirms that the compilation produces valid JS.
           });
 
           done();
@@ -1663,7 +1757,7 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v4`, function() {
   });
 
   describe(`[workbox-webpack-plugin] Non-compilation scenarios`, function() {
-    it(`should error when compileSrc is false and webpackCompilationPlugins is used`, function(done) {
+    it(`should warn when compileSrc is false and webpackCompilationPlugins is used`, function(done) {
       const outputDir = tempy.directory();
 
       const config = {
@@ -1688,11 +1782,10 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v4`, function() {
         try {
           expect(webpackError).not.to.exist;
           const statsJson = stats.toJson();
-          expect(statsJson.warnings).to.be.empty;
-          expect(statsJson.errors).to.have.members([
-            `Please check your InjectManifest plugin configuration:\n"webpackCompilationPlugins" is not allowed`,
+          expect(statsJson.errors).to.be.empty;
+          expect(statsJson.warnings).to.have.members([
+            'compileSrc is false, so the webpackCompilationPlugins option will be ignored.',
           ]);
-
           done();
         } catch (error) {
           done(error);

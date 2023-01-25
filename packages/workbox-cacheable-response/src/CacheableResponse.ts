@@ -127,7 +127,7 @@ class CacheableResponse {
         });
 
         logger.groupCollapsed(`View response status and headers here.`);
-        logger.log(`Response status: ` + response.status);
+        logger.log(`Response status: ${response.status}`);
         logger.log(`Response headers: ` +
           JSON.stringify(logFriendlyHeaders, null, 2));
         logger.groupEnd();

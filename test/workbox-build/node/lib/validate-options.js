@@ -7,35 +7,74 @@
 */
 
 const expect = require('chai').expect;
+const proxyquire = require('proxyquire');
+const sinon = require('sinon');
 
-const validateOptions = require('../../../../packages/workbox-build/src/lib/validate-options');
+class AJVFailsValidation {
+  compile() {
+    const stub = sinon.stub().returns(false);
+    stub.errors = [];
+    return stub;
+  }
+  addKeyword() {
+    // no-op
+  }
+}
 
-describe(`[workbox-build] entry-points/options/validate.js`, function() {
-  const testOptions = {
-    ignored: 'test',
-  };
+class AJVPassesValidation {
+  compile() {
+    return sinon.stub().returns(true);
+  }
+  addKeyword() {
+    // no-op
+  }
+}
 
-  it(`should throw when the call to schema.validate() returns an error`, function() {
-    const error = 'dummy error';
-    const schema = {
-      validate: (options) => {
-        expect(options).to.eql(testOptions);
-        return {error};
-      },
-    };
+// The integration tests will exercise the actual validation logic.
+describe(`[workbox-build] entry-points/options/validate-options.js`, function() {
+  const MODULE_PATH = '../../../../packages/workbox-build/build/lib/validate-options';
+  const testCases = [
+    'validateGenerateSWOptions',
+    'validateGetManifestOptions',
+    'validateInjectManifestOptions',
+  ];
 
-    expect(() => validateOptions(testOptions, schema)).to.throw(error);
-  });
+  for (const func of testCases) {
+    it(`${func}() should throw when validation fails`, function() {
+      const validateOptions = proxyquire(MODULE_PATH, {
+        'ajv': {
+          default: AJVFailsValidation,
+        },
+        '@apideck/better-ajv-errors': {
+          betterAjvErrors: sinon.stub().returns([{
+            message: 'message1',
+            path: 'path1',
+            suggestion: 'suggestion1',
+          }, {
+            message: 'message2',
+            path: 'path2',
+            suggestion: 'suggestion2',
+          }]),
+        },
+      });
 
-  it(`should pass through the value when the call to schema.validate() doesn't return an error`, function() {
-    const schema = {
-      validate: (options) => {
-        expect(options).to.eql(testOptions);
-        return {value: options};
-      },
-    };
+      expect(() => validateOptions[func]()).to.throw(
+          validateOptions.WorkboxConfigError,
+          `[path1] message1. suggestion1\n\n[path2] message2. suggestion2`,
+      );
+    });
 
-    const value = validateOptions(testOptions, schema);
-    expect(value).to.eql(testOptions);
-  });
+    it(`${func}() should not throw when validation passes`, function() {
+      const validateOptions = proxyquire(MODULE_PATH, {
+        'ajv': {
+          default: AJVPassesValidation,
+        },
+      });
+
+      const defaultOptions = validateOptions[func]({
+        globDirectory: '.',
+      });
+      expect(defaultOptions).to.be.an('object');
+    });
+  }
 });

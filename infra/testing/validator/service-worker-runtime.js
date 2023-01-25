@@ -198,7 +198,9 @@ module.exports = async ({
 
   vm.runInNewContext(swString, context);
 
-  validateMethodCalls({methodsToSpies, expectedMethodCalls, context});
+  if (expectedMethodCalls) {
+    validateMethodCalls({methodsToSpies, expectedMethodCalls, context});
+  }
 
   // Optionally check the usage of addEventListener().
   if (addEventListenerValidation) {

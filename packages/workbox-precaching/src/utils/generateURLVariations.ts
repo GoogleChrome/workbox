@@ -26,7 +26,7 @@ export function* generateURLVariations(url: string, {
   directoryIndex = 'index.html',
   cleanURLs = true,
   urlManipulation,
-}: PrecacheRouteOptions = {}) {
+}: PrecacheRouteOptions = {}): Generator<string, void, unknown> {
   const urlObject = new URL(url, location.href);
   urlObject.hash = '';
   yield urlObject.href;

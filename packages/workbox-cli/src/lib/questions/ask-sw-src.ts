@@ -6,16 +6,16 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {prompt} from 'inquirer';
+import {Answers, prompt} from 'inquirer';
 import {oneLine as ol} from 'common-tags';
 
 // The key used for the question/answer.
 const name = 'swSrc';
 
 /**
- * @return {Promise<Object>} The answers from inquirer.
+ * @return {Promise<Answers>} The answers from inquirer.
  */
-function askQuestion() {
+function askQuestion(): Promise<Answers> {
   return prompt([{
     name,
     message: ol`Where's your existing service worker file? To be used with
@@ -25,7 +25,8 @@ function askQuestion() {
   }]);
 }
 
-export async function askSWSrc() {
+export async function askSWSrc(): Promise<string | null> {
   const answers = await askQuestion();
-  return answers[name].trim();
+  // When prompt type is input the return is string or null
+  return answers[name] ? (answers[name] as string).trim() : null;
 }

@@ -15,7 +15,7 @@ import '../_version.js';
 /**
  * A plugin, designed to be used with PrecacheController, to translate URLs into
  * the corresponding cache key, based on the current revision info.
- * 
+ *
  * @private
  */
 class PrecacheCacheKeyPlugin implements WorkboxPlugin {
@@ -29,6 +29,8 @@ class PrecacheCacheKeyPlugin implements WorkboxPlugin {
     request,
     params,
   }: WorkboxPluginCallbackParam['cacheKeyWillBeUsed']) => {
+    // Params is type any, can't change right now.
+    // eslint-disable-next-line
     const cacheKey = params && params.cacheKey ||
         this._precacheController.getCacheKeyForURL(request.url);
 

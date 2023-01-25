@@ -7,11 +7,11 @@
 */
 
 import {oneLine as ol} from 'common-tags';
-import * as assert from 'assert';
-import * as meow from 'meow';
-import * as prettyBytes from 'pretty-bytes';
-import * as upath from 'upath';
-import * as watch from 'glob-watcher';
+import assert from 'assert';
+import GlobWatcher from 'glob-watcher';
+import meow from 'meow';
+import prettyBytes from 'pretty-bytes';
+import upath from 'upath';
 import * as workboxBuild from 'workbox-build';
 
 import {constants} from './lib/constants.js';
@@ -22,11 +22,10 @@ import {runWizard} from './lib/run-wizard.js';
 import {SupportedFlags} from './bin.js'
 
 interface BuildCommand {
-  command: 'generateSW'|'injectManifest';
+  command: 'generateSW' | 'injectManifest';
   config: any;
   watch: boolean;
 }
-
 
 /**
  * Runs the specified build command with the provided configuration.
@@ -34,43 +33,33 @@ interface BuildCommand {
  * @param {Object} options
  */
 async function runBuildCommand({command, config, watch}: BuildCommand) {
-  try {
-    const {count, filePaths, size, warnings} =
-        await workboxBuild[command](config);
-        
+  const {count, filePaths, size, warnings} = await workboxBuild[command](config);
 
-    for (const warning of warnings) {
-      logger.warn(warning);
-    }
+  for (const warning of warnings) {
+    logger.warn(warning);
+  }
 
-    if (filePaths.length === 1) {
-      logger.log(`The service worker file was written to ${config.swDest}`);
-    } else {
-      const message = filePaths
-          .sort()
-          .map((filePath) => `  • ${filePath}`)
-          .join(`\n`);
-      logger.log(`The service worker files were written to:\n${message}`);
-    }
+  if (filePaths.length === 1) {
+    // Can't change the type of config, we'll consider in next major release.
+    // eslint-disable-next-line
+    logger.log(`The service worker file was written to ${config.swDest}`);
+  } else {
+    const message = filePaths
+        .sort()
+        .map((filePath) => `  • ${filePath}`)
+        .join(`\n`);
+    logger.log(`The service worker files were written to:\n${message}`);
+  }
 
-    logger.log(`The service worker will precache ${count} URLs, ` +
-        `totaling ${prettyBytes(size)}.`);
+  logger.log(`The service worker will precache ${count} URLs, ` +
+      `totaling ${prettyBytes(size)}.`);
 
-    if (watch) {
-      logger.log(`\nWatching for changes...`);
-    }
-  } catch (error) {
-    // See https://github.com/hapijs/joi/blob/v11.3.4/API.md#errors
-    if (typeof error.annotate === 'function') {
-      throw new Error(
-          `${errors['config-validation-failed']}\n${error.annotate()}`);
-    }
-    logger.error(errors['workbox-build-runtime-error']);
-    throw error;
+  if (watch) {
+    logger.log(`\nWatching for changes...`);
   }
 }
 
-export const app = async (params: meow.Result<SupportedFlags>) => {
+export const app = async (params: meow.Result<SupportedFlags>): Promise<void> => {
   // This should not be a user-visible error, unless meow() messes something up.
   assert(params && Array.isArray(params.input), errors['missing-input']);
 
@@ -104,32 +93,39 @@ export const app = async (params: meow.Result<SupportedFlags>) => {
 
       let config: any;
       try {
+        // Can't change the type of config, we'll consider in next major release.
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         config = readConfig(configPath);
       } catch (error) {
-        logger.error(errors['invalid-common-js-module']);
-        throw error;
+        if (error instanceof Error) {
+          logger.error(errors['invalid-common-js-module']);
+          throw error;
+        }
       }
 
       logger.log(`Using configuration from ${configPath}.`);
 
       // Determine whether we're in --watch mode, or one-off mode.
+      // Can't change the type of config, we'll consider in next major release.
+      /* eslint-disable */
       if (params.flags && params.flags.watch) {
-        const options: watch.WatchOptions = {ignoreInitial: false}
+        const options: GlobWatcher.WatchOptions = {ignoreInitial: false};
         if (config.globIgnores) {
           options.ignored = config.globIgnores;
         }
         if (config.globDirectory) {
           options.cwd = config.globDirectory;
         }
-        
+
         if (config.globPatterns) {
-          watch(config.globPatterns, options,
+          GlobWatcher(config.globPatterns, options,
             () => runBuildCommand({command, config, watch: true}));
         }
-        
+
       } else {
         await runBuildCommand({command, config, watch: false});
       }
+      /* eslint-disable */
       break;
     }
 

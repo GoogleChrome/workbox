@@ -26,19 +26,19 @@ import './_version.js';
  * @memberof module:workbox-core
  */
 const cacheNames = {
-  get googleAnalytics() {
+  get googleAnalytics(): string {
     return _cacheNames.getGoogleAnalyticsName();
   },
-  get precache() {
+  get precache(): string {
     return _cacheNames.getPrecacheName();
   },
-  get prefix() {
+  get prefix(): string {
     return _cacheNames.getPrefix();
   },
-  get runtime() {
+  get runtime(): string {
     return _cacheNames.getRuntimeName();
   },
-  get suffix() {
+  get suffix(): string {
     return _cacheNames.getSuffix();
   },
 };

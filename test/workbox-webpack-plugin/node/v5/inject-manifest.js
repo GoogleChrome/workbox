@@ -71,7 +71,7 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function() {
           const statsJson = stats.toJson();
           expect(statsJson.warnings).to.be.empty;
           expect(statsJson.errors[0].message).to.eql(
-              `Please check your InjectManifest plugin configuration:\n"invalid" is not allowed`,
+              `Please check your InjectManifest plugin configuration:\n[WebpackInjectManifest] 'invalid' property is not expected to be here. Did you mean property 'include'?`,
           );
 
           done();
@@ -686,6 +686,100 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function() {
                 url: 'webpackEntry.js',
               }], {}]],
             },
+          });
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+
+    // See https://github.com/GoogleChrome/workbox/issues/2729
+    it(`should produce valid JavaScript when eval-cheap-source-map and minimization are used`, function(done) {
+      const outputDir = tempy.directory();
+
+      const config = {
+        mode: 'development',
+        entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        output: {
+          filename: WEBPACK_ENTRY_FILENAME,
+          path: outputDir,
+        },
+        devtool: 'eval-cheap-source-map',
+        optimization: {
+          minimize: true,
+        },
+        plugins: [
+          new InjectManifest({
+            swSrc: upath.join(__dirname, '..', '..', 'static', 'module-import-sw.js'),
+            swDest: 'service-worker.js',
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError, stats) => {
+        const swFile = upath.join(outputDir, 'service-worker.js');
+        try {
+          webpackBuildCheck(webpackError, stats);
+
+          const files = await globby('**', {cwd: outputDir});
+          expect(files).to.have.length(4);
+
+          await validateServiceWorkerRuntime({
+            swFile,
+            entryPoint: 'injectManifest',
+            // We can't verify expectedMethodCalls here, since we're using
+            // a compiled ES module import, not the workbox-sw interfaces.
+            // This test just confirms that the compilation produces valid JS.
+          });
+
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
+    });
+
+    // See https://github.com/GoogleChrome/workbox/issues/2729
+    it(`should produce valid JavaScript when eval-cheap-source-map is used without minimization`, function(done) {
+      const outputDir = tempy.directory();
+
+      const config = {
+        mode: 'development',
+        entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        output: {
+          filename: WEBPACK_ENTRY_FILENAME,
+          path: outputDir,
+        },
+        devtool: 'eval-cheap-source-map',
+        optimization: {
+          minimize: false,
+        },
+        plugins: [
+          new InjectManifest({
+            swSrc: upath.join(__dirname, '..', '..', 'static', 'module-import-sw.js'),
+            swDest: 'service-worker.js',
+          }),
+        ],
+      };
+
+      const compiler = webpack(config);
+      compiler.run(async (webpackError, stats) => {
+        const swFile = upath.join(outputDir, 'service-worker.js');
+        try {
+          webpackBuildCheck(webpackError, stats);
+
+          const files = await globby('**', {cwd: outputDir});
+          expect(files).to.have.length(2);
+
+          await validateServiceWorkerRuntime({
+            swFile,
+            entryPoint: 'injectManifest',
+            // We can't verify expectedMethodCalls here, since we're using
+            // a compiled ES module import, not the workbox-sw interfaces.
+            // This test just confirms that the compilation produces valid JS.
           });
 
           done();
@@ -1632,7 +1726,7 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function() {
           new InjectManifest({
             compileSrc: false,
             swDest: 'injected-manifest.json',
-            swSrc: upath.join(__dirname, '..', 'static', 'injected-manifest.json'),
+            swSrc: upath.join(__dirname, '..', '..', 'static', 'injected-manifest.json'),
             webpackCompilationPlugins: [{}],
           }),
         ],
@@ -1643,9 +1737,9 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function() {
         try {
           expect(webpackError).not.to.exist;
           const statsJson = stats.toJson();
-          expect(statsJson.warnings).to.be.empty;
-          expect(statsJson.errors[0].message).to.eql(
-              `Please check your InjectManifest plugin configuration:\n"webpackCompilationPlugins" is not allowed`,
+          expect(statsJson.errors).to.be.empty;
+          expect(statsJson.warnings[0].message).to.eql(
+              'compileSrc is false, so the webpackCompilationPlugins option will be ignored.',
           );
 
           done();
@@ -1694,45 +1788,45 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function() {
         }
       });
     });
-  });
 
-  it(`should support injecting a manifest into a CJS module`, function(done) {
-    const outputDir = tempy.directory();
+    it(`should support injecting a manifest into a CJS module`, function(done) {
+      const outputDir = tempy.directory();
 
-    const config = {
-      mode: 'production',
-      entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
-      output: {
-        filename: '[name].[contenthash:20].js',
-        path: outputDir,
-      },
-      plugins: [
-        new InjectManifest({
-          compileSrc: false,
-          swDest: 'injected-manifest.js',
-          swSrc: upath.join(__dirname, '..', '..', 'static', 'injected-manifest.js'),
-        }),
-      ],
-    };
+      const config = {
+        mode: 'production',
+        entry: upath.join(SRC_DIR, WEBPACK_ENTRY_FILENAME),
+        output: {
+          filename: '[name].[contenthash:20].js',
+          path: outputDir,
+        },
+        plugins: [
+          new InjectManifest({
+            compileSrc: false,
+            swDest: 'injected-manifest.js',
+            swSrc: upath.join(__dirname, '..', '..', 'static', 'injected-manifest.js'),
+          }),
+        ],
+      };
 
-    const compiler = webpack(config);
-    compiler.run(async (webpackError, stats) => {
-      try {
-        webpackBuildCheck(webpackError, stats);
+      const compiler = webpack(config);
+      compiler.run(async (webpackError, stats) => {
+        try {
+          webpackBuildCheck(webpackError, stats);
 
-        const files = await globby('**', {cwd: outputDir});
-        expect(files).to.have.length(2);
+          const files = await globby('**', {cwd: outputDir});
+          expect(files).to.have.length(2);
 
-        const manifest = require(upath.join(outputDir, 'injected-manifest.js'));
-        expect(manifest).to.matchPattern([{
-          revision: null,
-          url: /^main\.[0-9a-f]{20}\.js$/,
-        }]);
+          const manifest = require(upath.join(outputDir, 'injected-manifest.js'));
+          expect(manifest).to.matchPattern([{
+            revision: null,
+            url: /^main\.[0-9a-f]{20}\.js$/,
+          }]);
 
-        done();
-      } catch (error) {
-        done(error);
-      }
+          done();
+        } catch (error) {
+          done(error);
+        }
+      });
     });
   });
 });

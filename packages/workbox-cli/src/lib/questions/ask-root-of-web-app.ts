@@ -6,9 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
-import * as assert from 'assert';
-import * as fse from 'fs-extra';
-import * as glob from 'glob';
+import assert from 'assert';
+import fse from 'fs-extra';
+import glob from 'glob';
 import {prompt, Separator} from 'inquirer';
 import {oneLine as ol} from 'common-tags';
 
@@ -71,7 +71,7 @@ async function askQuestion(): Promise<{ globDirectory: string; manualDirectoryIn
   }]);
 }
 
-export async function askRootOfWebApp() {
+export async function askRootOfWebApp(): Promise<string> {
   const { manualDirectoryInput, globDirectory } = await askQuestion();
 
   try {

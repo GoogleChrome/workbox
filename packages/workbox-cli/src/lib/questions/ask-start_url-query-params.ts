@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import * as assert from 'assert';
+import assert from 'assert';
 import {prompt} from 'inquirer';
 import {oneLine as ol} from 'common-tags';
 
