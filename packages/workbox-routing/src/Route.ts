@@ -9,10 +9,12 @@
 import {assert} from 'workbox-core/_private/assert.js';
 import {HTTPMethod, defaultMethod, validMethods} from './utils/constants.js';
 import {normalizeHandler} from './utils/normalizeHandler.js';
-import {RouteHandler, RouteHandlerObject, RouteMatchCallback}
-    from 'workbox-core/types.js';
+import {
+  RouteHandler,
+  RouteHandlerObject,
+  RouteMatchCallback,
+} from 'workbox-core/types.js';
 import './_version.js';
-
 
 /**
  * A `Route` consists of a pair of callback functions, "match" and "handler".
@@ -21,7 +23,7 @@ import './_version.js';
  * is called when there is a match and should return a Promise that resolves
  * to a `Response`.
  *
- * @memberof module:workbox-routing
+ * @memberof workbox-routing
  */
 class Route {
   handler: RouteHandlerObject;
@@ -32,18 +34,19 @@ class Route {
   /**
    * Constructor for Route class.
    *
-   * @param {module:workbox-routing~matchCallback} match
+   * @param {workbox-routing~matchCallback} match
    * A callback function that determines whether the route matches a given
    * `fetch` event by returning a non-falsy value.
-   * @param {module:workbox-routing~handlerCallback} handler A callback
+   * @param {workbox-routing~handlerCallback} handler A callback
    * function that returns a Promise resolving to a Response.
    * @param {string} [method='GET'] The HTTP method to match the Route
    * against.
    */
   constructor(
-      match: RouteMatchCallback,
-      handler: RouteHandler,
-      method: HTTPMethod = defaultMethod) {
+    match: RouteMatchCallback,
+    handler: RouteHandler,
+    method: HTTPMethod = defaultMethod,
+  ) {
     if (process.env.NODE_ENV !== 'production') {
       assert!.isType(match, 'function', {
         moduleName: 'workbox-routing',
@@ -66,11 +69,11 @@ class Route {
 
   /**
    *
-   * @param {module:workbox-routing-handlerCallback} handler A callback
+   * @param {workbox-routing-handlerCallback} handler A callback
    * function that returns a Promise resolving to a Response
    */
   setCatchHandler(handler: RouteHandler): void {
-    this.catchHandler = normalizeHandler(handler)
+    this.catchHandler = normalizeHandler(handler);
   }
 }
 

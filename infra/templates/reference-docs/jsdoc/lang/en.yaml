@@ -6,46 +6,46 @@
 # https://opensource.org/licenses/MIT.
 
 constructor:
-    prefix: 'new '
+  prefix: 'new '
 returnTypesSeparator: '&nbsp;returns&nbsp;'
 tables:
-    body:
-        defaultValue: 'Defaults to {valueString}.'
-        defaultValueString: '<code>{value}</code>'
-        eachValueHasProperties: 'Values in <code>{name}</code> have the following properties:'
-        isOptional: 'Optional'
-        isRequired: '&nbsp;'
-        nonNullable:
-            long: 'Value must not be null.'
-            short: 'non-null'
-        nullable:
-            long: 'Value may be null.'
-            short: 'nullable'
-        repeatable:
-            long: 'Value may be repeated.'
-            short: 'repeatable'
-        unknownType: '?'
-    emptyCellPlaceholder: '&nbsp;'
-    header:
-        description: 'Description'
-        name: 'Name'
-        optional: 'Optional'
-        type: 'Type'
-    notApplicable: '&#8212;'
+  body:
+    defaultValue: 'Defaults to {valueString}.'
+    defaultValueString: '<code>{value}</code>'
+    eachValueHasProperties: 'Values in <code>{name}</code> have the following properties:'
+    isOptional: 'Optional'
+    isRequired: '&nbsp;'
+    nonNullable:
+      long: 'Value must not be null.'
+      short: 'non-null'
+    nullable:
+      long: 'Value may be null.'
+      short: 'nullable'
+    repeatable:
+      long: 'Value may be repeated.'
+      short: 'repeatable'
+    unknownType: '?'
+  emptyCellPlaceholder: '&nbsp;'
+  header:
+    description: 'Description'
+    name: 'Name'
+    optional: 'Optional'
+    type: 'Type'
+  notApplicable: '&#8212;'
 params:
-    all: '({params})'
-    joiner: |
-        {items, plural,
-            =0 {{param}}
-            other {, {param}}}
-    optional: '{param}'
-    repeatable: '...{param}'
+  all: '({params})'
+  joiner: |
+    {items, plural,
+        =0 {{param}}
+        other {, {param}}}
+  optional: '{param}'
+  repeatable: '...{param}'
 headings:
-    enums: |
-        {items, plural,
-            =1 {Enumeration}
-            other {Enumerations}}
-    values: |
-        {items, plural,
-            =1 {Value}
-            other {Values}}
+  enums: |
+    {items, plural,
+        =1 {Enumeration}
+        other {Enumerations}}
+  values: |
+    {items, plural,
+        =1 {Value}
+        other {Values}}

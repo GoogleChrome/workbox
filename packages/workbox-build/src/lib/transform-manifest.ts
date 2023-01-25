@@ -6,7 +6,12 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {BasePartial, FileDetails, ManifestEntry, ManifestTransform} from '../types';
+import {
+  BasePartial,
+  FileDetails,
+  ManifestEntry,
+  ManifestTransform,
+} from '../types';
 import {additionalManifestEntriesTransform} from './additional-manifest-entries-transform';
 import {errors} from './errors';
 import {maximumSizeTransform} from './maximum-size-transform';
@@ -16,7 +21,7 @@ import {noRevisionForURLsMatchingTransform} from './no-revision-for-urls-matchin
 /**
  * A `ManifestTransform` function can be used to modify the modify the `url` or
  * `revision` properties of some or all of the
- * {@link module:workbox-build.ManifestEntry|ManifestEntries} in the manifest.
+ * {@link workbox-build.ManifestEntry} in the manifest.
  *
  * Deleting the `revision` property of an entry will cause
  * the corresponding `url` to be precached without cache-busting parameters
@@ -54,15 +59,15 @@ import {noRevisionForURLsMatchingTransform} from './no-revision-for-urls-matchin
  * };
  *
  * @callback ManifestTransform
- * @param {Array<module:workbox-build.ManifestEntry>} manifestEntries The full
+ * @param {Array<workbox-build.ManifestEntry>} manifestEntries The full
  * array of entries, prior to the current transformation.
  * @param {Object} [compilation] When used in the webpack plugins, this param
  * will be set to the current `compilation`.
- * @return {Promise<module:workbox-build.ManifestTransformResult>}
+ * @return {Promise<workbox-build.ManifestTransformResult>}
  * The array of entries with the transformation applied, and optionally, any
  * warnings that should be reported back to the build tool.
  *
- * @memberof module:workbox-build
+ * @memberof workbox-build
  */
 
 interface ManifestTransformResultWithWarnings {
@@ -84,7 +89,7 @@ export async function transformManifest({
   // When this is called by the webpack plugin, transformParam will be the
   // current webpack compilation.
   transformParam?: unknown;
-  }): Promise<ManifestTransformResultWithWarnings> {
+}): Promise<ManifestTransformResultWithWarnings> {
   const allWarnings: Array<string> = [];
 
   // Take the array of fileDetail objects and convert it into an array of
@@ -109,7 +114,8 @@ export async function transformManifest({
 
   if (dontCacheBustURLsMatching) {
     transformsToApply.push(
-        noRevisionForURLsMatchingTransform(dontCacheBustURLsMatching));
+      noRevisionForURLsMatchingTransform(dontCacheBustURLsMatching),
+    );
   }
 
   // Run any manifestTransforms functions second-to-last.
@@ -120,10 +126,12 @@ export async function transformManifest({
   // Run additionalManifestEntriesTransform last.
   if (additionalManifestEntries) {
     transformsToApply.push(
-        additionalManifestEntriesTransform(additionalManifestEntries));
+      additionalManifestEntriesTransform(additionalManifestEntries),
+    );
   }
 
-  let transformedManifest: Array<ManifestEntry & {size: number}> = normalizedManifest;
+  let transformedManifest: Array<ManifestEntry & {size: number}> =
+    normalizedManifest;
   for (const transform of transformsToApply) {
     const result = await transform(transformedManifest, transformParam);
     if (!('manifest' in result)) {
@@ -138,7 +146,9 @@ export async function transformManifest({
   // properties from each entry.
   const count = transformedManifest.length;
   let size = 0;
-  for (const manifestEntry of transformedManifest as Array<ManifestEntry & {size?: number}>) {
+  for (const manifestEntry of transformedManifest as Array<
+    ManifestEntry & {size?: number}
+  >) {
     size += manifestEntry.size || 0;
     delete manifestEntry.size;
   }

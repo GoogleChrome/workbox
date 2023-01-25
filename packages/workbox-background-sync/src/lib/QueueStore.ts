@@ -7,14 +7,19 @@
 */
 
 import {assert} from 'workbox-core/_private/assert.js';
+import {
+  UnidentifiedQueueStoreEntry,
+  QueueStoreEntry,
+  QueueDb,
+} from './QueueDb.js';
 import '../_version.js';
-import {UnidentifiedQueueStoreEntry, QueueStoreEntry, QueueDb} from './QueueDb.js';
 
 /**
  * A class to manage storing requests from a Queue in IndexedDB,
  * indexed by their queue name for easier access.
  *
- * @private
+ * Most developers will not need to access this class directly;
+ * it is exposed for advanced use cases.
  */
 export class QueueStore {
   private readonly _queueName: string;
@@ -25,7 +30,6 @@ export class QueueStore {
    * identified by their queue name.
    *
    * @param {string} queueName
-   * @private
    */
   constructor(queueName: string) {
     this._queueName = queueName;
@@ -39,7 +43,6 @@ export class QueueStore {
    * @param {Object} entry.requestData
    * @param {number} [entry.timestamp]
    * @param {Object} [entry.metadata]
-   * @private
    */
   async pushEntry(entry: UnidentifiedQueueStoreEntry): Promise<void> {
     if (process.env.NODE_ENV !== 'production') {
@@ -71,7 +74,6 @@ export class QueueStore {
    * @param {Object} entry.requestData
    * @param {number} [entry.timestamp]
    * @param {Object} [entry.metadata]
-   * @private
    */
   async unshiftEntry(entry: UnidentifiedQueueStoreEntry): Promise<void> {
     if (process.env.NODE_ENV !== 'production') {
@@ -107,31 +109,42 @@ export class QueueStore {
    * Removes and returns the last entry in the queue matching the `queueName`.
    *
    * @return {Promise<QueueStoreEntry|undefined>}
-   * @private
    */
   async popEntry(): Promise<QueueStoreEntry | undefined> {
-    return this._removeEntry(await this._queueDb.getLastEntryByQueueName(this._queueName));
+    return this._removeEntry(
+      await this._queueDb.getLastEntryByQueueName(this._queueName),
+    );
   }
 
   /**
    * Removes and returns the first entry in the queue matching the `queueName`.
    *
    * @return {Promise<QueueStoreEntry|undefined>}
-   * @private
    */
   async shiftEntry(): Promise<QueueStoreEntry | undefined> {
-    return this._removeEntry(await this._queueDb.getFirstEntryByQueueName(this._queueName));
+    return this._removeEntry(
+      await this._queueDb.getFirstEntryByQueueName(this._queueName),
+    );
   }
 
   /**
    * Returns all entries in the store matching the `queueName`.
    *
-   * @param {Object} options See {@link module:workbox-background-sync.Queue~getAll}
+   * @param {Object} options See {@link workbox-background-sync.Queue~getAll}
    * @return {Promise<Array<Object>>}
-   * @private
    */
   async getAll(): Promise<QueueStoreEntry[]> {
     return await this._queueDb.getAllEntriesByQueueName(this._queueName);
+  }
+
+  /**
+   * Returns the number of entries in the store matching the `queueName`.
+   *
+   * @param {Object} options See {@link workbox-background-sync.Queue~size}
+   * @return {Promise<number>}
+   */
+  async size(): Promise<number> {
+    return await this._queueDb.getEntryCountByQueueName(this._queueName);
   }
 
   /**
@@ -142,7 +155,6 @@ export class QueueStore {
    * as this class is not publicly exposed. An additional check would make
    * this method slower than it needs to be.
    *
-   * @private
    * @param {number} id
    */
   async deleteEntry(id: number): Promise<void> {
@@ -156,7 +168,9 @@ export class QueueStore {
    * @return {Promise<QueueStoreEntry|undefined>}
    * @private
    */
-  async _removeEntry(entry?: QueueStoreEntry): Promise<QueueStoreEntry | undefined> {
+  async _removeEntry(
+    entry?: QueueStoreEntry,
+  ): Promise<QueueStoreEntry | undefined> {
     if (entry) {
       await this.deleteEntry(entry.id);
     }

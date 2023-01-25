@@ -8,7 +8,6 @@
 
 import './_version.js';
 
-
 export interface MapLikeObject {
   [key: string]: any;
 }
@@ -47,7 +46,7 @@ export interface RouteMatchCallback {
 /**
  * Options passed to a `RouteHandlerCallback` function.
  */
-export interface RouteHandlerCallbackOptions {
+export declare interface RouteHandlerCallbackOptions {
   event: ExtendableEvent;
   request: Request;
   url: URL;
@@ -63,7 +62,8 @@ export interface ManualHandlerCallbackOptions {
 }
 
 export type HandlerCallbackOptions =
-    RouteHandlerCallbackOptions | ManualHandlerCallbackOptions;
+  | RouteHandlerCallbackOptions
+  | ManualHandlerCallbackOptions;
 
 /**
  * The "handler" callback is invoked whenever a `Router` matches a URL/Request
@@ -149,7 +149,9 @@ export interface CacheWillUpdateCallbackParam {
 }
 
 export interface CacheWillUpdateCallback {
-  (param: CacheWillUpdateCallbackParam): Promise<Response | void | null | undefined>;
+  (param: CacheWillUpdateCallbackParam): Promise<
+    Response | void | null | undefined
+  >;
 }
 
 export interface CachedResponseWillBeUsedCallbackParam {
@@ -162,7 +164,9 @@ export interface CachedResponseWillBeUsedCallbackParam {
 }
 
 export interface CachedResponseWillBeUsedCallback {
-  (param: CachedResponseWillBeUsedCallbackParam): Promise<Response | void | null | undefined>;
+  (param: CachedResponseWillBeUsedCallbackParam): Promise<
+    Response | void | null | undefined
+  >;
 }
 
 export interface FetchDidFailCallbackParam {

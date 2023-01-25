@@ -17,12 +17,8 @@ class CreateWebpackAssetPlugin {
   }
 
   apply(compiler) {
-    compiler.hooks.thisCompilation.tap(
-        this.constructor.name,
-        (compilation) => compilation.emitAsset(
-            this.name,
-            new sources.RawSource(this.name),
-        ),
+    compiler.hooks.thisCompilation.tap(this.constructor.name, (compilation) =>
+      compilation.emitAsset(this.name, new sources.RawSource(this.name)),
     );
   }
 }

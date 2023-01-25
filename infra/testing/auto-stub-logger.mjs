@@ -23,12 +23,12 @@ stubLogger();
 
 // This is part of the "root" mocha suite - meaning it'll reset all the logger
 // values before every test.
-beforeEach(function() {
+beforeEach(function () {
   sandbox.restore();
 
   stubLogger();
 });
 
-after(function() {
+after(function () {
   sandbox.restore();
 });

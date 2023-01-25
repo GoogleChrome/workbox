@@ -8,8 +8,10 @@
 
 const {series} = require('gulp');
 
-const {transpile_typescript, transpile_typescript_watch} =
-    require('./transpile-typescript');
+const {
+  transpile_typescript,
+  transpile_typescript_watch,
+} = require('./transpile-typescript');
 const constants = require('./utils/constants');
 const testServer = require('../infra/testing/server/index');
 
@@ -36,6 +38,9 @@ function startServer() {
 }
 
 module.exports = {
-  test_server: series(transpile_typescript, startServer,
-      transpile_typescript_watch),
+  test_server: series(
+    transpile_typescript,
+    startServer,
+    transpile_typescript_watch,
+  ),
 };

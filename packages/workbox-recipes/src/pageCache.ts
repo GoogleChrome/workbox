@@ -9,11 +9,15 @@ import {warmStrategyCache} from './warmStrategyCache';
 import {registerRoute} from 'workbox-routing/registerRoute.js';
 import {NetworkFirst} from 'workbox-strategies/NetworkFirst.js';
 import {CacheableResponsePlugin} from 'workbox-cacheable-response/CacheableResponsePlugin.js';
-import {RouteMatchCallback, RouteMatchCallbackOptions, WorkboxPlugin} from 'workbox-core/types.js';
+import {
+  RouteMatchCallback,
+  RouteMatchCallbackOptions,
+  WorkboxPlugin,
+} from 'workbox-core/types.js';
 
 import './_version.js';
 
-export interface ImageCacheOptions {
+export interface PageCacheOptions {
   cacheName?: string;
   matchCallback?: RouteMatchCallback;
   networkTimeoutSeconds?: number;
@@ -24,7 +28,7 @@ export interface ImageCacheOptions {
 /**
  * An implementation of a page caching recipe with a network timeout
  *
- * @memberof module:workbox-recipes
+ * @memberof workbox-recipes
  *
  * @param {Object} [options]
  * @param {string} [options.cacheName] Name for cache. Defaults to pages
@@ -33,16 +37,19 @@ export interface ImageCacheOptions {
  * @param {WorkboxPlugin[]} [options.plugins] Additional plugins to use for this recipe
  * @param {string[]} [options.warmCache] Paths to call to use to warm this cache
  */
-function pageCache(options: ImageCacheOptions = {}): void {
-  const defaultMatchCallback = ({request}: RouteMatchCallbackOptions) => request.mode === 'navigate';
+function pageCache(options: PageCacheOptions = {}): void {
+  const defaultMatchCallback = ({request}: RouteMatchCallbackOptions) =>
+    request.mode === 'navigate';
 
   const cacheName = options.cacheName || 'pages';
   const matchCallback = options.matchCallback || defaultMatchCallback;
   const networkTimeoutSeconds = options.networkTimeoutSeconds || 3;
-  const plugins = (options.plugins || []);
-  plugins.push(new CacheableResponsePlugin({
-    statuses: [0, 200],
-  }));
+  const plugins = options.plugins || [];
+  plugins.push(
+    new CacheableResponsePlugin({
+      statuses: [0, 200],
+    }),
+  );
 
   const strategy = new NetworkFirst({
     networkTimeoutSeconds,
@@ -50,12 +57,8 @@ function pageCache(options: ImageCacheOptions = {}): void {
     plugins,
   });
 
-
   // Registers the route
-  registerRoute(
-    matchCallback,
-    strategy
-  );
+  registerRoute(matchCallback, strategy);
 
   // Warms the cache
   if (options.warmCache) {
@@ -63,4 +66,4 @@ function pageCache(options: ImageCacheOptions = {}): void {
   }
 }
 
-export { pageCache }
+export {pageCache};

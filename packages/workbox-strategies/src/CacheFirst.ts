@@ -15,9 +15,8 @@ import {StrategyHandler} from './StrategyHandler.js';
 import {messages} from './utils/messages.js';
 import './_version.js';
 
-
 /**
- * An implementation of a [cache-first]{@link https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#cache-falling-back-to-network}
+ * An implementation of a [cache-first](https://developer.chrome.com/docs/workbox/caching-strategies-overview/#cache-first-falling-back-to-network)
  * request strategy.
  *
  * A cache first strategy is useful for assets that have been revisioned,
@@ -27,14 +26,14 @@ import './_version.js';
  * If the network request fails, and there is no cache match, this will throw
  * a `WorkboxError` exception.
  *
- * @extends module:workbox-strategies.Strategy
- * @memberof module:workbox-strategies
+ * @extends workbox-strategies.Strategy
+ * @memberof workbox-strategies
  */
 class CacheFirst extends Strategy {
   /**
    * @private
    * @param {Request|string} request A request to run this strategy for.
-   * @param {module:workbox-strategies.StrategyHandler} handler The event that
+   * @param {workbox-strategies.StrategyHandler} handler The event that
    *     triggered the request.
    * @return {Promise<Response>}
    */
@@ -56,8 +55,9 @@ class CacheFirst extends Strategy {
     if (!response) {
       if (process.env.NODE_ENV !== 'production') {
         logs.push(
-            `No response found in the '${this.cacheName}' cache. ` +
-            `Will respond with a network request.`);
+          `No response found in the '${this.cacheName}' cache. ` +
+            `Will respond with a network request.`,
+        );
       }
       try {
         response = await handler.fetchAndCachePut(request);
@@ -76,14 +76,14 @@ class CacheFirst extends Strategy {
       }
     } else {
       if (process.env.NODE_ENV !== 'production') {
-        logs.push(
-            `Found a cached response in the '${this.cacheName}' cache.`);
+        logs.push(`Found a cached response in the '${this.cacheName}' cache.`);
       }
     }
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
-          messages.strategyStart(this.constructor.name, request));
+        messages.strategyStart(this.constructor.name, request),
+      );
       for (const log of logs) {
         logger.log(log);
       }

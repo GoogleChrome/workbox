@@ -25,8 +25,10 @@ async function docs_build() {
   ].join('&');
 
   const params = [
-    '-c', upath.join(__dirname, '..', 'jsdoc.conf'),
-    '-d', DOCS_DIRECTORY,
+    '-c',
+    upath.join(__dirname, '..', 'jsdoc.conf'),
+    '-d',
+    DOCS_DIRECTORY,
   ];
 
   if (!(global.cliOptions && global.cliOptions.pretty)) {
@@ -40,10 +42,17 @@ You can view a friendlier UI by running
 'gulp docs --pretty'
 `);
     params.push(
-        '--template', upath.join(
-            __dirname, '..', 'infra', 'templates', 'reference-docs', 'jsdoc',
-        ),
-        '--query', queryString,
+      '--template',
+      upath.join(
+        __dirname,
+        '..',
+        'infra',
+        'templates',
+        'reference-docs',
+        'jsdoc',
+      ),
+      '--query',
+      queryString,
     );
   }
 

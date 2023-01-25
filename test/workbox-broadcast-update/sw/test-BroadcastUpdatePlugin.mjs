@@ -8,20 +8,19 @@
 
 import {BroadcastUpdatePlugin} from '../../../packages/workbox-broadcast-update/BroadcastUpdatePlugin.mjs';
 
-
-describe(`BroadcastUpdatePlugin`, function() {
+describe(`BroadcastUpdatePlugin`, function () {
   const sandbox = sinon.createSandbox();
 
-  beforeEach(function() {
+  beforeEach(function () {
     sandbox.restore();
   });
 
-  after(function() {
+  after(function () {
     sandbox.restore();
   });
 
-  describe(`cacheDidUpdate`, function() {
-    it(`should call notifyIfUpdated and pass all options`, async function() {
+  describe(`cacheDidUpdate`, function () {
+    it(`should call notifyIfUpdated and pass all options`, async function () {
       const bcuPlugin = new BroadcastUpdatePlugin();
       sandbox.stub(bcuPlugin._broadcastUpdate, 'notifyIfUpdated').resolves();
 
@@ -29,7 +28,9 @@ describe(`BroadcastUpdatePlugin`, function() {
       await bcuPlugin.cacheDidUpdate(opts);
 
       expect(bcuPlugin._broadcastUpdate.notifyIfUpdated.callCount).to.equal(1);
-      expect(bcuPlugin._broadcastUpdate.notifyIfUpdated.args[0][0]).to.equal(opts);
+      expect(bcuPlugin._broadcastUpdate.notifyIfUpdated.args[0][0]).to.equal(
+        opts,
+      );
     });
   });
 });

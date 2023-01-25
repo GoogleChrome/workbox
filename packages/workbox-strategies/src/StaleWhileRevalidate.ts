@@ -16,10 +16,9 @@ import {StrategyHandler} from './StrategyHandler.js';
 import {messages} from './utils/messages.js';
 import './_version.js';
 
-
 /**
  * An implementation of a
- * [stale-while-revalidate]{@link https://developers.google.com/web/fundamentals/instant-and-offline/offline-cookbook/#stale-while-revalidate}
+ * [stale-while-revalidate](https://developer.chrome.com/docs/workbox/caching-strategies-overview/#stale-while-revalidate)
  * request strategy.
  *
  * Resources are requested from both the cache and the network in parallel.
@@ -28,22 +27,22 @@ import './_version.js';
  * with each successful request.
  *
  * By default, this strategy will cache responses with a 200 status code as
- * well as [opaque responses]{@link https://developers.google.com/web/tools/workbox/guides/handle-third-party-requests}.
+ * well as [opaque responses](https://developer.chrome.com/docs/workbox/caching-resources-during-runtime/#opaque-responses).
  * Opaque responses are cross-origin requests where the response doesn't
- * support [CORS]{@link https://enable-cors.org/}.
+ * support [CORS](https://enable-cors.org/).
  *
  * If the network request fails, and there is no cache match, this will throw
  * a `WorkboxError` exception.
  *
- * @extends module:workbox-strategies.Strategy
- * @memberof module:workbox-strategies
+ * @extends workbox-strategies.Strategy
+ * @memberof workbox-strategies
  */
 class StaleWhileRevalidate extends Strategy {
   /**
    * @param {Object} [options]
    * @param {string} [options.cacheName] Cache name to store and retrieve
    * requests. Defaults to cache names provided by
-   * [workbox-core]{@link module:workbox-core.cacheNames}.
+   * {@link workbox-core.cacheNames}.
    * @param {Array<Object>} [options.plugins] [Plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}
    * to use in conjunction with this caching strategy.
    * @param {Object} [options.fetchOptions] Values passed along to the
@@ -65,7 +64,7 @@ class StaleWhileRevalidate extends Strategy {
   /**
    * @private
    * @param {Request|string} request A request to run this strategy for.
-   * @param {module:workbox-strategies.StrategyHandler} handler The event that
+   * @param {workbox-strategies.StrategyHandler} handler The event that
    *     triggered the request.
    * @return {Promise<Response>}
    */
@@ -81,30 +80,33 @@ class StaleWhileRevalidate extends Strategy {
       });
     }
 
-    const fetchAndCachePromise = handler
-        .fetchAndCachePut(request)
-        .catch(() => {
-          // Swallow this error because a 'no-response' error will be thrown in
-          // main handler return flow. This will be in the `waitUntil()` flow.
-        });
+    const fetchAndCachePromise = handler.fetchAndCachePut(request).catch(() => {
+      // Swallow this error because a 'no-response' error will be thrown in
+      // main handler return flow. This will be in the `waitUntil()` flow.
+    });
+    void handler.waitUntil(fetchAndCachePromise);
 
     let response = await handler.cacheMatch(request);
 
     let error;
     if (response) {
       if (process.env.NODE_ENV !== 'production') {
-        logs.push(`Found a cached response in the '${this.cacheName}'` +
-          ` cache. Will update with the network response in the background.`);
+        logs.push(
+          `Found a cached response in the '${this.cacheName}'` +
+            ` cache. Will update with the network response in the background.`,
+        );
       }
     } else {
       if (process.env.NODE_ENV !== 'production') {
-        logs.push(`No response found in the '${this.cacheName}' cache. ` +
-          `Will wait for the network response.`);
+        logs.push(
+          `No response found in the '${this.cacheName}' cache. ` +
+            `Will wait for the network response.`,
+        );
       }
       try {
         // NOTE(philipwalton): Really annoying that we have to type cast here.
         // https://github.com/microsoft/TypeScript/issues/20006
-        response = (await fetchAndCachePromise as Response | undefined);
+        response = (await fetchAndCachePromise) as Response | undefined;
       } catch (err) {
         if (err instanceof Error) {
           error = err;
@@ -114,7 +116,8 @@ class StaleWhileRevalidate extends Strategy {
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
-          messages.strategyStart(this.constructor.name, request));
+        messages.strategyStart(this.constructor.name, request),
+      );
       for (const log of logs) {
         logger.log(log);
       }

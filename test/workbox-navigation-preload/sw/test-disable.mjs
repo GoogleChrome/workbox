@@ -11,11 +11,10 @@ import {disable} from 'workbox-navigation-preload/disable.mjs';
 import {isSupported} from 'workbox-navigation-preload/isSupported.mjs';
 import {dispatchAndWaitUntilDone} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
 
-
-describe(`disable`, function() {
+describe(`disable`, function () {
   const sandbox = sinon.createSandbox();
 
-  beforeEach(async function() {
+  beforeEach(async function () {
     sandbox.restore();
 
     // Spy on all added event listeners so they can be removed.
@@ -27,7 +26,7 @@ describe(`disable`, function() {
     }
   });
 
-  afterEach(function() {
+  afterEach(function () {
     for (const args of self.addEventListener.args) {
       self.removeEventListener(...args);
     }
@@ -37,11 +36,11 @@ describe(`disable`, function() {
   // This is needed because we're skipping the last test, which for some
   // reasons seems to be skipping the afterEach hook:
   // https://github.com/mochajs/mocha/pull/2571#issuecomment-477407091
-  after(function() {
+  after(function () {
     sandbox.restore();
   });
 
-  it(`should call addEventListener iff navigation preload is supported`, async function() {
+  it(`should call addEventListener iff navigation preload is supported`, async function () {
     disable();
 
     if (isSupported()) {
@@ -52,7 +51,7 @@ describe(`disable`, function() {
     }
   });
 
-  it(`should disable navigation preload if supported`, async function() {
+  it(`should disable navigation preload if supported`, async function () {
     if (!isSupported()) this.skip();
 
     disable();
@@ -63,7 +62,7 @@ describe(`disable`, function() {
     expect(self.registration.navigationPreload.disable.callCount).to.equal(1);
   });
 
-  it(`should log a confirmation message in development`, async function() {
+  it(`should log a confirmation message in development`, async function () {
     if (process.env.NODE_ENV === 'production') this.skip();
 
     sandbox.spy(logger, 'log');

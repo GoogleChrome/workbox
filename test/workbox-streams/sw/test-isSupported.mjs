@@ -8,9 +8,8 @@
 
 import {isSupported} from 'workbox-streams/isSupported.mjs';
 
-
-describe(`isSupported`, function() {
-  it(`should return true when ReadableStream is available`, async function() {
+describe(`isSupported`, function () {
+  it(`should return true when ReadableStream is available`, async function () {
     try {
       new ReadableStream({start() {}});
 

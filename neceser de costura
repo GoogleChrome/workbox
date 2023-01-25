@@ -1,0 +1,70 @@
+
+Google Chrome
+/
+neceser de costura
+Público
+Código
+Asuntos
+146
+Solicitudes de extracción
+dieciséis
+Comportamiento
+wiki
+Seguridad
+Perspectivas
+neceser de costura/ CONTRIBUYENDO.md
+@jeffposnick
+jeffposnick Actualizaciones a la guía de contribuciones ( #2949 )
+…
+ 2 colaboradores
+70 líneas (43 sloc)  3.52KB
+Cómo convertirse en colaborador y enviar su propio código
+Acuerdos de licencia de colaborador
+¡Nos encantaría aceptar sus parches! Antes de que podamos tomarlos, tenemos que saltar un par de obstáculos legales.
+
+Complete el Acuerdo de licencia de colaborador (CLA) individual o corporativo.
+
+Si es un individuo que escribe el código fuente original y está seguro de que posee la propiedad intelectual, deberá firmar un CLA individual .
+Si trabaja para una empresa que desea permitirle contribuir con su trabajo, deberá firmar un CLA corporativo .
+Siga cualquiera de los dos enlaces anteriores para acceder al CLA apropiado y las instrucciones sobre cómo firmarlo y devolverlo. Una vez que lo recibamos, podremos aceptar sus solicitudes de incorporación de cambios.
+
+Aportando un parche
+Envíe un problema que describa su cambio propuesto al repositorio en cuestión.
+El propietario del repositorio responderá a su problema de inmediato.
+Si se acepta el cambio propuesto y aún no lo ha hecho, firme un Acuerdo de licencia de colaborador (consulte los detalles más arriba).
+Bifurque el repositorio, desarrolle y pruebe sus cambios de código (consulte los detalles a continuación).
+Asegúrese de que su código se adhiera al estilo existente en la muestra a la que está contribuyendo.
+Envíe una solicitud de extracción.
+Configuración de su entorno
+Workbox utiliza nodey su cadena de herramientas relacionada ( npm, etc.) para instalar dependencias y ejecutar los procesos de compilación y prueba. Asegúrese de tener una nodeinstalación que funcione antes de continuar.
+
+Workbox utiliza gitganchos a través huskyde para ejecutar automáticamente formateadores y filtros de código al confirmar y enviar código a GitHub. Si tiene problemas con los gitganchos, es posible que deba crear un ~/.huskyrcarchivo para configurarlo $PATHcorrectamente.
+
+Se espera que el entorno de desarrollo de Workbox funcione en Windows, macOS y Linux. Si encuentra algún problema específico de la plataforma, abra un error .
+
+Poniendo a prueba tu contribución
+Al realizar cambios locales, probablemente querrá asegurarse de que su código se compila y supera nuestro conjunto de pruebas. Para hacer esto, ejecute lo siguiente en su clon local del repositorio:
+
+$ npm ci
+
+$ npm run gulp build
+
+$ npm run gulp test
+Tenga en cuenta que en Windows, npm run gulp testsolo ejecutará un subconjunto de nuestro conjunto de pruebas. El conjunto de pruebas completo siempre se ejecutará como parte del entorno de integración continua de GitHub contra su solicitud de incorporación de cambios.
+
+Cuando agregue una nueva función o corrija un error, verifique el conjunto de pruebas para ver si es apropiado agregar o modificar una prueba existente para cubrir la funcionalidad actualizada.
+
+Ejecución de un subconjunto de las pruebas
+El conjunto de pruebas de Workbox se divide en dos partes: una para las nodeherramientas basadas en ( workbox-cli, workbox-build, workbox-webpack-plugin) y otra para el código basado en navegador.
+
+Para ejecutar las pruebas solo para las nodeherramientas basadas en:
+
+npm run gulp test_node
+Para ejecutar pruebas interactivas para el código basado en navegador, inicie el servidor de prueba:
+
+npm run gulp test_server
+A continuación, abra un navegador web en http://localhost:3004/ y navegue hasta el conjunto de pruebas del paquete que le interesa. Por ejemplo, para ejecutar las pruebas de workbox-strategies, vaya a http://localhost:3004/test/ caja de trabajo-streams/sw/
+
+Para realizar una ejecución automatizada del conjunto de pruebas basado en navegador con el conjunto completo de navegadores compatibles, ejecute:
+
+npm run gulp test_integration ```

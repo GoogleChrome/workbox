@@ -10,6 +10,7 @@ import '../_version.js';
 
 export const CACHE_UPDATED_MESSAGE_TYPE = 'CACHE_UPDATED';
 export const CACHE_UPDATED_MESSAGE_META = 'workbox-broadcast-update';
+export const NOTIFY_ALL_CLIENTS = true;
 export const DEFAULT_HEADERS_TO_CHECK: string[] = [
   'content-length',
   'etag',

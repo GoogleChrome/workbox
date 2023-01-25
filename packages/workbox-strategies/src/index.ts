@@ -8,13 +8,20 @@
 
 import {CacheFirst} from './CacheFirst.js';
 import {CacheOnly} from './CacheOnly.js';
-import {NetworkFirst} from './NetworkFirst.js';
-import {NetworkOnly} from './NetworkOnly.js';
+import {NetworkFirst, NetworkFirstOptions} from './NetworkFirst.js';
+import {NetworkOnly, NetworkOnlyOptions} from './NetworkOnly.js';
 import {StaleWhileRevalidate} from './StaleWhileRevalidate.js';
-import {Strategy} from './Strategy.js';
+import {Strategy, StrategyOptions} from './Strategy.js';
 import {StrategyHandler} from './StrategyHandler.js';
 import './_version.js';
 
+// See https://github.com/GoogleChrome/workbox/issues/2946
+declare global {
+  interface FetchEvent {
+    // See https://github.com/GoogleChrome/workbox/issues/2974
+    readonly preloadResponse: Promise<any>;
+  }
+}
 
 /**
  * There are common caching strategies that most service workers will need
@@ -27,9 +34,11 @@ export {
   CacheFirst,
   CacheOnly,
   NetworkFirst,
+  NetworkFirstOptions,
   NetworkOnly,
+  NetworkOnlyOptions,
   StaleWhileRevalidate,
   Strategy,
   StrategyHandler,
+  StrategyOptions,
 };
-

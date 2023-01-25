@@ -12,12 +12,11 @@ import {RegExpRoute} from 'workbox-routing/RegExpRoute.mjs';
 import {registerRoute} from 'workbox-routing/registerRoute.mjs';
 import {Route} from 'workbox-routing/Route.mjs';
 
-
-describe(`registerRoute()`, function() {
+describe(`registerRoute()`, function () {
   const sandbox = sinon.createSandbox();
   let defaultRouter;
 
-  beforeEach(async function() {
+  beforeEach(async function () {
     sandbox.restore();
 
     if (logger) {
@@ -33,7 +32,7 @@ describe(`registerRoute()`, function() {
     sandbox.spy(defaultRouter, 'registerRoute');
   });
 
-  afterEach(function() {
+  afterEach(function () {
     for (const args of self.addEventListener.args) {
       self.removeEventListener(...args);
     }
@@ -46,30 +45,37 @@ describe(`registerRoute()`, function() {
   // This is needed because we're skipping the last test, which for some
   // reasons seems to be skipping the afterEach hook:
   // https://github.com/mochajs/mocha/pull/2571#issuecomment-477407091
-  after(function() {
+  after(function () {
     sandbox.restore();
   });
 
-  it(`should use the default router instance`, function() {
+  it(`should use the default router instance`, function () {
     expect(defaultRouter.registerRoute.callCount).to.equal(0);
     registerRoute('/abc', sandbox.spy());
     expect(defaultRouter.registerRoute.callCount).to.equal(1);
   });
 
-  it(`should throw when using a string that doesn't start with '/' or 'http' is used.`, async function() {
+  it(`should throw when using a string that doesn't start with '/' or 'http' is used.`, async function () {
     if (process.env.NODE_ENV === 'production') this.skip();
 
     await expectError(
-        () => registerRoute('invalid-start', sandbox.stub()),
-        'invalid-string',
-        (error) => {
-          expect(error.details).to.have.property('moduleName').that.equals('workbox-routing');
-          expect(error.details).to.have.property('funcName').that.equals('registerRoute');
-          expect(error.details).to.have.property('paramName').that.equals('capture');
-        });
+      () => registerRoute('invalid-start', sandbox.stub()),
+      'invalid-string',
+      (error) => {
+        expect(error.details)
+          .to.have.property('moduleName')
+          .that.equals('workbox-routing');
+        expect(error.details)
+          .to.have.property('funcName')
+          .that.equals('registerRoute');
+        expect(error.details)
+          .to.have.property('paramName')
+          .that.equals('capture');
+      },
+    );
   });
 
-  it(`should handle a string for input and return a route that can be unregistered.`, async function() {
+  it(`should handle a string for input and return a route that can be unregistered.`, async function () {
     const defaultRouter = getOrCreateDefaultRouter();
     const handlerSpy = sandbox.spy();
 
@@ -94,7 +100,7 @@ describe(`registerRoute()`, function() {
     expect(handlerSpy.callCount).to.equal(0);
   });
 
-  it(`should handle a string for input, matching same-origin requests, and return a route that can be unregistered.`, async function() {
+  it(`should handle a string for input, matching same-origin requests, and return a route that can be unregistered.`, async function () {
     const defaultRouter = getOrCreateDefaultRouter();
     const handlerSpy = sandbox.spy();
 
@@ -106,8 +112,9 @@ describe(`registerRoute()`, function() {
 
     const sameOriginURL = new URL(pathname, location);
     const sameOriginRequest = new Request(sameOriginURL);
-    const sameOriginEvent =
-        new FetchEvent('fetch', {request: sameOriginRequest});
+    const sameOriginEvent = new FetchEvent('fetch', {
+      request: sameOriginRequest,
+    });
 
     await defaultRouter.handleRequest({
       request: sameOriginRequest,
@@ -115,10 +122,10 @@ describe(`registerRoute()`, function() {
     });
 
     const sameOriginURLNotMatching = new URL('/does/not/match', location);
-    const sameOriginRequestNotMatching =
-        new Request(sameOriginURLNotMatching);
-    const sameOriginEventNotMatching =
-        new FetchEvent('fetch', {request: sameOriginRequestNotMatching});
+    const sameOriginRequestNotMatching = new Request(sameOriginURLNotMatching);
+    const sameOriginEventNotMatching = new FetchEvent('fetch', {
+      request: sameOriginRequestNotMatching,
+    });
 
     await defaultRouter.handleRequest({
       request: sameOriginRequestNotMatching,
@@ -127,8 +134,9 @@ describe(`registerRoute()`, function() {
 
     const crossOriginURL = new URL(pathname, crossOrigin);
     const crossOriginRequest = new Request(crossOriginURL);
-    const crossOriginEvent =
-        new FetchEvent('fetch', {request: crossOriginRequest});
+    const crossOriginEvent = new FetchEvent('fetch', {
+      request: crossOriginRequest,
+    });
 
     await defaultRouter.handleRequest({
       request: crossOriginRequest,
@@ -150,7 +158,7 @@ describe(`registerRoute()`, function() {
     expect(handlerSpy.callCount).to.equal(0);
   });
 
-  it(`should handle a string for input, matching cross-origin requests, and return a route that can be unregistered.`, async function() {
+  it(`should handle a string for input, matching cross-origin requests, and return a route that can be unregistered.`, async function () {
     const defaultRouter = getOrCreateDefaultRouter();
     const handlerSpy = sandbox.spy();
 
@@ -162,8 +170,9 @@ describe(`registerRoute()`, function() {
 
     const sameOriginURL = new URL(pathname, location);
     const sameOriginRequest = new Request(sameOriginURL);
-    const sameOriginEvent =
-        new FetchEvent('fetch', {request: sameOriginRequest});
+    const sameOriginEvent = new FetchEvent('fetch', {
+      request: sameOriginRequest,
+    });
 
     await defaultRouter.handleRequest({
       request: sameOriginRequest,
@@ -172,8 +181,9 @@ describe(`registerRoute()`, function() {
 
     const crossOriginURL = new URL(pathname, crossOrigin);
     const crossOriginRequest = new Request(crossOriginURL);
-    const crossOriginEvent =
-        new FetchEvent('fetch', {request: crossOriginRequest});
+    const crossOriginEvent = new FetchEvent('fetch', {
+      request: crossOriginRequest,
+    });
 
     await defaultRouter.handleRequest({
       request: crossOriginRequest,
@@ -194,7 +204,7 @@ describe(`registerRoute()`, function() {
     expect(handlerSpy.callCount).to.equal(0);
   });
 
-  it(`should handle a regex for input and return a route that can be unregistered.`, async function() {
+  it(`should handle a regex for input and return a route that can be unregistered.`, async function () {
     const defaultRouter = getOrCreateDefaultRouter();
     const handlerSpy = sandbox.spy();
 
@@ -218,7 +228,7 @@ describe(`registerRoute()`, function() {
     expect(handlerSpy.callCount).to.equal(0);
   });
 
-  it(`should handle a function for input and return a route that can be unregistered.`, async function() {
+  it(`should handle a function for input and return a route that can be unregistered.`, async function () {
     const defaultRouter = getOrCreateDefaultRouter();
     const captureSpy = sandbox.stub().returns(true);
     const handlerSpy = sandbox.spy();
@@ -246,13 +256,13 @@ describe(`registerRoute()`, function() {
     expect(handlerSpy.callCount).to.equal(0);
   });
 
-  it(`should throw on unexpected capture`, function() {
+  it(`should throw on unexpected capture`, function () {
     return expectError(() => {
       registerRoute([], () => {});
     }, 'unsupported-route-type');
   });
 
-  it(`should allow registering a normal Route`, async function() {
+  it(`should allow registering a normal Route`, async function () {
     const defaultRouter = getOrCreateDefaultRouter();
     const captureSpy = sandbox.stub().callsFake(() => true);
     const handlerSpy = sandbox.spy();
@@ -281,7 +291,7 @@ describe(`registerRoute()`, function() {
     expect(handlerSpy.callCount).to.equal(0);
   });
 
-  it(`should allow registering a class that extends Route`, async function() {
+  it(`should allow registering a class that extends Route`, async function () {
     const defaultRouter = getOrCreateDefaultRouter();
     const handlerSpy = sandbox.spy();
 
@@ -306,7 +316,7 @@ describe(`registerRoute()`, function() {
     expect(handlerSpy.callCount).to.equal(0);
   });
 
-  it(`should log for express styles routes`, function() {
+  it(`should log for express styles routes`, function () {
     if (process.env.NODE_ENV === 'production') this.skip();
 
     registerRoute('/:example/', () => {});

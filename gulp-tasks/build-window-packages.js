@@ -12,7 +12,6 @@ const fse = require('fs-extra');
 const ol = require('common-tags').oneLine;
 const upath = require('upath');
 
-const {transpilePackageOrSkip} = require('./transpile-typescript').functions;
 const constants = require('./utils/constants');
 const logHelper = require('../infra/utils/log-helper');
 const packageRunner = require('./utils/package-runner');
@@ -28,8 +27,10 @@ async function buildWindowBundle(packagePath, buildType) {
     throw new Error(`Could not find ${packageIndex}`);
   }
 
-  const outputDirectory = upath.join(packagePath,
-      constants.PACKAGE_BUILD_DIRNAME);
+  const outputDirectory = upath.join(
+    packagePath,
+    constants.PACKAGE_BUILD_DIRNAME,
+  );
 
   const esmFilename = `${packageName}.${buildType.slice(0, 4)}.mjs`;
   const esmLegacyFilename = `${packageName}.${buildType.slice(0, 4)}.es5.mjs`;
@@ -37,8 +38,10 @@ async function buildWindowBundle(packagePath, buildType) {
 
   const onwarn = (warning) => {
     // This can occur when using rollup-plugin-replace.
-    if (buildType === constants.BUILD_TYPES.prod &&
-        warning.code === 'UNUSED_EXTERNAL_IMPORT') {
+    if (
+      buildType === constants.BUILD_TYPES.prod &&
+      warning.code === 'UNUSED_EXTERNAL_IMPORT'
+    ) {
       logHelper.warn(`[${warning.code}] ${warning.message}`);
       return;
     }
@@ -93,25 +96,27 @@ async function buildWindowBundle(packagePath, buildType) {
 
 // This reads a little cleaner with a function to generate the sub-sequences.
 function windowBundleSequence() {
-  const transpilations = packageRunner(
-      'build_window_packages_transpile_typescript', 'window',
-      transpilePackageOrSkip);
-  const builds = Object.keys(constants.BUILD_TYPES).map((type) => packageRunner(
-      'build_window_packages_bundle', 'window', buildWindowBundle,
-      constants.BUILD_TYPES[type]));
-
-  return series(
-      parallel(transpilations),
-      // This needs to be a series, not in parallel, so that there isn't a
-      // race condition with the terser nameCache.
-      series(builds),
+  const builds = Object.keys(constants.BUILD_TYPES).map((type) =>
+    packageRunner(
+      'build_window_packages_bundle',
+      'window',
+      buildWindowBundle,
+      constants.BUILD_TYPES[type],
+    ),
   );
+
+  return series(builds);
 }
 
 module.exports = {
   build_window_packages: series(
-      parallel(packageRunner('build_window_packages_version_module', 'window',
-          versionModule)),
-      windowBundleSequence(),
+    parallel(
+      packageRunner(
+        'build_window_packages_version_module',
+        'window',
+        versionModule,
+      ),
+    ),
+    windowBundleSequence(),
   ),
 };

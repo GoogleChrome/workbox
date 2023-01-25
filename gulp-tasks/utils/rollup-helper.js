@@ -27,19 +27,24 @@ module.exports = {
 
     const babelConfig = {
       babelHelpers: 'bundled',
-      presets: [['@babel/preset-env', {
-        loose: true,
-        targets: {
-          browsers: es5 ?
-              // If es5 is true, target IE11
-              // https://github.com/browserslist/browserslist#queries
-              ['ie 11'] :
-              // This corresponds to the version of Chromium used by
-              // Samsung Internet 6.x, which is the minimum non-evergreen
-              // browser we currently support.
-              ['chrome >= 56'],
-        },
-      }]],
+      presets: [
+        [
+          '@babel/preset-env',
+          {
+            loose: true,
+            targets: {
+              browsers: es5
+                ? // If es5 is true, target IE11
+                  // https://github.com/browserslist/browserslist#queries
+                  ['ie 11']
+                : // This corresponds to the version of Chromium used by
+                  // Samsung Internet 6.x, which is the minimum non-evergreen
+                  // browser we currently support.
+                  ['chrome >= 56'],
+            },
+          },
+        ],
+      ],
     };
     if (es5) {
       babelConfig.plugins = [asyncToPromises];
@@ -78,8 +83,8 @@ module.exports = {
 
     // This is what the build should be
     const replaceOptions = {
-      'preventAssignment': true,
-      'WORKBOX_CDN_ROOT_URL': getVersionsCDNUrl(),
+      preventAssignment: true,
+      WORKBOX_CDN_ROOT_URL: getVersionsCDNUrl(),
     };
 
     if (buildType) {

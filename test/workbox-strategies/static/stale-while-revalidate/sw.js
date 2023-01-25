@@ -12,11 +12,15 @@ importScripts('/infra/testing/comlink/sw-interface.js');
 workbox.setConfig({modulePathPrefix: '/__WORKBOX/buildFile/'});
 
 workbox.routing.registerRoute(
-    new RegExp('/__WORKBOX/uniqueValue'),
-    new workbox.strategies.StaleWhileRevalidate({
-      cacheName: 'stale-while-revalidate',
-    }),
+  new RegExp('/__WORKBOX/uniqueValue'),
+  new workbox.strategies.StaleWhileRevalidate({
+    cacheName: 'stale-while-revalidate',
+  }),
 );
 
-self.addEventListener('install', (event) => event.waitUntil(self.skipWaiting()));
-self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim()));
+self.addEventListener('install', (event) =>
+  event.waitUntil(self.skipWaiting()),
+);
+self.addEventListener('activate', (event) =>
+  event.waitUntil(self.clients.claim()),
+);

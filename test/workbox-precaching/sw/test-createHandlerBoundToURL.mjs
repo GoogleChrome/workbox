@@ -12,38 +12,48 @@ import {spyOnEvent} from '../../../infra/testing/helpers/extendable-event-utils.
 import {createHandlerBoundToURL} from 'workbox-precaching/createHandlerBoundToURL.mjs';
 import {precache} from 'workbox-precaching/precache.mjs';
 
-describe(`createHandlerBoundToURL()`, function() {
+describe(`createHandlerBoundToURL()`, function () {
   const sandbox = sinon.createSandbox();
 
-  beforeEach(function() {
+  beforeEach(function () {
     sandbox.stub(self, 'addEventListener');
     resetDefaultPrecacheController();
   });
 
-  afterEach(function() {
+  afterEach(function () {
     sandbox.restore();
   });
 
-  it(`should throw when passed a URL that isn't precached`, function() {
+  it(`should throw when passed a URL that isn't precached`, function () {
     precache([]);
 
-    return expectError(() => {
-      createHandlerBoundToURL('/does-not-exist');
-    }, 'non-precached-url', (error) => expect(error.details.url).to.eql('/does-not-exist'));
+    return expectError(
+      () => {
+        createHandlerBoundToURL('/does-not-exist');
+      },
+      'non-precached-url',
+      (error) => expect(error.details.url).to.eql('/does-not-exist'),
+    );
   });
 
-  it(`should return the expected handlerCallback for precached URLs`, async function() {
+  it(`should return the expected handlerCallback for precached URLs`, async function () {
     // Simulate the following: first two handlerCallbacks have cache.match()
     // calls that return a hit. Third, and subsequent handlerCallback has a
     // cache.match() call that's a miss, which will lead to a call to fetch().
-    const matchStub = sandbox.stub(self.caches, 'match')
-        .onFirstCall().resolves(new Response('response 1'))
-        .onSecondCall().resolves(new Response('response 2'))
-        .resolves(undefined);
+    const matchStub = sandbox
+      .stub(self.caches, 'match')
+      .onFirstCall()
+      .resolves(new Response('response 1'))
+      .onSecondCall()
+      .resolves(new Response('response 2'))
+      .resolves(undefined);
 
-    const fetchStub = sandbox.stub(self, 'fetch')
-        .onFirstCall().resolves(new Response('response 3'))
-        .onSecondCall().resolves(new Response('response 4'));
+    const fetchStub = sandbox
+      .stub(self, 'fetch')
+      .onFirstCall()
+      .resolves(new Response('response 3'))
+      .onSecondCall()
+      .resolves(new Response('response 4'));
 
     precache([
       '/url1',
@@ -67,7 +77,9 @@ describe(`createHandlerBoundToURL()`, function() {
     const response2 = await handler2({event});
 
     expect(matchStub.calledTwice).to.be.true;
-    expect(matchStub.secondCall.args[0].url).to.eql(`${location.origin}/url2?__WB_REVISION__=abc123`);
+    expect(matchStub.secondCall.args[0].url).to.eql(
+      `${location.origin}/url2?__WB_REVISION__=abc123`,
+    );
     expect(fetchStub.notCalled).to.be.true;
     expect(await response2.text()).to.eql('response 2');
 
@@ -85,7 +97,9 @@ describe(`createHandlerBoundToURL()`, function() {
 
     expect(matchStub.callCount).to.eql(4);
     // Call #3 is the fourth call due to zero-indexing.
-    expect(matchStub.getCall(3).args[0].url).to.eql(`${location.origin}/url4?__WB_REVISION__=def456`);
+    expect(matchStub.getCall(3).args[0].url).to.eql(
+      `${location.origin}/url4?__WB_REVISION__=def456`,
+    );
     expect(fetchStub.calledTwice).to.be.true;
     expect(fetchStub.secondCall.args[0].url).to.eql(`${location.origin}/url4`);
     expect(await response4.text()).to.eql('response 4');

@@ -11,7 +11,6 @@ import {cacheNames, PartialCacheNameDetails} from './_private/cacheNames.js';
 import {WorkboxError} from './_private/WorkboxError.js';
 import './_version.js';
 
-
 /**
  * Modifies the default cache names used by the Workbox packages.
  * Cache names are generated as `<prefix>-<Cache Name>-<suffix>`.
@@ -27,7 +26,7 @@ import './_version.js';
  * @param {Object} [details.googleAnalytics] The cache name to use for
  *     `workbox-google-analytics` caching.
  *
- * @memberof module:workbox-core
+ * @memberof workbox-core
  */
 function setCacheNameDetails(details: PartialCacheNameDetails): void {
   if (process.env.NODE_ENV !== 'production') {
@@ -53,7 +52,10 @@ function setCacheNameDetails(details: PartialCacheNameDetails): void {
       });
     }
 
-    if ('googleAnalytics' in details && details['googleAnalytics'].length === 0) {
+    if (
+      'googleAnalytics' in details &&
+      details['googleAnalytics'].length === 0
+    ) {
       throw new WorkboxError('invalid-cache-name', {
         cacheNameId: 'googleAnalytics',
         value: details['googleAnalytics'],
@@ -64,4 +66,4 @@ function setCacheNameDetails(details: PartialCacheNameDetails): void {
   cacheNames.updateDetails(details);
 }
 
-export {setCacheNameDetails}
+export {setCacheNameDetails};

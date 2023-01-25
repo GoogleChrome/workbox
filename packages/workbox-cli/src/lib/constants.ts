@@ -8,11 +8,7 @@
 
 export const constants = {
   defaultConfigFile: 'workbox-config.js',
-  ignoredDirectories: [
-    'node_modules',
-  ],
-  ignoredFileExtensions: [
-    'map',
-  ],
+  ignoredDirectories: ['node_modules'],
+  ignoredFileExtensions: ['map'],
   ignoreURLParametersMatching: [/^utm_/, /^fbclid$/],
 };

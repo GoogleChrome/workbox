@@ -9,15 +9,14 @@
 import {executeQuotaErrorCallbacks} from 'workbox-core/_private/executeQuotaErrorCallbacks.mjs';
 import {registerQuotaErrorCallback} from 'workbox-core/registerQuotaErrorCallback.mjs';
 
-
-describe(`executeQuotaErrorCallbacks()`, function() {
+describe(`executeQuotaErrorCallbacks()`, function () {
   const sandbox = sinon.createSandbox();
 
-  afterEach(function() {
+  afterEach(function () {
     sandbox.restore();
   });
 
-  it('should call everything registered with registerQuotaErrorCallback()', async function() {
+  it('should call everything registered with registerQuotaErrorCallback()', async function () {
     const callback1 = sandbox.stub();
     registerQuotaErrorCallback(callback1);
     const callback2 = sandbox.stub();
@@ -29,7 +28,7 @@ describe(`executeQuotaErrorCallbacks()`, function() {
     expect(callback2.calledOnce).to.be.true;
   });
 
-  it(`shouldn't have any effect if called multiple times with the same callback`, async function() {
+  it(`shouldn't have any effect if called multiple times with the same callback`, async function () {
     const callback1 = sandbox.stub();
     registerQuotaErrorCallback(callback1);
     registerQuotaErrorCallback(callback1);
@@ -40,7 +39,7 @@ describe(`executeQuotaErrorCallbacks()`, function() {
     expect(callback1.calledOnce).to.be.true;
   });
 
-  it(`should call everything registered with registerQuotaErrorCallback(), each time it's called`, async function() {
+  it(`should call everything registered with registerQuotaErrorCallback(), each time it's called`, async function () {
     const callback1 = sandbox.stub();
     registerQuotaErrorCallback(callback1);
     const callback2 = sandbox.stub();

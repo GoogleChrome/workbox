@@ -2,13 +2,10 @@ module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    project: ['./packages/*/tsconfig.json'],
+    project: ['./tsconfig.json', './packages/**/tsconfig.json'],
     tsconfigRootDir: __dirname,
   },
-  plugins: [
-    '@typescript-eslint',
-    'jsdoc',
-  ],
+  plugins: ['@typescript-eslint', 'jsdoc'],
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/eslint-recommended',
@@ -34,15 +31,15 @@ module.exports = {
     'block-scoped-var': 'error',
     'eol-last': 'error',
     'eqeqeq': 'error',
+    'indent': 'off',
     'no-cond-assign': 'off',
     'no-dupe-class-members': 'off',
     'no-var': 'error',
     'no-warning-comments': 'off',
+    'operator-linebreak': 'off',
     'prefer-const': 'error',
     'prefer-spread': 'off',
+    'space-before-function-paren': 'off',
   },
-  ignorePatterns: [
-    '**/_version.ts',
-    'test/**',
-  ],
+  ignorePatterns: ['**/_version.ts', 'test/**'],
 };

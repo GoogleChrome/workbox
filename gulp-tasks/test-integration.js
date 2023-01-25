@@ -25,7 +25,7 @@ function runFiles(filePaths) {
 
   return new Promise((resolve, reject) => {
     const mocha = new Mocha({
-      retries: (process.env.TRAVIS || process.env.GITHUB_ACTIONS) ? 4 : 1,
+      retries: process.env.TRAVIS || process.env.GITHUB_ACTIONS ? 4 : 1,
       timeout: 3 * 60 * 1000,
     });
 
@@ -34,7 +34,7 @@ function runFiles(filePaths) {
     }
 
     // Run the tests.
-    mocha.run(function(failureCount) {
+    mocha.run(function (failureCount) {
       if (failureCount > 0) {
         return reject(new Error(`${failureCount} tests failed.`));
       }
@@ -63,8 +63,9 @@ async function runTestSuite(testPath, nodeEnv, seleniumBrowser, webdriver) {
       webdriver,
     };
 
-    const testFiles = glob.sync(upath.join(__dirname, '..', testPath,
-        'test-*.js'));
+    const testFiles = glob.sync(
+      upath.join(__dirname, '..', testPath, 'test-*.js'),
+    );
 
     await runFiles(testFiles);
   } finally {
@@ -106,15 +107,15 @@ async function test_integration() {
 
   // Install the latest Chrome and Firefox webdrivers without referencing
   // package-lock.json, to ensure that they're up to date.
-  await execa('npm', ['install', '--no-save', 'chromedriver', 'geckodriver'],
-      {preferLocal: true});
+  await execa('npm', ['install', '--no-save', 'chromedriver', 'geckodriver'], {
+    preferLocal: true,
+  });
 
   logHelper.log(`Downloading browsers...`);
   const expiration = 24;
+  // We are only running tests in stable, see bellow for reasons.
   await seleniumAssistant.downloadLocalBrowser('chrome', 'stable', expiration);
-  await seleniumAssistant.downloadLocalBrowser('chrome', 'beta', expiration);
   await seleniumAssistant.downloadLocalBrowser('firefox', 'stable', expiration);
-  await seleniumAssistant.downloadLocalBrowser('firefox', 'beta', expiration);
 
   const packagesToTest = glob.sync(`test/${global.packageOrStar}/integration`);
   if (packagesToTest.length === 0) {

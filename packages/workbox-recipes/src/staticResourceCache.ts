@@ -9,7 +9,11 @@ import {warmStrategyCache} from './warmStrategyCache';
 import {registerRoute} from 'workbox-routing/registerRoute.js';
 import {StaleWhileRevalidate} from 'workbox-strategies/StaleWhileRevalidate.js';
 import {CacheableResponsePlugin} from 'workbox-cacheable-response/CacheableResponsePlugin.js';
-import {RouteMatchCallback, RouteMatchCallbackOptions, WorkboxPlugin} from 'workbox-core/types.js';
+import {
+  RouteMatchCallback,
+  RouteMatchCallbackOptions,
+  WorkboxPlugin,
+} from 'workbox-core/types.js';
 
 import './_version.js';
 
@@ -23,7 +27,7 @@ export interface StaticResourceOptions {
 /**
  * An implementation of the [CSS and JavaScript files recipe]{@link https://developers.google.com/web/tools/workbox/guides/common-recipes#cache_css_and_javascript_files}
  *
- * @memberof module:workbox-recipes
+ * @memberof workbox-recipes
  *
  * @param {Object} [options]
  * @param {string} [options.cacheName] Name for cache. Defaults to static-resources
@@ -32,24 +36,26 @@ export interface StaticResourceOptions {
  * @param {string[]} [options.warmCache] Paths to call to use to warm this cache
  */
 function staticResourceCache(options: StaticResourceOptions = {}): void {
-  const defaultMatchCallback = ({request}: RouteMatchCallbackOptions) => request.destination === 'style' || request.destination === 'script' || request.destination === 'worker';
+  const defaultMatchCallback = ({request}: RouteMatchCallbackOptions) =>
+    request.destination === 'style' ||
+    request.destination === 'script' ||
+    request.destination === 'worker';
 
   const cacheName = options.cacheName || 'static-resources';
   const matchCallback = options.matchCallback || defaultMatchCallback;
-  const plugins = (options.plugins || []);
-  plugins.push(new CacheableResponsePlugin({
-    statuses: [0, 200],
-  }));
+  const plugins = options.plugins || [];
+  plugins.push(
+    new CacheableResponsePlugin({
+      statuses: [0, 200],
+    }),
+  );
 
   const strategy = new StaleWhileRevalidate({
     cacheName,
     plugins,
   });
 
-  registerRoute(
-    matchCallback,
-    strategy,
-  );
+  registerRoute(matchCallback, strategy);
 
   // Warms the cache
   if (options.warmCache) {
@@ -57,4 +63,4 @@ function staticResourceCache(options: StaticResourceOptions = {}): void {
   }
 }
 
-export { staticResourceCache }
+export {staticResourceCache};

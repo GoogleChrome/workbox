@@ -11,13 +11,12 @@ import {assert} from './_private/assert.js';
 import {quotaErrorCallbacks} from './models/quotaErrorCallbacks.js';
 import './_version.js';
 
-
 /**
  * Adds a function to the set of quotaErrorCallbacks that will be executed if
  * there's a quota error.
  *
  * @param {Function} callback
- * @memberof module:workbox-core
+ * @memberof workbox-core
  */
 // Can't change Function type
 // eslint-disable-next-line @typescript-eslint/ban-types

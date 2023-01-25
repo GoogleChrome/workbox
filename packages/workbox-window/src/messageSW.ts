@@ -8,7 +8,6 @@
 
 import './_version.js';
 
-
 /**
  * Sends a data object to a service worker via `postMessage` and resolves with
  * a response (if any).
@@ -21,7 +20,7 @@ import './_version.js';
  * @param {ServiceWorker} sw The service worker to send the message to.
  * @param {Object} data An object to send to the service worker.
  * @return {Promise<Object|undefined>}
- * @memberof module:workbox-window
+ * @memberof workbox-window
  */
 // Better not change type of data.
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -35,4 +34,4 @@ function messageSW(sw: ServiceWorker, data: {}): Promise<any> {
   });
 }
 
-export {messageSW}
+export {messageSW};

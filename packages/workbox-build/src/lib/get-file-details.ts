@@ -46,11 +46,16 @@ export function getFileDetails({
       strict: globStrict,
     });
   } catch (err) {
-    throw new Error(errors['unable-to-glob-files'] + ` '${err instanceof Error && err.message ? err.message : ''}'`);
+    throw new Error(
+      errors['unable-to-glob-files'] +
+        ` '${err instanceof Error && err.message ? err.message : ''}'`,
+    );
   }
 
   if (globbedFiles.length === 0) {
-    warning = errors['useless-glob-pattern'] + ' ' +
+    warning =
+      errors['useless-glob-pattern'] +
+      ' ' +
       JSON.stringify({globDirectory, globPattern, globIgnores}, null, 2);
   }
 

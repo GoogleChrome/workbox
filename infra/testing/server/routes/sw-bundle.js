@@ -7,7 +7,8 @@
 */
 
 const {getPackages} = require('../../../../gulp-tasks/utils/get-packages');
-const {needsTranspile, queueTranspile} = require('../../../../gulp-tasks/transpile-typescript').functions;
+const {needsTranspile, queueTranspile} =
+  require('../../../../gulp-tasks/transpile-typescript').functions;
 const {nodeResolve} = require('@rollup/plugin-node-resolve');
 const {rollup} = require('rollup');
 const commonjs = require('@rollup/plugin-commonjs');

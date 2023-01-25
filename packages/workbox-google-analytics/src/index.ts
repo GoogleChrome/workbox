@@ -6,14 +6,12 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {initialize} from './initialize.js';
-import './_version.js';
+import {initialize, GoogleAnalyticsInitializeOptions} from './initialize.js';
 
+import './_version.js';
 
 /**
  * @module workbox-google-analytics
  */
 
-export {
-  initialize,
-};
+export {initialize, GoogleAnalyticsInitializeOptions};

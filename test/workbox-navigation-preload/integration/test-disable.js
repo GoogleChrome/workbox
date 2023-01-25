@@ -12,23 +12,25 @@ const activateAndControlSW = require('../../../infra/testing/activate-and-contro
 const cleanSWEnv = require('../../../infra/testing/clean-sw');
 const runInSW = require('../../../infra/testing/comlink/node-interface');
 
-describe(`navigationPreload.disable`, function() {
+describe(`navigationPreload.disable`, function () {
   const staticPath = `/test/workbox-navigation-preload/static/`;
   const baseURL = global.__workbox.server.getAddress() + staticPath;
   const integrationURL = `${baseURL}integration.html`;
   const integrationURLPath = `${staticPath}integration.html`;
 
   let requestCounter;
-  beforeEach(async function() {
+  beforeEach(async function () {
     // Navigate to our test page and clear all caches before this test runs.
     await cleanSWEnv(global.__workbox.webdriver, integrationURL);
-    requestCounter = global.__workbox.server.startCountingRequests('Service-Worker-Navigation-Preload');
+    requestCounter = global.__workbox.server.startCountingRequests(
+      'Service-Worker-Navigation-Preload',
+    );
   });
-  afterEach(function() {
+  afterEach(function () {
     global.__workbox.server.stopCountingRequests(requestCounter);
   });
 
-  it(`should support disabling previously enabled navigation preload`, async function() {
+  it(`should support disabling previously enabled navigation preload`, async function () {
     await activateAndControlSW(`${baseURL}sw-default-header.js`);
 
     const isEnabled = await runInSW('isNavigationPreloadSupported');

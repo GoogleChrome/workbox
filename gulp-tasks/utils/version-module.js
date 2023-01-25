@@ -20,13 +20,16 @@ const getDetails = (packagePath) => {
 };
 
 module.exports = async (packagePath) => {
-  const versionString =
-      `try{self['${getDetails(packagePath)}']&&_()}catch(e){}`;
+  const versionString = `try{self['${getDetails(
+    packagePath,
+  )}']&&_()}catch(e){}`;
 
   if (await fs.pathExists(path.join(packagePath, 'src', 'index.ts'))) {
     const tsVersionString = `// @ts-ignore\n${versionString}`;
     await fs.writeFile(
-        path.join(packagePath, 'src', '_version.ts'), tsVersionString);
+      path.join(packagePath, 'src', '_version.ts'),
+      tsVersionString,
+    );
   }
 
   const mjsVersionString = `${versionString}// eslint-disable-line`;

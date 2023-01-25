@@ -11,11 +11,12 @@ const proxyquire = require('proxyquire');
 
 const {errors} = require('../../../../packages/workbox-build/build/lib/errors');
 
-describe(`[workbox-build] lib/get-file-hash.js`, function() {
-  const MODULE_PATH = '../../../../packages/workbox-build/build/lib/get-file-hash';
+describe(`[workbox-build] lib/get-file-hash.js`, function () {
+  const MODULE_PATH =
+    '../../../../packages/workbox-build/build/lib/get-file-hash';
   const FILE = 'file.txt';
 
-  it(`should throw when there's a fs.readFileSync() error`, function() {
+  it(`should throw when there's a fs.readFileSync() error`, function () {
     const {getFileHash} = proxyquire(MODULE_PATH, {
       'fs-extra': {
         readFileSync: () => {
@@ -32,7 +33,7 @@ describe(`[workbox-build] lib/get-file-hash.js`, function() {
     }
   });
 
-  it(`should return the hash corresponding to a file's contents`, function() {
+  it(`should return the hash corresponding to a file's contents`, function () {
     const buffer = Buffer.alloc(10);
     const hashForBuffer = 'a63c90cc3684ad8b0a2176a6a8fe9005';
 

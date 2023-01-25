@@ -28,14 +28,20 @@ async function runNodeTestSuite(testPath, nodeEnv) {
 
   process.env.NODE_ENV = nodeEnv;
   try {
-    const {stdout} = await execa('nyc', [
-      '--clean', 'false',
-      '--silent',
-      'mocha',
-      '--timeout', '60000',
-      `${testPath}/**/*.{js,mjs}`,
-      ...options,
-    ], {preferLocal: true});
+    const {stdout} = await execa(
+      'nyc',
+      [
+        '--clean',
+        'false',
+        '--silent',
+        'mocha',
+        '--timeout',
+        '60000',
+        `${testPath}/**/*.{js,mjs}`,
+        ...options,
+      ],
+      {preferLocal: true},
+    );
 
     console.log(stdout);
   } finally {
@@ -45,9 +51,7 @@ async function runNodeTestSuite(testPath, nodeEnv) {
 
 async function runNodeTestsWithEnv(testGroup, nodeEnv) {
   const globConfig = {
-    ignore: [
-      '**/all/**',
-    ],
+    ignore: ['**/all/**'],
   };
 
   if (testGroup === 'all') {
@@ -87,17 +91,14 @@ async function test_node_coverage() {
   const runOptions = [];
   if (global.packageOrStar !== '*') {
     runOptions.push('--include');
-    runOptions.push(
-        upath.join('packages', global.packageOrStar, '**', '*'),
-    );
+    runOptions.push(upath.join('packages', global.packageOrStar, '**', '*'));
   }
 
-  const {stdout} = await execa('nyc', [
-    'report',
-    '--reporter', 'lcov',
-    '--reporter', 'text',
-    ...runOptions,
-  ], {preferLocal: true});
+  const {stdout} = await execa(
+    'nyc',
+    ['report', '--reporter', 'lcov', '--reporter', 'text', ...runOptions],
+    {preferLocal: true},
+  );
 
   console.log(stdout);
 }
@@ -107,6 +108,11 @@ module.exports = {
   test_node_coverage,
   test_node_dev,
   test_node_prod,
-  test_node: series(test_node_clean, test_node_dev, test_node_prod,
-      test_node_all, test_node_coverage),
+  test_node: series(
+    test_node_clean,
+    test_node_dev,
+    test_node_prod,
+    test_node_all,
+    test_node_coverage,
+  ),
 };

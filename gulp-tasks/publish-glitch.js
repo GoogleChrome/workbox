@@ -48,12 +48,18 @@ async function publish_glitch() {
       await execa('git', ['commit', `-m'Autocommit on ${new Date()}'`], {
         cwd: projectPath,
       });
-      await execa('git', ['push', 'origin', 'glitch', '-f', '--set-upstream',
-        '--no-verify'], {cwd: projectPath});
+      await execa(
+        'git',
+        ['push', 'origin', 'glitch', '-f', '--set-upstream', '--no-verify'],
+        {cwd: projectPath},
+      );
 
       const deployURL = new URL(`https://${project}.glitch.me/deploy`);
       deployURL.searchParams.set('secret', process.env.GLITCH_WORKBOX_SECRET);
-      deployURL.searchParams.set('repo', `https://api.glitch.com/git/${project}`);
+      deployURL.searchParams.set(
+        'repo',
+        `https://api.glitch.com/git/${project}`,
+      );
       await execa('curl', ['-X', 'POST', deployURL.href]);
     } catch (error) {
       logHelper.error(`'${error}' occurred while processing ${project}.`);

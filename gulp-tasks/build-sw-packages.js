@@ -12,7 +12,6 @@ const fse = require('fs-extra');
 const ol = require('common-tags').oneLine;
 const upath = require('upath');
 
-const {transpilePackageOrSkip} = require('./transpile-typescript').functions;
 const constants = require('./utils/constants');
 const logHelper = require('../infra/utils/log-helper');
 const packageRunner = require('./utils/package-runner');
@@ -63,10 +62,9 @@ function globals(moduleId) {
   // on the global scope (i.e. workbox.<browserNamespace>)
   try {
     const pkg = require(upath.join(packagePath, 'package.json'));
-    return [
-      pkg.workbox.browserNamespace,
-      additionalNamespace,
-    ].filter((value) => (value && value.length > 0)).join('.');
+    return [pkg.workbox.browserNamespace, additionalNamespace]
+      .filter((value) => value && value.length > 0)
+      .join('.');
   } catch (err) {
     logHelper.error(`Unable to get browserNamespace for '${packageName}'`);
     throw err;
@@ -76,7 +74,7 @@ function globals(moduleId) {
 // This ensures all workbox-* modules are treated as external and are
 // referenced as globals.
 function externalAndPure(importPath) {
-  return (importPath.indexOf('workbox-') === 0);
+  return importPath.indexOf('workbox-') === 0;
 }
 
 async function buildSWBundle(packagePath, buildType) {
@@ -109,8 +107,10 @@ async function buildSWBundle(packagePath, buildType) {
   outputFilename += '.js';
 
   const namespace = pkgJson.workbox.browserNamespace;
-  const outputDirectory = upath.join(packagePath,
-      constants.PACKAGE_BUILD_DIRNAME);
+  const outputDirectory = upath.join(
+    packagePath,
+    constants.PACKAGE_BUILD_DIRNAME,
+  );
 
   const plugins = rollupHelper.getDefaultPlugins(buildType);
 
@@ -122,8 +122,10 @@ async function buildSWBundle(packagePath, buildType) {
     },
     plugins,
     onwarn: (warning) => {
-      if (buildType === constants.BUILD_TYPES.prod &&
-        warning.code === 'UNUSED_EXTERNAL_IMPORT') {
+      if (
+        buildType === constants.BUILD_TYPES.prod &&
+        warning.code === 'UNUSED_EXTERNAL_IMPORT'
+      ) {
         // This can occur when using rollup-plugin-replace.
         logHelper.warn(`[${warning.code}] ${warning.message}`);
         return;
@@ -131,8 +133,9 @@ async function buildSWBundle(packagePath, buildType) {
 
       // The final builds should have no warnings.
       if (warning.code && warning.message) {
-        throw new Error(`Unhandled Rollup Warning: [${warning.code}] ` +
-          `${warning.message}`);
+        throw new Error(
+          `Unhandled Rollup Warning: [${warning.code}] ` + `${warning.message}`,
+        );
       } else {
         throw new Error(`Unhandled Rollup Warning: ${warning}`);
       }
@@ -151,26 +154,23 @@ async function buildSWBundle(packagePath, buildType) {
 
 // This reads a little cleaner with a function to generate the sub-sequences.
 function swBundleSequence() {
-  const transpilations = packageRunner(
-      'build_sw_packages_transpile_typescript', 'sw', transpilePackageOrSkip);
-  const builds = Object.keys(constants.BUILD_TYPES).map((type) => packageRunner(
-      'build_sw_packages_bundle', 'sw', buildSWBundle,
-      constants.BUILD_TYPES[type]));
-
-  return series(
-      parallel(transpilations),
-      // This needs to be a series, not in parallel, so that there isn't a
-      // race condition with the terser nameCache.
-      series(builds),
+  const builds = Object.keys(constants.BUILD_TYPES).map((type) =>
+    packageRunner(
+      'build_sw_packages_bundle',
+      'sw',
+      buildSWBundle,
+      constants.BUILD_TYPES[type],
+    ),
   );
+
+  return series(builds);
 }
 
 module.exports = {
-  build_sw_packages_transpile_typescript: parallel(packageRunner(
-      'build_sw_packages_transpile_typescript', 'sw', transpilePackageOrSkip)),
   build_sw_packages: series(
-      parallel(packageRunner('build_sw_packages_version_module', 'sw',
-          versionModule)),
-      swBundleSequence(),
+    parallel(
+      packageRunner('build_sw_packages_version_module', 'sw', versionModule),
+    ),
+    swBundleSequence(),
   ),
 };

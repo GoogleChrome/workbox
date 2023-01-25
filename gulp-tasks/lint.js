@@ -10,19 +10,31 @@ const {parallel} = require('gulp');
 const execa = require('execa');
 
 async function lint_js() {
-  await execa('eslint', [
-    '**/*.{js,mjs}',
-    '--config', 'javascript.eslintrc.js',
-    '--ignore-path', '.gitignore',
-  ], {preferLocal: true});
+  await execa(
+    'eslint',
+    [
+      '**/*.{js,mjs}',
+      '--config',
+      'javascript.eslintrc.js',
+      '--ignore-path',
+      '.gitignore',
+    ],
+    {preferLocal: true},
+  );
 }
 
 async function lint_ts() {
-  await execa('eslint', [
-    '**/*.ts',
-    '--config', 'typescript.eslintrc.js',
-    '--ignore-path', '.gitignore',
-  ], {preferLocal: true});
+  await execa(
+    'eslint',
+    [
+      '**/*.ts',
+      '--config',
+      'typescript.eslintrc.js',
+      '--ignore-path',
+      '.gitignore',
+    ],
+    {preferLocal: true},
+  );
 }
 
 module.exports = {

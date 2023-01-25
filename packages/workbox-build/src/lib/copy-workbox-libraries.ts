@@ -26,37 +26,43 @@ const BUILD_DIR = 'build';
  * Workbox from its official CDN URL.
  *
  * This method is exposed for the benefit of developers using
- * [injectManifest()]{@link module:workbox-build.injectManifest} who would
+ * {@link workbox-build.injectManifest} who would
  * prefer not to use the CDN copies of Workbox. Developers using
- * [generateSW()]{@link module:workbox-build.generateSW} don't need to
+ * {@link workbox-build.generateSW} don't need to
  * explicitly call this method.
  *
  * @param {string} destDirectory The path to the parent directory under which
  * the new directory of libraries will be created.
  * @return {Promise<string>} The name of the newly created directory.
  *
- * @alias module:workbox-build.copyWorkboxLibraries
+ * @alias workbox-build.copyWorkboxLibraries
  */
-export async function copyWorkboxLibraries(destDirectory: string): Promise<string> {
+export async function copyWorkboxLibraries(
+  destDirectory: string,
+): Promise<string> {
   // eslint-disable-next-line  @typescript-eslint/no-unsafe-assignment
   const thisPkg: WorkboxPackageJSON = require('../../package.json');
   // Use the version string from workbox-build in the name of the parent
   // directory. This should be safe, because lerna will bump workbox-build's
   // pkg.version whenever one of the dependent libraries gets bumped, and we
   // care about versioning the dependent libraries.
-  const workboxDirectoryName = `workbox-v${thisPkg.version ? thisPkg.version : ''}`;
+  const workboxDirectoryName = `workbox-v${
+    thisPkg.version ? thisPkg.version : ''
+  }`;
   const workboxDirectoryPath = upath.join(destDirectory, workboxDirectoryName);
   await fse.ensureDir(workboxDirectoryPath);
 
   const copyPromises: Array<Promise<void>> = [];
   const librariesToCopy = Object.keys(thisPkg.dependencies || {}).filter(
-      (dependency) => dependency.startsWith(WORKBOX_PREFIX));
+    (dependency) => dependency.startsWith(WORKBOX_PREFIX),
+  );
 
   for (const library of librariesToCopy) {
     // Get the path to the package on the user's filesystem by require-ing
     // the package's `package.json` file via the node resolution algorithm.
     const libraryPath = upath.dirname(
-        require.resolve(`${library}/package.json`));
+      require.resolve(`${library}/package.json`),
+    );
 
     const buildPath = upath.join(libraryPath, BUILD_DIR);
 
@@ -69,6 +75,10 @@ export async function copyWorkboxLibraries(destDirectory: string): Promise<strin
     await Promise.all(copyPromises);
     return workboxDirectoryName;
   } catch (error) {
-    throw Error(`${errors['unable-to-copy-workbox-libraries']} ${error instanceof Error ? error.toString() : ''}`);
+    throw Error(
+      `${errors['unable-to-copy-workbox-libraries']} ${
+        error instanceof Error ? error.toString() : ''
+      }`,
+    );
   }
 }

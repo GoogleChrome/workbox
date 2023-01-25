@@ -6,8 +6,6 @@
   https://opensource.org/licenses/MIT.
 */
 
-const {oneLine} = require('common-tags');
-const fs = require('fs-extra');
 const glob = require('glob');
 const path = require('path');
 const {Storage} = require('@google-cloud/storage');
@@ -16,8 +14,6 @@ const cdnDetails = require('../../cdn-details.json');
 const logHelper = require('../../infra/utils/log-helper');
 
 const PROJECT_ID = 'workbox-bab1f';
-const SERVICE_ACCOUNT_PATH = path.join(__dirname, '..', '..',
-    `workbox-9d39634504ad.json`);
 
 class CDNHelper {
   constructor() {
@@ -30,23 +26,10 @@ class CDNHelper {
 
   async getGCS() {
     if (!this._gcs) {
-      try {
-        await fs.access(SERVICE_ACCOUNT_PATH);
-      } catch (err) {
-        const errorMessage = oneLine`
-  Unable to find the service account file that is required to upload
-  to the CDN.
-  Please get the service account file and put it at the root of the
-  workbox repo.
-
-  File Path Tested: '${SERVICE_ACCOUNT_PATH}'.
-`;
-        throw new Error(errorMessage);
-      }
-
+      // Run `gcloud auth application-default login` if needed.
+      // See https://stackoverflow.com/a/42059661/385997
       this._gcs = new Storage({
         projectId: PROJECT_ID,
-        keyFilename: SERVICE_ACCOUNT_PATH,
       });
     }
 
@@ -81,8 +64,9 @@ class CDNHelper {
     const bucket = gcs.bucket(cdnDetails.bucketName);
 
     for (const filePath of filePaths) {
-      const destination =
-        `${this._getReleaseTagPath(tagName)}/${path.basename(filePath)}`;
+      const destination = `${this._getReleaseTagPath(tagName)}/${path.basename(
+        filePath,
+      )}`;
 
       try {
         await bucket.upload(filePath, {
@@ -99,7 +83,7 @@ class CDNHelper {
         throw err;
       }
       publicUrls.push(
-          `${cdnDetails.origin}/${cdnDetails.bucketName}/${destination}`,
+        `${cdnDetails.origin}/${cdnDetails.bucketName}/${destination}`,
       );
     }
 

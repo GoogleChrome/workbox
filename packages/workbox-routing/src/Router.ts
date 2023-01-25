@@ -32,8 +32,8 @@ interface CacheURLsMessageData {
 }
 
 /**
- * The Router can be used to process a FetchEvent through one or more
- * [Routes]{@link module:workbox-routing.Route} responding  with a Request if
+ * The Router can be used to process a `FetchEvent` using one or more
+ * {@link workbox-routing.Route}, responding with a `Response` if
  * a matching route exists.
  *
  * If no route matches a given a request, the Router will use a "default"
@@ -46,7 +46,7 @@ interface CacheURLsMessageData {
  * If a request matches multiple routes, the **earliest** registered route will
  * be used to respond to the request.
  *
- * @memberof module:workbox-routing
+ * @memberof workbox-routing
  */
 class Router {
   private readonly _routes: Map<HTTPMethod, Route[]>;
@@ -62,7 +62,7 @@ class Router {
   }
 
   /**
-   * @return {Map<string, Array<module:workbox-routing.Route>>} routes A `Map` of HTTP
+   * @return {Map<string, Array<workbox-routing.Route>>} routes A `Map` of HTTP
    * method name ('GET', etc.) to an array of all the corresponding `Route`
    * instances that are registered.
    */
@@ -111,26 +111,29 @@ class Router {
     // See https://github.com/Microsoft/TypeScript/issues/28357#issuecomment-436484705
     self.addEventListener('message', ((event: ExtendableMessageEvent) => {
       // event.data is type 'any'
-      if (event.data && event.data.type === 'CACHE_URLS') { // eslint-disable-line
-        const {payload}: CacheURLsMessageData = event.data; // eslint-disable-line
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      if (event.data && event.data.type === 'CACHE_URLS') {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        const {payload}: CacheURLsMessageData = event.data;
 
         if (process.env.NODE_ENV !== 'production') {
           logger.debug(`Caching URLs from the window`, payload.urlsToCache);
         }
 
-        const requestPromises = Promise.all(payload.urlsToCache.map(
-            (entry: string | [string, RequestInit?]) => {
-          if (typeof entry === 'string') {
-            entry = [entry];
-          }
+        const requestPromises = Promise.all(
+          payload.urlsToCache.map((entry: string | [string, RequestInit?]) => {
+            if (typeof entry === 'string') {
+              entry = [entry];
+            }
 
-          const request = new Request(...entry);
-          return this.handleRequest({request, event});
+            const request = new Request(...entry);
+            return this.handleRequest({request, event});
 
-        // TODO(philipwalton): TypeScript errors without this typecast for
-        // some reason (probably a bug). The real type here should work but
-        // doesn't: `Array<Promise<Response> | undefined>`.
-        }) as any[]); // TypeScript
+            // TODO(philipwalton): TypeScript errors without this typecast for
+            // some reason (probably a bug). The real type here should work but
+            // doesn't: `Array<Promise<Response> | undefined>`.
+          }) as any[],
+        ); // TypeScript
 
         event.waitUntil(requestPromises);
 
@@ -154,7 +157,10 @@ class Router {
    *     registered route can handle the request. If there is no matching
    *     route and there's no `defaultHandler`, `undefined` is returned.
    */
-  handleRequest({request, event}: {
+  handleRequest({
+    request,
+    event,
+  }: {
     request: Request;
     event: ExtendableEvent;
   }): Promise<Response> | undefined {
@@ -171,7 +177,8 @@ class Router {
     if (!url.protocol.startsWith('http')) {
       if (process.env.NODE_ENV !== 'production') {
         logger.debug(
-            `Workbox Router only supports URLs that start with 'http'.`);
+          `Workbox Router only supports URLs that start with 'http'.`,
+        );
       }
       return;
     }
@@ -188,13 +195,12 @@ class Router {
     const debugMessages = [];
     if (process.env.NODE_ENV !== 'production') {
       if (handler) {
-        debugMessages.push([
-          `Found a route to handle this request:`, route,
-        ]);
+        debugMessages.push([`Found a route to handle this request:`, route]);
 
         if (params) {
           debugMessages.push([
-            `Passing the following params to the route's handler:`, params,
+            `Passing the following params to the route's handler:`,
+            params,
           ]);
         }
       }
@@ -205,8 +211,10 @@ class Router {
     const method = request.method as HTTPMethod;
     if (!handler && this._defaultHandlerMap.has(method)) {
       if (process.env.NODE_ENV !== 'production') {
-        debugMessages.push(`Failed to find a matching route. Falling ` +
-          `back to the default handler for ${method}.`);
+        debugMessages.push(
+          `Failed to find a matching route. Falling ` +
+            `back to the default handler for ${method}.`,
+        );
       }
       handler = this._defaultHandlerMap.get(method);
     }
@@ -248,15 +256,22 @@ class Router {
     // Get route's catch handler, if it exists
     const catchHandler = route && route.catchHandler;
 
-    if (responsePromise instanceof Promise && (this._catchHandler || catchHandler)) {
+    if (
+      responsePromise instanceof Promise &&
+      (this._catchHandler || catchHandler)
+    ) {
       responsePromise = responsePromise.catch(async (err) => {
         // If there's a route catch handler, process that first
         if (catchHandler) {
           if (process.env.NODE_ENV !== 'production') {
             // Still include URL here as it will be async from the console group
             // and may not make sense without the URL
-            logger.groupCollapsed(`Error thrown when responding to: ` +
-              ` ${getFriendlyURL(url)}. Falling back to route's Catch Handler.`);
+            logger.groupCollapsed(
+              `Error thrown when responding to: ` +
+                ` ${getFriendlyURL(
+                  url,
+                )}. Falling back to route's Catch Handler.`,
+            );
             logger.error(`Error thrown by:`, route);
             logger.error(err);
             logger.groupEnd();
@@ -275,8 +290,12 @@ class Router {
           if (process.env.NODE_ENV !== 'production') {
             // Still include URL here as it will be async from the console group
             // and may not make sense without the URL
-            logger.groupCollapsed(`Error thrown when responding to: ` +
-              ` ${getFriendlyURL(url)}. Falling back to global Catch Handler.`);
+            logger.groupCollapsed(
+              `Error thrown when responding to: ` +
+                ` ${getFriendlyURL(
+                  url,
+                )}. Falling back to global Catch Handler.`,
+            );
             logger.error(`Error thrown by:`, route);
             logger.error(err);
             logger.groupEnd();
@@ -306,9 +325,15 @@ class Router {
    *     They are populated if a matching route was found or `undefined`
    *     otherwise.
    */
-  findMatchingRoute(
-    {url, sameOrigin, request, event}: RouteMatchCallbackOptions):
-      {route?: Route; params?: RouteHandlerCallbackOptions['params']} {
+  findMatchingRoute({
+    url,
+    sameOrigin,
+    request,
+    event,
+  }: RouteMatchCallbackOptions): {
+    route?: Route;
+    params?: RouteHandlerCallbackOptions['params'];
+  } {
     const routes = this._routes.get(request.method as HTTPMethod) || [];
     for (const route of routes) {
       let params: Promise<any> | undefined;
@@ -320,10 +345,12 @@ class Router {
           // Warn developers that using an async matchCallback is almost always
           // not the right thing to do.
           if (matchResult instanceof Promise) {
-            logger.warn(`While routing ${getFriendlyURL(url)}, an async ` +
+            logger.warn(
+              `While routing ${getFriendlyURL(url)}, an async ` +
                 `matchCallback function was used. Please convert the ` +
                 `following route to use a synchronous matchCallback function:`,
-                route);
+              route,
+            );
           }
         }
 
@@ -333,8 +360,10 @@ class Router {
         if (Array.isArray(params) && params.length === 0) {
           // Instead of passing an empty array in as params, use undefined.
           params = undefined;
-        } else if ((matchResult.constructor === Object && // eslint-disable-line
-            Object.keys(matchResult).length === 0)) {
+        } else if (
+          matchResult.constructor === Object && // eslint-disable-line
+          Object.keys(matchResult).length === 0
+        ) {
           // Instead of passing an empty object in as params, use undefined.
           params = undefined;
         } else if (typeof matchResult === 'boolean') {
@@ -361,12 +390,15 @@ class Router {
    * Without a default handler, unmatched requests will go against the
    * network as if there were no service worker present.
    *
-   * @param {module:workbox-routing~handlerCallback} handler A callback
+   * @param {workbox-routing~handlerCallback} handler A callback
    * function that returns a Promise resulting in a Response.
    * @param {string} [method='GET'] The HTTP method to associate with this
    * default handler. Each method has its own default.
    */
-  setDefaultHandler(handler: RouteHandler, method: HTTPMethod = defaultMethod): void {
+  setDefaultHandler(
+    handler: RouteHandler,
+    method: HTTPMethod = defaultMethod,
+  ): void {
     this._defaultHandlerMap.set(method, normalizeHandler(handler));
   }
 
@@ -374,7 +406,7 @@ class Router {
    * If a Route throws an error while handling a request, this `handler`
    * will be called and given a chance to provide a response.
    *
-   * @param {module:workbox-routing~handlerCallback} handler A callback
+   * @param {workbox-routing~handlerCallback} handler A callback
    * function that returns a Promise resulting in a Response.
    */
   setCatchHandler(handler: RouteHandler): void {
@@ -384,7 +416,7 @@ class Router {
   /**
    * Registers a route with the router.
    *
-   * @param {module:workbox-routing.Route} route The route to register.
+   * @param {workbox-routing.Route} route The route to register.
    */
   registerRoute(route: Route): void {
     if (process.env.NODE_ENV !== 'production') {
@@ -436,15 +468,13 @@ class Router {
   /**
    * Unregisters a route with the router.
    *
-   * @param {module:workbox-routing.Route} route The route to unregister.
+   * @param {workbox-routing.Route} route The route to unregister.
    */
   unregisterRoute(route: Route): void {
     if (!this._routes.has(route.method)) {
-      throw new WorkboxError(
-          'unregister-route-but-not-found-with-method', {
-            method: route.method,
-          }
-      );
+      throw new WorkboxError('unregister-route-but-not-found-with-method', {
+        method: route.method,
+      });
     }
 
     const routeIndex = this._routes.get(route.method)!.indexOf(route);

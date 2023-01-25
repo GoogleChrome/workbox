@@ -8,9 +8,7 @@
 
 const {getPackages} = require('./get-packages');
 
-
 const outputFilenameToPkgMap = {};
-
 
 const windowAndSWPackages = [
   ...getPackages({type: 'sw'}),

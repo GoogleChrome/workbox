@@ -27,20 +27,28 @@ async function getAllFileExtensions(globDirectory: string) {
   const files: string[] = await new Promise((resolve, reject) => {
     // Use a pattern to match any file that contains a '.', since that signifies
     // the presence of a file extension.
-    glob('**/*.*', {
-      cwd: globDirectory,
-      nodir: true,
-      ignore: [
-        ...constants.ignoredDirectories.map((directory) => `**/${directory}/**`),
-        ...constants.ignoredFileExtensions.map((extension) => `**/*.${extension}`),
-      ],
-    }, (error, files) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(files);
-      }
-    });
+    glob(
+      '**/*.*',
+      {
+        cwd: globDirectory,
+        nodir: true,
+        ignore: [
+          ...constants.ignoredDirectories.map(
+            (directory) => `**/${directory}/**`,
+          ),
+          ...constants.ignoredFileExtensions.map(
+            (extension) => `**/*.${extension}`,
+          ),
+        ],
+      },
+      (error, files) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(files);
+        }
+      },
+    );
   });
 
   const extensions: Set<string> = new Set();
@@ -72,16 +80,20 @@ async function askQuestion(globDirectory: string): Promise<Answers> {
 
   assert(fileExtensions.length > 0, errors['no-file-extensions-found']);
 
-  return prompt([{
-    name,
-    message: 'Which file types would you like to precache?',
-    type: 'checkbox',
-    choices: fileExtensions,
-    default: fileExtensions,
-  }]);
+  return prompt([
+    {
+      name,
+      message: 'Which file types would you like to precache?',
+      type: 'checkbox',
+      choices: fileExtensions,
+      default: fileExtensions,
+    },
+  ]);
 }
 
-export async function askExtensionsToCache(globDirectory: string): Promise<string[]> {
+export async function askExtensionsToCache(
+  globDirectory: string,
+): Promise<string[]> {
   const answers = await askQuestion(globDirectory);
   // The return value is an array of strings with the selected values
   // and there is a default, the casting is safe.
@@ -90,8 +102,7 @@ export async function askExtensionsToCache(globDirectory: string): Promise<strin
 
   // glob isn't happy with a single option inside of a {} group, so use a
   // pattern without a {} group when there's only one extension.
-  const extensionsPattern: string = extensions.length === 1 ?
-    extensions[0] :
-    `{${extensions.join(',')}}`;
+  const extensionsPattern: string =
+    extensions.length === 1 ? extensions[0] : `{${extensions.join(',')}}`;
   return [`**/*.${extensionsPattern}`];
 }

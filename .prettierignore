@@ -1,0 +1,17 @@
+_version.ts
+.nyc_output
+.vscode
+*.hbs
+*.log
+build
+coverage
+docs
+generated-release-files
+node_modules
+package-lock.json
+packages/**/*.d.ts
+packages/**/*.js
+packages/**/*.mjs
+packages/workbox-build/src/schema/*.json
+temp
+test/workbox-webpack-plugin/static/injected-manifest.json

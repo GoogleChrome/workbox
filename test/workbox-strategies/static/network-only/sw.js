@@ -12,15 +12,22 @@ importScripts('/infra/testing/comlink/sw-interface.js');
 workbox.setConfig({modulePathPrefix: '/__WORKBOX/buildFile/'});
 
 workbox.routing.registerRoute(
-    new RegExp('/__WORKBOX/uniqueValue'),
-    new workbox.strategies.NetworkOnly({
-      cacheName: 'network-only',
-    }),
+  new RegExp('/__WORKBOX/uniqueValue'),
+  new workbox.strategies.NetworkOnly({
+    cacheName: 'network-only',
+  }),
 );
 
-self.addEventListener('install', (event) => event.waitUntil(
-    caches.open('network-only')
-        .then((cache) => cache.put('/__WORKBOX/uniqueValue', new Response('Cached')))
-        .then(() => self.skipWaiting())),
+self.addEventListener('install', (event) =>
+  event.waitUntil(
+    caches
+      .open('network-only')
+      .then((cache) =>
+        cache.put('/__WORKBOX/uniqueValue', new Response('Cached')),
+      )
+      .then(() => self.skipWaiting()),
+  ),
 );
-self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim()));
+self.addEventListener('activate', (event) =>
+  event.waitUntil(self.clients.claim()),
+);

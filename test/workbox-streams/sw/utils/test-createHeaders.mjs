@@ -8,21 +8,20 @@
 
 import {createHeaders} from 'workbox-streams/utils/createHeaders.mjs';
 
-
-describe(`createHeaders`, function() {
+describe(`createHeaders`, function () {
   const sandbox = sinon.createSandbox();
 
-  beforeEach(function() {
+  beforeEach(function () {
     sandbox.restore();
   });
 
-  afterEach(function() {
+  afterEach(function () {
     sandbox.restore();
   });
 
   const DEFAULT_CONTENT_TYPE = ['content-type', 'text/html'];
 
-  it(`should use the default Content-Type, and construct with an empty object, when headersInit is undefined`, function() {
+  it(`should use the default Content-Type, and construct with an empty object, when headersInit is undefined`, function () {
     const headersSpy = sandbox.spy(self, 'Headers');
     const headers = createHeaders();
     expect([...headers]).to.eql([DEFAULT_CONTENT_TYPE]);
@@ -31,7 +30,7 @@ describe(`createHeaders`, function() {
     expect(headersSpy.args[0][0]).to.eql({});
   });
 
-  it(`should use the default Content-Type along with custom headersInit values`, function() {
+  it(`should use the default Content-Type along with custom headersInit values`, function () {
     const headersInit = {
       'x-one': '1',
       'x-two': '2',
@@ -44,7 +43,7 @@ describe(`createHeaders`, function() {
     ]);
   });
 
-  it(`should use a custom Content-Type`, function() {
+  it(`should use a custom Content-Type`, function () {
     const headersInit = {
       'content-type': 'text/plain',
     };

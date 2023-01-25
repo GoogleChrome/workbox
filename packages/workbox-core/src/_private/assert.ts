@@ -16,10 +16,7 @@ import '../_version.js';
  * The destructed and restructured object is so it's clear what is
  * needed.
  */
-const isArray = (
-  value: any[],
-  details: MapLikeObject,
-) => {
+const isArray = (value: any[], details: MapLikeObject) => {
   if (!Array.isArray(value)) {
     throw new WorkboxError('not-an-array', details);
   }
@@ -61,13 +58,11 @@ const isInstance = (
   }
 };
 
-const isOneOf = (
-  value: any,
-  validValues: any[],
-  details: MapLikeObject) => {
+const isOneOf = (value: any, validValues: any[], details: MapLikeObject) => {
   if (!validValues.includes(value)) {
-    details['validValueDescription'] =
-        `Valid values are ${JSON.stringify(validValues)}.`
+    details['validValueDescription'] = `Valid values are ${JSON.stringify(
+      validValues,
+    )}.`;
     throw new WorkboxError('invalid-value', details);
   }
 };
@@ -90,13 +85,16 @@ const isArrayOfClass = (
   }
 };
 
-const finalAssertExports = process.env.NODE_ENV === 'production' ? null : {
-  hasMethod,
-  isArray,
-  isInstance,
-  isOneOf,
-  isType,
-  isArrayOfClass,
-};
+const finalAssertExports =
+  process.env.NODE_ENV === 'production'
+    ? null
+    : {
+        hasMethod,
+        isArray,
+        isInstance,
+        isOneOf,
+        isType,
+        isArrayOfClass,
+      };
 
 export {finalAssertExports as assert};

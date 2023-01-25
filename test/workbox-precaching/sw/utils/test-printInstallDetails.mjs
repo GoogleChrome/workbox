@@ -9,21 +9,20 @@
 import {logger} from 'workbox-core/_private/logger.mjs';
 import {printInstallDetails} from 'workbox-precaching/utils/printInstallDetails.mjs';
 
-
-describe(`printInstallDetails()`, function() {
+describe(`printInstallDetails()`, function () {
   const sandbox = sinon.createSandbox();
 
-  beforeEach(function() {
+  beforeEach(function () {
     if (logger) {
       sandbox.spy(logger, 'log');
     }
   });
 
-  afterEach(function() {
+  afterEach(function () {
     sandbox.restore();
   });
 
-  it(`should print with single update`, function() {
+  it(`should print with single update`, function () {
     if (process.env.NODE_ENV === 'production') this.skip();
 
     printInstallDetails([], ['/index.html']);

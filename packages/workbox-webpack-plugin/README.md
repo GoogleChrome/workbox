@@ -1,1 +1,1 @@
-This module's documentation can be found at https://developers.google.com/web/tools/workbox/modules/workbox-webpack-plugin
+This module's documentation can be found at https://developer.chrome.com/docs/workbox/modules/workbox-webpack-plugin/

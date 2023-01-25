@@ -17,30 +17,29 @@ import {getOrCreateDefaultRouter} from './utils/getOrCreateDefaultRouter.js';
 
 import './_version.js';
 
-
 /**
  * Easily register a RegExp, string, or function with a caching
  * strategy to a singleton Router instance.
  *
  * This method will generate a Route for you if needed and
- * call [registerRoute()]{@link module:workbox-routing.Router#registerRoute}.
+ * call {@link workbox-routing.Router#registerRoute}.
  *
- * @param {RegExp|string|module:workbox-routing.Route~matchCallback|module:workbox-routing.Route} capture
+ * @param {RegExp|string|workbox-routing.Route~matchCallback|workbox-routing.Route} capture
  * If the capture param is a `Route`, all other arguments will be ignored.
- * @param {module:workbox-routing~handlerCallback} [handler] A callback
+ * @param {workbox-routing~handlerCallback} [handler] A callback
  * function that returns a Promise resulting in a Response. This parameter
  * is required if `capture` is not a `Route` object.
  * @param {string} [method='GET'] The HTTP method to match the Route
  * against.
- * @return {module:workbox-routing.Route} The generated `Route`(Useful for
- * unregistering).
+ * @return {workbox-routing.Route} The generated `Route`.
  *
- * @memberof module:workbox-routing
+ * @memberof workbox-routing
  */
 function registerRoute(
-    capture: RegExp | string | RouteMatchCallback | Route,
-    handler?: RouteHandler,
-    method?: HTTPMethod): Route {
+  capture: RegExp | string | RouteMatchCallback | Route,
+  handler?: RouteHandler,
+  method?: HTTPMethod,
+): Route {
   let route;
 
   if (typeof capture === 'string') {
@@ -57,28 +56,32 @@ function registerRoute(
 
       // We want to check if Express-style wildcards are in the pathname only.
       // TODO: Remove this log message in v4.
-      const valueToCheck = capture.startsWith('http') ?
-          captureUrl.pathname : capture;
+      const valueToCheck = capture.startsWith('http')
+        ? captureUrl.pathname
+        : capture;
 
       // See https://github.com/pillarjs/path-to-regexp#parameters
       const wildcards = '[*:?+]';
-      if ((new RegExp(`${wildcards}`)).exec(valueToCheck)) {
+      if (new RegExp(`${wildcards}`).exec(valueToCheck)) {
         logger.debug(
-            `The '$capture' parameter contains an Express-style wildcard ` +
-          `character (${wildcards}). Strings are now always interpreted as ` +
-          `exact matches; use a RegExp for partial or wildcard matches.`
+          `The '$capture' parameter contains an Express-style wildcard ` +
+            `character (${wildcards}). Strings are now always interpreted as ` +
+            `exact matches; use a RegExp for partial or wildcard matches.`,
         );
       }
     }
 
     const matchCallback: RouteMatchCallback = ({url}) => {
       if (process.env.NODE_ENV !== 'production') {
-        if ((url.pathname === captureUrl.pathname) &&
-            (url.origin !== captureUrl.origin)) {
+        if (
+          url.pathname === captureUrl.pathname &&
+          url.origin !== captureUrl.origin
+        ) {
           logger.debug(
-              `${capture} only partially matches the cross-origin URL ` +
-            `${url.toString()}. This route will only handle cross-origin requests ` +
-              `if they match the entire URL.`);
+            `${capture} only partially matches the cross-origin URL ` +
+              `${url.toString()}. This route will only handle cross-origin requests ` +
+              `if they match the entire URL.`,
+          );
         }
       }
 
