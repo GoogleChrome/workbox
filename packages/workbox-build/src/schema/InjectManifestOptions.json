@@ -31,7 +31,7 @@
       "type": "number"
     },
     "modifyURLPrefix": {
-      "description": "A mapping of prefixes that, if present in an entry in the precache\nmanifest, will be replaced with the corresponding value. This can be used\nto, for example, remove or add a path prefix from a manifest entry if your\nweb hosting setup doesn't match your local filesystem setup. As an\nalternative with more flexibility, you can use the `manifestTransforms`\noption and provide a function that modifies the entries in the manifest\nusing whatever logic you provide.",
+      "description": "An object mapping string prefixes to replacement string values. This can be\nused to, e.g., remove or add a path prefix from a manifest entry if your\nweb hosting setup doesn't match your local filesystem setup. As an\nalternative with more flexibility, you can use the `manifestTransforms`\noption and provide a function that modifies the entries in the manifest\nusing whatever logic you provide.\n\nExample usage:\n\n```\n// Replace a '/dist/' prefix with '/', and also prepend\n// '/static' to every URL.\nmodifyURLPrefix: {\n  '/dist/': '/',\n  '': '/static',\n}\n```",
       "type": "object",
       "additionalProperties": {
         "type": "string"
@@ -281,7 +281,7 @@
               "$ref": "#/definitions/ExpirationPluginOptions"
             },
             "networkTimeoutSeconds": {
-              "description": "If provided, this will set the `cacheName` property of the\n{@link workbox-strategies} configured in `handler`. Note that only\n`'NetworkFirst'` and `'NetworkOnly'` support `networkTimeoutSeconds`.",
+              "description": "If provided, this will set the `networkTimeoutSeconds` property of the\n{@link workbox-strategies} configured in `handler`. Note that only\n`'NetworkFirst'` and `'NetworkOnly'` support `networkTimeoutSeconds`.",
               "type": "number"
             },
             "plugins": {
