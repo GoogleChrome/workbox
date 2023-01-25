@@ -21,6 +21,7 @@ describe(`[workbox-build] Test Dependencies`, function() {
         ignoreMatches: [
           '@babel/preset-env',
           '@babel/runtime',
+          'type-fest',
           'workbox-background-sync',
           'workbox-broadcast-update',
           'workbox-cacheable-response',
@@ -30,6 +31,7 @@ describe(`[workbox-build] Test Dependencies`, function() {
           'workbox-navigation-preload',
           'workbox-precaching',
           'workbox-range-requests',
+          'workbox-recipes',
           'workbox-routing',
           'workbox-strategies',
           'workbox-streams',

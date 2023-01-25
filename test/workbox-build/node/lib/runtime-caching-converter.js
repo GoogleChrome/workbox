@@ -10,9 +10,9 @@ const expect = require('chai').expect;
 const sinon = require('sinon');
 const vm = require('vm');
 
-const errors = require('../../../../packages/workbox-build/src/lib/errors');
-const ModuleRegistry = require('../../../../packages/workbox-build/src/lib/module-registry');
-const runtimeCachingConverter = require('../../../../packages/workbox-build/src/lib/runtime-caching-converter');
+const {errors} = require('../../../../packages/workbox-build/build/lib/errors');
+const {ModuleRegistry} = require('../../../../packages/workbox-build/build/lib/module-registry');
+const {runtimeCachingConverter} = require('../../../../packages/workbox-build/build/lib/runtime-caching-converter');
 
 const moduleRegistry = new ModuleRegistry();
 
@@ -31,6 +31,8 @@ function validate(runtimeCachingOptions, convertedOptions) {
     workbox_expiration_ExpirationPlugin: sinon.spy(),
     workbox_background_sync_BackgroundSyncPlugin: sinon.spy(),
     workbox_broadcast_update_BroadcastUpdatePlugin: sinon.spy(),
+    workbox_precaching_PrecacheFallbackPlugin: sinon.spy(),
+    workbox_range_requests_RangeRequestsPlugin: sinon.spy(),
     workbox_routing_registerRoute: sinon.spy(),
     workbox_strategies_CacheFirst: sinon.spy(),
     workbox_strategies_CacheOnly: sinon.spy(),
@@ -95,6 +97,14 @@ function validate(runtimeCachingOptions, convertedOptions) {
 
       if (options.cacheableResponse) {
         expect(globalScope.workbox_cacheable_response_CacheableResponsePlugin.calledWith(options.cacheableResponse)).to.be.true;
+      }
+
+      if (options.precacheFallback) {
+        expect(globalScope.workbox_precaching_PrecacheFallbackPlugin.calledWith(options.precacheFallback)).to.be.true;
+      }
+
+      if (options.rangeRequests) {
+        expect(globalScope.workbox_range_requests_RangeRequestsPlugin.calledWith()).to.be.true;
       }
 
       if (options.backgroundSync) {
@@ -182,6 +192,10 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
         backgroundSync: {
           name: 'test',
         },
+        precacheFallback: {
+          fallbackURL: '/test1',
+        },
+        rangeRequests: false,
         fetchOptions: {
           headers: {
             'Custom': 'Header',
@@ -209,6 +223,10 @@ describe(`[workbox-build] src/lib/utils/runtime-caching-converter.js`, function(
           options: {
             maxRetentionTime: 123,
           },
+        },
+        rangeRequests: true,
+        precacheFallback: {
+          fallbackURL: '/test2',
         },
         matchOptions: {
           ignoreSearch: true,

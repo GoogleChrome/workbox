@@ -27,7 +27,7 @@ import './_version.js';
  * If the network request fails, and there is no cache match, this will throw
  * a `WorkboxError` exception.
  *
- * @extends module:workbox-core.Strategy
+ * @extends module:workbox-strategies.Strategy
  * @memberof module:workbox-strategies
  */
 class CacheFirst extends Strategy {
@@ -44,7 +44,7 @@ class CacheFirst extends Strategy {
     if (process.env.NODE_ENV !== 'production') {
       assert!.isInstance(request, Request, {
         moduleName: 'workbox-strategies',
-        className: 'CacheFirst',
+        className: this.constructor.name,
         funcName: 'makeRequest',
         paramName: 'request',
       });
@@ -52,7 +52,7 @@ class CacheFirst extends Strategy {
 
     let response = await handler.cacheMatch(request);
 
-    let error;
+    let error: Error | undefined = undefined;
     if (!response) {
       if (process.env.NODE_ENV !== 'production') {
         logs.push(
@@ -62,7 +62,9 @@ class CacheFirst extends Strategy {
       try {
         response = await handler.fetchAndCachePut(request);
       } catch (err) {
-        error = err;
+        if (err instanceof Error) {
+          error = err;
+        }
       }
 
       if (process.env.NODE_ENV !== 'production') {
@@ -81,7 +83,7 @@ class CacheFirst extends Strategy {
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
-          messages.strategyStart('CacheFirst', request));
+          messages.strategyStart(this.constructor.name, request));
       for (const log of logs) {
         logger.log(log);
       }

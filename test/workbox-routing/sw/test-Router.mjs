@@ -8,6 +8,8 @@
 
 import {Route} from 'workbox-routing/Route.mjs';
 import {Router} from 'workbox-routing/Router.mjs';
+import {logger} from 'workbox-core/_private/logger.mjs';
+
 import {dispatchAndWaitUntilDone} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
 import generateTestVariants from '../../../infra/testing/generate-variant-tests';
 
@@ -469,6 +471,43 @@ describe(`Router`, function() {
       expect(responseBody).to.eql(EXPECTED_RESPONSE_BODY);
     });
 
+    it(`should fall back to the Route's catch handler if there's an error in the Route's handler, if set`, async function() {
+      const router = new Router();
+      const route = new Route(
+          () => true,
+          () => Promise.reject(new Error()),
+      );
+      route.setCatchHandler(() => new Response(EXPECTED_RESPONSE_BODY));
+      router.registerRoute(route);
+
+      // route.match() always returns true, so the Request details don't matter.
+      const request = new Request(location);
+      const event = new FetchEvent('fetch', {request});
+      const response = await router.handleRequest({request, event});
+      const responseBody = await response.text();
+
+      expect(responseBody).to.eql(EXPECTED_RESPONSE_BODY);
+    });
+
+    it(`should fall back to the global catch handler if there's an error in the Route's catch handler`, async function() {
+      const router = new Router();
+      const route = new Route(
+          () => true,
+          () => Promise.reject(new Error()),
+      );
+      route.setCatchHandler(() => Promise.reject(new Error()));
+      router.setCatchHandler(() => new Response(EXPECTED_RESPONSE_BODY));
+      router.registerRoute(route);
+
+      // route.match() always returns true, so the Request details don't matter.
+      const request = new Request(location);
+      const event = new FetchEvent('fetch', {request});
+      const response = await router.handleRequest({request, event});
+      const responseBody = await response.text();
+
+      expect(responseBody).to.eql(EXPECTED_RESPONSE_BODY);
+    });
+
     it(`should return a response from the first matching route when there are multiple potential matches`, async function() {
       const router = new Router();
       const response1 = 'response1';
@@ -650,6 +689,27 @@ describe(`Router`, function() {
   });
 
   describe(`findMatchingRoute()`, function() {
+    it(`should log a warning in development when an async matchCallback is used`, function() {
+      if (process.env.NODE_ENV === 'production') return this.skip();
+
+      const loggerStub = sandbox.stub(logger, 'warn');
+
+      const router = new Router();
+      const route = new Route(async () => true, () => new Response());
+      router.registerRoute(route);
+
+      const url = new URL(location.href);
+      const request = new Request(url);
+      const event = new FetchEvent('fetch', {request});
+      const sameOrigin = true;
+
+      router.findMatchingRoute({url, sameOrigin, request, event});
+
+      expect(loggerStub.calledOnce).to.be.true;
+      // Just check for a snippet of the warning message.
+      expect(loggerStub.firstCall.args[0]).to.include('async');
+    });
+
     it(`should return the first matching route`, function() {
       const router = new Router();
 

@@ -35,23 +35,24 @@ import './_version.js';
  * If the network request fails, and there is no cache match, this will throw
  * a `WorkboxError` exception.
  *
- * @extends module:workbox-core.Strategy
+ * @extends module:workbox-strategies.Strategy
  * @memberof module:workbox-strategies
  */
 class StaleWhileRevalidate extends Strategy {
   /**
-   * @param {Object} options
-   * @param {string} options.cacheName Cache name to store and retrieve
+   * @param {Object} [options]
+   * @param {string} [options.cacheName] Cache name to store and retrieve
    * requests. Defaults to cache names provided by
    * [workbox-core]{@link module:workbox-core.cacheNames}.
-   * @param {Array<Object>} options.plugins [Plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}
+   * @param {Array<Object>} [options.plugins] [Plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}
    * to use in conjunction with this caching strategy.
-   * @param {Object} options.fetchOptions Values passed along to the
+   * @param {Object} [options.fetchOptions] Values passed along to the
    * [`init`](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch#Parameters)
-   * of all fetch() requests made by this strategy.
-   * @param {Object} options.matchOptions [`CacheQueryOptions`](https://w3c.github.io/ServiceWorker/#dictdef-cachequeryoptions)
+   * of [non-navigation](https://github.com/GoogleChrome/workbox/issues/1796)
+   * `fetch()` requests made by this strategy.
+   * @param {Object} [options.matchOptions] [`CacheQueryOptions`](https://w3c.github.io/ServiceWorker/#dictdef-cachequeryoptions)
    */
-  constructor(options: StrategyOptions) {
+  constructor(options: StrategyOptions = {}) {
     super(options);
 
     // If this instance contains no plugins with a 'cacheWillUpdate' callback,
@@ -74,7 +75,7 @@ class StaleWhileRevalidate extends Strategy {
     if (process.env.NODE_ENV !== 'production') {
       assert!.isInstance(request, Request, {
         moduleName: 'workbox-strategies',
-        className: 'StaleWhileRevalidate',
+        className: this.constructor.name,
         funcName: 'handle',
         paramName: 'request',
       });
@@ -105,13 +106,15 @@ class StaleWhileRevalidate extends Strategy {
         // https://github.com/microsoft/TypeScript/issues/20006
         response = (await fetchAndCachePromise as Response | undefined);
       } catch (err) {
-        error = err;
+        if (err instanceof Error) {
+          error = err;
+        }
       }
     }
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
-          messages.strategyStart('StaleWhileRevalidate', request));
+          messages.strategyStart(this.constructor.name, request));
       for (const log of logs) {
         logger.log(log);
       }

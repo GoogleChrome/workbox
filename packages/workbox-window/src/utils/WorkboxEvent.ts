@@ -28,8 +28,9 @@ export class WorkboxEvent<K extends keyof WorkboxEventMap> {
 }
 
 export interface WorkboxMessageEvent extends WorkboxEvent<'message'> {
-  originalEvent: Event;
   data: any;
+  originalEvent: Event;
+  ports: readonly MessagePort[];
 }
 
 export interface WorkboxLifecycleEvent extends WorkboxEvent<keyof WorkboxLifecycleEventMap> {

@@ -10,10 +10,10 @@ const expect = require('chai').expect;
 const upath = require('upath');
 const proxyquire = require('proxyquire');
 
-const errors = require('../../../../packages/workbox-build/src/lib/errors');
+const {errors} = require('../../../../packages/workbox-build/build/lib/errors');
 
 describe(`[workbox-build] lib/get-file-details.js`, function() {
-  const MODULE_PATH = '../../../../packages/workbox-build/src/lib/get-file-details';
+  const MODULE_PATH = '../../../../packages/workbox-build/build/lib/get-file-details';
   const GLOB_DIRECTORY = './';
   const GLOB_PATTERN = 'file*';
   const DIRECTORY = 'directory';
@@ -23,7 +23,7 @@ describe(`[workbox-build] lib/get-file-details.js`, function() {
   const HASH = 'example-hash';
 
   it(`should throw when there's a glob.sync() error`, function() {
-    const getFileDetails = proxyquire(MODULE_PATH, {
+    const {getFileDetails} = proxyquire(MODULE_PATH, {
       glob: {
         sync: () => {
           throw new Error();
@@ -43,7 +43,7 @@ describe(`[workbox-build] lib/get-file-details.js`, function() {
   });
 
   it(`should return a warning when the pattern doesn't match anything`, function() {
-    const getFileDetails = proxyquire(MODULE_PATH, {
+    const {getFileDetails} = proxyquire(MODULE_PATH, {
       glob: {
         sync: () => [],
       },
@@ -58,23 +58,27 @@ describe(`[workbox-build] lib/get-file-details.js`, function() {
   });
 
   it(`should return array of file details, without null values`, function() {
-    const getFileDetails = proxyquire(MODULE_PATH, {
+    const {getFileDetails} = proxyquire(MODULE_PATH, {
       'glob': {
         sync: () => {
           return [FILE1, FILE2, DIRECTORY];
         },
       },
-      './get-file-size': (value) => {
-        if (upath.normalize(value) === upath.normalize(DIRECTORY)) {
-          return null;
-        }
-        return SIZE;
+      './get-file-size': {
+        getFileSize: (value) => {
+          if (upath.normalize(value) === upath.normalize(DIRECTORY)) {
+            return null;
+          }
+          return SIZE;
+        },
       },
-      './get-file-hash': (value) => {
-        if (upath.normalize(value) === upath.normalize(DIRECTORY)) {
-          throw new Error(`getFileHash(${DIRECTORY}) shouldn't have been called.`);
-        }
-        return HASH;
+      './get-file-hash': {
+        getFileHash: (value) => {
+          if (upath.normalize(value) === upath.normalize(DIRECTORY)) {
+            throw new Error(`getFileHash(${DIRECTORY}) shouldn't have been called.`);
+          }
+          return HASH;
+        },
       },
     });
 
@@ -83,7 +87,7 @@ describe(`[workbox-build] lib/get-file-details.js`, function() {
       globPattern: GLOB_PATTERN,
     });
 
-    expect(warning).to.be.undefined;
+    expect(warning).to.eql('');
     expect(globbedFileDetails).to.deep.equal([{
       file: FILE1,
       hash: HASH,

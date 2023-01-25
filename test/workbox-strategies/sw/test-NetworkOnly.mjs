@@ -10,6 +10,7 @@ import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
 import {NetworkOnly} from 'workbox-strategies/NetworkOnly.mjs';
 import {spyOnEvent} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
 import {generateUniqueResponse} from '../../../infra/testing/helpers/generateUniqueResponse.mjs';
+import {sleep} from '../../../infra/testing/helpers/sleep.mjs';
 
 
 describe(`NetworkOnly`, function() {
@@ -137,6 +138,34 @@ describe(`NetworkOnly`, function() {
 
       expect(fetchStub.calledOnce).to.be.true;
       expect(fetchStub.calledWith(request, fetchOptions)).to.be.true;
+    });
+
+    it(`should throw if the network request times out`, async function() {
+      const request = new Request('http://example.io/test/');
+      const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
+
+      // Use a short timeout to not slow down the test.
+      // Note Sinon fake timers do not work with `await timeout()` used
+      // in the current `StrategyHandler` implementation.
+      const networkTimeoutSeconds = 0.5;
+      const sleepLongerThanNetworkTimeout =
+          sleep(2 * networkTimeoutSeconds * 1000);
+
+      sandbox.stub(self, 'fetch').callsFake(async () => {
+        await sleepLongerThanNetworkTimeout;
+        return new Response('Unexpected Response');
+      });
+
+      const networkOnly = new NetworkOnly({networkTimeoutSeconds});
+
+      await expectError(
+          () => networkOnly.handle({event, request}),
+          'no-response',
+          (err) => {
+            expect(err.details.error.message).to.include(networkTimeoutSeconds);
+          },
+      );
     });
   });
 });

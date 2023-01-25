@@ -14,6 +14,11 @@ const templateData = require('../template-data');
 const match = '/test/:packageName/sw/';
 
 async function handler(req, res) {
+  // See https://github.com/GoogleChrome/workbox/pull/2744#issuecomment-774138051
+  if (!req.path.endsWith('/')) {
+    return res.redirect(req.path + '/');
+  }
+
   const {packageName} = req.params;
   const testFilter = req.query.filter || '**/test-*.mjs';
 

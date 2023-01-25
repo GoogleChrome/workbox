@@ -10,7 +10,7 @@
 // Removes the initial portion, since that's obtained from error.message.
 // Removes every stack frame earlier than the last instance of moduleName,
 // since that's just frames related to the Node runtime/loader.
-export function cleanupStackTrace(error: Error, moduleName: string) {
+export function cleanupStackTrace(error: Error, moduleName: string): string {
   if (!error.stack) {
     return '';
   }

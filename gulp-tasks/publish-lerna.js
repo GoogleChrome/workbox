@@ -14,19 +14,14 @@ const logHelper = require('../infra/utils/log-helper');
 async function publish_lerna() {
   const options = ['publish', '--force-publish'];
 
-  // gulp publish_lerna --distTag=blah takes precedence.
+  // gulp publish --distTag=latest would be the most common.
   if (global.cliOptions.distTag) {
     logHelper.log(ol`Using ${logHelper.highlight(
         '--dist-tag=' + global.cliOptions.distTag)}`);
     options.push('--dist-tag', global.cliOptions.distTag);
   } else {
-    // If we're not on master, publish to next on npm.
-    const {stdout} = await execa('git', ['symbolic-ref', '--short', 'HEAD']);
-    if (stdout !== 'master') {
-      logHelper.log(ol`Using ${logHelper.highlight('--dist-tag=next')} as
-          the current git branch is ${logHelper.highlight(stdout)}.`);
-      options.push('--dist-tag', 'next');
-    }
+    throw new Error(ol`Please set the --distTag command line option, normally
+        to 'latest' (for a stable release) or 'next' (for a pre-release).`);
   }
 
   await execa('lerna', options, {

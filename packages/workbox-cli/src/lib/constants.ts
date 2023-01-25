@@ -14,4 +14,5 @@ export const constants = {
   ignoredFileExtensions: [
     'map',
   ],
+  ignoreURLParametersMatching: [/^utm_/, /^fbclid$/],
 };

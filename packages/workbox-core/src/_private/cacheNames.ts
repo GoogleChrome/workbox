@@ -12,10 +12,10 @@ import '../_version.js';
 declare let registration: ServiceWorkerRegistration|undefined;
 
 export interface CacheNameDetails {
-  googleAnalytics: string; 
-  precache: string; 
-  prefix: string; 
-  runtime: string; 
+  googleAnalytics: string;
+  precache: string;
+  prefix: string;
+  runtime: string;
   suffix: string;
 }
 
@@ -41,33 +41,33 @@ const _createCacheName = (cacheName: string): string => {
       .join('-');
 };
 
-const eachCacheNameDetail = (fn: Function): void => {
+const eachCacheNameDetail = (fn: (key: CacheNameDetailsProp) => void): void => {
   for (const key of Object.keys(_cacheNameDetails)) {
     fn(key as CacheNameDetailsProp);
   }
-} 
+}
 
 export const cacheNames = {
-  updateDetails: (details: PartialCacheNameDetails) => {
-    eachCacheNameDetail((key: CacheNameDetailsProp) => {
+  updateDetails: (details: PartialCacheNameDetails): void => {
+    eachCacheNameDetail((key: CacheNameDetailsProp): void => {
       if (typeof details[key] === 'string') {
         _cacheNameDetails[key] = details[key];
       }
     })
   },
-  getGoogleAnalyticsName: (userCacheName?: string) => {
+  getGoogleAnalyticsName: (userCacheName?: string): string => {
     return userCacheName || _createCacheName(_cacheNameDetails.googleAnalytics);
   },
-  getPrecacheName: (userCacheName?: string) => {
+  getPrecacheName: (userCacheName?: string): string => {
     return userCacheName || _createCacheName(_cacheNameDetails.precache);
   },
-  getPrefix: () => {
+  getPrefix: (): string => {
     return _cacheNameDetails.prefix;
   },
-  getRuntimeName: (userCacheName?: string) => {
+  getRuntimeName: (userCacheName?: string): string => {
     return userCacheName || _createCacheName(_cacheNameDetails.runtime);
   },
-  getSuffix: () => {
+  getSuffix: (): string => {
     return _cacheNameDetails.suffix;
   },
 };

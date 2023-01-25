@@ -7,15 +7,15 @@
 */
 
 const expect = require('chai').expect;
-const activateAndControlSW = require('../../../infra/testing/activate-and-control');
+
 const {runUnitTests} = require('../../../infra/testing/webdriver/runUnitTests');
-const {openNewTab} = require('../../../infra/testing/webdriver/openNewTab');
-const {getLastWindowHandle} = require('../../../infra/testing/webdriver/getLastWindowHandle');
+const {TabManager} = require('../../../infra/testing/webdriver/TabManager');
+const activateAndControlSW = require('../../../infra/testing/activate-and-control');
+const cleanSWEnv = require('../../../infra/testing/clean-sw');
 const templateData = require('../../../infra/testing/server/template-data');
 
-
 // Store local references of these globals.
-const {webdriver, server} = global.__workbox;
+const {webdriver, server, seleniumBrowser} = global.__workbox;
 
 describe(`[workbox-broadcast-update]`, function() {
   it(`passes all SW unit tests`, async function() {
@@ -29,11 +29,13 @@ describe(`[workbox-broadcast-update] Plugin`, function() {
   const swURL = `${testingURL}sw.js`;
   const apiURL = `${testServerAddress}/__WORKBOX/uniqueETag`;
 
-  it(`should broadcast a message when there's a cache update to a regular request`, async function() {
-    await webdriver.get(testingURL);
+  beforeEach(async function() {
+    // Navigate to our test page and clear all caches before this test runs.
+    await cleanSWEnv(global.__workbox.webdriver, testingURL);
     await activateAndControlSW(swURL);
-    await clearAllCaches();
+  });
 
+  it(`should broadcast a message when there's a cache update to a regular request`, async function() {
     // Fetch `apiURL`, which should put it in the cache (but not trigger an update)
     const err1 = await webdriver.executeAsyncScript((apiURL, cb) => {
       fetch(apiURL).then(() => cb()).catch((err) => cb(err.message));
@@ -68,13 +70,9 @@ describe(`[workbox-broadcast-update] Plugin`, function() {
   });
 
   it(`should broadcast a message when there's a cache update to a navigation request`, async function() {
-    await webdriver.get(testingURL);
-    await activateAndControlSW(swURL);
-    await clearAllCaches();
-
     templateData.assign({
       title: 'Broadcast Cache Update Test',
-      body: '',
+      body: 'Second test, initial body.',
       script: `
         window.__messages = [];
         navigator.serviceWorker.addEventListener('message', (event) => {
@@ -83,7 +81,7 @@ describe(`[workbox-broadcast-update] Plugin`, function() {
       `,
     });
 
-    const dynamicPageURL = testingURL + 'integration.html.njk';
+    const dynamicPageURL = testingURL + 'integration.html.njk?second';
 
     // Navigate to a dynamic page whose content can be updated from with this
     // test, and wait until the cache is populated.
@@ -95,9 +93,9 @@ describe(`[workbox-broadcast-update] Plugin`, function() {
     });
 
     // Update the template data with new content,
-    // then refresh and wait until the udpate message is received.
+    // then refresh and wait until the update message is received.
     templateData.assign({
-      body: 'New content to change Content-Length!',
+      body: 'Second test, with and updated body.',
     });
 
     await webdriver.get(webdriver.getCurrentUrl());
@@ -124,13 +122,17 @@ describe(`[workbox-broadcast-update] Plugin`, function() {
   });
 
   it(`should broadcast a message to all open window clients`, async function() {
-    await webdriver.get(testingURL);
-    await activateAndControlSW(swURL);
-    await clearAllCaches();
+    // This test doesn't work in Safari:
+    // https://github.com/GoogleChrome/workbox/issues/2755
+    if (seleniumBrowser.getId() === 'safari') {
+      this.skip();
+    }
+
+    const tabManager = new TabManager(webdriver);
 
     templateData.assign({
       title: 'Broadcast Cache Update Test',
-      body: '',
+      body: 'Third test, initial body.',
       script: `
         window.__messages = [];
         navigator.serviceWorker.addEventListener('message', (event) => {
@@ -139,71 +141,44 @@ describe(`[workbox-broadcast-update] Plugin`, function() {
       `,
     });
 
-    const dynamicPageURL = testingURL + 'integration.html.njk';
+    const dynamicPageURL = testingURL + 'integration.html.njk?third';
 
     // Navigate to a dynamic page whose content can be updated from with this
     // test, and wait until the cache is populated.
     await webdriver.get(dynamicPageURL);
-    const tab1Handle = await getLastWindowHandle();
     await webdriver.wait(async () => {
       return webdriver.executeAsyncScript(async (url, cb) => {
         cb(await caches.match(url));
       }, dynamicPageURL);
     });
 
-    // Update the template data with new content,
-    // then open a new tab and wait until the udpate message is received.
+    // Update the template data, then open a new tab to trigger the update.
     templateData.assign({
-      body: 'New content to change Content-Length!',
+      body: 'Third test, with an updated body.',
     });
-    await openNewTab(dynamicPageURL);
+
+    await tabManager.openTab(dynamicPageURL);
+
+    // Go back to the initial tab to assert the message was received there.
+    await tabManager.closeOpenedTabs();
+
     await webdriver.wait(() => {
       return webdriver.executeScript(() => {
         return window.__messages.length > 0;
       });
     });
 
-    const tab2Messsages = await webdriver.executeScript(() => {
+    const tab1Messages = await webdriver.executeScript(() => {
       return window.__messages;
     });
 
-    expect(tab2Messsages.length).to.equal(1);
-    expect(tab2Messsages[0]).to.deep.equal({
+    expect(tab1Messages).to.eql([{
       type: 'CACHE_UPDATED',
       meta: 'workbox-broadcast-update',
       payload: {
         cacheName: 'bcu-integration-test',
         updatedURL: dynamicPageURL,
       },
-    });
-
-    // Also assert a message was received on the first tab.
-    await webdriver.switchTo().window(tab1Handle);
-    const tab1Messsages = await webdriver.executeScript(() => {
-      return window.__messages;
-    });
-
-    expect(tab1Messsages.length).to.equal(1);
-    expect(tab1Messsages[0]).to.deep.equal({
-      type: 'CACHE_UPDATED',
-      meta: 'workbox-broadcast-update',
-      payload: {
-        cacheName: 'bcu-integration-test',
-        updatedURL: dynamicPageURL,
-      },
-    });
+    }]);
   });
 });
-
-/**
- * Clears all caches for the origin of the currently open page.
- */
-async function clearAllCaches() {
-  await webdriver.executeAsyncScript(async (cb) => {
-    const cacheNames = await caches.keys();
-    for (const name of cacheNames) {
-      await caches.delete(name);
-    }
-    cb();
-  });
-}

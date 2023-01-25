@@ -7,9 +7,9 @@
 */
 
 import {Queue} from 'workbox-background-sync/Queue.mjs';
-import {QueueStore} from 'workbox-background-sync/lib/QueueStore.mjs';
+import {QueueDb} from 'workbox-background-sync/lib/QueueDb.mjs';
 import {cacheNames} from 'workbox-core/_private/cacheNames.mjs';
-import {DBWrapper} from 'workbox-core/_private/DBWrapper.mjs';
+import {openDB} from 'idb';
 import {initialize} from 'workbox-google-analytics/initialize.mjs';
 import {
   GOOGLE_ANALYTICS_HOST,
@@ -27,12 +27,13 @@ const PAYLOAD = 'v=1&t=pageview&tid=UA-12345-1&cid=1&dp=%2F';
 
 describe(`initialize`, function() {
   const sandbox = sinon.createSandbox();
-  const db = new DBWrapper('workbox-background-sync', 3, {
-    onupgradeneeded: QueueStore.prototype._upgradeDb,
-  });
+  let db = null;
 
   beforeEach(async function() {
     Queue._queueNames.clear();
+    db = await openDB('workbox-background-sync', 3, {
+      upgrade: QueueDb.prototype._upgradeDb,
+    });
     sandbox.restore();
     await db.clear('requests');
 
@@ -147,6 +148,10 @@ describe(`initialize`, function() {
   });
 
   it(`should register GET/POST routes for collect endpoints`, async function() {
+    // Stub out fetch(), since this test is about routing, and doesn't need to
+    // contact the production Google Analytics endpoints.
+    sandbox.stub(self, 'fetch').callsFake(() => new Response('ignored'));
+
     sandbox.spy(NetworkOnly.prototype, 'handle');
 
     initialize();
@@ -191,7 +196,9 @@ describe(`initialize`, function() {
   });
 
   it(`should not alter successful hit payloads`, async function() {
-    sandbox.spy(self, 'fetch');
+    // Stub out fetch(), since this test is about routing, and doesn't need to
+    // contact the production Google Analytics endpoints.
+    sandbox.stub(self, 'fetch').callsFake(() => new Response('ignored'));
 
     initialize();
 
@@ -220,7 +227,9 @@ describe(`initialize`, function() {
   });
 
   it(`should not alter hit paths`, async function() {
-    sandbox.spy(self, 'fetch');
+    // Stub out fetch(), since this test is about routing, and doesn't need to
+    // contact the production Google Analytics endpoints.
+    sandbox.stub(self, 'fetch').callsFake(() => new Response('ignored'));
 
     initialize();
 

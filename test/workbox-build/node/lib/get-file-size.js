@@ -9,15 +9,15 @@
 const expect = require('chai').expect;
 const proxyquire = require('proxyquire');
 
-const errors = require('../../../../packages/workbox-build/src/lib/errors.js');
+const {errors} = require('../../../../packages/workbox-build/build/lib/errors.js');
 
 describe(`[workbox-build] lib/get-file-size.js`, function() {
-  const MODULE_PATH = '../../../../packages/workbox-build/src/lib/get-file-size';
+  const MODULE_PATH = '../../../../packages/workbox-build/build/lib/get-file-size';
   const FILE = 'file.txt';
 
   it(`should throw when fs.statSync() fails`, function() {
-    const getFileSize = proxyquire(MODULE_PATH, {
-      fs: {
+    const {getFileSize} = proxyquire(MODULE_PATH, {
+      'fs-extra': {
         statSync: () => {
           throw new Error();
         },
@@ -33,8 +33,8 @@ describe(`[workbox-build] lib/get-file-size.js`, function() {
   });
 
   it(`should return null for non-files`, function() {
-    const getFileSize = proxyquire(MODULE_PATH, {
-      fs: {
+    const {getFileSize} = proxyquire(MODULE_PATH, {
+      'fs-extra': {
         statSync: () => {
           return {
             isFile: () => false,
@@ -50,8 +50,8 @@ describe(`[workbox-build] lib/get-file-size.js`, function() {
   it(`should return the expected file size`, function() {
     const expectedSize = 1234;
 
-    const getFileSize = proxyquire(MODULE_PATH, {
-      fs: {
+    const {getFileSize} = proxyquire(MODULE_PATH, {
+      'fs-extra': {
         statSync: () => {
           return {
             isFile: () => true,

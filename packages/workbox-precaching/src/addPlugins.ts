@@ -18,9 +18,9 @@ import './_version.js';
  *
  * @memberof module:workbox-precaching
  */
-function addPlugins(plugins: WorkboxPlugin[]) {
+function addPlugins(plugins: WorkboxPlugin[]): void {
   const precacheController = getOrCreatePrecacheController();
-  return precacheController.addPlugins(plugins);
+  precacheController.strategy.plugins.push(...plugins);
 }
 
 export {addPlugins};

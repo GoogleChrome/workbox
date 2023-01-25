@@ -17,13 +17,12 @@ export interface CleanupResult {
   deletedCacheRequests: string[];
 }
 
-export interface PrecacheEntry {
+export declare interface PrecacheEntry {
   integrity?: string;
   url: string;
-  revision?: string;
+  revision?: string | null;
 }
-
-export interface FetchListenerOptions {
+export interface PrecacheRouteOptions {
   directoryIndex?: string;
   ignoreURLParametersMatching?: RegExp[];
   cleanURLs?: boolean;

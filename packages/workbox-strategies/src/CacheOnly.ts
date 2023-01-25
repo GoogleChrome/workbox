@@ -26,7 +26,7 @@ import './_version.js';
  *
  * If there is no cache match, this will throw a `WorkboxError` exception.
  *
- * @extends module:workbox-core.Strategy
+ * @extends module:workbox-strategies.Strategy
  * @memberof module:workbox-strategies
  */
 class CacheOnly extends Strategy {
@@ -41,7 +41,7 @@ class CacheOnly extends Strategy {
     if (process.env.NODE_ENV !== 'production') {
       assert!.isInstance(request, Request, {
         moduleName: 'workbox-strategies',
-        className: 'CacheOnly',
+        className: this.constructor.name,
         funcName: 'makeRequest',
         paramName: 'request',
       });
@@ -51,10 +51,10 @@ class CacheOnly extends Strategy {
 
     if (process.env.NODE_ENV !== 'production') {
       logger.groupCollapsed(
-          messages.strategyStart('CacheOnly', request));
+          messages.strategyStart(this.constructor.name, request));
       if (response) {
-        logger.log(`Found a cached response in the '${this.cacheName}'` +
-          ` cache.`);
+        logger.log(`Found a cached response in the '${this.cacheName}' ` +
+          `cache.`);
         messages.printFinalResponse(response);
       } else {
         logger.log(`No response found in the '${this.cacheName}' cache.`);

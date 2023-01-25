@@ -15,12 +15,12 @@ declare let self: ServiceWorkerGlobalScope;
 
 /**
  * This method is deprecated, and will be removed in Workbox v7.
- * 
+ *
  * Calling self.skipWaiting() is equivalent, and should be used instead.
  *
  * @memberof module:workbox-core
  */
-function skipWaiting() {
+function skipWaiting(): void {
   // Just call self.skipWaiting() directly.
   // See https://github.com/GoogleChrome/workbox/issues/2525
   if (process.env.NODE_ENV !== 'production') {
@@ -29,7 +29,7 @@ function skipWaiting() {
         `is equivalent.`);
   }
 
-  self.skipWaiting();
+  void self.skipWaiting();
 }
 
 export {skipWaiting}

@@ -37,6 +37,28 @@ class ErrorStrategy extends Strategy {
   }
 }
 
+class HandlerThrowsStrategy extends Strategy {
+  constructor(options) {
+    super(options);
+    this._error = options.error;
+  }
+  async _handle(request, handler) {
+    throw this._error;
+  }
+}
+
+class HandlerReturnsUndefinedStrategy extends Strategy {
+  async _handle(request, handler) {
+    return undefined;
+  }
+}
+
+class HandlerReturnsResponseErrorStrategy extends Strategy {
+  async _handle(request, handler) {
+    return Response.error();
+  }
+}
+
 class ExtendingStrategy extends FetchStrategy {
   constructor(options) {
     super(options);
@@ -307,6 +329,130 @@ describe(`Strategy`, function() {
       }))).to.be.true;
       expect(await plugins[0].handlerDidComplete.firstCall.args[0].response
           .clone().text()).to.equal('generated response');
+    });
+  });
+
+  describe('handlerDidError', function() {
+    it('should use the first callback that returns a Response when _handler() throws', async function() {
+      const plugins = [{
+        handlerDidError: sandbox.stub().resolves(undefined),
+      }, {
+        handlerDidError: sandbox.stub().resolves(new Response('from plugin')),
+      }, {
+        handlerDidError: sandbox.stub().resolves(undefined),
+      }];
+      const error = new Error('thrown error');
+      const strategy = new HandlerThrowsStrategy({error, plugins});
+
+      const {request, event} = generateOptions();
+
+      const [responsePromise] = strategy.handleAll({request, event});
+      const response = await responsePromise;
+      const responseBody = await response.text();
+      const expectedArgs = [[{
+        error,
+        event,
+        request,
+        state: {},
+      }]];
+
+      expect(responseBody).to.eql('from plugin');
+      expect(plugins[0].handlerDidError.args).to.eql(expectedArgs);
+      expect(plugins[1].handlerDidError.args).to.eql(expectedArgs);
+      // This shouldn't run, since the previous plugin returns a response.
+      expect(plugins[2].handlerDidError.args).to.eql([]);
+    });
+
+    it(`should rethrow the error when the callbacks don't return a Response`, async function() {
+      const plugins = [{
+        handlerDidError: sandbox.stub().resolves(undefined),
+      }, {
+        handlerDidError: sandbox.stub().resolves(undefined),
+      }];
+      const error = new Error('thrown error');
+      const strategy = new HandlerThrowsStrategy({error, plugins});
+
+      const {request, event} = generateOptions();
+
+      const [responsePromise] = strategy.handleAll({request, event});
+      try {
+        await responsePromise;
+        throw new Error('unexpected error');
+      } catch (thrownError) {
+        expect(thrownError).to.eql(error);
+
+        const expectedArgs = [[{
+          error,
+          event,
+          request,
+          state: {},
+        }]];
+
+        expect(plugins[0].handlerDidError.args).to.eql(expectedArgs);
+        expect(plugins[1].handlerDidError.args).to.eql(expectedArgs);
+      }
+    });
+
+    it('should use the callback Response when _handler() returns undefined', async function() {
+      const plugins = [{
+        handlerDidError: sandbox.stub().resolves(new Response('from plugin')),
+      }];
+      const strategy = new HandlerReturnsUndefinedStrategy({plugins});
+
+      const {request, event} = generateOptions();
+
+      const [responsePromise] = strategy.handleAll({request, event});
+      const response = await responsePromise;
+      const responseBody = await response.text();
+
+      expect(responseBody).to.eql('from plugin');
+
+      // We can't do a deep equality check without a reference to the
+      // WorkboxError, so just do a sanity check.
+      expect(plugins[0].handlerDidError.args[0][0].error.name).to.eql('no-response');
+    });
+
+    it('should throw an error when _handler() returns undefined and the callbacks return undefined', async function() {
+      const plugins = [{
+        handlerDidError: sandbox.stub().resolves(undefined),
+      }];
+      const strategy = new HandlerReturnsUndefinedStrategy({plugins});
+
+      const {request, event} = generateOptions();
+
+      const [responsePromise] = strategy.handleAll({request, event});
+      try {
+        await responsePromise;
+        throw new Error('unexpected error');
+      } catch (thrownError) {
+        expect(thrownError.name).to.eql('no-response');
+
+        expect(plugins[0].handlerDidError.args).to.eql([[{
+          event,
+          request,
+          error: thrownError,
+          state: {},
+        }]]);
+      }
+    });
+
+    it('should use the callback Response when _handler() returns Response.error()', async function() {
+      const plugins = [{
+        handlerDidError: sandbox.stub().resolves(new Response('from plugin')),
+      }];
+      const strategy = new HandlerReturnsResponseErrorStrategy({plugins});
+
+      const {request, event} = generateOptions();
+
+      const [responsePromise] = strategy.handleAll({request, event});
+      const response = await responsePromise;
+      const responseBody = await response.text();
+
+      expect(responseBody).to.eql('from plugin');
+
+      // We can't do a deep equality check without a reference to the
+      // WorkboxError, so just do a sanity check.
+      expect(plugins[0].handlerDidError.args[0][0].error.name).to.eql('no-response');
     });
   });
 

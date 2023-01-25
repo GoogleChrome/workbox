@@ -6,21 +6,24 @@
   https://opensource.org/licenses/MIT.
 */
 
-const asyncToPromises = require('babel-plugin-transform-async-to-promises');
 const {babel} = require('@rollup/plugin-babel');
+const {nodeResolve} = require('@rollup/plugin-node-resolve');
+const asyncToPromises = require('babel-plugin-transform-async-to-promises');
 const replace = require('@rollup/plugin-replace');
-const resolve = require('@rollup/plugin-node-resolve');
 const terserPlugin = require('rollup-plugin-terser').terser;
 
 const constants = require('./constants');
 const getVersionsCDNUrl = require('./versioned-cdn-url');
+
+// See https://github.com/GoogleChrome/workbox/issues/1674
+const nameCache = {};
 
 module.exports = {
   // Every use of rollup should have minification and the replace
   // plugin set up and used to ensure as consist set of tests
   // as possible.
   getDefaultPlugins: (buildType, buildFormat = 'iife', es5 = false) => {
-    const plugins = [resolve()];
+    const plugins = [nodeResolve()];
 
     const babelConfig = {
       babelHelpers: 'bundled',
@@ -46,6 +49,7 @@ module.exports = {
     const minifyBuild = buildType === constants.BUILD_TYPES.prod;
     if (minifyBuild) {
       const terserOptions = {
+        nameCache,
         module: buildFormat === 'esm' ? true : false,
         mangle: {
           properties: {
@@ -54,8 +58,10 @@ module.exports = {
               '_obj',
               // We need this to be exported correctly.
               '_private',
+              // See https://github.com/GoogleChrome/workbox/issues/2686
+              '_handle',
             ],
-            // mangle > properties > regex will allow uglify-es to minify
+            // mangle > properties > regex will allow terser to minify
             // private variable and names that start with a single underscore
             // followed by a letter. This restriction to avoid mangling
             // unintentional fields in our or other libraries code.
@@ -72,6 +78,7 @@ module.exports = {
 
     // This is what the build should be
     const replaceOptions = {
+      'preventAssignment': true,
       'WORKBOX_CDN_ROOT_URL': getVersionsCDNUrl(),
     };
 

@@ -25,14 +25,14 @@ module.exports = (compilation, chunkNames) => {
         }
       }
     } else {
-      compilation.warnings.push(`${chunkName} was provided to ` +
-        `importScriptsViaChunks, but didn't match any named chunks.`);
+      compilation.warnings.push(new Error(`${chunkName} was provided to ` +
+        `importScriptsViaChunks, but didn't match any named chunks.`));
     }
   }
 
   if (scriptFiles.size === 0) {
-    compilation.warnings.push(`There were no assets matching ` +
-        `importScriptsViaChunks: [${chunkNames}].`);
+    compilation.warnings.push(new Error(`There were no assets matching ` +
+        `importScriptsViaChunks: [${chunkNames}].`));
   }
 
   return Array.from(scriptFiles);

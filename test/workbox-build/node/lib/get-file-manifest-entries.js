@@ -9,10 +9,10 @@
 const expect = require('chai').expect;
 const proxyquire = require('proxyquire');
 
-const errors = require('../../../../packages/workbox-build/src/lib/errors');
+const {errors} = require('../../../../packages/workbox-build/build/lib/errors');
 
 describe(`[workbox-build] Test getFileManifestEntries`, function() {
-  const MODULE_PATH = '../../../../packages/workbox-build/src/lib/get-file-manifest-entries';
+  const MODULE_PATH = '../../../../packages/workbox-build/build/lib/get-file-manifest-entries';
   const GLOB_DIRECTORY = './';
   const GLOB_PATTERNS = ['invalid*'];
   const FILE = {
@@ -22,7 +22,7 @@ describe(`[workbox-build] Test getFileManifestEntries`, function() {
   };
 
   it(`should return empty info when neither globDirectory nor templatedURLs are provided`, async function() {
-    const getFileManifestEntries = require(MODULE_PATH);
+    const {getFileManifestEntries} = require(MODULE_PATH);
 
     const {count, size, manifestEntries} = await getFileManifestEntries({});
 
@@ -32,12 +32,14 @@ describe(`[workbox-build] Test getFileManifestEntries`, function() {
   });
 
   it(`should not return the same file twice`, async function() {
-    const getFileManifestEntries = proxyquire(MODULE_PATH, {
-      './get-file-details': () => {
-        return {
-          globbedFileDetails: [FILE, FILE],
-          warning: undefined,
-        };
+    const {getFileManifestEntries} = proxyquire(MODULE_PATH, {
+      './get-file-details': {
+        getFileDetails: () => {
+          return {
+            globbedFileDetails: [FILE, FILE],
+            warning: undefined,
+          };
+        },
       },
     });
 
@@ -55,12 +57,14 @@ describe(`[workbox-build] Test getFileManifestEntries`, function() {
   });
 
   it(`should throw when a templatedURL matches a globbed file`, async function() {
-    const getFileManifestEntries = proxyquire(MODULE_PATH, {
-      './get-file-details': () => {
-        return {
-          globbedFileDetails: [FILE],
-          warning: undefined,
-        };
+    const {getFileManifestEntries} = proxyquire(MODULE_PATH, {
+      './get-file-details': {
+        getFileDetails: () => {
+          return {
+            globbedFileDetails: [FILE],
+            warning: undefined,
+          };
+        },
       },
     });
 
@@ -80,9 +84,11 @@ describe(`[workbox-build] Test getFileManifestEntries`, function() {
 
   it(`should treat an exception thrown by getFileDetails() as a warning message`, async function() {
     const warningMessage = 'test warning';
-    const getFileManifestEntries = proxyquire(MODULE_PATH, {
-      './get-file-details': () => {
-        throw new Error(warningMessage);
+    const {getFileManifestEntries} = proxyquire(MODULE_PATH, {
+      './get-file-details': {
+        getFileDetails: () => {
+          throw new Error(warningMessage);
+        },
       },
     });
 
@@ -98,10 +104,11 @@ describe(`[workbox-build] Test getFileManifestEntries`, function() {
   });
 
   it(`should throw when a templatedURL contains a pattern that doesn't match anything`, async function() {
-    const getFileManifestEntries = require(MODULE_PATH);
+    const {getFileManifestEntries} = require(MODULE_PATH);
 
     try {
       await getFileManifestEntries({
+        globDirectory: GLOB_DIRECTORY,
         templatedURLs: {
           [FILE.file]: GLOB_PATTERNS,
         },
@@ -117,12 +124,14 @@ describe(`[workbox-build] Test getFileManifestEntries`, function() {
     const url2 = '/path/to/url2';
     const stringValue = 'string';
 
-    const getFileManifestEntries = proxyquire(MODULE_PATH, {
-      './get-file-details': () => {
-        return {
-          globbedFileDetails: [FILE],
-          warning: undefined,
-        };
+    const {getFileManifestEntries} = proxyquire(MODULE_PATH, {
+      './get-file-details': {
+        getFileDetails: () => {
+          return {
+            globbedFileDetails: [FILE],
+            warning: undefined,
+          };
+        },
       },
     });
 

@@ -7,7 +7,8 @@
 */
 
 const {matchPart} = require('webpack').ModuleFilenameHelpers;
-const transformManifest = require('workbox-build/build/lib/transform-manifest');
+const {transformManifest} =
+    require('workbox-build/build/lib/transform-manifest');
 
 const getAssetHash = require('./get-asset-hash');
 const resolveWebpackURL = require('./resolve-webpack-url');
@@ -41,38 +42,55 @@ function checkConditions(asset, compilation, conditions = []) {
 }
 
 /**
- * Creates a mapping of an asset name to an Set of zero or more chunk names
- * that the asset is associated with.
+ * Returns the names of all the assets in all the chunks in a chunk group,
+ * if provided a chunk group name.
+ * Otherwise, if provided a chunk name, return all the assets in that chunk.
+ * Otherwise, if there isn't a chunk group or chunk with that name, return null.
  *
- * Those chunk names come from a combination of the `chunkName` property on the
- * asset, as well as the `stats.namedChunkGroups` property. That is the only
- * way to find out if an asset has an implicit descendent relationship with a
- * chunk, if it was, e.g., created by `SplitChunksPlugin`.
- *
- * See https://github.com/GoogleChrome/workbox/issues/1859
- * See https://github.com/webpack/webpack/issues/7073
- *
- * @param {Object} stats The webpack compilation stats.
- * @return {object<string, Set<string>>}
+ * @param {Compilation} compilation
+ * @param {string} chunkOrGroup
+ * @return {Array<Asset>|null}
  * @private
  */
-function assetToChunkNameMapping(stats) {
-  const mapping = {};
-
-  for (const asset of stats.assets) {
-    mapping[asset.name] = new Set(asset.chunkNames);
-  }
-
-  for (const [chunkName, {assets}] of Object.entries(stats.namedChunkGroups)) {
-    for (const assetName of assets) {
-      // See https://github.com/GoogleChrome/workbox/issues/2194
-      if (mapping[assetName]) {
-        mapping[assetName].add(chunkName);
-      }
+function getNamesOfAssetsInChunkOrGroup(compilation, chunkOrGroup) {
+  const chunkGroup = compilation.namedChunkGroups &&
+      compilation.namedChunkGroups.get(chunkOrGroup);
+  if (chunkGroup) {
+    const assetNames = [];
+    for (const chunk of chunkGroup.chunks) {
+      assetNames.push(...getNamesOfAssetsInChunk(chunk));
+    }
+    return assetNames;
+  } else {
+    const chunk = compilation.namedChunks &&
+        compilation.namedChunks.get(chunkOrGroup);
+    if (chunk) {
+      return getNamesOfAssetsInChunk(chunk);
     }
   }
 
-  return mapping;
+  // If we get here, there's no chunkGroup or chunk with that name.
+  return null;
+}
+
+/**
+ * Returns the names of all the assets in a chunk.
+ *
+ * @param {Chunk} chunk
+ * @return {Array<Asset>}
+ * @private
+ */
+function getNamesOfAssetsInChunk(chunk) {
+  const assetNames = [];
+
+  assetNames.push(...chunk.files);
+
+  // This only appears to be set in webpack v5.
+  if (chunk.auxiliaryFiles) {
+    assetNames.push(...chunk.auxiliaryFiles);
+  }
+
+  return assetNames;
 }
 
 /**
@@ -88,47 +106,55 @@ function assetToChunkNameMapping(stats) {
  */
 function filterAssets(compilation, config) {
   const filteredAssets = new Set();
-  // See https://webpack.js.org/configuration/stats/#stats
-  // We only need assets and chunkGroups here.
-  const stats = compilation.getStats().toJson({
-    assets: true,
-    chunkGroups: true,
-  });
+  const assets = compilation.getAssets();
 
-  const assetNameToChunkNames = assetToChunkNameMapping(stats);
-
+  const allowedAssetNames = new Set();
   // See https://github.com/GoogleChrome/workbox/issues/1287
   if (Array.isArray(config.chunks)) {
-    for (const chunk of config.chunks) {
-      if (!(chunk in stats.namedChunkGroups)) {
-        compilation.warnings.push(`The chunk '${chunk}' was provided in ` +
-          `your Workbox chunks config, but was not found in the compilation.`);
+    for (const name of config.chunks) {
+      // See https://github.com/GoogleChrome/workbox/issues/2717
+      const assetsInChunkOrGroup = getNamesOfAssetsInChunkOrGroup(
+          compilation, name);
+      if (assetsInChunkOrGroup) {
+        for (const assetName of assetsInChunkOrGroup) {
+          allowedAssetNames.add(assetName);
+        }
+      } else {
+        compilation.warnings.push(new Error(`The chunk '${name}' was ` +
+          `provided in your Workbox chunks config, but was not found in the ` +
+          `compilation.`));
       }
     }
   }
 
-  // See https://webpack.js.org/api/stats/#asset-objects
-  for (const asset of stats.assets) {
-    // chunkName based filtering is funky because:
-    // - Each asset might belong to one or more chunkNames.
+  const deniedAssetNames = new Set();
+  if (Array.isArray(config.excludeChunks)) {
+    for (const name of config.excludeChunks) {
+      // See https://github.com/GoogleChrome/workbox/issues/2717
+      const assetsInChunkOrGroup = getNamesOfAssetsInChunkOrGroup(
+          compilation, name);
+      if (assetsInChunkOrGroup) {
+        for (const assetName of assetsInChunkOrGroup) {
+          deniedAssetNames.add(assetName);
+        }
+      } // Don't warn if the chunk group isn't found.
+    }
+  }
+
+  for (const asset of assets) {
+    // chunk based filtering is funky because:
+    // - Each asset might belong to one or more chunks.
     // - If *any* of those chunk names match our config.excludeChunks,
     //   then we skip that asset.
     // - If the config.chunks is defined *and* there's no match
     //   between at least one of the chunkNames and one entry, then
     //   we skip that assets as well.
-    const isExcludedChunk = Array.isArray(config.excludeChunks) &&
-      config.excludeChunks.some((chunkName) => {
-        return assetNameToChunkNames[asset.name].has(chunkName);
-      });
-    if (isExcludedChunk) {
+
+    if (deniedAssetNames.has(asset.name)) {
       continue;
     }
 
-    const isIncludedChunk = !Array.isArray(config.chunks) ||
-      config.chunks.some((chunkName) => {
-        return assetNameToChunkNames[asset.name].has(chunkName);
-      });
-    if (!isIncludedChunk) {
+    if (Array.isArray(config.chunks) && !allowedAssetNames.has(asset.name)) {
       continue;
     }
 
@@ -156,30 +182,16 @@ module.exports = async (compilation, config) => {
   const filteredAssets = filterAssets(compilation, config);
 
   const {publicPath} = compilation.options.output;
-  const fileDetails = [];
 
-  for (const asset of filteredAssets) {
-    // Not sure why this would be false, but checking just in case, since
-    // our original list of assets comes from compilation.getStats().toJson(),
-    // not from compilation.assets.
-    if (asset.name in compilation.assets) {
-      // This matches the format expected by transformManifest().
-      fileDetails.push({
-        file: resolveWebpackURL(publicPath, asset.name),
-        hash: getAssetHash(compilation.assets[asset.name]),
-        size: asset.size || 0,
-      });
-    } else {
-      compilation.warnings.push(`Could not precache ${asset.name}, as it's ` +
-        `missing from compilation.assets. Please open a bug against Workbox ` +
-        `with details about your webpack config.`);
-    }
-  }
+  const fileDetails = Array.from(filteredAssets).map((asset) => {
+    return {
+      file: resolveWebpackURL(publicPath, asset.name),
+      hash: getAssetHash(asset),
+      size: asset.source.size() || 0,
+    };
+  });
 
-  // We also get back `size` and `count`, and it would be nice to log that
-  // somewhere, but... webpack doesn't offer info-level logs?
-  // https://github.com/webpack/webpack/issues/3996
-  const {manifestEntries, warnings} = await transformManifest({
+  const {manifestEntries, size, warnings} = await transformManifest({
     fileDetails,
     additionalManifestEntries: config.additionalManifestEntries,
     dontCacheBustURLsMatching: config.dontCacheBustURLsMatching,
@@ -189,11 +201,14 @@ module.exports = async (compilation, config) => {
     transformParam: compilation,
   });
 
-  compilation.warnings = compilation.warnings.concat(warnings || []);
+  // See https://github.com/GoogleChrome/workbox/issues/2790
+  for (const warning of warnings) {
+    compilation.warnings.push(new Error(warning));
+  }
 
   // Ensure that the entries are properly sorted by URL.
   const sortedEntries = manifestEntries.sort(
       (a, b) => a.url === b.url ? 0 : (a.url > b.url ? 1 : -1));
 
-  return sortedEntries;
+  return {size, sortedEntries};
 };

@@ -29,7 +29,7 @@ import {
 import './_version.js';
 
 
-interface GoogleAnalyticsInitializeOptions {
+export interface GoogleAnalyticsInitializeOptions {
   cacheName?: string;
   parameterOverrides?: {[paramName: string]: string};
   hitFilter?: (params: URLSearchParams) => void;
@@ -49,7 +49,7 @@ interface GoogleAnalyticsInitializeOptions {
 const createOnSyncCallback = (config: GoogleAnalyticsInitializeOptions) => {
   return async ({queue}: {queue: Queue}) => {
     let entry;
-    while (entry = await queue.shiftRequest()) {
+    while ((entry = await queue.shiftRequest())) {
       const {request, timestamp} = entry;
       const url = new URL(request.url);
 
@@ -93,14 +93,14 @@ const createOnSyncCallback = (config: GoogleAnalyticsInitializeOptions) => {
 
 
         if (process.env.NODE_ENV !== 'production') {
-          logger.log(`Request for '${getFriendlyURL(url.href)}'` +
+          logger.log(`Request for '${getFriendlyURL(url.href)}' ` +
              `has been replayed`);
         }
       } catch (err) {
         await queue.unshiftRequest(entry);
 
         if (process.env.NODE_ENV !== 'production') {
-          logger.log(`Request for '${getFriendlyURL(url.href)}'` +
+          logger.log(`Request for '${getFriendlyURL(url.href)}' ` +
              `failed to replay, putting it back in the queue.`);
         }
         throw err;
@@ -206,7 +206,7 @@ const createGtmJsRoute = (cacheName: string) => {
  *
  * @memberof module:workbox-google-analytics
  */
-const initialize = (options: GoogleAnalyticsInitializeOptions = {}) => {
+const initialize = (options: GoogleAnalyticsInitializeOptions = {}): void => {
   const cacheName = cacheNames.getGoogleAnalyticsName(options.cacheName);
 
   const bgSyncPlugin = new BackgroundSyncPlugin(QUEUE_NAME, {

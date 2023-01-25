@@ -8,43 +8,24 @@
 
 import {addPlugins} from 'workbox-precaching/addPlugins.mjs';
 import {precache} from 'workbox-precaching/precache.mjs';
-import {PrecacheController} from 'workbox-precaching/PrecacheController.mjs';
-import {resetDefaultPrecacheController} from './resetDefaultPrecacheController.mjs';
-import {dispatchAndWaitUntilDone} from '../../../infra/testing/helpers/extendable-event-utils.mjs';
+import {getOrCreatePrecacheController} from 'workbox-precaching/utils/getOrCreatePrecacheController.mjs';
 
 
 describe(`addPlugins()`, function() {
-  const sandbox = sinon.createSandbox();
-
-  beforeEach(function() {
-    sandbox.restore();
-    resetDefaultPrecacheController();
-
-    // Spy on all added event listeners so they can be removed.
-    sandbox.spy(self, 'addEventListener');
-  });
-
-  afterEach(function() {
-    for (const args of self.addEventListener.args) {
-      self.removeEventListener(...args);
-    }
-    sandbox.restore();
-  });
-
-  it(`should add plugins during install`, async function() {
-    sandbox.spy(PrecacheController.prototype, 'install');
-    sandbox.stub(Cache.prototype, 'keys').returns([]);
-
-    const plugin1 = {handlerWillStart: sandbox.spy()};
-    const plugin2 = {handlerWillStart: sandbox.spy()};
+  it(`should add plugins to the strategy`, async function() {
+    const plugin1 = {};
+    const plugin2 = {};
 
     precache([{url: '/', revision: null}]);
     addPlugins([plugin1]);
+
+    const pc = getOrCreatePrecacheController();
+    expect(pc.strategy.plugins).to.include(plugin1);
+    expect(pc.strategy.plugins).not.to.include(plugin2);
+
     addPlugins([plugin2]);
 
-    await dispatchAndWaitUntilDone(new ExtendableEvent('install'));
-
-    expect(plugin1.handlerWillStart.callCount).to.equal(1);
-    expect(plugin2.handlerWillStart.callCount).to.equal(1);
+    expect(pc.strategy.plugins).to.include(plugin1);
+    expect(pc.strategy.plugins).to.include(plugin2);
   });
 });

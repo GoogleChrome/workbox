@@ -7,7 +7,7 @@
 */
 
 const expect = require('chai').expect;
-const escapeRegexp = require('../../../../packages/workbox-build/src/lib/escape-regexp');
+const {escapeRegExp} = require('../../../../packages/workbox-build/build/lib/escape-regexp');
 
 describe(`[workbox-build] lib/copy-workbox-libraries.js`, function() {
   const expectedValues = new Map([
@@ -19,7 +19,7 @@ describe(`[workbox-build] lib/copy-workbox-libraries.js`, function() {
 
   for (const [original, escaped] of expectedValues) {
     it(`should perform the expected escaping: ${original} => ${escaped}`, async function() {
-      expect(escapeRegexp(original)).to.eql(escaped);
+      expect(escapeRegExp(original)).to.eql(escaped);
     });
   }
 });

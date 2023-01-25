@@ -7,6 +7,9 @@
 */
 
 import {cacheNames} from 'workbox-core/_private/cacheNames.js';
+import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
+import {logger} from 'workbox-core/_private/logger.js';
+import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
 import {HandlerCallbackOptions, RouteHandlerObject, WorkboxPlugin}
     from 'workbox-core/types.js';
 
@@ -35,7 +38,7 @@ abstract class Strategy implements RouteHandlerObject {
   protected abstract _handle(
     request: Request,
     handler: StrategyHandler
-  ): Promise<Response>;
+  ): Promise<Response | undefined>;
 
   /**
    * Creates a new instance of the strategy and sets all documented option
@@ -45,16 +48,17 @@ abstract class Strategy implements RouteHandlerObject {
    * not need more than these properties, it does not need to define its own
    * constructor.
    *
-   * @param {Object} options
-   * @param {string} options.cacheName Cache name to store and retrieve
+   * @param {Object} [options]
+   * @param {string} [options.cacheName] Cache name to store and retrieve
    * requests. Defaults to the cache names provided by
    * [workbox-core]{@link module:workbox-core.cacheNames}.
-   * @param {Array<Object>} options.plugins [Plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}
+   * @param {Array<Object>} [options.plugins] [Plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}
    * to use in conjunction with this caching strategy.
-   * @param {Object} options.fetchOptions Values passed along to the
-   * [`init`]{@link https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch#Parameters}
-   * of all fetch() requests made by this strategy.
-   * @param {Object} options.matchOptions The
+   * @param {Object} [options.fetchOptions] Values passed along to the
+   * [`init`](https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch#Parameters)
+   * of [non-navigation](https://github.com/GoogleChrome/workbox/issues/1796)
+   * `fetch()` requests made by this strategy.
+   * @param {Object} [options.matchOptions] The
    * [`CacheQueryOptions`]{@link https://w3c.github.io/ServiceWorker/#dictdef-cachequeryoptions}
    * for any `cache.match()` or `cache.put()` calls made by this strategy.
    */
@@ -64,7 +68,7 @@ abstract class Strategy implements RouteHandlerObject {
      * requests. Defaults to the cache names provided by
      * [workbox-core]{@link module:workbox-core.cacheNames}.
      *
-     * @instance
+     * @type {string}
      */
     this.cacheName = cacheNames.getRuntimeName(options.cacheName);
     /**
@@ -72,7 +76,7 @@ abstract class Strategy implements RouteHandlerObject {
      * [Plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}
      * used by this strategy.
      *
-     * @instance
+     * @type {Array<Object>}
      */
     this.plugins = options.plugins || [];
     /**
@@ -80,7 +84,7 @@ abstract class Strategy implements RouteHandlerObject {
      * [`init`]{@link https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch#Parameters}
      * of all fetch() requests made by this strategy.
      *
-     * @instance
+     * @type {Object}
      */
     this.fetchOptions = options.fetchOptions;
     /**
@@ -88,7 +92,7 @@ abstract class Strategy implements RouteHandlerObject {
      * [`CacheQueryOptions`]{@link https://w3c.github.io/ServiceWorker/#dictdef-cachequeryoptions}
      * for any `cache.match()` or `cache.put()` calls made by this strategy.
      *
-     * @instance
+     * @type {Object}
      */
     this.matchOptions = options.matchOptions;
   }
@@ -166,17 +170,45 @@ abstract class Strategy implements RouteHandlerObject {
     return [responseDone, handlerDone];
   }
 
-  async _getResponse(handler: StrategyHandler, request: Request, event: ExtendableEvent) {
+  async _getResponse(handler: StrategyHandler, request: Request, event: ExtendableEvent): Promise<Response> {
     await handler.runCallbacks('handlerWillStart', {event, request});
-    let response = await this._handle(request, handler);
+
+    let response: Response | undefined = undefined;
+    try {
+      response = await this._handle(request, handler);
+      // The "official" Strategy subclasses all throw this error automatically,
+      // but in case a third-party Strategy doesn't, ensure that we have a
+      // consistent failure when there's no response or an error response.
+      if (!response || response.type === 'error') {
+        throw new WorkboxError('no-response', {url: request.url});
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        for (const callback of handler.iterateCallbacks('handlerDidError')) {
+          response = await callback({error, event, request});
+          if (response) {
+            break;
+          }
+        }
+      }
+
+      if (!response) {
+        throw error;
+      } else if (process.env.NODE_ENV !== 'production') {
+        logger.log(`While responding to '${getFriendlyURL(request.url)}', ` +
+          `an ${error instanceof Error ? error.toString() : ''} error occurred. Using a fallback response provided by ` +
+          `a handlerDidError plugin.`);
+      }
+    }
 
     for (const callback of handler.iterateCallbacks('handlerWillRespond')) {
       response = await callback({event, request, response});
     }
+
     return response;
   }
 
-  async _awaitComplete(responseDone: Promise<Response>, handler: StrategyHandler, request: Request, event: ExtendableEvent) {
+  async _awaitComplete(responseDone: Promise<Response>, handler: StrategyHandler, request: Request, event: ExtendableEvent): Promise<void> {
     let response;
     let error;
 
@@ -196,14 +228,17 @@ abstract class Strategy implements RouteHandlerObject {
       });
       await handler.doneWaiting();
     } catch (waitUntilError) {
-      error = waitUntilError;
+      if (waitUntilError instanceof Error) {
+        error = waitUntilError;
+      }
+
     }
 
     await handler.runCallbacks('handlerDidComplete', {
       event,
       request,
       response,
-      error,
+      error: error as Error,
     });
     handler.destroy();
 

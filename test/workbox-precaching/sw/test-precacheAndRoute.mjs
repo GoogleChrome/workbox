@@ -8,6 +8,8 @@
 
 import {precacheAndRoute} from 'workbox-precaching/precacheAndRoute.mjs';
 import {PrecacheController} from 'workbox-precaching/PrecacheController.mjs';
+import {PrecacheRoute} from 'workbox-precaching/PrecacheRoute.mjs';
+import {Router} from 'workbox-routing/Router.mjs';
 import {resetDefaultPrecacheController} from './resetDefaultPrecacheController.mjs';
 
 
@@ -33,18 +35,18 @@ describe(`precacheAndRoute()`, function() {
 
   it(`should call precache() and addRoute() without args`, function() {
     const precache = sandbox.stub(PrecacheController.prototype, 'precache');
-    const addRoute = sandbox.stub(PrecacheController.prototype, 'addRoute');
+    const registerRoute = sandbox.stub(Router.prototype, 'registerRoute');
 
     precacheAndRoute();
     expect(precache.callCount).to.equal(1);
     expect(precache.args[0]).to.deep.equal([undefined]);
-    expect(addRoute.callCount).to.equal(1);
-    expect(addRoute.args[0]).to.deep.equal([undefined]);
+    expect(registerRoute.callCount).to.equal(1);
+    expect(registerRoute.args[0][0]).to.be.instanceOf(PrecacheRoute);
   });
 
   it(`should call precache() and addRoute() with args`, function() {
     const precache = sandbox.stub(PrecacheController.prototype, 'precache');
-    const addRoute = sandbox.stub(PrecacheController.prototype, 'addRoute');
+    const registerRoute = sandbox.stub(Router.prototype, 'registerRoute');
 
     const precacheArgs = ['/'];
     const routeOptions = {
@@ -55,7 +57,7 @@ describe(`precacheAndRoute()`, function() {
     precacheAndRoute(precacheArgs, routeOptions);
     expect(precache.callCount).to.equal(1);
     expect(precache.args[0][0]).to.equal(precacheArgs);
-    expect(addRoute.callCount).to.equal(1);
-    expect(addRoute.args[0][0]).to.equal(routeOptions);
+    expect(registerRoute.callCount).to.equal(1);
+    expect(registerRoute.args[0][0]).to.be.instanceOf(PrecacheRoute);
   });
 });

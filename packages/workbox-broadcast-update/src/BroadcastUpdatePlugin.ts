@@ -27,7 +27,7 @@ class BroadcastUpdatePlugin implements WorkboxPlugin {
    * calls its [`notifyIfUpdated()`]{@link module:workbox-broadcast-update.BroadcastCacheUpdate~notifyIfUpdated}
    * method whenever the plugin's `cacheDidUpdate` callback is invoked.
    *
-   * @param {Object} options
+   * @param {Object} [options]
    * @param {Array<string>} [options.headersToCheck=['content-length', 'etag', 'last-modified']]
    *     A list of headers that will be used to determine whether the responses
    *     differ.
@@ -35,7 +35,7 @@ class BroadcastUpdatePlugin implements WorkboxPlugin {
    *     will be used as the `payload` field in any cache update messages sent
    *     to the window clients.
    */
-  constructor(options: BroadcastCacheUpdateOptions) {
+  constructor(options?: BroadcastCacheUpdateOptions) {
     this._broadcastUpdate = new BroadcastCacheUpdate(options);
   }
 

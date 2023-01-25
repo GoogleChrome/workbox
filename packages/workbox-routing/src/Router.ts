@@ -66,7 +66,7 @@ class Router {
    * method name ('GET', etc.) to an array of all the corresponding `Route`
    * instances that are registered.
    */
-  get routes() {
+  get routes(): Map<HTTPMethod, Route[]> {
     return this._routes;
   }
 
@@ -74,7 +74,7 @@ class Router {
    * Adds a fetch event listener to respond to events when a route matches
    * the event's request.
    */
-  addFetchListener() {
+  addFetchListener(): void {
     // See https://github.com/Microsoft/TypeScript/issues/28357#issuecomment-436484705
     self.addEventListener('fetch', ((event: FetchEvent) => {
       const {request} = event;
@@ -107,11 +107,12 @@ class Router {
    * }
    * ```
    */
-  addCacheListener() {
+  addCacheListener(): void {
     // See https://github.com/Microsoft/TypeScript/issues/28357#issuecomment-436484705
     self.addEventListener('message', ((event: ExtendableMessageEvent) => {
-      if (event.data && event.data.type === 'CACHE_URLS') {
-        const {payload}: CacheURLsMessageData = event.data;
+      // event.data is type 'any'
+      if (event.data && event.data.type === 'CACHE_URLS') { // eslint-disable-line
+        const {payload}: CacheURLsMessageData = event.data; // eslint-disable-line
 
         if (process.env.NODE_ENV !== 'production') {
           logger.debug(`Caching URLs from the window`, payload.urlsToCache);
@@ -135,7 +136,7 @@ class Router {
 
         // If a MessageChannel was used, reply to the message on success.
         if (event.ports && event.ports[0]) {
-          requestPromises.then(() => event.ports[0].postMessage(true));
+          void requestPromises.then(() => event.ports[0].postMessage(true));
         }
       }
     }) as EventListener);
@@ -244,18 +245,46 @@ class Router {
       responsePromise = Promise.reject(err);
     }
 
-    if (responsePromise instanceof Promise && this._catchHandler) {
-      responsePromise = responsePromise.catch((err) => {
-        if (process.env.NODE_ENV !== 'production') {
-          // Still include URL here as it will be async from the console group
-          // and may not make sense without the URL
-          logger.groupCollapsed(`Error thrown when responding to: ` +
-            ` ${getFriendlyURL(url)}. Falling back to Catch Handler.`);
-          logger.error(`Error thrown by:`, route);
-          logger.error(err);
-          logger.groupEnd();
+    // Get route's catch handler, if it exists
+    const catchHandler = route && route.catchHandler;
+
+    if (responsePromise instanceof Promise && (this._catchHandler || catchHandler)) {
+      responsePromise = responsePromise.catch(async (err) => {
+        // If there's a route catch handler, process that first
+        if (catchHandler) {
+          if (process.env.NODE_ENV !== 'production') {
+            // Still include URL here as it will be async from the console group
+            // and may not make sense without the URL
+            logger.groupCollapsed(`Error thrown when responding to: ` +
+              ` ${getFriendlyURL(url)}. Falling back to route's Catch Handler.`);
+            logger.error(`Error thrown by:`, route);
+            logger.error(err);
+            logger.groupEnd();
+          }
+
+          try {
+            return await catchHandler.handle({url, request, event, params});
+          } catch (catchErr) {
+            if (catchErr instanceof Error) {
+              err = catchErr;
+            }
+          }
         }
-        return this._catchHandler!.handle({url, request, event});
+
+        if (this._catchHandler) {
+          if (process.env.NODE_ENV !== 'production') {
+            // Still include URL here as it will be async from the console group
+            // and may not make sense without the URL
+            logger.groupCollapsed(`Error thrown when responding to: ` +
+              ` ${getFriendlyURL(url)}. Falling back to global Catch Handler.`);
+            logger.error(`Error thrown by:`, route);
+            logger.error(err);
+            logger.groupEnd();
+          }
+          return this._catchHandler.handle({url, request, event});
+        }
+
+        throw err;
       });
     }
 
@@ -269,6 +298,8 @@ class Router {
    *
    * @param {Object} options
    * @param {URL} options.url
+   * @param {boolean} options.sameOrigin The result of comparing `url.origin`
+   *     against the current origin.
    * @param {Request} options.request The request to match.
    * @param {Event} options.event The corresponding event.
    * @return {Object} An object with `route` and `params` properties.
@@ -280,15 +311,29 @@ class Router {
       {route?: Route; params?: RouteHandlerCallbackOptions['params']} {
     const routes = this._routes.get(request.method as HTTPMethod) || [];
     for (const route of routes) {
-      let params;
+      let params: Promise<any> | undefined;
+      // route.match returns type any, not possible to change right now.
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const matchResult = route.match({url, sameOrigin, request, event});
       if (matchResult) {
+        if (process.env.NODE_ENV !== 'production') {
+          // Warn developers that using an async matchCallback is almost always
+          // not the right thing to do.
+          if (matchResult instanceof Promise) {
+            logger.warn(`While routing ${getFriendlyURL(url)}, an async ` +
+                `matchCallback function was used. Please convert the ` +
+                `following route to use a synchronous matchCallback function:`,
+                route);
+          }
+        }
+
         // See https://github.com/GoogleChrome/workbox/issues/2079
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         params = matchResult;
-        if (Array.isArray(matchResult) && matchResult.length === 0) {
+        if (Array.isArray(params) && params.length === 0) {
           // Instead of passing an empty array in as params, use undefined.
           params = undefined;
-        } else if ((matchResult.constructor === Object &&
+        } else if ((matchResult.constructor === Object && // eslint-disable-line
             Object.keys(matchResult).length === 0)) {
           // Instead of passing an empty object in as params, use undefined.
           params = undefined;
@@ -321,7 +366,7 @@ class Router {
    * @param {string} [method='GET'] The HTTP method to associate with this
    * default handler. Each method has its own default.
    */
-  setDefaultHandler(handler: RouteHandler, method: HTTPMethod = defaultMethod) {
+  setDefaultHandler(handler: RouteHandler, method: HTTPMethod = defaultMethod): void {
     this._defaultHandlerMap.set(method, normalizeHandler(handler));
   }
 
@@ -332,7 +377,7 @@ class Router {
    * @param {module:workbox-routing~handlerCallback} handler A callback
    * function that returns a Promise resulting in a Response.
    */
-  setCatchHandler(handler: RouteHandler) {
+  setCatchHandler(handler: RouteHandler): void {
     this._catchHandler = normalizeHandler(handler);
   }
 
@@ -341,7 +386,7 @@ class Router {
    *
    * @param {module:workbox-routing.Route} route The route to register.
    */
-  registerRoute(route: Route) {
+  registerRoute(route: Route): void {
     if (process.env.NODE_ENV !== 'production') {
       assert!.isType(route, 'object', {
         moduleName: 'workbox-routing',
@@ -393,7 +438,7 @@ class Router {
    *
    * @param {module:workbox-routing.Route} route The route to unregister.
    */
-  unregisterRoute(route: Route) {
+  unregisterRoute(route: Route): void {
     if (!this._routes.has(route.method)) {
       throw new WorkboxError(
           'unregister-route-but-not-found-with-method', {

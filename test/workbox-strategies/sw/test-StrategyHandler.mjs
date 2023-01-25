@@ -258,8 +258,8 @@ describe(`StrategyHandler`, function() {
       await expectError(() => {
         return handler.fetch('/test/requestWillFetch/0');
       }, 'plugin-error-request-will-fetch', (err) => {
-        expect(err.details.thrownError).to.exist;
-        expect(err.details.thrownError.message).to.equal('Injected Error from Test.');
+        expect(err.details.thrownErrorMessage).to.exist;
+        expect(err.details.thrownErrorMessage).to.equal('Injected Error from Test.');
       });
 
       expect(errorPluginSpy.callCount).equal(1);
@@ -462,12 +462,14 @@ describe(`StrategyHandler`, function() {
 
       await handler.cachePut(putRequest, putResponse);
 
+
       [spyOne, spyTwo].forEach((pluginSpy) => {
         expect(pluginSpy.callCount).to.equal(1);
         expect(pluginSpy.args[0][0].cacheName).to.equal('TODO-CHANGE-ME');
         expect(pluginSpy.args[0][0].request).to.equal(putRequest);
         expect(pluginSpy.args[0][0].oldResponse).to.equal(undefined);
-        expect(pluginSpy.args[0][0].newResponse).to.equal(putResponse);
+        // `newResponse` is cloned, so don't compare for object equality.
+        expect(pluginSpy.args[0][0].newResponse.headers.get('x-id')).to.equal('1');
 
         // Reset so the spies are clean for next step in the test.
         pluginSpy.resetHistory();
@@ -483,6 +485,8 @@ describe(`StrategyHandler`, function() {
         expect(pluginSpy.callCount).to.equal(1);
         expect(pluginSpy.args[0][0].cacheName).to.equal('TODO-CHANGE-ME');
         expect(pluginSpy.args[0][0].request).to.equal(putRequest);
+        // `oldResponse` and `newResponse` are cloned,
+        // so don't compare for object equality.
         expect(pluginSpy.args[0][0].oldResponse.headers.get('x-id')).to.equal('1');
         expect(pluginSpy.args[0][0].newResponse.headers.get('x-id')).to.equal('2');
       });
@@ -556,6 +560,63 @@ describe(`StrategyHandler`, function() {
       const spyTwo = sandbox.spy(secondPlugin, 'cacheKeyWillBeUsed');
 
       const initialRequest = new Request('/noPlugin');
+      const response = new Response('Test response.');
+
+      const handler = createStrategyHandler({
+        cacheName,
+        plugins: [
+          firstPlugin,
+          {}, // Intentionally empty to ensure it's filtered out.
+          secondPlugin,
+        ],
+      });
+
+      await handler.cachePut(initialRequest, response);
+
+      expect(spyOne.calledOnceWith(sinon.match({
+        mode: 'write',
+        request: initialRequest,
+      }))).to.be.true;
+      expect(spyOne.thisValues[0]).to.eql(firstPlugin);
+
+      expect(spyTwo.calledOnceWith(sinon.match({
+        mode: 'write',
+        request: firstPluginReturnValue,
+      }))).to.be.true;
+      expect(spyTwo.thisValues[0]).to.eql(secondPlugin);
+
+      expect(cachePutStub.calledOnce).to.be.true;
+      // Check the url of the Request passed to cache.put().
+      expect(cachePutStub.args[0][0].url).to.eql(`${self.location.origin}/secondPlugin`);
+      expect(cachePutStub.args[0][1]).to.eql(response);
+    });
+
+    it(`should allow caching of posts if cacheKeyWillBeUsed returns a get request`, async function() {
+      const cacheName = 'cacheKeyWillBeUsed-test-cache';
+      const cache = await caches.open(cacheName);
+      sandbox.stub(caches, 'open').resolves(cache);
+      const cachePutStub = sandbox.stub(cache, 'put').resolves();
+
+      const firstPluginReturnValue = new Request('/firstPlugin', {
+        method: 'get',
+      });
+
+      const firstPlugin = {
+        cacheKeyWillBeUsed: () => firstPluginReturnValue,
+      };
+
+      const secondPlugin = {
+        // This string will be converted to a Request.
+        cacheKeyWillBeUsed: () => '/secondPlugin',
+      };
+
+      const spyOne = sandbox.spy(firstPlugin, 'cacheKeyWillBeUsed');
+      const spyTwo = sandbox.spy(secondPlugin, 'cacheKeyWillBeUsed');
+
+      const initialRequest = new Request('/noPlugin', {
+        method: 'post',
+      });
+
       const response = new Response('Test response.');
 
       const handler = createStrategyHandler({
@@ -834,7 +895,7 @@ describe(`StrategyHandler`, function() {
       sandbox.spy(handler, 'cachePut');
       sandbox.spy(handler, 'waitUntil');
 
-      handler.fetchAndCachePut('/url');
+      await handler.fetchAndCachePut('/url');
 
       await handler.doneWaiting();
       expect(handler.waitUntil.calledWith(
@@ -1059,6 +1120,69 @@ describe(`StrategyHandler`, function() {
       }
 
       expect(request.url).to.equal(location.origin + '/test-request+1+2');
+    });
+  });
+
+  describe(`getCacheKey`, function() {
+    it(`returns the cackeKey after applying plugins`, async function() {
+      const request = new Request('/test');
+      const handler = createStrategyHandler({
+        plugins: [
+          {
+            cacheKeyWillBeUsed({mode, request}) {
+              return new Request(request.url + '+1');
+            },
+          },
+          {
+            cacheKeyWillBeUsed({mode, request}) {
+              return mode === 'read' ?
+                  new Request(request.url + '+read') : request;
+            },
+          },
+          {
+            cacheKeyWillBeUsed({mode, request}) {
+              return mode === 'write' ?
+                  new Request(request.url + '+write') : request;
+            },
+          },
+        ],
+      });
+
+      const readCacheKey = await handler.getCacheKey(request, 'read');
+      expect(readCacheKey.url).to.equal(location.origin + '/test+1+read');
+
+      const writeCacheKey = await handler.getCacheKey(request, 'write');
+      expect(writeCacheKey.url).to.equal(location.origin + '/test+1+write');
+    });
+
+    it(`caches the key per mode to avoid repeat invocations`, async function() {
+      const request = new Request('/test');
+      const plugin = {
+        cacheKeyWillBeUsed({mode, request}) {
+          return new Request(request.url + '+' + mode);
+        },
+      };
+      sandbox.spy(plugin, 'cacheKeyWillBeUsed');
+
+      const handler = createStrategyHandler({
+        plugins: [plugin],
+      });
+
+      const readCacheKey = await handler.getCacheKey(request, 'read');
+      expect(readCacheKey.url).to.equal(location.origin + '/test+read');
+      expect(plugin.cacheKeyWillBeUsed.callCount).to.equal(1);
+
+      await handler.getCacheKey(request, 'read');
+      await handler.getCacheKey(request, 'read');
+      expect(plugin.cacheKeyWillBeUsed.callCount).to.equal(1);
+
+      const writeCacheKey = await handler.getCacheKey(request, 'write');
+      expect(writeCacheKey.url).to.equal(location.origin + '/test+write');
+      expect(plugin.cacheKeyWillBeUsed.callCount).to.equal(2);
+
+      await handler.getCacheKey(request, 'write');
+      await handler.getCacheKey(request, 'write');
+      expect(plugin.cacheKeyWillBeUsed.callCount).to.equal(2);
     });
   });
 });

@@ -19,7 +19,7 @@ declare global {
 }
 
 type LoggerMethods = 'debug'|'log'|'warn'|'error'|'groupCollapsed'|'groupEnd';
-    
+
 const logger = (process.env.NODE_ENV === 'production' ? null : (() => {
   // Don't overwrite this value if it's already set.
   // See https://github.com/GoogleChrome/workbox/pull/2284#issuecomment-560470923
@@ -53,7 +53,7 @@ const logger = (process.env.NODE_ENV === 'production' ? null : (() => {
     }
 
     const styles = [
-      `background: ${methodToColorMap[method]}`,
+      `background: ${methodToColorMap[method]!}`,
       `border-radius: 0.5em`,
       `color: white`,
       `font-weight: bold`,
@@ -72,7 +72,7 @@ const logger = (process.env.NODE_ENV === 'production' ? null : (() => {
       inGroup = false;
     }
   };
-
+  // eslint-disable-next-line @typescript-eslint/ban-types
   const api: {[methodName: string]: Function} = {};
   const loggerMethods = Object.keys(methodToColorMap);
 

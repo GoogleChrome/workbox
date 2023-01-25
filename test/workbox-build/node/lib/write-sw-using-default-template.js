@@ -11,13 +11,13 @@ const upath = require('upath');
 const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 
-const errors = require('../../../../packages/workbox-build/src/lib/errors');
+const {errors} = require('../../../../packages/workbox-build/build/lib/errors');
 
 describe(`[workbox-build] lib/write-sw-using-default-template.js`, function() {
-  const MODULE_PATH = '../../../../packages/workbox-build/src/lib/write-sw-using-default-template';
+  const MODULE_PATH = '../../../../packages/workbox-build/build/lib/write-sw-using-default-template';
 
   it(`should reject with an error when fs-extra.mkdirp() fails`, async function() {
-    const writeSWUsingDefaultTemplate = proxyquire(MODULE_PATH, {
+    const {writeSWUsingDefaultTemplate} = proxyquire(MODULE_PATH, {
       'upath': {
         dirname: () => 'ignored',
       },
@@ -35,7 +35,7 @@ describe(`[workbox-build] lib/write-sw-using-default-template.js`, function() {
   });
 
   it(`should reject with an error when fs-extra.writeFile() fails`, async function() {
-    const writeSWUsingDefaultTemplate = proxyquire(MODULE_PATH, {
+    const {writeSWUsingDefaultTemplate} = proxyquire(MODULE_PATH, {
       'upath': {
         dirname: () => 'ignored',
       },
@@ -57,7 +57,7 @@ describe(`[workbox-build] lib/write-sw-using-default-template.js`, function() {
     const eisdirError = new Error();
     eisdirError.code = 'EISDIR';
 
-    const writeSWUsingDefaultTemplate = proxyquire(MODULE_PATH, {
+    const {writeSWUsingDefaultTemplate} = proxyquire(MODULE_PATH, {
       'upath': {
         dirname: () => 'ignored',
       },
@@ -66,10 +66,12 @@ describe(`[workbox-build] lib/write-sw-using-default-template.js`, function() {
         readFile: () => Promise.resolve(),
         writeFile: () => Promise.reject(eisdirError),
       },
-      './bundle': async () => [{
-        name: 'ignored',
-        contents: 'ignored',
-      }],
+      './bundle': {
+        bundle: async () => [{
+          name: 'ignored',
+          contents: 'ignored',
+        }],
+      },
     });
 
     try {
@@ -89,7 +91,7 @@ describe(`[workbox-build] lib/write-sw-using-default-template.js`, function() {
     const contents2 = 'contents2';
 
     const writeFileStub = sinon.stub().returns(Promise.resolve());
-    const writeSWUsingDefaultTemplate = proxyquire(MODULE_PATH, {
+    const {writeSWUsingDefaultTemplate} = proxyquire(MODULE_PATH, {
       'fs-extra': {
         mkdirp: (path) => {
           expect(path).to.eql(expectedPath);
@@ -97,14 +99,18 @@ describe(`[workbox-build] lib/write-sw-using-default-template.js`, function() {
         readFile: () => Promise.resolve(),
         writeFile: writeFileStub,
       },
-      './bundle': async () => [{
-        name: upath.join(expectedPath, file1),
-        contents: contents1,
-      }, {
-        name: upath.join(expectedPath, file2),
-        contents: contents2,
-      }],
-      './populate-sw-template': () => '',
+      './bundle': {
+        bundle: async () => [{
+          name: upath.join(expectedPath, file1),
+          contents: contents1,
+        }, {
+          name: upath.join(expectedPath, file2),
+          contents: contents2,
+        }],
+      },
+      './populate-sw-template': {
+        populateSWTemplate: () => '',
+      },
     });
 
     await writeSWUsingDefaultTemplate({swDest});

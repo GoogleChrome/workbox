@@ -32,7 +32,7 @@ const logGroup = (groupTitle: string, deletedURLs: string[]) => {
  * @private
  * @memberof module:workbox-precaching
  */
-export function printCleanupDetails(deletedURLs: string[]) {
+export function printCleanupDetails(deletedURLs: string[]): void {
   const deletionCount = deletedURLs.length;
   if (deletionCount > 0) {
     logger.groupCollapsed(`During precaching cleanup, ` +

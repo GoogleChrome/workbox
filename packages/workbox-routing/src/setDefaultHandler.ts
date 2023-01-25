@@ -25,7 +25,7 @@ import './_version.js';
  *
  * @memberof module:workbox-routing
  */
-function setDefaultHandler(handler: RouteHandler) {
+function setDefaultHandler(handler: RouteHandler): void {
   const defaultRouter = getOrCreateDefaultRouter();
   defaultRouter.setDefaultHandler(handler);
 }

@@ -21,11 +21,10 @@ firebase-debug.log
 # Generated TypeScript files and build data
 tsconfig.tsbuildinfo
 packages/workbox-*/**/*.d.ts
+!packages/workbox-*/src/**/*.d.ts
 packages/workbox-*/**/*.js
 !packages/workbox-build/**/*.js
-!packages/workbox-cli/**/*.js
 !packages/workbox-webpack-plugin/**/*.js
-
 
 # Individual package ignores during TypeScript migration
 packages/workbox-background-sync/**/*.mjs
@@ -37,8 +36,8 @@ packages/workbox-google-analytics/**/*.mjs
 packages/workbox-navigation-preload/**/*.mjs
 packages/workbox-precaching/**/*.mjs
 packages/workbox-range-requests/**/*.mjs
+packages/workbox-recipes/**/*.mjs
 packages/workbox-routing/**/*.mjs
 packages/workbox-strategies/**/*.mjs
 packages/workbox-streams/**/*.mjs
 packages/workbox-window/**/*.mjs
-workbocx-cli-ts.code-workspace

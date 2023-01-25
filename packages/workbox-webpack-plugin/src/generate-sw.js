@@ -6,18 +6,22 @@
   https://opensource.org/licenses/MIT.
 */
 
-const {RawSource} = require('webpack-sources');
-const bundle = require('workbox-build/build/lib/bundle');
-const populateSWTemplate =
+const {validateWebpackGenerateSWOptions} =
+  require('workbox-build/build/lib/validate-options');
+const {bundle} = require('workbox-build/build/lib/bundle');
+const {populateSWTemplate} =
   require('workbox-build/build/lib/populate-sw-template');
-const validate = require('workbox-build/build/lib/validate-options');
-const webpackGenerateSWSchema = require(
-    'workbox-build/build/options/schema/webpack-generate-sw');
+const prettyBytes = require('pretty-bytes');
+const webpack = require('webpack');
 
 const getScriptFilesForChunks = require('./lib/get-script-files-for-chunks');
 const getManifestEntriesFromCompilation =
   require('./lib/get-manifest-entries-from-compilation');
 const relativeToOutputPath = require('./lib/relative-to-output-path');
+
+// webpack v4/v5 compatibility:
+// https://github.com/webpack/webpack/issues/11425#issuecomment-686607633
+const {RawSource} = webpack.sources || require('webpack-sources');
 
 // Used to keep track of swDest files written by *any* instance of this plugin.
 // See https://github.com/GoogleChrome/workbox/issues/2181
@@ -70,10 +74,10 @@ class GenerateSW {
    *
    * @param {RegExp} [config.dontCacheBustURLsMatching] Assets that match this will be
    * assumed to be uniquely versioned via their URL, and exempted from the normal
-   * HTTP cache-busting that's done when populating the precache. While not
-   * required, it's recommended that if your existing build process already
-   * inserts a `[hash]` value into each filename, you provide a RegExp that will
-   * detect that, as it will reduce the bandwidth consumed when precaching.
+   * HTTP cache-busting that's done when populating the precache. (As of Workbox
+   * v6, this option is usually not needed, as each
+   * [asset's metadata](https://github.com/webpack/webpack/issues/9038) is used
+   * to determine whether it's immutable or not.)
    *
    * @param {Array<string|RegExp|Function>} [config.exclude=[/\.map$/, /^manifest.*\.js$]]
    * One or more specifiers used to exclude assets from the precache manifest.
@@ -124,7 +128,7 @@ class GenerateSW {
    *
    * @param {string} [config.mode] If set to 'production', then an optimized service
    * worker bundle that excludes debugging info will be produced. If not explicitly
-   * configured here, the `mode` value configured in the current `webpack` compiltion
+   * configured here, the `mode` value configured in the current `webpack` compilation
    * will be used.
    *
    * @param {object<string, string>} [config.modifyURLPrefix] A mapping of prefixes
@@ -177,7 +181,8 @@ class GenerateSW {
    * @param {boolean} [config.skipWaiting=false] Whether to add an
    * unconditional call to [`skipWaiting()`]{@link module:workbox-core.skipWaiting}
    * to the generated service worker. If `false`, then a `message` listener will
-   * be added instead, allowing you to conditionally call `skipWaiting()`.
+   * be added instead, allowing you to conditionally call `skipWaiting()` by posting
+   * a message containing {type: 'SKIP_WAITING'}.
    *
    * @param {boolean} [config.sourcemap=true] Whether to create a sourcemap
    * for the generated service worker files.
@@ -212,11 +217,31 @@ class GenerateSW {
   apply(compiler) {
     this.propagateWebpackConfig(compiler);
 
-    compiler.hooks.emit.tapPromise(
-        this.constructor.name,
-        (compilation) => this.handleEmit(compilation).catch(
-            (error) => compilation.errors.push(error)),
-    );
+    // webpack v4/v5 compatibility:
+    // https://github.com/webpack/webpack/issues/11425#issuecomment-690387207
+    if (webpack.version.startsWith('4.')) {
+      compiler.hooks.emit.tapPromise(
+          this.constructor.name,
+          (compilation) => this.addAssets(compilation).catch(
+              (error) => compilation.errors.push(error)),
+      );
+    } else {
+      const {PROCESS_ASSETS_STAGE_OPTIMIZE_TRANSFER} = webpack.Compilation;
+      // Specifically hook into thisCompilation, as per
+      // https://github.com/webpack/webpack/issues/11425#issuecomment-690547848
+      compiler.hooks.thisCompilation.tap(
+          this.constructor.name, (compilation) => {
+            compilation.hooks.processAssets.tapPromise({
+              name: this.constructor.name,
+              // TODO(jeffposnick): This may need to change eventually.
+              // See https://github.com/webpack/webpack/issues/11822#issuecomment-726184972
+              stage: PROCESS_ASSETS_STAGE_OPTIMIZE_TRANSFER - 10,
+            }, () => this.addAssets(compilation).catch(
+                (error) => compilation.errors.push(error)),
+            );
+          },
+      );
+    }
   }
 
   /**
@@ -224,14 +249,19 @@ class GenerateSW {
    *
    * @private
    */
-  async handleEmit(compilation) {
+  async addAssets(compilation) {
     // See https://github.com/GoogleChrome/workbox/issues/1790
     if (this.alreadyCalled) {
-      compilation.warnings.push(`${this.constructor.name} has been called ` +
+      const warningMessage = `${this.constructor.name} has been called ` +
         `multiple times, perhaps due to running webpack in --watch mode. The ` +
         `precache manifest generated after the first call may be inaccurate! ` +
         `Please see https://github.com/GoogleChrome/workbox/issues/1790 for ` +
-        `more information.`);
+        `more information.`;
+
+      if (!compilation.warnings.some((warning) => warning instanceof Error &&
+            warning.message === warningMessage)) {
+        compilation.warnings.push(new Error(warningMessage));
+      }
     } else {
       this.alreadyCalled = true;
     }
@@ -241,7 +271,7 @@ class GenerateSW {
       // emit might be called multiple times; instead of modifying this.config,
       // use a validated copy.
       // See https://github.com/GoogleChrome/workbox/issues/2158
-      config = validate(this.config, webpackGenerateSWSchema);
+      config = validateWebpackGenerateSWOptions(this.config);
     } catch (error) {
       throw new Error(`Please check your ${this.constructor.name} plugin ` +
         `configuration:\n${error.message}`);
@@ -264,8 +294,9 @@ class GenerateSW {
           .concat(scripts);
     }
 
-    config.manifestEntries = await getManifestEntriesFromCompilation(
+    const {size, sortedEntries} = await getManifestEntriesFromCompilation(
         compilation, config);
+    config.manifestEntries = sortedEntries;
 
     const unbundledCode = populateSWTemplate(config);
 
@@ -279,8 +310,17 @@ class GenerateSW {
     });
 
     for (const file of files) {
-      compilation.assets[file.name] = new RawSource(file.contents);
+      compilation.emitAsset(file.name, new RawSource(file.contents), {
+        // See https://github.com/webpack-contrib/compression-webpack-plugin/issues/218#issuecomment-726196160
+        minimized: config.mode === 'production',
+      });
       _generatedAssetNames.add(file.name);
+    }
+
+    if (compilation.getLogger) {
+      const logger = compilation.getLogger(this.constructor.name);
+      logger.info(`The service worker at ${config.swDest} will precache
+        ${config.manifestEntries.length} URLs, totaling ${prettyBytes(size)}.`);
     }
   }
 }

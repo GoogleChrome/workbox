@@ -10,15 +10,15 @@ const expect = require('chai').expect;
 const proxyquire = require('proxyquire');
 const sinon = require('sinon');
 
-const errors = require('../../../../packages/workbox-build/src/lib/errors');
+const {errors} = require('../../../../packages/workbox-build/build/lib/errors');
 
 describe(`[workbox-build] lib/populate-sw-template.js`, function() {
-  const MODULE_PATH = '../../../../packages/workbox-build/src/lib/populate-sw-template';
+  const MODULE_PATH = '../../../../packages/workbox-build/build/lib/populate-sw-template';
 
   it(`should throw an error if templating fails`, function() {
     const manifestEntries = ['ignored'];
 
-    const populateSWTemplate = proxyquire(MODULE_PATH, {
+    const {populateSWTemplate} = proxyquire(MODULE_PATH, {
       'lodash/template': () => {
         throw new Error();
       },
@@ -33,7 +33,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
   });
 
   it(`should throw an error if both manifestEntries and runtimeCaching are empty`, function() {
-    const populateSWTemplate = proxyquire(MODULE_PATH, {
+    const {populateSWTemplate} = proxyquire(MODULE_PATH, {
       'lodash/template': () => {},
     });
 
@@ -53,10 +53,12 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
 
     const innerStub = sinon.stub().returns('');
     const outerStub = sinon.stub().returns(innerStub);
-    const populateSWTemplate = proxyquire(MODULE_PATH, {
+    const {populateSWTemplate} = proxyquire(MODULE_PATH, {
       'lodash/template': outerStub,
-      './runtime-caching-converter': () => runtimeCachingPlaceholder,
-      '../templates/sw-template': swTemplate,
+      './runtime-caching-converter': {
+        runtimeCachingConverter: () => runtimeCachingPlaceholder,
+      },
+      '../templates/sw-template': {swTemplate},
     });
 
     populateSWTemplate({manifestEntries});
@@ -113,10 +115,12 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
     // We need to stub out both of those steps to test the full flow.
     const templatePopulationStub = sinon.stub().returns('');
     const templateCreationStub = sinon.stub().returns(templatePopulationStub);
-    const populateSWTemplate = proxyquire(MODULE_PATH, {
+    const {populateSWTemplate} = proxyquire(MODULE_PATH, {
       'lodash/template': templateCreationStub,
-      './runtime-caching-converter': () => runtimeCachingPlaceholder,
-      '../templates/sw-template': swTemplate,
+      './runtime-caching-converter': {
+        runtimeCachingConverter: () => runtimeCachingPlaceholder,
+      },
+      '../templates/sw-template': {swTemplate},
     });
 
     populateSWTemplate({
@@ -180,10 +184,12 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function() {
 
     const innerStub = sinon.stub().returns('');
     const outerStub = sinon.stub().returns(innerStub);
-    const populateSWTemplate = proxyquire(MODULE_PATH, {
+    const {populateSWTemplate} = proxyquire(MODULE_PATH, {
       'lodash/template': outerStub,
-      './runtime-caching-converter': () => runtimeCachingPlaceholder,
-      '../templates/sw-template': swTemplate,
+      './runtime-caching-converter': {
+        runtimeCachingConverter: () => runtimeCachingPlaceholder,
+      },
+      '../templates/sw-template': {swTemplate},
     });
 
     populateSWTemplate({manifestEntries, offlineGoogleAnalytics});

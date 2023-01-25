@@ -7,6 +7,7 @@ module.exports = {
   },
   plugins: [
     '@typescript-eslint',
+    'jsdoc',
   ],
   extends: [
     'eslint:recommended',
@@ -25,7 +26,9 @@ module.exports = {
     '@typescript-eslint/no-misused-promises': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/no-use-before-define': 'off',
+    '@typescript-eslint/no-var-requires': 'off',
     '@typescript-eslint/prefer-readonly': 'error',
+    '@typescript-eslint/prefer-regexp-exec': 'off',
     '@typescript-eslint/require-await': 'off',
     '@typescript-eslint/unbound-method': 'off',
     'block-scoped-var': 'error',

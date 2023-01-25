@@ -62,7 +62,7 @@ class BroadcastCacheUpdate {
    * Construct a BroadcastCacheUpdate instance with a specific `channelName` to
    * broadcast messages on
    *
-   * @param {Object} options
+   * @param {Object} [options]
    * @param {Array<string>} [options.headersToCheck=['content-length', 'etag', 'last-modified']]
    *     A list of headers that will be used to determine whether the responses
    *     differ.

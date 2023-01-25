@@ -29,7 +29,7 @@ import './_version.js';
  *
  * @memberof module:workbox-precaching
  */
-function getCacheKeyForURL(url: string) {
+function getCacheKeyForURL(url: string): string | undefined {
   const precacheController = getOrCreatePrecacheController();
   return precacheController.getCacheKeyForURL(url);
 }

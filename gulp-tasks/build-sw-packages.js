@@ -118,7 +118,7 @@ async function buildSWBundle(packagePath, buildType) {
     input: packageIndex,
     external: externalAndPure,
     treeshake: {
-      pureExternalModules: externalAndPure,
+      moduleSideEffects: externalAndPure ? 'no-external' : false,
     },
     plugins,
     onwarn: (warning) => {
@@ -145,6 +145,7 @@ async function buildSWBundle(packagePath, buildType) {
     sourcemap: true,
     format: 'iife',
     globals,
+    esModule: false,
   });
 }
 
@@ -158,7 +159,9 @@ function swBundleSequence() {
 
   return series(
       parallel(transpilations),
-      parallel(builds),
+      // This needs to be a series, not in parallel, so that there isn't a
+      // race condition with the terser nameCache.
+      series(builds),
   );
 }
 

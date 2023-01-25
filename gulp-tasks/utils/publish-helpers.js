@@ -6,7 +6,6 @@
   https://opensource.org/licenses/MIT.
 */
 
-const archiver = require('archiver');
 const execa = require('execa');
 const fse = require('fs-extra');
 const glob = require('glob');
@@ -127,53 +126,6 @@ const groupBuildFiles = async (tagName, gitBranch) => {
   return groupedBuildFiles;
 };
 
-const createArchive = async (tagName, fileExtension, format, options) => {
-  const archiveFilesPath = upath.join(getBuildPath(tagName), 'archives');
-  const archiveFilename = `workbox-${tagName}.${fileExtension}`;
-  const outputFilePath = upath.join(archiveFilesPath, archiveFilename);
-
-  logHelper.log(ol`
-    Creating ${format} and saving to
-    ${logHelper.highlight(upath.relative(process.cwd(), outputFilePath))}.
-  `);
-
-  await fse.ensureDir(upath.dirname(outputFilePath));
-
-  const groupedBuildFiles = upath.join(getBuildPath(tagName),
-      GROUPED_BUILD_FILES);
-
-  const writeStream = fse.createWriteStream(outputFilePath);
-  const archive = archiver(format, options);
-  archive.pipe(writeStream);
-  // Adds the directory contents to the zip.
-  archive.directory(groupedBuildFiles, false);
-  await archive.finalize();
-
-  return outputFilePath;
-};
-
-const createTarGz = (tagName) => {
-  return createArchive(tagName, 'tar.gz', 'tar', {gzip: true});
-};
-
-const createZip = (tagName) => {
-  return createArchive(tagName, 'zip', 'zip', {
-    zlib: {level: 9},
-  });
-};
-
-const createBundles = async (tagName, gitBranch) => {
-  await groupBuildFiles(tagName, gitBranch);
-
-  const tarPath = await createTarGz(tagName);
-  const zipPath = await createZip(tagName);
-  return {
-    tarPath,
-    zipPath,
-  };
-};
-
 module.exports = {
   groupBuildFiles,
-  createBundles,
 };

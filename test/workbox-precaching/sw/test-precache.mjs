@@ -22,9 +22,6 @@ describe(`precache()`, function() {
 
     // Spy on all added event listeners so they can be removed.
     sandbox.spy(self, 'addEventListener');
-
-    // Reset the `_urlsToCacheKeys` map on the default PrecacheController.
-    getOrCreatePrecacheController()._urlsToCacheKeys = new Map();
   });
 
   // The `addFetchListener` method adds a listener only the first time it's invoked,
@@ -37,19 +34,22 @@ describe(`precache()`, function() {
   });
 
   it(`should call install and activate on install and activate`, async function() {
-    sandbox.spy(PrecacheController.prototype, 'install');
-    sandbox.spy(PrecacheController.prototype, 'activate');
+    const pc = getOrCreatePrecacheController();
+
+    sandbox.spy(pc, 'install');
+    sandbox.spy(pc, 'activate');
 
     precache(['/']);
 
     await dispatchAndWaitUntilDone(new ExtendableEvent('install'));
 
-    expect(PrecacheController.prototype.install.callCount).to.equal(1);
-    expect(PrecacheController.prototype.activate.callCount).to.equal(0);
+    expect(pc.install.callCount).to.equal(1);
+    expect(pc.activate.callCount).to.equal(0);
 
     await dispatchAndWaitUntilDone(new ExtendableEvent('activate'));
-    expect(PrecacheController.prototype.install.callCount).to.equal(1);
-    expect(PrecacheController.prototype.activate.callCount).to.equal(1);
+
+    expect(pc.install.callCount).to.equal(1);
+    expect(pc.activate.callCount).to.equal(1);
   });
 
   it(`should add entries to the default PrecacheController cache list`, async function() {

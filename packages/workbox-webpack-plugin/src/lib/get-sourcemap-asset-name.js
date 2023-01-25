@@ -39,7 +39,8 @@ module.exports = (compilation, swContents, swDest) => {
     const sourcemapURLAssetName = upath.normalize(
         upath.join(swAssetDirname, url));
 
-    if (sourcemapURLAssetName in compilation.assets) {
+    // Not sure if there's a better way to check for asset existence?
+    if (compilation.getAsset(sourcemapURLAssetName)) {
       return sourcemapURLAssetName;
     }
   }

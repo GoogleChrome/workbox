@@ -100,9 +100,17 @@ async function transpilePackage(packageName, {failOnError = true} = {}) {
     // it will call the version in `Microsoft SDKs/TypeScript`.
     await execa('tsc', ['-b', `packages/${packageName}`], {preferLocal: true});
 
+    const packagePath = upath.join('packages', packageName);
+
+    // Don't create `.mjs` files for the node_ts packages.
+    const pkgJson = require(`../${packagePath}/package.json`);
+    if (pkgJson.workbox.packageType === 'node_ts') {
+      return;
+    }
+
     // Mirror all `.ts` files with `.mjs` files.
     const tsFiles = await globby(`**/*.ts`, {
-      cwd: upath.join('packages', packageName, 'src'),
+      cwd: upath.join(packagePath, 'src'),
     });
 
     for (const tsFile of tsFiles) {
