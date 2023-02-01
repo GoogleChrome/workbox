@@ -1,3 +1,5 @@
+import '../_version.js';
+
 export interface PromiseResolution<T> {
   status: 'fulfilled';
   value: T;
