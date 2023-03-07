@@ -77,9 +77,15 @@ function concatenate(sourcePromises: Promise<StreamSource>[]): {
   const stream = new ReadableStream({
     pull(controller: ReadableStreamDefaultController<any>) {
       return readerPromises[i]
-        .then((reader) => reader.read())
+        .then((reader) => {
+          if (reader instanceof ReadableStreamDefaultReader) {
+            return reader.read();
+          } else {
+            return;
+          }
+        })
         .then((result) => {
-          if (result.done) {
+          if (result?.done) {
             if (process.env.NODE_ENV !== 'production') {
               logMessages.push([
                 'Reached the end of source:',
@@ -113,7 +119,7 @@ function concatenate(sourcePromises: Promise<StreamSource>[]): {
             // The `pull` method is defined because we're inside it.
             return this.pull!(controller);
           } else {
-            controller.enqueue(result.value);
+            controller.enqueue(result?.value);
           }
         })
         .catch((error) => {

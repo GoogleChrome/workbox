@@ -64,6 +64,6 @@
   },
   "types": "build/index.d.ts",
   "devDependencies": {
-    "@types/node": "^16.10.2"
+    "@types/node": "^18.14.6"
   }
 }

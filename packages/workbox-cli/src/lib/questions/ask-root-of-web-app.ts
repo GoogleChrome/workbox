@@ -9,7 +9,7 @@
 import assert from 'assert';
 import fse from 'fs-extra';
 import glob from 'glob';
-import {prompt, Separator} from 'inquirer';
+import inquirer from 'inquirer';
 import {oneLine as ol} from 'common-tags';
 
 import {errors} from '../errors';
@@ -52,18 +52,21 @@ async function askQuestion(): Promise<{
   globDirectory: string;
   manualDirectoryInput?: string;
 }> {
-  const subdirectories: (string | InstanceType<typeof Separator>)[] =
+  const subdirectories: (string | InstanceType<typeof inquirer.Separator>)[] =
     await getSubdirectories();
 
   if (subdirectories.length > 0) {
     const manualEntryChoice = 'Manually enter path';
-    return prompt([
+    return inquirer.prompt([
       {
         name: questionRootDirectory,
         type: 'list',
         message: ol`What is the root of your web app (i.e. which directory do
         you deploy)?`,
-        choices: subdirectories.concat([new Separator(), manualEntryChoice]),
+        choices: subdirectories.concat([
+          new inquirer.Separator(),
+          manualEntryChoice,
+        ]),
       },
       {
         name: questionManualInput,
@@ -74,7 +77,7 @@ async function askQuestion(): Promise<{
     ]);
   }
 
-  return prompt([
+  return inquirer.prompt([
     {
       name: questionRootDirectory,
       message: ROOT_PROMPT,
