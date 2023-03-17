@@ -1,12 +1,14 @@
 importScripts(
   'https://storage.googleapis.com/workbox-cdn/releases/6.1.5/workbox-sw.js',
 );
-// To avoid async issues, we load strategies before we call it in the event listener
-workbox.loadModule('workbox-strategies');
+
 // Note: Ignore the error that Glitch raises about workbox being undefined.
 workbox.setConfig({
   debug: true,
 });
+
+// To avoid async issues, we load strategies before we call it in the event listener
+workbox.loadModule('workbox-strategies');
 
 self.addEventListener('fetch', (event) => {
   const request = event.request;
