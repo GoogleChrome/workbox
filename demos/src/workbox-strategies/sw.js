@@ -52,8 +52,6 @@ self.addEventListener('fetch', (event) => {
   }
 });
 
-// This immediately deploys the service worker w/o requiring a refresh
-workbox.core.skipWaiting();
 workbox.core.clientsClaim();
 
 // Populate the cache to illustrate cache-only-populated-cache route
