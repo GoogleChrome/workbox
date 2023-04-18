@@ -867,29 +867,7 @@
     },
     "AbortSignal": {
       "type": "object",
-      "properties": {
-        "aborted": {
-          "type": "boolean"
-        },
-        "onabort": {
-          "anyOf": [
-            {
-              "type": "object",
-              "additionalProperties": false
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "reason": {}
-      },
-      "additionalProperties": false,
-      "required": [
-        "aborted",
-        "onabort",
-        "reason"
-      ]
+      "additionalProperties": false
     },
     "RouteMatchCallback": {}
   },
