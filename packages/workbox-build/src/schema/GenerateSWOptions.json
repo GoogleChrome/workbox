@@ -865,10 +865,7 @@
       "type": "object",
       "additionalProperties": false
     },
-    "AbortSignal": {
-      "type": "object",
-      "additionalProperties": false
-    },
+    "AbortSignal": {},
     "RouteMatchCallback": {}
   },
   "$schema": "http://json-schema.org/draft-07/schema#"
