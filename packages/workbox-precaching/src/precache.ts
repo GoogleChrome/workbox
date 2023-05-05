@@ -9,6 +9,7 @@
 import {getOrCreatePrecacheController} from './utils/getOrCreatePrecacheController.js';
 import {PrecacheEntry} from './_types.js';
 import './_version.js';
+import {PrecacheControllerOptions} from './PrecacheController.js';
 
 /**
  * Adds items to the precache list, removing any duplicates and
@@ -29,8 +30,11 @@ import './_version.js';
  *
  * @memberof workbox-precaching
  */
-function precache(entries: Array<PrecacheEntry | string>): void {
-  const precacheController = getOrCreatePrecacheController();
+function precache(
+  entries: Array<PrecacheEntry | string>,
+  options?: PrecacheControllerOptions,
+): void {
+  const precacheController = getOrCreatePrecacheController(options);
   precacheController.precache(entries);
 }
 
