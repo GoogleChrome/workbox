@@ -7,7 +7,8 @@
 */
 
 import assert from 'assert';
-import {Answers, prompt} from 'inquirer';
+import {Answers} from 'inquirer';
+import inquirer from 'inquirer';
 import glob from 'glob';
 import ora from 'ora';
 import upath from 'upath';
@@ -80,7 +81,7 @@ async function askQuestion(globDirectory: string): Promise<Answers> {
 
   assert(fileExtensions.length > 0, errors['no-file-extensions-found']);
 
-  return prompt([
+  return inquirer.prompt([
     {
       name,
       message: 'Which file types would you like to precache?',

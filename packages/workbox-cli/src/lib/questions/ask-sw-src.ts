@@ -6,7 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {Answers, prompt} from 'inquirer';
+import {Answers} from 'inquirer';
+import inquirer from 'inquirer';
 import {oneLine as ol} from 'common-tags';
 
 // The key used for the question/answer.
@@ -16,7 +17,7 @@ const name = 'swSrc';
  * @return {Promise<Answers>} The answers from inquirer.
  */
 function askQuestion(): Promise<Answers> {
-  return prompt([
+  return inquirer.prompt([
     {
       name,
       message: ol`Where's your existing service worker file? To be used with
