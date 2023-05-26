@@ -6,12 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-const GitHubApi = require('@octokit/rest');
+const {Octokit} = require('@octokit/rest');
 const semver = require('semver');
 
 const constants = require('./constants');
-
-const github = new GitHubApi();
 
 // github.authenticate() is synchronous, and it only stores the credentials for
 // the next request, so it should be called once per method that requires auth.
@@ -24,30 +22,28 @@ const authenticate = () => {
     );
   }
 
-  github.authenticate({
-    type: 'token',
-    token: process.env.GITHUB_TOKEN,
-  });
+  return new Octokit({auth: process.env.GITHUB_TOKEN});
 };
 
 module.exports = {
   createRelease: (args) => {
-    authenticate();
+    const github = authenticate();
+
     args.owner = constants.GITHUB_OWNER;
     args.repo = constants.GITHUB_REPO;
-    return github.repos.createRelease(args);
+    return github.rest.repos.createRelease(args);
   },
 
   uploadAsset: (args) => {
-    authenticate();
+    const github = authenticate();
     args.owner = constants.GITHUB_OWNER;
     args.repo = constants.GITHUB_REPO;
-    return github.repos.uploadAsset(args);
+    return github.rest.repos.uploadReleaseAsset(args);
   },
 
   getTaggedReleases: async () => {
-    authenticate();
-    const releasesData = await github.repos.getReleases({
+    const github = authenticate();
+    const releasesData = await github.rest.repos.listReleases({
       owner: constants.GITHUB_OWNER,
       repo: constants.GITHUB_REPO,
     });
@@ -65,8 +61,8 @@ module.exports = {
   },
 
   getTags: async () => {
-    authenticate();
-    const tagsResponse = await github.repos.getTags({
+    const github = authenticate();
+    const tagsResponse = await github.repos.listTags({
       owner: constants.GITHUB_OWNER,
       repo: constants.GITHUB_REPO,
     });

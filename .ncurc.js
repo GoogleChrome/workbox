@@ -6,7 +6,6 @@
 module.exports = {
   reject: [
     // See https://github.com/GoogleChrome/workbox/issues/2479
-    '@octokit/rest',
     'service-worker-mock',
   ],
 };
