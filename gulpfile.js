@@ -11,7 +11,8 @@ const globby = require('globby');
 const minimist = require('minimist');
 const upath = require('upath');
 
-const options = minimist(process.argv.slice(2));
+const argv = process.argv.slice(2);
+const options = minimist(argv);
 
 if (options.package) {
   // Ensure the package is valid before running tasks
