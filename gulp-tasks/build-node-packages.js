@@ -77,6 +77,10 @@ async function generateWorkboxBuildJSONSchema(packagePath) {
       schema.properties.include.items = {};
     }
 
+    if (schema.properties.urlManipulation) {
+      schema.properties.urlManipulation = {};
+    }
+
     // See https://github.com/GoogleChrome/workbox/issues/2910
     if (schema.definitions.OnSyncCallback) {
       schema.definitions.OnSyncCallback = {};

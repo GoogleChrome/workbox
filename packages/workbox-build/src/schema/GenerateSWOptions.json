@@ -111,6 +111,11 @@
       "default": false,
       "type": "boolean"
     },
+    "cleanURLs": {
+      "description": "check the cache for the URL with a `.html` added to the end of the end.",
+      "default": true,
+      "type": "boolean"
+    },
     "directoryIndex": {
       "description": "If a navigation request for a URL ending in `/` fails to match a precached\nURL, this value will be appended to the URL and that will be checked for a\nprecache match. This should be set to what your web server is using for its\ndirectory index.",
       "type": [
@@ -205,6 +210,7 @@
       "default": true,
       "type": "boolean"
     },
+    "urlManipulation": {},
     "swDest": {
       "description": "The path and filename of the service worker file that will be created by\nthe build process, relative to the current working directory. It must end\nin '.js'.",
       "type": "string"
