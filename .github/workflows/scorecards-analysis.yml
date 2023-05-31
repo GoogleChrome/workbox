@@ -5,7 +5,7 @@ on:
   schedule:
     - cron: '33 8 * * 4'
   push:
-    branches: [ v7 ]
+    branches: [v7]
 
 # Declare default permissions as read only.
 permissions: read-all
@@ -17,17 +17,19 @@ jobs:
     permissions:
       # Needed to upload the results to code-scanning dashboard.
       security-events: write
+      # Used to receive a badge. (Upcoming feature)
+      id-token: write
       actions: read
       contents: read
 
     steps:
-      - name: "Checkout code"
-        uses: actions/checkout@ec3a7ce113134d7a93b817d10a8272cb61118579 # v2.4.0
+      - name: 'Checkout code'
+        uses: actions/checkout@a12a3943b4bdde767164f792f33f40b04645d846 # tag=v3.0.0
         with:
           persist-credentials: false
 
-      - name: "Run analysis"
-        uses: ossf/scorecard-action@c8416b0b2bf627c349ca92fc8e3de51a64b005cf # v1.0.2
+      - name: 'Run analysis'
+        uses: ossf/scorecard-action@3e15ea8318eee9b333819ec77a36aca8d39df13e # tag=v1.1.1
         with:
           results_file: results.sarif
           results_format: sarif
@@ -36,20 +38,21 @@ jobs:
           repo_token: ${{ secrets.SCORECARD_READ_TOKEN }}
           # Publish the results to enable scorecard badges. For more details, see
           # https://github.com/ossf/scorecard-action#publishing-results.
-          # For private repositories, `publish_results` will automatically be set to `false`,
-          # regardless of the value entered here.
+          # For private repositories, `publish_results` will automatically be set to `false`, regardless
+          # of the value entered here.
           publish_results: true
 
-      # Upload the results as artifacts (optional).
-      - name: "Upload artifact"
-        uses: actions/upload-artifact@82c141cc518b40d92cc801eee768e7aafc9c2fa2 # v2.3.1
+      # Upload the results as artifacts (optional). Commenting out will disable uploads of run results in SARIF
+      # format to the repository Actions tab.
+      - name: 'Upload artifact'
+        uses: actions/upload-artifact@6673cd052c4cd6fcf4b4e6e60ea986c889389535 # tag=v3.0.0
         with:
           name: SARIF file
           path: results.sarif
           retention-days: 5
 
       # Upload the results to GitHub's code scanning dashboard.
-      - name: "Upload to code-scanning"
-        uses: github/codeql-action/upload-sarif@5f532563584d71fdef14ee64d17bafb34f751ce5 # v1.0.26
+      - name: 'Upload to code-scanning'
+        uses: github/codeql-action/upload-sarif@5f532563584d71fdef14ee64d17bafb34f751ce5 # tag=v1.0.26
         with:
           sarif_file: results.sarif
