@@ -265,8 +265,8 @@ class StrategyHandler {
    * defined on the strategy object.
    *
    * The following plugin lifecycle methods are invoked when using this method:
-   * - cacheKeyWillByUsed()
-   * - cachedResponseWillByUsed()
+   * - cacheKeyWillBeUsed()
+   * - cachedResponseWillBeUsed()
    *
    * @param {Request|string} key The Request or URL to use as the cache key.
    * @return {Promise<Response|undefined>} A matching response, if found.
@@ -308,7 +308,7 @@ class StrategyHandler {
    * the strategy object.
    *
    * The following plugin lifecycle methods are invoked when using this method:
-   * - cacheKeyWillByUsed()
+   * - cacheKeyWillBeUsed()
    * - cacheWillUpdate()
    * - cacheDidUpdate()
    *
