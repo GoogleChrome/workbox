@@ -269,7 +269,6 @@ export interface GeneratePartial {
    * your precache manifest. This is meant to be used in a Single Page App
    * scenario, in which you want all navigations to use common
    * [App Shell HTML](https://developers.google.com/web/fundamentals/architecture/app-shell).
-   * @default null
    */
   navigateFallback?: string | null;
   /**
