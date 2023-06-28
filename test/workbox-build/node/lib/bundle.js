@@ -57,9 +57,7 @@ describe(`[workbox-build] lib/bundle`, function () {
       '@rollup/plugin-babel': {
         babel: sinon.stub(),
       },
-      'rollup-plugin-terser': {
-        terser: sinon.stub(),
-      },
+      '@rollup/plugin-terser': sinon.stub(),
       '@surma/rollup-plugin-off-main-thread': sinon.stub(),
       'rollup': {
         rollup: sinon.stub().resolves(rollupStub),
@@ -123,7 +121,7 @@ describe(`[workbox-build] lib/bundle`, function () {
       mode,
     });
 
-    expect(stubs['rollup-plugin-terser'].terser.calledOnce).to.be.true;
+    expect(stubs['@rollup/plugin-terser'].calledOnce).to.be.true;
   });
 
   it(`should not use terser when 'mode' is not 'production'`, async function () {
@@ -132,7 +130,7 @@ describe(`[workbox-build] lib/bundle`, function () {
       mode,
     });
 
-    expect(stubs['rollup-plugin-terser'].terser.notCalled).to.be.true;
+    expect(stubs['@rollup/plugin-terser'].notCalled).to.be.true;
   });
 
   it(`should pass the 'sourcemap' parameter value through to Rollup`, async function () {
