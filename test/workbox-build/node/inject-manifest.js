@@ -14,6 +14,9 @@ const tempy = require('tempy');
 
 const {errors} = require('../../../packages/workbox-build/build/lib/errors');
 const {
+  getSourceMapURL,
+} = require('../../../packages/workbox-build/build/lib/get-source-map-url');
+const {
   injectManifest,
 } = require('../../../packages/workbox-build/build/inject-manifest');
 const {
@@ -436,11 +439,8 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function () {
     it(`should update the sourcemap to account for manifest injection`, async function () {
       const outputDir = tempy.directory();
       const swSrc = upath.join(SW_SRC_DIR, 'basic-with-sourcemap.js.nolint');
-      const swDest = upath.join(outputDir, 'basic-with-sourcemap.js');
-      const sourcemapDest = upath.join(
-        outputDir,
-        'basic-with-sourcemap.js.map',
-      );
+      const swDest = upath.join(outputDir, 'sw.js');
+      const sourcemapDest = `${swDest}.map`;
       const options = Object.assign({}, BASE_OPTIONS, {
         swDest,
         swSrc,
@@ -458,6 +458,9 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function () {
         upath.join(SW_SRC_DIR, '..', 'expected-source-map.js.map'),
       );
       expect(actualSourcemap).to.eql(expectedSourcemap);
+
+      const actualMapURL = getSourceMapURL(await fse.readFile(swDest, 'utf-8'));
+      expect(actualMapURL).to.eql(upath.basename(sourcemapDest));
 
       // We can't validate the SW file contents.
     });
