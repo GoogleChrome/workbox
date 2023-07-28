@@ -16,7 +16,7 @@ describe(`[workbox-build] lib/translate-url-to-sourcemap-paths.ts`, function () 
     '../../../../packages/workbox-build/build/lib/translate-url-to-sourcemap-paths';
   const URL = 'sw.js.map';
   const SWSRC = 'src/sw.js';
-  const SWDEST = 'dist/sw.js';
+  const SWDEST = 'dist/service-worker.js';
 
   it(`should return undefined paths when url is undefined`, function () {
     const {translateURLToSourcemapPaths} = require(MODULE_PATH);
@@ -80,7 +80,7 @@ describe(`[workbox-build] lib/translate-url-to-sourcemap-paths.ts`, function () 
       SWDEST,
     );
 
-    expect(destPath).to.eql('dist/sw.js.map');
+    expect(destPath).to.eql('dist/service-worker.js.map');
     expect(srcPath).to.eq('src/sw.js.map');
     expect(warning).to.be.undefined;
   });
