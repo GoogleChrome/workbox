@@ -28,7 +28,7 @@ export function translateURLToSourcemapPaths(
     const possibleSrcPath = upath.resolve(upath.dirname(swSrc), url);
     if (fse.existsSync(possibleSrcPath)) {
       srcPath = possibleSrcPath;
-      destPath = upath.resolve(upath.dirname(swDest), url);
+      destPath = `${swDest}.map`;
     } else {
       warning = `${errors['cant-find-sourcemap']} ${possibleSrcPath}`;
     }
