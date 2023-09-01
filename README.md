@@ -7,7 +7,7 @@ Workbox is a collection of JavaScript libraries for
 
 ## Documentation
 
-- [Overview](https://developers.google.com/web/tools/workbox/) ([site source](https://github.com/google/WebFundamentals/tree/main/src/content/en/tools/workbox))
+- [Overview](https://developers.google.com/web/tools/workbox/)
 - [Get started](https://developers.google.com/web/tools/workbox/guides/get-started)
 - [Contribute](CONTRIBUTING.md)
 
