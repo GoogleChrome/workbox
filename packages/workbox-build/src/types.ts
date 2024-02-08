@@ -1,5 +1,3 @@
-import {PackageJson} from 'type-fest';
-
 import {BroadcastCacheUpdateOptions} from 'workbox-broadcast-update/BroadcastCacheUpdate';
 import {GoogleAnalyticsInitializeOptions} from 'workbox-google-analytics/initialize';
 import {HTTPMethod} from 'workbox-routing/utils/constants';
@@ -583,7 +581,9 @@ export type BuildType = 'dev' | 'prod';
 /**
  * @private
  */
-export interface WorkboxPackageJSON extends PackageJson {
+export interface WorkboxPackageJSON {
+  version: string;
+  dependencies: Record<string, string>;
   workbox?: {
     browserNamespace?: string;
     packageType?: string;

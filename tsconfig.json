@@ -12,6 +12,7 @@
     "preserveConstEnums": true,
     "strict": true,
     "target": "es2017",
+    "skipLibCheck": true,
     "tsBuildInfoFile": "./tsconfig.tsbuildinfo"
   },
   "files": ["./infra/type-overrides.d.ts"],
