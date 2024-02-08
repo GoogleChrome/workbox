@@ -34,25 +34,19 @@ const tempy = require('tempy');
 const webpack = require('webpack');
 
 const CreateWebpackAssetPlugin = require('./lib/create-webpack-asset-plugin');
-const validateServiceWorkerRuntime = require('../../../../infra/testing/validator/service-worker-runtime');
-const webpackBuildCheck = require('../../../../infra/testing/webpack-build-check');
+const validateServiceWorkerRuntime = require('../../../infra/testing/validator/service-worker-runtime');
+const webpackBuildCheck = require('../../../infra/testing/webpack-build-check');
 const {
   InjectManifest,
-} = require('../../../../packages/workbox-webpack-plugin/build/inject-manifest');
+} = require('../../../packages/workbox-webpack-plugin/build/inject-manifest');
 
 chai.use(chaiMatchPattern);
 const {expect} = chai;
 
 describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function () {
   const WEBPACK_ENTRY_FILENAME = 'webpackEntry.js';
-  const SRC_DIR = upath.join(
-    __dirname,
-    '..',
-    '..',
-    'static',
-    'example-project-1',
-  );
-  const SW_SRC = upath.join(__dirname, '..', '..', 'static', 'sw-src.js');
+  const SRC_DIR = upath.join(__dirname, '..', 'static', 'example-project-1');
+  const SW_SRC = upath.join(__dirname, '..', 'static', 'sw-src.js');
 
   describe(`[workbox-webpack-plugin] Runtime errors`, function () {
     it(`should lead to a webpack compilation error when passed invalid config`, function (done) {
@@ -106,7 +100,6 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function () 
           new InjectManifest({
             swSrc: upath.join(
               __dirname,
-              '..',
               '..',
               'static',
               'bad-multiple-injection.js',
@@ -734,7 +727,6 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function () 
       const swSrc = upath.join(
         __dirname,
         '..',
-        '..',
         'static',
         'sw-src-missing-sourcemap.js',
       );
@@ -806,13 +798,7 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function () 
         },
         plugins: [
           new InjectManifest({
-            swSrc: upath.join(
-              __dirname,
-              '..',
-              '..',
-              'static',
-              'module-import-sw.js',
-            ),
+            swSrc: upath.join(__dirname, '..', 'static', 'module-import-sw.js'),
             swDest: 'service-worker.js',
           }),
         ],
@@ -859,13 +845,7 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function () 
         },
         plugins: [
           new InjectManifest({
-            swSrc: upath.join(
-              __dirname,
-              '..',
-              '..',
-              'static',
-              'module-import-sw.js',
-            ),
+            swSrc: upath.join(__dirname, '..', 'static', 'module-import-sw.js'),
             swDest: 'service-worker.js',
           }),
         ],
@@ -1533,7 +1513,6 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function () 
       const swSrc = upath.join(
         __dirname,
         '..',
-        '..',
         'static',
         'sw-src-define-plugin.js',
       );
@@ -1680,7 +1659,7 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function () 
         },
         plugins: [
           new InjectManifest({
-            swSrc: upath.join(__dirname, '..', '..', 'static', 'sw.ts'),
+            swSrc: upath.join(__dirname, '..', 'static', 'sw.ts'),
           }),
         ],
       };
@@ -1820,12 +1799,12 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function () 
         plugins: [
           new InjectManifest({
             exclude: [/sw\d.js/],
-            swSrc: upath.join(__dirname, '..', '..', 'static', 'sw.ts'),
+            swSrc: upath.join(__dirname, '..', 'static', 'sw.ts'),
             swDest: 'sw1.js',
           }),
           new InjectManifest({
             exclude: [/sw\d.js/],
-            swSrc: upath.join(__dirname, '..', '..', 'static', 'sw.ts'),
+            swSrc: upath.join(__dirname, '..', 'static', 'sw.ts'),
             swDest: 'sw2.js',
           }),
         ],
@@ -1900,7 +1879,7 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function () 
           new InjectManifest({
             exclude: [/sw\d.js/],
             swDest: 'sw.js',
-            swSrc: upath.join(__dirname, '..', '..', 'static', 'sw-src.js'),
+            swSrc: upath.join(__dirname, '..', 'static', 'sw-src.js'),
           }),
         ],
       };
@@ -1959,7 +1938,6 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function () 
             swSrc: upath.join(
               __dirname,
               '..',
-              '..',
               'static',
               'injected-manifest.json',
             ),
@@ -2001,7 +1979,6 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function () 
             swDest: 'injected-manifest.json',
             swSrc: upath.join(
               __dirname,
-              '..',
               '..',
               'static',
               'injected-manifest.json',
@@ -2051,7 +2028,6 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function () 
             swDest: 'injected-manifest.js',
             swSrc: upath.join(
               __dirname,
-              '..',
               '..',
               'static',
               'injected-manifest.js',

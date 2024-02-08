@@ -33,21 +33,15 @@ const tempy = require('tempy');
 const webpack = require('webpack');
 
 const CreateWebpackAssetPlugin = require('./lib/create-webpack-asset-plugin');
-const validateServiceWorkerRuntime = require('../../../../infra/testing/validator/service-worker-runtime');
-const webpackBuildCheck = require('../../../../infra/testing/webpack-build-check');
+const validateServiceWorkerRuntime = require('../../../infra/testing/validator/service-worker-runtime');
+const webpackBuildCheck = require('../../../infra/testing/webpack-build-check');
 const {
   GenerateSW,
-} = require('../../../../packages/workbox-webpack-plugin/build/generate-sw');
+} = require('../../../packages/workbox-webpack-plugin/build/generate-sw');
 
 describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function () {
   const WEBPACK_ENTRY_FILENAME = 'webpackEntry.js';
-  const SRC_DIR = upath.join(
-    __dirname,
-    '..',
-    '..',
-    'static',
-    'example-project-1',
-  );
+  const SRC_DIR = upath.join(__dirname, '..', 'static', 'example-project-1');
 
   describe(`[workbox-webpack-plugin] Runtime errors`, function () {
     it(`should lead to a webpack compilation error when passed invalid config`, function (done) {
@@ -1235,13 +1229,7 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function () {
     // See https://github.com/GoogleChrome/workbox/issues/2158
     it(`should support multiple compilations using the same plugin instance`, async function () {
       const outputDir = tempy.directory();
-      const srcDir = upath.join(
-        __dirname,
-        '..',
-        '..',
-        'static',
-        'example-project-1',
-      );
+      const srcDir = upath.join(__dirname, '..', 'static', 'example-project-1');
       const config = {
         mode: 'production',
         entry: {
@@ -1288,13 +1276,7 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v5`, function () {
 
     it(`should not list the swDest from one plugin in the other's manifest`, function (done) {
       const outputDir = tempy.directory();
-      const srcDir = upath.join(
-        __dirname,
-        '..',
-        '..',
-        'static',
-        'example-project-1',
-      );
+      const srcDir = upath.join(__dirname, '..', 'static', 'example-project-1');
       const config = {
         mode: 'production',
         entry: {
