@@ -30,6 +30,11 @@ declare global {
   interface ServiceWorkerGlobalScope {
     __WB_MANIFEST: Array<PrecacheEntry | string>;
   }
+
+  // https://caniuse.com/?search=Request.init%20priority
+  interface RequestInit {
+    priority?: 'low' | 'normal' | 'high';
+  }
 }
 
 interface PrecacheControllerOptions {
@@ -213,6 +218,7 @@ class PrecacheController {
           integrity,
           cache: cacheMode,
           credentials: 'same-origin',
+          priority: 'low',
         });
 
         await Promise.all(
