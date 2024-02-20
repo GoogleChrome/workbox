@@ -10,6 +10,7 @@ import {addRoute} from './addRoute.js';
 import {precache} from './precache.js';
 import {PrecacheRouteOptions, PrecacheEntry} from './_types.js';
 import './_version.js';
+import {PrecacheControllerOptions} from './PrecacheController.js';
 
 /**
  * This method will add entries to the precache list and add a route to
@@ -27,10 +28,11 @@ import './_version.js';
  */
 function precacheAndRoute(
   entries: Array<PrecacheEntry | string>,
-  options?: PrecacheRouteOptions,
+  routeOptions?: PrecacheRouteOptions,
+  controllerOptions?: PrecacheControllerOptions,
 ): void {
-  precache(entries);
-  addRoute(options);
+  precache(entries, controllerOptions);
+  addRoute(routeOptions);
 }
 
 export {precacheAndRoute};
