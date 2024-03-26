@@ -1,0 +1,357 @@
+{
+	"name": "Puppet Development Kit (Community)",
+	"dockerFile": "Dockerfile",
+
+	// Configure tool-specific properties.
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"puppet.puppet-vscode",
+				"rebornix.Ruby"
+			]
+		}
+	},
+	"features": {
+		"ghcr.io/devcontainers/features/aws-cli:1": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers/features/azure-cli:1": {
+			"installBicep": true,
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers/features/common-utils:2": {
+			"installZsh": true,
+			"configureZshAsDefaultShell": true,
+			"installOhMyZsh": true,
+			"upgradePackages": true,
+			"username": "automatic",
+			"userUid": "automatic",
+			"userGid": "automatic"
+		},
+		"ghcr.io/devcontainers/features/desktop-lite:1": {
+			"version": "latest",
+			"noVncVersion": "1.2.0",
+			"password": "vscode",
+			"webPort": "6080",
+			"vncPort": "5901"
+		},
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {
+			"moby": true,
+			"azureDnsAutoDetection": true,
+			"installDockerBuildx": true,
+			"version": "latest",
+			"dockerDashComposeVersion": "v1"
+		},
+		"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+			"moby": true,
+			"installDockerBuildx": true,
+			"version": "latest",
+			"dockerDashComposeVersion": "v1"
+		},
+		"ghcr.io/devcontainers/features/dotnet:1": {
+			"installUsingApt": true,
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers/features/git:1": {
+			"ppa": true,
+			"version": "os-provided"
+		},
+		"ghcr.io/devcontainers/features/git-lfs:1": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers/features/github-cli:1": {
+			"installDirectlyFromGitHubRelease": true,
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers/features/go:1": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers/features/java:1": {
+			"installGradle": true,
+			"installMaven": true,
+			"installAnt": true,
+			"version": "latest",
+			"jdkDistro": "ms",
+			"gradleVersion": "latest",
+			"mavenVersion": "latest",
+			"antVersion": "latest"
+		},
+		"ghcr.io/devcontainers/features/node:1": {
+			"nodeGypDependencies": true,
+			"version": "lts"
+		},
+		"ghcr.io/devcontainers/features/php:1": {
+			"installComposer": true,
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers/features/powershell:1": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers/features/python:1": {
+			"installTools": true,
+			"optimize": true,
+			"installJupyterlab": true,
+			"version": "os-provided"
+		},
+		"ghcr.io/devcontainers/features/ruby:1": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers/features/sshd:1": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers/features/terraform:1": {
+			"installSentinel": true,
+			"version": "latest",
+			"tflint": "latest",
+			"terragrunt": "latest"
+		},
+		"ghcr.io/iterative/features/dvc:1": {},
+		"ghcr.io/rocker-org/devcontainer-features/miniforge:1": {
+			"version": "latest",
+			"variant": "Mambaforge"
+		},
+		"ghcr.io/devcontainers-contrib/features/activemq-sdkman:2": {
+			"version": "latest",
+			"jdkVersion": "latest",
+			"jdkDistro": "ms"
+		},
+		"ghcr.io/devcontainers-contrib/features/amplify-cli:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/aws-cdk:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/aws-eb-cli:1": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/bandit:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/black:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/brownie:2": {
+			"version": "latest",
+			"pythonVersion": "os-provided"
+		},
+		"ghcr.io/devcontainers-contrib/features/btrace-sdkman:2": {
+			"version": "latest",
+			"jdkVersion": "latest",
+			"jdkDistro": "ms"
+		},
+		"ghcr.io/devcontainers-contrib/features/cloudinary-cli:1": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/coverage-py:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/doctoolchain-sdkman:2": {
+			"version": "latest",
+			"jdkVersion": "latest",
+			"jdkDistro": "ms"
+		},
+		"ghcr.io/devcontainers-contrib/features/ffmpeg-apt-get:1": {},
+		"ghcr.io/devcontainers-contrib/features/firebase-cli:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/flake8:2": {
+			"version": "latest",
+			"plugins": "flake8-black"
+		},
+		"ghcr.io/devcontainers-contrib/features/flit:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/gh-release:1": {
+			"repo": "digitalocean/doctl",
+			"target": "gh",
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/glances:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/hatch:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/isort:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/localtunnel-npm:1": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/maven-sdkman:2": {
+			"version": "latest",
+			"jdkVersion": "latest",
+			"jdkDistro": "ms"
+		},
+		"ghcr.io/devcontainers-contrib/features/mongodb-atlas-cli-homebrew:1": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/mvnd-sdkman:2": {
+			"version": "latest",
+			"jdkVersion": "latest",
+			"jdkDistro": "ms"
+		},
+		"ghcr.io/devcontainers-contrib/features/mypy:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/nestjs-cli:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/netdata:1": {},
+		"ghcr.io/devcontainers-contrib/features/nim-asdf:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/nox:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/npm-package:1": {
+			"package": "typescript",
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/pdm:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/pipx-package:1": {
+			"package": "black",
+			"version": "latest",
+			"injections": "pylint pytest"
+		},
+		"ghcr.io/devcontainers-contrib/features/poetry:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/pre-commit:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/protoc-asdf:1": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/pyinfra:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/pylint:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/pyscaffold:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/serverless:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/terraform-asdf:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/terraform-ls-asdf:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/tfswitch:1": {},
+		"ghcr.io/devcontainers-contrib/features/toolkit-sdkman:2": {
+			"version": "latest",
+			"jdkVersion": "latest",
+			"jdkDistro": "ms"
+		},
+		"ghcr.io/devcontainers-contrib/features/twine:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/typescript:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/vault-asdf:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/visualvm-sdkman:2": {
+			"version": "latest",
+			"jdkVersion": "latest",
+			"jdkDistro": "ms"
+		},
+		"ghcr.io/devcontainers-contrib/features/vue-cli:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/vulture:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/waypoint-asdf:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/wget-apt-get:1": {},
+		"ghcr.io/devcontainers-contrib/features/yamllint:2": {
+			"version": "latest"
+		},
+		"ghcr.io/devcontainers-contrib/features/yapf:2": {
+			"version": "latest"
+		},
+		"ghcr.io/eitsupi/devcontainer-features/go-task:1": {
+			"version": "latest"
+		},
+		"ghcr.io/dhoeric/features/google-cloud-cli:1": {},
+		"ghcr.io/dhoeric/features/stern:1": {},
+		"ghcr.io/dhoeric/features/terraform-docs:1": {},
+		"ghcr.io/dhoeric/features/terraformer:1": {},
+		"ghcr.io/rchaganti/vsc-devcontainer-features/gitsign:1": {},
+		"ghcr.io/rchaganti/vsc-devcontainer-features/wabt:1": {},
+		"ghcr.io/customink/codespaces-features/sam-cli:1": {
+			"version": "latest"
+		},
+		"ghcr.io/stuartleeks/dev-container-features/azure-cli-persistence:0": {},
+		"ghcr.io/stuartleeks/dev-container-features/shell-history:0": {},
+		"ghcr.io/guiyomh/features/golangci-lint:0": {
+			"version": "latest"
+		},
+		"ghcr.io/natescherer/devcontainers-custom-features/powershell-resources:1": {},
+		"ghcr.io/shyim/devcontainers-features/php:0": {
+			"installComposer": true,
+			"version": "8.1"
+		},
+		"ghcr.io/rjfmachado/devcontainer-features/cloud-native:1": {
+			"kubectl": "latest",
+			"helm": "latest",
+			"kubelogin": "latest",
+			"azwi": "latest",
+			"flux": "latest",
+			"cilium": "latest"
+		},
+		"ghcr.io/lukewiwa/features/shellcheck:0": {
+			"version": "stable"
+		},
+		"ghcr.io/rio/features/skaffold:2": {},
+		"ghcr.io/jlaundry/devcontainer-features/azure-functions-core-tools:1": {
+			"version": "latest"
+		},
+		"ghcr.io/mikaello/devcontainer-features/modern-shell-utils:1": {},
+		"ghcr.io/oleksis/devcontainer-features/playground-cli:4": {
+			"version": "4.3.0"
+		},
+		"ghcr.io/oleksis/devcontainer-features/python-launcher:1": {
+			"version": "1.0.0"
+		},
+		"ghcr.io/ebaskoro/devcontainer-features/sdkman:1": {
+			"candidate": "java",
+			"version": "latest"
+		},
+		"ghcr.io/warrenbuckley/codespace-features/sqlite:1": {},
+		"ghcr.io/lentzi90/features/clusterctl:0": {
+			"version": "v1.3.5"
+		},
+		"ghcr.io/robsyme/features/nextflow:1": {},
+		"ghcr.io/frntn/devcontainers-features/gitleaks:1": {
+			"version": "latest"
+		},
+		"ghcr.io/akhildevelops/devcontainer-features/pip:0": {},
+		"ghcr.io/swift-server-community/swift-devcontainer-features/SwiftFormat:0": {
+			"version": "latest"
+		},
+		"ghcr.io/swift-server-community/swift-devcontainer-features/foundationnetworking:1": {},
+		"ghcr.io/jarrodcolburn/features/android-sdk:0": {
+			"emulator": true,
+			"platforms": "33",
+			"build-tools": "33.0.2"
+		}
+	}
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [],
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	// "postCreateCommand": "pdk --version",
+}
