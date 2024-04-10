@@ -11,6 +11,18 @@ Workbox is a collection of JavaScript libraries for
 - [Get started](https://developers.google.com/web/tools/workbox/guides/get-started)
 - [Contribute](CONTRIBUTING.md)
 
+## Maintenance updated
+
+Workbox is a powerful library originally developed by members of Chrome's
+developer relations team to facilitate the creation of Progressive Web Apps
+and to improve the offline experience of web applications. It offers a suite
+of tools and strategies for efficiently caching and serving web assets,
+managing service workers, and handling offline scenarios. Workbox simplifies
+the implementation of common caching patterns and provides developers with a
+comprehensive toolkit to build robust, resilient web applications. From now
+on, [Chrome's Aurora team](https://developer.chrome.com/docs/aurora) will be
+the new owners of Workbox.
+
 ## Contributing
 
 Development happens in the open on GitHub. We're thankful to the community for
