@@ -11,7 +11,7 @@ Workbox is a collection of JavaScript libraries for
 - [Get started](https://developers.google.com/web/tools/workbox/guides/get-started)
 - [Contribute](CONTRIBUTING.md)
 
-## Maintenance updated
+## Maintenance update
 
 Workbox is a powerful library originally developed by members of Chrome's
 developer relations team to facilitate the creation of Progressive Web Apps
