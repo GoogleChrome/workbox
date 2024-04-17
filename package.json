@@ -5,8 +5,8 @@
   },
   "description": "Top-level scripts and dependencies for the workbox monorepo. Not meant to be published to npm.",
   "devDependencies": {
-    "@babel/cli": "^7.10.5",
-    "@babel/core": "^7.11.1",
+    "@babel/cli": "^7.24.1",
+    "@babel/core": "^7.24.4",
     "@babel/preset-env": "^7.11.0",
     "@google-cloud/storage": "^5.2.0",
     "@octokit/rest": "^19.0.11",
@@ -42,7 +42,7 @@
     "copy-webpack-plugin": "^6.0.3",
     "coveralls": "^3.1.1",
     "del": "^5.1.0",
-    "depcheck": "^1.2.0",
+    "depcheck": "^1.4.7",
     "eslint": "^7.6.0",
     "eslint-config-google": "^0.14.0",
     "eslint-plugin-header": "^3.0.0",
@@ -63,7 +63,7 @@
     "lerna": "^5.6.2",
     "lint-staged": "^11.1.2",
     "memory-fs": "^0.5.0",
-    "minimist": "^1.2.6",
+    "minimist": "^1.2.8",
     "mocha": "^9.0.0",
     "module-alias": "^2.2.2",
     "nunjucks": "^3.2.2",
@@ -84,7 +84,7 @@
     "typescript-json-schema": "^0.56.0",
     "upath": "^1.2.0",
     "webpack-v4": "npm:webpack@^4.44.2",
-    "webpack-v5": "npm:webpack@^5.9.0",
+    "webpack-v5": "npm:webpack@^5.91.0",
     "worker-plugin": "^5.0.0"
   },
   "engines": {
