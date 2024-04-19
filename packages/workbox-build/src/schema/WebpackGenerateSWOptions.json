@@ -247,6 +247,9 @@
         },
         "dotAll": {
           "type": "boolean"
+        },
+        "hasIndices": {
+          "type": "boolean"
         }
       },
       "additionalProperties": false,
@@ -254,6 +257,7 @@
         "dotAll",
         "flags",
         "global",
+        "hasIndices",
         "ignoreCase",
         "lastIndex",
         "multiline",
@@ -782,19 +786,17 @@
         "byteLength": {
           "type": "number"
         },
-        "__@species@598": {
+        "__@species@478": {
           "$ref": "#/definitions/SharedArrayBuffer"
         },
         "__@toStringTag@25": {
           "type": "string",
-          "enum": [
-            "SharedArrayBuffer"
-          ]
+          "const": "SharedArrayBuffer"
         }
       },
       "additionalProperties": false,
       "required": [
-        "__@species@598",
+        "__@species@478",
         "__@toStringTag@25",
         "byteLength"
       ]
