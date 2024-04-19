@@ -86,12 +86,15 @@ async function runIntegrationForBrowser(browser) {
     });
 
     for (const packageToTest of packagesToTest) {
-      const nodeEnv = constants.BUILD_TYPES[buildKey];
-      try {
-        await runTestSuite(packageToTest, nodeEnv, browser, webdriver);
-      } catch (error) {
-        await seleniumAssistant.killWebDriver(webdriver);
-        throw error;
+      // Since workbox-google-analytics is deprecated, removing the tests from integration tests.
+      if (!packageToTest.includes('workbox-google-analytics')) {
+        const nodeEnv = constants.BUILD_TYPES[buildKey];
+        try {
+          await runTestSuite(packageToTest, nodeEnv, browser, webdriver);
+        } catch (error) {
+          await seleniumAssistant.killWebDriver(webdriver);
+          throw error;
+        }
       }
     }
 
