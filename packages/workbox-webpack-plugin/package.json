@@ -28,7 +28,7 @@
     "workbox-build": "7.0.0"
   },
   "peerDependencies": {
-    "webpack": "^4.4.0 || ^5.9.0"
+    "webpack": "^4.4.0 || ^5.91.0"
   },
   "devDependencies": {
     "@types/node": "^18.15.11",

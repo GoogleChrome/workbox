@@ -147,6 +147,9 @@
         },
         "dotAll": {
           "type": "boolean"
+        },
+        "hasIndices": {
+          "type": "boolean"
         }
       },
       "additionalProperties": false,
@@ -154,6 +157,7 @@
         "dotAll",
         "flags",
         "global",
+        "hasIndices",
         "ignoreCase",
         "lastIndex",
         "multiline",
