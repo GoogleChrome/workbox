@@ -18,8 +18,10 @@ export type PromiseResult<T> = PromiseResolution<T> | PromiseRejection;
  * https://github.com/es-shims/Promise.allSettled/blob/main/implementation.js
  *
  * which is (c) 2019 Jordan Harband and used under the terms of the MIT license.
+ *
+ * @private
  */
-export function allSettled<T>(
+function allSettled<T>(
   iterable: Iterable<Promise<T>>,
 ): Promise<PromiseResult<T>[]> {
   const values = Array.from(iterable);
@@ -40,3 +42,5 @@ export function allSettled<T>(
     }),
   );
 }
+
+export {allSettled};
