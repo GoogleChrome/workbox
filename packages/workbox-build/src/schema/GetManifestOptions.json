@@ -55,7 +55,7 @@
     "globPatterns": {
       "description": "Files matching any of these patterns will be included in the precache\nmanifest. For more information, see the\n[`glob` primer](https://github.com/isaacs/node-glob#glob-primer).",
       "default": [
-        "**/*.{js,css,html}"
+        "**/*.{js,wasm,css,html}"
       ],
       "type": "array",
       "items": {
