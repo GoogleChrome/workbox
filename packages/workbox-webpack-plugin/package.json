@@ -36,7 +36,10 @@
   },
   "author": "Google's Web DevRel Team and Google's Aurora Team",
   "license": "MIT",
-  "repository": "googlechrome/workbox",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/googlechrome/workbox.git"
+  },
   "bugs": "https://github.com/GoogleChrome/workbox/issues",
   "homepage": "https://github.com/GoogleChrome/workbox"
 }

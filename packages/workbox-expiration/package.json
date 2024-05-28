@@ -4,7 +4,10 @@
   "license": "MIT",
   "author": "Google's Web DevRel Team and Google's Aurora Team",
   "description": "A service worker helper library that expires cached responses based on age or maximum number of entries.",
-  "repository": "googlechrome/workbox",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/googlechrome/workbox.git"
+  },
   "bugs": "https://github.com/googlechrome/workbox/issues",
   "homepage": "https://github.com/GoogleChrome/workbox",
   "keywords": [

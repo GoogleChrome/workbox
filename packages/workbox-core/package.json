@@ -4,7 +4,10 @@
   "license": "MIT",
   "author": "Google's Web DevRel Team and Google's Aurora Team",
   "description": "This module is used by a number of the other Workbox modules to share common code.",
-  "repository": "googlechrome/workbox",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/googlechrome/workbox.git"
+  },
   "bugs": "https://github.com/googlechrome/workbox/issues",
   "homepage": "https://github.com/GoogleChrome/workbox",
   "keywords": [

@@ -4,7 +4,10 @@
   "license": "MIT",
   "author": "Google's Web DevRel Team and Google's Aurora Team",
   "description": "Queues failed requests and uses the Background Sync API to replay them when the network is available",
-  "repository": "googlechrome/workbox",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/googlechrome/workbox.git"
+  },
   "bugs": "https://github.com/googlechrome/workbox/issues",
   "homepage": "https://github.com/GoogleChrome/workbox",
   "keywords": [
