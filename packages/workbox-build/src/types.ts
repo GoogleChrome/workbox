@@ -401,7 +401,7 @@ export interface GlobPartial {
    * Files matching any of these patterns will be included in the precache
    * manifest. For more information, see the
    * [`glob` primer](https://github.com/isaacs/node-glob#glob-primer).
-   * @default ["**\/*.{js,css,html}"]
+   * @default ["**\/*.{js,wasm,css,html}"]
    */
   globPatterns?: Array<string>;
   /**
