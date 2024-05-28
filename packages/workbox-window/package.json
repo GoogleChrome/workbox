@@ -2,7 +2,7 @@
   "name": "workbox-window",
   "version": "7.1.0",
   "license": "MIT",
-  "author": "Google's Web DevRel Team",
+  "author": "Google's Web DevRel Team and Google's Aurora Team",
   "description": "Simplifies communications with Workbox packages running in the service worker",
   "repository": "googlechrome/workbox",
   "bugs": "https://github.com/googlechrome/workbox/issues",

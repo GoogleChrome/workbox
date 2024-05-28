@@ -2,7 +2,7 @@
   "name": "workbox-cacheable-response",
   "version": "7.1.0",
   "license": "MIT",
-  "author": "Google's Web DevRel Team",
+  "author": "Google's Web DevRel Team and Google's Aurora Team",
   "description": "This library takes a Response object and determines whether it's cacheable based on a specific configuration.",
   "repository": "googlechrome/workbox",
   "bugs": "https://github.com/googlechrome/workbox/issues",

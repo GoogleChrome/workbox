@@ -1,6 +1,6 @@
 {
   "name": "workbox-build",
-  "version": "7.1.0",
+  "version": "7.1.1",
   "description": "A module that integrates into your build process, helping you generate a manifest of local files that workbox-sw should precache.",
   "keywords": [
     "workbox",
@@ -14,7 +14,7 @@
   "engines": {
     "node": ">=16.0.0"
   },
-  "author": "Google's Web DevRel Team",
+  "author": "Google's Web DevRel Team and Google's Aurora Team",
   "license": "MIT",
   "repository": "googlechrome/workbox",
   "bugs": "https://github.com/GoogleChrome/workbox/issues",

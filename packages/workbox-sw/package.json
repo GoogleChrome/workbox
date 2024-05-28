@@ -2,7 +2,7 @@
   "name": "workbox-sw",
   "version": "7.1.0",
   "license": "MIT",
-  "author": "Google's Web DevRel Team",
+  "author": "Google's Web DevRel Team and Google's Aurora Team",
   "description": "This module makes it easy to get started with the Workbox service worker libraries.",
   "repository": "googlechrome/workbox",
   "bugs": "https://github.com/googlechrome/workbox/issues",

@@ -2,7 +2,7 @@
   "name": "workbox-background-sync",
   "version": "7.1.0",
   "license": "MIT",
-  "author": "Google's Web DevRel Team",
+  "author": "Google's Web DevRel Team and Google's Aurora Team",
   "description": "Queues failed requests and uses the Background Sync API to replay them when the network is available",
   "repository": "googlechrome/workbox",
   "bugs": "https://github.com/googlechrome/workbox/issues",
