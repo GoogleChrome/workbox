@@ -116,13 +116,17 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function () {
           revision: /^[0-9a-f]{32}$/,
         },
         {
-          url: 'webpackEntry.js',
+          url: 'webpackEntry-1.js',
+          revision: /^[0-9a-f]{32}$/,
+        },
+        {
+          url: 'webpackEntry-2.wasm',
           revision: /^[0-9a-f]{32}$/,
         },
       ]);
-      expect(count).to.eql(6);
+      expect(count).to.eql(7);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2782, 2698]);
+      expect(size).to.be.oneOf([2760, 2698]);
     });
 
     it(`should use defaults when all the required parameters, and 'globPatterns' are present`, async function () {
@@ -148,13 +152,13 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function () {
           revision: /^[0-9a-f]{32}$/,
         },
         {
-          url: 'webpackEntry.js',
+          url: 'webpackEntry-1.js',
           revision: /^[0-9a-f]{32}$/,
         },
       ]);
       expect(count).to.eql(4);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2707, 2629]);
+      expect(size).to.be.oneOf([2691, 2629]);
     });
 
     it(`should use defaults when all the required parameters, and 'globIgnores' are present`, async function () {
@@ -178,10 +182,14 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function () {
           url: 'styles/stylesheet-2.css',
           revision: /^[0-9a-f]{32}$/,
         },
+        {
+          url: 'webpackEntry-2.wasm',
+          revision: /^[0-9a-f]{32}$/,
+        },
       ]);
-      expect(count).to.eql(2);
+      expect(count).to.eql(3);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([69, 75]);
+      expect(size).to.be.oneOf([131, 75]);
     });
 
     it(`should use defaults when all the required parameters, 'globIgnores', and 'globPatterns' are present`, async function () {
@@ -200,7 +208,7 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function () {
           revision: /^[0-9a-f]{32}$/,
         },
         {
-          url: 'webpackEntry.js',
+          url: 'webpackEntry-1.js',
           revision: /^[0-9a-f]{32}$/,
         },
       ]);
@@ -220,7 +228,7 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function () {
       const {count, size, manifestEntries, warnings} = await getManifest(
         options,
       );
-      expect(warnings).to.have.lengthOf(2);
+      expect(warnings).to.have.lengthOf(3);
       expect(manifestEntries).to.matchPattern([
         {
           revision: /^[0-9a-f]{32}$/,
@@ -284,7 +292,11 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function () {
           revision: /^[0-9a-f]{32}$/,
         },
         {
-          url: 'webpackEntry.js',
+          url: 'webpackEntry-1.js',
+          revision: /^[0-9a-f]{32}$/,
+        },
+        {
+          url: 'webpackEntry-2.wasm',
           revision: /^[0-9a-f]{32}$/,
         },
         {
@@ -296,9 +308,9 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function () {
           revision: /^[0-9a-f]{32}$/,
         },
       ]);
-      expect(count).to.eql(8);
+      expect(count).to.eql(9);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([5162, 5324]);
+      expect(size).to.be.oneOf([5224, 5324]);
     });
 
     it(`should use defaults when all the required parameters, and 'manifestTransforms' are present`, async function () {
@@ -338,10 +350,14 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function () {
           url: '/prefix/styles/stylesheet-1.css',
           revision: /^[0-9a-f]{32}$/,
         },
+        {
+          url: '/prefix/webpackEntry-1.js',
+          revision: /^[0-9a-f]{32}$/,
+        },
       ]);
-      expect(count).to.eql(2);
+      expect(count).to.eql(3);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([50, 54]);
+      expect(size).to.be.oneOf([232, 54]);
     });
 
     it(`should use defaults when all the required parameters are present, with 'globFollow' and symlinks`, async function () {
@@ -372,13 +388,17 @@ describe(`[workbox-build] get-manifest.js (End to End)`, function () {
           revision: /^[0-9a-f]{32}$/,
         },
         {
-          url: 'link/webpackEntry.js',
+          url: 'link/webpackEntry-1.js',
+          revision: /^[0-9a-f]{32}$/,
+        },
+        {
+          url: 'link/webpackEntry-2.wasm',
           revision: /^[0-9a-f]{32}$/,
         },
       ]);
-      expect(count).to.eql(4);
+      expect(count).to.eql(5);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2707, 2629]);
+      expect(size).to.be.oneOf([2691, 2629]);
     });
   });
 
