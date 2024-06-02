@@ -11,7 +11,6 @@ const chaiAsPromised = require('chai-as-promised');
 const fse = require('fs-extra');
 const upath = require('upath');
 const tempy = require('tempy');
-const fs = require('fs');
 
 const {errors} = require('../../../packages/workbox-build/build/lib/errors');
 const {
@@ -478,7 +477,6 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function () {
       const expectedSourcemap = await fse.readJSON(
         upath.join(SW_SRC_DIR, '..', 'expected-source-map.js.map'),
       );
-      fs.writeFileSync('hello.js.msp', JSON.stringify(actualSourcemap));
       expect(actualSourcemap).to.eql(expectedSourcemap);
 
       // We can't validate the SW file contents.
