@@ -100,6 +100,12 @@ describe(`PrecacheController`, function () {
 
       expect(self.fetch.callCount).to.equal(0);
     });
+
+    it(`should construct with valid 'concurrentRequest' amount`, async function () {
+      expect(() => {
+        new PrecacheController({concurrentRequests: 5});
+      }).to.not.throw();
+    });
   });
 
   describe(`addToCacheList()`, function () {
@@ -802,6 +808,228 @@ describe(`PrecacheController`, function () {
       new PrecacheController().install(event);
 
       expect(event.waitUntil.callCount).to.equal(1);
+    });
+
+    describe(`concurrent requests`, function () {
+      it(`should not batch requests by default`, async function () {
+        self.fetch.restore();
+
+        const precacheController = new PrecacheController();
+        const cacheList = [
+          '/index.1234.html',
+          {url: '/example.1234.css'},
+          {url: '/scripts/index.js', revision: '1234'},
+          {url: '/scripts/stress.js?test=search&foo=bar', revision: '1234'},
+        ];
+        precacheController.addToCacheList(cacheList);
+        const event = new ExtendableEvent('install');
+        spyOnEvent(event);
+        let resolveFetch;
+        const fetchLock = new Promise((resolve) => (resolveFetch = resolve));
+        const firstFetchMade = new Promise((resolve) => {
+          sandbox.stub(self, 'fetch').callsFake(async () => {
+            resolve();
+            await fetchLock;
+            return new Response('stub');
+          });
+        });
+
+        const installPromise = precacheController.install(event);
+        // Wait for the first fetch to be made
+        await firstFetchMade;
+        // Wait an additional 500 seconds (could be a bit flakey. However, worst case, this test is a false negative)
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        expect(self.fetch.callCount).to.equal(1);
+
+        resolveFetch();
+
+        await installPromise;
+
+        expect(self.fetch.callCount).to.equal(4);
+
+        const cache = await caches.open(cacheNames.getPrecacheName());
+        const keys = await cache.keys();
+        expect(keys.length).to.equal(cacheList.length);
+
+        const expectedCacheKeys = [
+          `${location.origin}/index.1234.html`,
+          `${location.origin}/example.1234.css`,
+          `${location.origin}/scripts/index.js?__WB_REVISION__=1234`,
+          `${location.origin}/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=1234`,
+        ];
+        for (const key of expectedCacheKeys) {
+          const cachedResponse = await cache.match(key);
+          expect(cachedResponse, `${key} is missing from the cache`).to.exist;
+        }
+      });
+
+      const invalidConcurrentRequestSizes = [0, -24];
+
+      invalidConcurrentRequestSizes.forEach((invalidConcurrentReqCount) => {
+        it(`should not batch requests for invalid request count of ${invalidConcurrentReqCount}`, async function () {
+          self.fetch.restore();
+
+          const precacheController = new PrecacheController();
+          const cacheList = [
+            '/index.1234.html',
+            {url: '/example.1234.css'},
+            {url: '/scripts/index.js', revision: '1234'},
+            {url: '/scripts/stress.js?test=search&foo=bar', revision: '1234'},
+          ];
+          precacheController.addToCacheList(cacheList);
+          const event = new ExtendableEvent('install');
+          spyOnEvent(event);
+          let resolveFetch;
+          const fetchLock = new Promise((resolve) => (resolveFetch = resolve));
+          const firstFetchMade = new Promise((resolve) => {
+            sandbox.stub(self, 'fetch').callsFake(async () => {
+              resolve();
+              await fetchLock;
+              return new Response('stub');
+            });
+          });
+
+          const installPromise = precacheController.install(event);
+          // Wait for the first fetch to be made
+          await firstFetchMade;
+          // Wait an additional 500 seconds (could be a bit flakey. However, worst case, this test is a false negative)
+          await new Promise((resolve) => setTimeout(resolve, 500));
+
+          expect(self.fetch.callCount).to.equal(1);
+
+          resolveFetch();
+
+          await installPromise;
+
+          expect(self.fetch.callCount).to.equal(4);
+
+          const cache = await caches.open(cacheNames.getPrecacheName());
+          const keys = await cache.keys();
+          expect(keys.length).to.equal(cacheList.length);
+
+          const expectedCacheKeys = [
+            `${location.origin}/index.1234.html`,
+            `${location.origin}/example.1234.css`,
+            `${location.origin}/scripts/index.js?__WB_REVISION__=1234`,
+            `${location.origin}/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=1234`,
+          ];
+          for (const key of expectedCacheKeys) {
+            const cachedResponse = await cache.match(key);
+            expect(cachedResponse, `${key} is missing from the cache`).to.exist;
+          }
+        });
+      });
+
+      it(`should batch requests with request count indivisible by batch size`, async function () {
+        self.fetch.restore();
+
+        const precacheController = new PrecacheController({
+          concurrentRequests: 3,
+        });
+        const cacheList = [
+          '/index.1234.html',
+          {url: '/example.1234.css'},
+          {url: '/scripts/index.js', revision: '1234'},
+          {url: '/scripts/stress.js?test=search&foo=bar', revision: '1234'},
+        ];
+        precacheController.addToCacheList(cacheList);
+        const event = new ExtendableEvent('install');
+        spyOnEvent(event);
+        let resolveFetch;
+        const fetchLock = new Promise((resolve) => (resolveFetch = resolve));
+        const firstFetchMade = new Promise((resolve) => {
+          sandbox.stub(self, 'fetch').callsFake(async () => {
+            resolve();
+            await fetchLock;
+            return new Response('stub');
+          });
+        });
+        const installPromise = precacheController.install(event);
+        // Wait for the first fetch to be made
+        await firstFetchMade;
+        // Wait an additional 500 seconds (could be a bit flakey. However, worst case, this test is a false negative)
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        expect(self.fetch.callCount).to.equal(3);
+
+        // Resolve the first fetch. This should trigger the second batch of requests
+        resolveFetch();
+
+        await installPromise;
+
+        expect(self.fetch.callCount).to.equal(4);
+
+        const cache = await caches.open(cacheNames.getPrecacheName());
+        const keys = await cache.keys();
+        expect(keys.length).to.equal(cacheList.length);
+
+        const expectedCacheKeys = [
+          `${location.origin}/index.1234.html`,
+          `${location.origin}/example.1234.css`,
+          `${location.origin}/scripts/index.js?__WB_REVISION__=1234`,
+          `${location.origin}/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=1234`,
+        ];
+        for (const key of expectedCacheKeys) {
+          const cachedResponse = await cache.match(key);
+          expect(cachedResponse, `${key} is missing from the cache`).to.exist;
+        }
+      });
+
+      it(`should batch requests with request count divisible by batch size`, async function () {
+        self.fetch.restore();
+
+        const precacheController = new PrecacheController({
+          concurrentRequests: 2,
+        });
+        const cacheList = [
+          '/index.1234.html',
+          {url: '/example.1234.css'},
+          {url: '/scripts/index.js', revision: '1234'},
+          {url: '/scripts/stress.js?test=search&foo=bar', revision: '1234'},
+        ];
+        precacheController.addToCacheList(cacheList);
+        const event = new ExtendableEvent('install');
+        spyOnEvent(event);
+        let resolveFetch;
+        const fetchLock = new Promise((resolve) => (resolveFetch = resolve));
+        const firstFetchMade = new Promise((resolve) => {
+          sandbox.stub(self, 'fetch').callsFake(async () => {
+            resolve();
+            await fetchLock;
+            return new Response('stub');
+          });
+        });
+        const installPromise = precacheController.install(event);
+        // Wait for the first fetch to be made
+        await firstFetchMade;
+        // Wait an additional 500 seconds (could be a bit flakey. However, worst case, this test is a false negative)
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        expect(self.fetch.callCount).to.equal(2);
+
+        // Resolve the first fetch. This should trigger the second batch of requests
+        resolveFetch();
+
+        await installPromise;
+
+        expect(self.fetch.callCount).to.equal(4);
+
+        const cache = await caches.open(cacheNames.getPrecacheName());
+        const keys = await cache.keys();
+        expect(keys.length).to.equal(cacheList.length);
+
+        const expectedCacheKeys = [
+          `${location.origin}/index.1234.html`,
+          `${location.origin}/example.1234.css`,
+          `${location.origin}/scripts/index.js?__WB_REVISION__=1234`,
+          `${location.origin}/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=1234`,
+        ];
+        for (const key of expectedCacheKeys) {
+          const cachedResponse = await cache.match(key);
+          expect(cachedResponse, `${key} is missing from the cache`).to.exist;
+        }
+      });
     });
   });
 

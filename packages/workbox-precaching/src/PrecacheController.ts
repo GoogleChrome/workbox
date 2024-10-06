@@ -32,10 +32,38 @@ declare global {
   }
 }
 
-interface PrecacheControllerOptions {
+function chunk<T>(array: T[], chunkSize = 1) {
+  const chunks: T[][] = [];
+  const tmp = [...array];
+  if (chunkSize <= 0) {
+    return chunks;
+  }
+  while (tmp.length) chunks.push(tmp.splice(0, chunkSize));
+  return chunks;
+}
+
+export interface PrecacheControllerOptions {
+  /** The cache to use for precaching. */
   cacheName?: string;
+
+  /**
+   * Plugins to use when precaching as well
+   * as responding to fetch events for precached assets.
+   */
   plugins?: WorkboxPlugin[];
+
+  /**
+   * Whether to attempt to
+   * get the response from the network if there's a precache miss.
+   * @default true
+   */
   fallbackToNetwork?: boolean;
+
+  /**
+   * The maximum number of concurrent prefetch requests to make.
+   * @default 1
+   */
+  concurrentRequests?: number;
 }
 
 /**
@@ -45,6 +73,16 @@ interface PrecacheControllerOptions {
  */
 class PrecacheController {
   private _installAndActiveListenersAdded?: boolean;
+
+  /**
+   * The number of requests to patch concurrently. By default, concurrent request batching should
+   * be disabled.
+   * @link https://github.com/GoogleChrome/workbox/issues/2528
+   * @link https://github.com/GoogleChrome/workbox/issues/2880
+   * @default 1
+   */
+  private readonly _concurrentRequests: number;
+
   private readonly _strategy: Strategy;
   private readonly _urlsToCacheKeys: Map<string, string> = new Map();
   private readonly _urlsToCacheModes: Map<
@@ -61,17 +99,13 @@ class PrecacheController {
   /**
    * Create a new PrecacheController.
    *
-   * @param {Object} [options]
-   * @param {string} [options.cacheName] The cache to use for precaching.
-   * @param {string} [options.plugins] Plugins to use when precaching as well
-   * as responding to fetch events for precached assets.
-   * @param {boolean} [options.fallbackToNetwork=true] Whether to attempt to
-   * get the response from the network if there's a precache miss.
+   * @param {PrecacheControllerOptions} [options={}] Optional precache controller configurations
    */
   constructor({
     cacheName,
     plugins = [],
     fallbackToNetwork = true,
+    concurrentRequests = 1,
   }: PrecacheControllerOptions = {}) {
     this._strategy = new PrecacheStrategy({
       cacheName: cacheNames.getPrecacheName(cacheName),
@@ -81,6 +115,8 @@ class PrecacheController {
       ],
       fallbackToNetwork,
     });
+    this._concurrentRequests =
+      concurrentRequests && concurrentRequests > 0 ? concurrentRequests : 1;
 
     // Bind the install and activate methods to the instance.
     this.install = this.install.bind(this);
@@ -203,25 +239,34 @@ class PrecacheController {
       const installReportPlugin = new PrecacheInstallReportPlugin();
       this.strategy.plugins.push(installReportPlugin);
 
-      // Cache entries one at a time.
-      // See https://github.com/GoogleChrome/workbox/issues/2528
-      for (const [url, cacheKey] of this._urlsToCacheKeys) {
-        const integrity = this._cacheKeysToIntegrities.get(cacheKey);
-        const cacheMode = this._urlsToCacheModes.get(url);
+      const chunkedUrlsToCacheKeys = chunk(
+        Array.from(this._urlsToCacheKeys),
+        this._concurrentRequests,
+      );
 
-        const request = new Request(url, {
-          integrity,
-          cache: cacheMode,
-          credentials: 'same-origin',
-        });
+      for (const urlsToCacheKeysChunk of chunkedUrlsToCacheKeys) {
+        const batchedRequests = urlsToCacheKeysChunk.map(
+          async ([url, cacheKey]) => {
+            const integrity = this._cacheKeysToIntegrities.get(cacheKey);
+            const cacheMode = this._urlsToCacheModes.get(url);
 
-        await Promise.all(
-          this.strategy.handleAll({
-            params: {cacheKey},
-            request,
-            event,
-          }),
+            const request = new Request(url, {
+              integrity,
+              cache: cacheMode,
+              credentials: 'same-origin',
+            });
+
+            return Promise.all(
+              this.strategy.handleAll({
+                params: {cacheKey},
+                request,
+                event,
+              }),
+            );
+          },
         );
+
+        await Promise.all(batchedRequests);
       }
 
       const {updatedURLs, notUpdatedURLs} = installReportPlugin;
