@@ -129,7 +129,10 @@ export async function injectManifest(
       searchString: options.injectionPoint!,
     });
 
-    filesToWrite[options.swDest] = source;
+    filesToWrite[options.swDest] = source.replace(
+      url!,
+      encodeURI(upath.basename(destPath)),
+    );
     filesToWrite[destPath] = map;
   } else {
     // If there's no sourcemap associated with swSrc, a simple string
