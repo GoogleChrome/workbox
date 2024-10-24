@@ -1,6 +1,6 @@
 {
   "name": "workbox-google-analytics",
-  "version": "7.1.0",
+  "version": "7.2.0",
   "license": "MIT",
   "author": "Google's Web DevRel Team and Google's Aurora Team",
   "description": "Queues failed requests and uses the Background Sync API to replay them when the network is available",
@@ -28,9 +28,9 @@
   "module": "index.mjs",
   "types": "index.d.ts",
   "dependencies": {
-    "workbox-background-sync": "7.1.0",
-    "workbox-core": "7.1.0",
-    "workbox-routing": "7.1.0",
-    "workbox-strategies": "7.1.0"
+    "workbox-background-sync": "7.2.0",
+    "workbox-core": "7.2.0",
+    "workbox-routing": "7.2.0",
+    "workbox-strategies": "7.2.0"
   }
 }

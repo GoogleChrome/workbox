@@ -1,6 +1,6 @@
 {
   "name": "workbox-range-requests",
-  "version": "7.1.0",
+  "version": "7.2.0",
   "license": "MIT",
   "author": "Google's Web DevRel Team and Google's Aurora Team",
   "description": "This library creates a new Response, given a source Response and a Range header value.",
@@ -29,6 +29,6 @@
   "module": "index.mjs",
   "types": "index.d.ts",
   "dependencies": {
-    "workbox-core": "7.1.0"
+    "workbox-core": "7.2.0"
   }
 }

@@ -2,5 +2,5 @@
   "origin": "https://storage.googleapis.com",
   "bucketName": "workbox-cdn",
   "releasesDir": "releases",
-  "latestVersion": "7.1.1"
+  "latestVersion": "7.2.0"
 }
