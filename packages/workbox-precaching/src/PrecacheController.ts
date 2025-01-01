@@ -204,13 +204,12 @@ class PrecacheController {
       const installReportPlugin = new PrecacheInstallReportPlugin();
       this.strategy.plugins.push(installReportPlugin);
 
-      // Cache 10 entries at a time
+      // Limit caching to 20 entries concurrently
       // See https://github.com/GoogleChrome/workbox/issues/2880#issuecomment-1506579511
-      const limit = pLimit(10);
+      // See https://github.com/GoogleChrome/workbox/issues/2528
+      const limit = pLimit(20);
       const promises: Promise<void>[] = [];
 
-      // Cache entries one at a time.
-      // See https://github.com/GoogleChrome/workbox/issues/2528
       for (const [url, cacheKey] of this._urlsToCacheKeys) {
         const integrity = this._cacheKeysToIntegrities.get(cacheKey);
         const cacheMode = this._urlsToCacheModes.get(url);
