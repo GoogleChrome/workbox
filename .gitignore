@@ -41,3 +41,5 @@ packages/workbox-routing/**/*.mjs
 packages/workbox-strategies/**/*.mjs
 packages/workbox-streams/**/*.mjs
 packages/workbox-window/**/*.mjs
+
+.npmrc
