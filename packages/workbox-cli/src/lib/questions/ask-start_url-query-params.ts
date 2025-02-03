@@ -7,7 +7,7 @@
 */
 
 import assert from 'assert';
-import {prompt} from 'inquirer';
+import inquirer from 'inquirer';
 import {oneLine as ol} from 'common-tags';
 
 import {errors} from '../errors';
@@ -28,7 +28,7 @@ async function askQuestion(): Promise<{
   shouldAskForIgnoreURLParametersMatching: boolean;
   ignoreURLParametersMatching?: string;
 }> {
-  return prompt([
+  return inquirer.prompt([
     {
       name: question_shouldAskForIgnoreURLParametersMatching,
       message: ol`Does your web app manifest include search parameter(s)

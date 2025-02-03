@@ -247,6 +247,9 @@
         },
         "dotAll": {
           "type": "boolean"
+        },
+        "hasIndices": {
+          "type": "boolean"
         }
       },
       "additionalProperties": false,
@@ -254,6 +257,7 @@
         "dotAll",
         "flags",
         "global",
+        "hasIndices",
         "ignoreCase",
         "lastIndex",
         "multiline",
@@ -607,6 +611,9 @@
               "$ref": "#/definitions/ArrayBufferView"
             },
             {
+              "$ref": "#/definitions/ReadableStream<any>"
+            },
+            {
               "$ref": "#/definitions/Blob"
             },
             {
@@ -614,9 +621,6 @@
             },
             {
               "$ref": "#/definitions/URLSearchParams"
-            },
-            {
-              "$ref": "#/definitions/ReadableStream<Uint8Array>"
             },
             {
               "type": [
@@ -648,19 +652,26 @@
         "headers": {
           "anyOf": [
             {
-              "$ref": "#/definitions/Headers"
+              "$ref": "#/definitions/Record<string,string>"
             },
             {
               "type": "array",
               "items": {
                 "type": "array",
-                "items": {
-                  "type": "string"
-                }
+                "items": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ],
+                "minItems": 2,
+                "maxItems": 2
               }
             },
             {
-              "$ref": "#/definitions/Record<string,string>"
+              "$ref": "#/definitions/Headers"
             }
           ]
         },
@@ -717,7 +728,9 @@
             }
           ]
         },
-        "window": {}
+        "window": {
+          "type": "null"
+        }
       },
       "additionalProperties": false
     },
@@ -727,13 +740,13 @@
         "byteLength": {
           "type": "number"
         },
-        "__@toStringTag": {
+        "__@toStringTag@25": {
           "type": "string"
         }
       },
       "additionalProperties": false,
       "required": [
-        "__@toStringTag",
+        "__@toStringTag@25",
         "byteLength"
       ]
     },
@@ -741,14 +754,7 @@
       "type": "object",
       "properties": {
         "buffer": {
-          "anyOf": [
-            {
-              "$ref": "#/definitions/ArrayBuffer"
-            },
-            {
-              "$ref": "#/definitions/SharedArrayBuffer"
-            }
-          ]
+          "$ref": "#/definitions/ArrayBufferLike"
         },
         "byteLength": {
           "type": "number"
@@ -764,27 +770,47 @@
         "byteOffset"
       ]
     },
+    "ArrayBufferLike": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/ArrayBuffer"
+        },
+        {
+          "$ref": "#/definitions/SharedArrayBuffer"
+        }
+      ]
+    },
     "SharedArrayBuffer": {
       "type": "object",
       "properties": {
         "byteLength": {
           "type": "number"
         },
-        "__@species": {
+        "__@species@478": {
           "$ref": "#/definitions/SharedArrayBuffer"
         },
-        "__@toStringTag": {
+        "__@toStringTag@25": {
           "type": "string",
-          "enum": [
-            "SharedArrayBuffer"
-          ]
+          "const": "SharedArrayBuffer"
         }
       },
       "additionalProperties": false,
       "required": [
-        "__@species",
-        "__@toStringTag",
+        "__@species@478",
+        "__@toStringTag@25",
         "byteLength"
+      ]
+    },
+    "ReadableStream<any>": {
+      "type": "object",
+      "properties": {
+        "locked": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "locked"
       ]
     },
     "Blob": {
@@ -811,50 +837,15 @@
       "type": "object",
       "additionalProperties": false
     },
-    "ReadableStream<Uint8Array>": {
+    "Record<string,string>": {
       "type": "object",
-      "properties": {
-        "locked": {
-          "type": "boolean"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "locked"
-      ]
+      "additionalProperties": false
     },
     "Headers": {
       "type": "object",
       "additionalProperties": false
     },
-    "Record<string,string>": {
-      "type": "object",
-      "additionalProperties": false
-    },
-    "AbortSignal": {
-      "type": "object",
-      "properties": {
-        "aborted": {
-          "type": "boolean"
-        },
-        "onabort": {
-          "anyOf": [
-            {
-              "type": "object",
-              "additionalProperties": false
-            },
-            {
-              "type": "null"
-            }
-          ]
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "aborted",
-        "onabort"
-      ]
-    },
+    "AbortSignal": {},
     "RouteMatchCallback": {}
   },
   "$schema": "http://json-schema.org/draft-07/schema#"

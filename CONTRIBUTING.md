@@ -65,6 +65,6 @@ Then open a web browser to http://localhost:3004/ and navigate to the test suite
 
 To do an automated run of the browser-based test suite against the full set of supported browsers, run:
 
-````sh
-npm run gulp test_integration ```
-````
+```sh
+npm run gulp test_integration
+```

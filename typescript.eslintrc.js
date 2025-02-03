@@ -28,6 +28,7 @@ module.exports = {
     '@typescript-eslint/prefer-regexp-exec': 'off',
     '@typescript-eslint/require-await': 'off',
     '@typescript-eslint/unbound-method': 'off',
+    '@typescript-eslint/no-unsafe-argument': 'off',
     'block-scoped-var': 'error',
     'eol-last': 'error',
     'eqeqeq': 'error',

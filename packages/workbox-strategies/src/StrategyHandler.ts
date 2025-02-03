@@ -29,7 +29,7 @@ function toRequest(input: RequestInfo) {
 }
 
 /**
- * A class created every time a Strategy instance instance calls
+ * A class created every time a Strategy instance calls
  * {@link workbox-strategies.Strategy~handle} or
  * {@link workbox-strategies.Strategy~handleAll} that wraps all fetch and
  * cache actions around plugin callbacks and keeps track of when the strategy
@@ -265,8 +265,8 @@ class StrategyHandler {
    * defined on the strategy object.
    *
    * The following plugin lifecycle methods are invoked when using this method:
-   * - cacheKeyWillByUsed()
-   * - cachedResponseWillByUsed()
+   * - cacheKeyWillBeUsed()
+   * - cachedResponseWillBeUsed()
    *
    * @param {Request|string} key The Request or URL to use as the cache key.
    * @return {Promise<Response|undefined>} A matching response, if found.
@@ -308,7 +308,7 @@ class StrategyHandler {
    * the strategy object.
    *
    * The following plugin lifecycle methods are invoked when using this method:
-   * - cacheKeyWillByUsed()
+   * - cacheKeyWillBeUsed()
    * - cacheWillUpdate()
    * - cacheDidUpdate()
    *
@@ -534,7 +534,7 @@ class StrategyHandler {
   /**
    * Adds a promise to the
    * [extend lifetime promises]{@link https://w3c.github.io/ServiceWorker/#extendableevent-extend-lifetime-promises}
-   * of the event event associated with the request being handled (usually a
+   * of the event associated with the request being handled (usually a
    * `FetchEvent`).
    *
    * Note: you can await
@@ -556,13 +556,17 @@ class StrategyHandler {
    *
    * Note: any work done after `doneWaiting()` settles should be manually
    * passed to an event's `waitUntil()` method (not this handler's
-   * `waitUntil()` method), otherwise the service worker thread my be killed
+   * `waitUntil()` method), otherwise the service worker thread may be killed
    * prior to your work completing.
    */
   async doneWaiting(): Promise<void> {
-    let promise;
-    while ((promise = this._extendLifetimePromises.shift())) {
-      await promise;
+    while (this._extendLifetimePromises.length) {
+      const promises = this._extendLifetimePromises.splice(0);
+      const result = await Promise.allSettled(promises);
+      const firstRejection = result.find((i) => i.status === 'rejected');
+      if (firstRejection) {
+        throw (firstRejection as PromiseRejectedResult).reason;
+      }
     }
   }
 

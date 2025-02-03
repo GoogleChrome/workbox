@@ -7,7 +7,8 @@
 */
 
 import assert from 'assert';
-import {Answers, prompt} from 'inquirer';
+import {Answers} from 'inquirer';
+import inquirer from 'inquirer';
 import upath from 'upath';
 
 import {errors} from '../errors';
@@ -20,7 +21,7 @@ const name = 'swDest';
  * @return {Promise<Answers>} The answers from inquirer.
  */
 function askQuestion(defaultDir: string): Promise<Answers> {
-  return prompt([
+  return inquirer.prompt([
     {
       name,
       message: `Where would you like your service worker file to be saved?`,

@@ -82,6 +82,10 @@ async function generateWorkboxBuildJSONSchema(packagePath) {
       schema.definitions.OnSyncCallback = {};
     }
 
+    if (schema.definitions.AbortSignal) {
+      schema.definitions.AbortSignal = {};
+    }
+
     if (schema.definitions.RouteMatchCallback) {
       schema.definitions.RouteMatchCallback = {};
     }

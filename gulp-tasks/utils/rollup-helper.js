@@ -10,7 +10,7 @@ const {babel} = require('@rollup/plugin-babel');
 const {nodeResolve} = require('@rollup/plugin-node-resolve');
 const asyncToPromises = require('babel-plugin-transform-async-to-promises');
 const replace = require('@rollup/plugin-replace');
-const terserPlugin = require('rollup-plugin-terser').terser;
+const terserPlugin = require('@rollup/plugin-terser');
 
 const constants = require('./constants');
 const getVersionsCDNUrl = require('./versioned-cdn-url');

@@ -9,7 +9,7 @@
 import {babel} from '@rollup/plugin-babel';
 import {nodeResolve} from '@rollup/plugin-node-resolve';
 import {rollup, Plugin} from 'rollup';
-import {terser} from 'rollup-plugin-terser';
+import terser from '@rollup/plugin-terser';
 import {writeFile} from 'fs-extra';
 import omt from '@surma/rollup-plugin-off-main-thread';
 import presetEnv from '@babel/preset-env';

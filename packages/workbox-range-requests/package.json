@@ -1,10 +1,13 @@
 {
   "name": "workbox-range-requests",
-  "version": "6.5.4",
+  "version": "7.3.0",
   "license": "MIT",
-  "author": "Google's Web DevRel Team",
+  "author": "Google's Web DevRel Team and Google's Aurora Team",
   "description": "This library creates a new Response, given a source Response and a Range header value.",
-  "repository": "googlechrome/workbox",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/googlechrome/workbox.git"
+  },
   "bugs": "https://github.com/googlechrome/workbox/issues",
   "homepage": "https://github.com/GoogleChrome/workbox",
   "keywords": [
@@ -26,6 +29,6 @@
   "module": "index.mjs",
   "types": "index.d.ts",
   "dependencies": {
-    "workbox-core": "6.5.4"
+    "workbox-core": "7.3.0"
   }
 }

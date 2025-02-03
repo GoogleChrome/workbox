@@ -7,7 +7,8 @@
 */
 
 import assert from 'assert';
-import {Answers, Question, prompt} from 'inquirer';
+import {Answers, Question} from 'inquirer';
+import inquirer from 'inquirer';
 import {oneLine as ol} from 'common-tags';
 
 import {constants} from '../constants';
@@ -26,7 +27,7 @@ const configLocationQuestion: Question<Answers> = {
  * @return {Promise<Answers>} The answers from inquirer.
  */
 function askQuestion(): Promise<Answers> {
-  return prompt([configLocationQuestion]);
+  return inquirer.prompt([configLocationQuestion]);
 }
 
 export async function askConfigLocation(): Promise<string> {

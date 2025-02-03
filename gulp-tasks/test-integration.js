@@ -86,6 +86,10 @@ async function runIntegrationForBrowser(browser) {
     });
 
     for (const packageToTest of packagesToTest) {
+      // Since workbox-google-analytics is deprecated, removing the tests from integration tests.
+      if (packageToTest.includes('workbox-google-analytics')) {
+        continue;
+      }
       const nodeEnv = constants.BUILD_TYPES[buildKey];
       try {
         await runTestSuite(packageToTest, nodeEnv, browser, webdriver);

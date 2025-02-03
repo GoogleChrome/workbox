@@ -2,7 +2,7 @@
   "compilerOptions": {
     "composite": true,
     "declaration": true,
-    "lib": ["es2017", "webworker"],
+    "lib": ["es2020", "webworker"],
     "module": "esnext",
     "moduleResolution": "node",
     "noFallthroughCasesInSwitch": true,
