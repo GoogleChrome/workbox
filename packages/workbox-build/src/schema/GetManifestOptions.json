@@ -62,11 +62,6 @@
         "type": "string"
       }
     },
-    "globStrict": {
-      "description": "If true, an error reading a directory when generating a precache manifest\nwill cause the build to fail. If false, the problematic directory will be\nskipped. For more information, see the definition of `strict` in the `glob`\n[documentation](https://github.com/isaacs/node-glob#options).",
-      "default": true,
-      "type": "boolean"
-    },
     "templatedURLs": {
       "description": "If a URL is rendered based on some server-side logic, its contents may\ndepend on multiple files or on some other unique string value. The keys in\nthis object are server-rendered URLs. If the values are an array of\nstrings, they will be interpreted as `glob` patterns, and the contents of\nany files matching the patterns will be used to uniquely version the URL.\nIf used with a single string, it will be interpreted as unique versioning\ninformation that you've generated for a given URL.",
       "type": "object",

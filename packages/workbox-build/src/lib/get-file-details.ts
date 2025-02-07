@@ -26,7 +26,6 @@ export function getFileDetails({
   globFollow,
   globIgnores,
   globPattern,
-  globStrict,
 }: Omit<GlobPartial, 'globDirectory' | 'globPatterns' | 'templatedURLs'> & {
   // This will only be called when globDirectory is not undefined.
   globDirectory: string;
@@ -43,7 +42,6 @@ export function getFileDetails({
       cwd: globDirectory,
       follow: globFollow,
       ignore: globIgnores,
-      strict: globStrict,
     });
   } catch (err) {
     throw new Error(
