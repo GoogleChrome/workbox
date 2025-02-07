@@ -36,7 +36,7 @@
     "common-tags": "^1.8.0",
     "fast-json-stable-stringify": "^2.1.0",
     "fs-extra": "^9.0.1",
-    "glob": "^7.1.6",
+    "glob": "^9.0.0",
     "lodash": "^4.17.20",
     "pretty-bytes": "^5.3.0",
     "rollup": "^2.79.2",
