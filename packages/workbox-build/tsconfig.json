@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig",
   "compilerOptions": {
+    "composite": true,
     "esModuleInterop": true,
     "module": "CommonJS",
     "outDir": "./build",
