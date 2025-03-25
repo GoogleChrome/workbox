@@ -154,9 +154,9 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function () {
 
       const {count, filePaths, size, warnings} = await injectManifest(options);
       expect(warnings).to.be.empty;
-      expect(count).to.eql(6);
+      expect(count).to.eql(7);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2782, 2698]);
+      expect(size).to.be.oneOf([2760, 2844]);
       expect(filePaths).to.have.members([upath.resolve(swDest)]);
 
       await validateServiceWorkerRuntime({
@@ -187,7 +187,11 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function () {
                   revision: /^[0-9a-f]{32}$/,
                 },
                 {
-                  url: 'webpackEntry.js',
+                  url: 'webpackEntry-1.js',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'webpackEntry-2.wasm',
                   revision: /^[0-9a-f]{32}$/,
                 },
               ],
@@ -217,9 +221,9 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function () {
 
       const {count, filePaths, size, warnings} = await injectManifest(options);
       expect(warnings).to.be.empty;
-      expect(count).to.eql(6);
+      expect(count).to.eql(7);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2782, 2698]);
+      expect(size).to.be.oneOf([2760, 2844]);
       expect(filePaths).to.have.members([upath.resolve(swDest)]);
 
       await validateServiceWorkerRuntime({
@@ -251,7 +255,11 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function () {
                   revision: /^[0-9a-f]{32}$/,
                 },
                 {
-                  url: 'webpackEntry.js',
+                  url: 'webpackEntry-1.js',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'webpackEntry-2.wasm',
                   revision: /^[0-9a-f]{32}$/,
                 },
               ],
@@ -277,9 +285,9 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function () {
 
       const {count, filePaths, size, warnings} = await injectManifest(options);
       expect(warnings).to.be.empty;
-      expect(count).to.eql(6);
+      expect(count).to.eql(7);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2782, 2698]);
+      expect(size).to.be.oneOf([2760, 2844]);
       expect(filePaths).to.have.members([upath.resolve(swDest)]);
 
       await validateServiceWorkerRuntime({
@@ -310,7 +318,11 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function () {
                   revision: /^[0-9a-f]{32}$/,
                 },
                 {
-                  url: 'webpackEntry.js',
+                  url: 'webpackEntry-1.js',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'webpackEntry-2.wasm',
                   revision: /^[0-9a-f]{32}$/,
                 },
               ],
@@ -329,9 +341,9 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function () {
 
       const {count, filePaths, size, warnings} = await injectManifest(options);
       expect(warnings).to.be.empty;
-      expect(count).to.eql(6);
+      expect(count).to.eql(7);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2782, 2698]);
+      expect(size).to.be.oneOf([2760, 2844]);
       expect(filePaths).to.have.members([upath.resolve(swDest)]);
 
       await validateServiceWorkerRuntime({
@@ -362,7 +374,11 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function () {
                   revision: /^[0-9a-f]{32}$/,
                 },
                 {
-                  url: 'webpackEntry.js',
+                  url: 'webpackEntry-1.js',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'webpackEntry-2.wasm',
                   revision: /^[0-9a-f]{32}$/,
                 },
               ],
@@ -390,9 +406,9 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function () {
 
       const {count, size, warnings} = await injectManifest(options);
       expect(warnings).to.be.empty;
-      expect(count).to.eql(6);
+      expect(count).to.eql(7);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2782, 2698]);
+      expect(size).to.be.oneOf([2760, 2844]);
       await validateServiceWorkerRuntime({
         entryPoint: 'injectManifest',
         swFile: swDest,
@@ -421,7 +437,11 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function () {
                   revision: /^[0-9a-f]{32}$/,
                 },
                 {
-                  url: 'webpackEntry.js',
+                  url: 'webpackEntry-1.js',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'webpackEntry-2.wasm',
                   revision: /^[0-9a-f]{32}$/,
                 },
               ],
@@ -448,9 +468,9 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function () {
 
       const {count, filePaths, size, warnings} = await injectManifest(options);
       expect(warnings).to.be.empty;
-      expect(count).to.eql(6);
+      expect(count).to.eql(7);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2782, 2698]);
+      expect(size).to.be.oneOf([2760, 2844]);
       expect(filePaths).to.have.members([upath.resolve(swDest), sourcemapDest]);
 
       const actualSourcemap = await fse.readJSON(sourcemapDest);
@@ -476,9 +496,9 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function () {
 
       const {count, size, warnings} = await injectManifest(options);
       expect(warnings).to.be.empty;
-      expect(count).to.eql(6);
+      expect(count).to.eql(7);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2782, 2698]);
+      expect(size).to.be.oneOf([2760, 2844]);
 
       // We can't validate the SW file contents.
     });
@@ -498,9 +518,9 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function () {
       const {count, size, warnings} = await injectManifest(options);
       expect(warnings.length).to.eql(1);
       expect(warnings[0]).to.include(errors['cant-find-sourcemap']);
-      expect(count).to.eql(6);
+      expect(count).to.eql(7);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2782, 2698]);
+      expect(size).to.be.oneOf([2760, 2844]);
 
       // We can't validate the SW file contents.
     });
