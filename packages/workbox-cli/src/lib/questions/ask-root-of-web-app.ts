@@ -33,8 +33,8 @@ async function getSubdirectories(): Promise<Array<string>> {
       .then((directories) => {
         resolve(directories);
       })
-      .catch((errors) => {
-        reject(errors);
+      .catch((error) => {
+        reject(error);
       });
   });
 }
