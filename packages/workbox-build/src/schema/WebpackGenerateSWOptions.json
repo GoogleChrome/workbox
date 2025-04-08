@@ -611,6 +611,9 @@
               "$ref": "#/definitions/ArrayBufferView"
             },
             {
+              "$ref": "#/definitions/ReadableStream<any>"
+            },
+            {
               "$ref": "#/definitions/Blob"
             },
             {
@@ -618,9 +621,6 @@
             },
             {
               "$ref": "#/definitions/URLSearchParams"
-            },
-            {
-              "$ref": "#/definitions/ReadableStream<any>"
             },
             {
               "type": [
@@ -652,6 +652,9 @@
         "headers": {
           "anyOf": [
             {
+              "$ref": "#/definitions/Record<string,string>"
+            },
+            {
               "type": "array",
               "items": {
                 "type": "array",
@@ -669,9 +672,6 @@
             },
             {
               "$ref": "#/definitions/Headers"
-            },
-            {
-              "$ref": "#/definitions/Record<string,string>"
             }
           ]
         },
@@ -740,13 +740,13 @@
         "byteLength": {
           "type": "number"
         },
-        "__@toStringTag@571": {
+        "__@toStringTag@25": {
           "type": "string"
         }
       },
       "additionalProperties": false,
       "required": [
-        "__@toStringTag@571",
+        "__@toStringTag@25",
         "byteLength"
       ]
     },
@@ -786,19 +786,31 @@
         "byteLength": {
           "type": "number"
         },
-        "__@species@1065": {
+        "__@species@478": {
           "$ref": "#/definitions/SharedArrayBuffer"
         },
-        "__@toStringTag@571": {
+        "__@toStringTag@25": {
           "type": "string",
           "const": "SharedArrayBuffer"
         }
       },
       "additionalProperties": false,
       "required": [
-        "__@species@1065",
-        "__@toStringTag@571",
+        "__@species@478",
+        "__@toStringTag@25",
         "byteLength"
+      ]
+    },
+    "ReadableStream<any>": {
+      "type": "object",
+      "properties": {
+        "locked": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "locked"
       ]
     },
     "Blob": {
@@ -823,34 +835,13 @@
     },
     "URLSearchParams": {
       "type": "object",
-      "properties": {
-        "size": {
-          "description": "The total number of parameter entries.",
-          "type": "number"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "size"
-      ]
-    },
-    "ReadableStream<any>": {
-      "type": "object",
-      "properties": {
-        "locked": {
-          "type": "boolean"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "locked"
-      ]
-    },
-    "Headers": {
-      "type": "object",
       "additionalProperties": false
     },
     "Record<string,string>": {
+      "type": "object",
+      "additionalProperties": false
+    },
+    "Headers": {
       "type": "object",
       "additionalProperties": false
     },

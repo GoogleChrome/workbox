@@ -9,7 +9,6 @@
 const execa = require('execa');
 const fse = require('fs-extra');
 const {globSync} = require('glob');
-
 const ol = require('common-tags').oneLine;
 const upath = require('upath');
 
