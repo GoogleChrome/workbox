@@ -40,8 +40,8 @@ async function getAllFileExtensions(globDirectory: string) {
         ),
       ],
     })
-      .then((directories) => {
-        resolve(directories);
+      .then((files) => {
+        resolve(files);
       })
       .catch((error) => {
         reject(error);
