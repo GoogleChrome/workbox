@@ -23,6 +23,7 @@
     "@types/estree": "^1.0.5",
     "@types/fs-extra": "^9.0.13",
     "@types/lodash": "^4.17.0",
+    "@types/node": "22.14.0",
     "@types/stringify-object": "^3.3.1",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
@@ -50,7 +51,7 @@
     "execa": "^4.1.0",
     "express": "^4.19.2",
     "fs-extra": "^9.1.0",
-    "glob": "^7.2.3",
+    "glob": "11.0.1",
     "globby": "^11.1.0",
     "gulp": "^4.0.2",
     "gzip-size": "^5.1.1",
@@ -125,5 +126,8 @@
     "test_server": "gulp test_server",
     "version": "gulp build && git add -A packages"
   },
-  "version": ""
+  "version": "",
+  "dependencies": {
+    "@types/minipass": "^3.1.2"
+  }
 }

@@ -8,7 +8,7 @@
 
 const clearModule = require('clear-module');
 const execa = require('execa');
-const glob = require('glob');
+const {globSync} = require('glob');
 const ol = require('common-tags').oneLine;
 const upath = require('upath');
 const seleniumAssistant = require('selenium-assistant');
@@ -63,7 +63,7 @@ async function runTestSuite(testPath, nodeEnv, seleniumBrowser, webdriver) {
       webdriver,
     };
 
-    const testFiles = glob.sync(
+    const testFiles = globSync(
       upath.join(__dirname, '..', testPath, 'test-*.js'),
     );
 

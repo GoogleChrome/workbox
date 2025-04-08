@@ -6,13 +6,13 @@
   https://opensource.org/licenses/MIT.
 */
 
-const glob = require('glob');
+const {globSync} = require('glob');
 const path = require('path');
 
 const DEFAULT_ROOT = path.join(__dirname, '..', '..');
 
 const getPackages = ({type, root = DEFAULT_ROOT} = {}) => {
-  const pathToPkgJsons = glob.sync('packages/*/package.json', {cwd: root});
+  const pathToPkgJsons = globSync('packages/*/package.json', {cwd: root});
 
   return pathToPkgJsons
     .map((pathToPkgJson) => {

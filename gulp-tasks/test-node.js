@@ -9,7 +9,7 @@
 const {series} = require('gulp');
 const execa = require('execa');
 const fse = require('fs-extra');
-const glob = require('glob');
+const {globSync} = require('glob');
 const ol = require('common-tags').oneLine;
 const upath = require('upath');
 
@@ -58,7 +58,7 @@ async function runNodeTestsWithEnv(testGroup, nodeEnv) {
     globConfig.ignore = [];
   }
 
-  const packagesToTest = glob.sync(`test/${testGroup}/node`, globConfig);
+  const packagesToTest = globSync(`test/${testGroup}/node`, globConfig);
   for (const packageToTest of packagesToTest) {
     // Hardcode special logic for webpack v4 and v5 tests, which need to
     // be run in separate processes.

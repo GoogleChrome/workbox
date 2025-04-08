@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-const glob = require('glob');
+const {globSync} = require('glob');
 const path = require('path');
 const {Storage} = require('@google-cloud/storage');
 
@@ -56,7 +56,7 @@ class CDNHelper {
   async upload(tagName, directoryToUpload) {
     const gcs = await this.getGCS();
 
-    const filePaths = glob.sync(`${directoryToUpload}/*`, {
+    const filePaths = globSync(`${directoryToUpload}/*`, {
       absolute: true,
     });
 

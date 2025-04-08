@@ -9,12 +9,13 @@
 const {oneLine} = require('common-tags');
 const constants = require('../../../gulp-tasks/utils/constants');
 const fse = require('fs-extra');
-const glob = require('glob');
+const {globSync} = require('glob');
+
 const logHelper = require('../../../infra/utils/log-helper');
 const path = require('path');
 
 describe(`[all] prod builds`, function () {
-  const buildFiles = glob.sync(
+  const buildFiles = globSync(
     `packages/*/${constants.PACKAGE_BUILD_DIRNAME}/*.prod.js`,
     {
       ignore: ['packages/*/node_modules/**/*'],

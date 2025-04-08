@@ -9,7 +9,7 @@
 import assert from 'assert';
 import {Answers} from 'inquirer';
 import inquirer from 'inquirer';
-import glob from 'glob';
+import {glob} from 'glob';
 import ora from 'ora';
 import upath from 'upath';
 
@@ -25,31 +25,21 @@ const name = 'globPatterns';
  * to all of the files under globDirectory.
  */
 async function getAllFileExtensions(globDirectory: string) {
-  const files: string[] = await new Promise((resolve, reject) => {
+  const files: string[] = await new Promise(() => {
     // Use a pattern to match any file that contains a '.', since that signifies
     // the presence of a file extension.
-    glob(
-      '**/*.*',
-      {
-        cwd: globDirectory,
-        nodir: true,
-        ignore: [
-          ...constants.ignoredDirectories.map(
-            (directory) => `**/${directory}/**`,
-          ),
-          ...constants.ignoredFileExtensions.map(
-            (extension) => `**/*.${extension}`,
-          ),
-        ],
-      },
-      (error, files) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(files);
-        }
-      },
-    );
+    glob('**/*.*', {
+      cwd: globDirectory,
+      nodir: true,
+      ignore: [
+        ...constants.ignoredDirectories.map(
+          (directory) => `**/${directory}/**`,
+        ),
+        ...constants.ignoredFileExtensions.map(
+          (extension) => `**/*.${extension}`,
+        ),
+      ],
+    });
   });
 
   const extensions: Set<string> = new Set();

@@ -8,7 +8,8 @@
 
 const {expect} = require('chai');
 const fse = require('fs-extra');
-const glob = require('glob');
+const {globSync} = require('glob');
+
 const upath = require('path');
 
 const {docs_build} = require('../../../gulp-tasks/docs.js');
@@ -29,7 +30,7 @@ describe('[all] JSDocs', function () {
     const docsPath = upath.join(projectRoot, 'docs');
     await docs_build();
 
-    const docs = glob.sync('*.html', {
+    const docs = globSync('*.html', {
       cwd: docsPath,
     });
 
