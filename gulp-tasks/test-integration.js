@@ -74,7 +74,7 @@ async function runTestSuite(testPath, nodeEnv, seleniumBrowser, webdriver) {
 }
 
 async function runIntegrationForBrowser(browser) {
-  const packagesToTest = glob.sync(`test/${global.packageOrStar}/integration`);
+  const packagesToTest = globSync(`test/${global.packageOrStar}/integration`);
 
   for (const buildKey of Object.keys(constants.BUILD_TYPES)) {
     const webdriver = await browser.getSeleniumDriver();
@@ -121,7 +121,7 @@ async function test_integration() {
   await seleniumAssistant.downloadLocalBrowser('chrome', 'stable', expiration);
   await seleniumAssistant.downloadLocalBrowser('firefox', 'stable', expiration);
 
-  const packagesToTest = glob.sync(`test/${global.packageOrStar}/integration`);
+  const packagesToTest = globSync(`test/${global.packageOrStar}/integration`);
   if (packagesToTest.length === 0) {
     return;
   }
