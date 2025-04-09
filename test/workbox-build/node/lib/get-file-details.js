@@ -60,10 +60,8 @@ describe(`[workbox-build] lib/get-file-details.js`, function () {
 
   it(`should return array of file details, without null values`, function () {
     const {getFileDetails} = proxyquire(MODULE_PATH, {
-      'glob': {
-        sync: () => {
-          return [FILE1, FILE2, DIRECTORY];
-        },
+      'globSync': () => {
+        return [FILE1, FILE2, DIRECTORY];
       },
       './get-file-size': {
         getFileSize: (value) => {
