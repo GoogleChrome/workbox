@@ -45,7 +45,7 @@ describe(`[workbox-cli] lib/questions/ask-extensions-to-cache.js`, function () {
 
   it(`should reject with a 'no-file-extensions-selected' error when the answer is an empty array`, async function () {
     const {askExtensionsToCache} = proxyquire(MODULE_PATH, {
-      glob: () => Promise.reject([`file.${SINGLE_EXTENSION}`]),
+      glob: () => Promise.resolve([`file.${SINGLE_EXTENSION}`]),
       inquirer: {
         prompt: () => Promise.resolve({[QUESTION_NAME]: []}),
       },
