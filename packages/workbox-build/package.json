@@ -12,7 +12,7 @@
     "file manifest"
   ],
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   },
   "author": "Google's Web DevRel Team and Google's Aurora Team",
   "license": "MIT",
