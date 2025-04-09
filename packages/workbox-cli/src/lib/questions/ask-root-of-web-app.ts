@@ -26,13 +26,9 @@ const questionManualInput = 'manualDirectoryInput';
  * working directory, with hidden and ignored ones filtered out.
  */
 async function getSubdirectories(): Promise<Array<string>> {
-  try {
-    return await glob('*/', {
-      ignore: constants.ignoredDirectories.map((directory) => `${directory}/`),
-    });
-  } catch (error) {
-    return error;
-  }
+  return await glob('*/', {
+    ignore: constants.ignoredDirectories.map((directory) => `${directory}/`),
+  });
 }
 
 /**
