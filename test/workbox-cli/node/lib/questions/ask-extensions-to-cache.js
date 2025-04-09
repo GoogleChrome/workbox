@@ -45,7 +45,7 @@ describe(`[workbox-cli] lib/questions/ask-extensions-to-cache.js`, function () {
 
   it(`should reject with a 'no-file-extensions-selected' error when the answer is an empty array`, async function () {
     const {askExtensionsToCache} = proxyquire(MODULE_PATH, {
-      glob: async () => [`file.${SINGLE_EXTENSION}`],
+      glob: () => Promise.reject([`file.${SINGLE_EXTENSION}`]),
       inquirer: {
         prompt: () => Promise.resolve({[QUESTION_NAME]: []}),
       },
@@ -68,7 +68,7 @@ describe(`[workbox-cli] lib/questions/ask-extensions-to-cache.js`, function () {
 
   it(`should resolve with the expected value when the answer is a single extension`, async function () {
     const {askExtensionsToCache} = proxyquire(MODULE_PATH, {
-      glob: async () => [`file.${SINGLE_EXTENSION}`],
+      glob: () => Promise.resolve([`file.${SINGLE_EXTENSION}`]),
       inquirer: {
         prompt: () => Promise.resolve({[QUESTION_NAME]: [SINGLE_EXTENSION]}),
       },
@@ -87,8 +87,10 @@ describe(`[workbox-cli] lib/questions/ask-extensions-to-cache.js`, function () {
 
   it(`should resolve with the expected value when the answer is multiple extensions`, async function () {
     const {askExtensionsToCache} = proxyquire(MODULE_PATH, {
-      glob: async () =>
-        MULTIPLE_EXTENSIONS.map((extension) => `file.${extension}`),
+      glob: () =>
+        Promise.resolve(
+          MULTIPLE_EXTENSIONS.map((extension) => `file.${extension}`),
+        ),
       inquirer: {
         prompt: () => Promise.resolve({[QUESTION_NAME]: MULTIPLE_EXTENSIONS}),
       },
@@ -107,9 +109,11 @@ describe(`[workbox-cli] lib/questions/ask-extensions-to-cache.js`, function () {
 
   it(`should ignore the expected directories and extensions`, async function () {
     const {askExtensionsToCache} = proxyquire(MODULE_PATH, {
-      glob: async (pattern, config) => {
+      glob: (pattern, config) => {
         expect(config.ignore).to.eql(['**/node_modules/**', '**/*.map']);
-        return MULTIPLE_EXTENSIONS.map((extension) => `file.${extension}`);
+        return Promise.resolve(
+          MULTIPLE_EXTENSIONS.map((extension) => `file.${extension}`),
+        );
       },
       inquirer: {
         prompt: () => Promise.resolve({[QUESTION_NAME]: MULTIPLE_EXTENSIONS}),
