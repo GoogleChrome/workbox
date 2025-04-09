@@ -25,27 +25,15 @@ const name = 'globPatterns';
  * to all of the files under globDirectory.
  */
 async function getAllFileExtensions(globDirectory: string) {
-  const files: string[] = await new Promise((resolve, reject) => {
-    // Use a pattern to match any file that contains a '.', since that signifies
-    // the presence of a file extension.
-    glob('**/*.*', {
-      cwd: globDirectory,
-      nodir: true,
-      ignore: [
-        ...constants.ignoredDirectories.map(
-          (directory) => `**/${directory}/**`,
-        ),
-        ...constants.ignoredFileExtensions.map(
-          (extension) => `**/*.${extension}`,
-        ),
-      ],
-    })
-      .then((files) => {
-        resolve(files);
-      })
-      .catch((error) => {
-        reject(error);
-      });
+  const files = await glob('**/*.*', {
+    cwd: globDirectory,
+    nodir: true,
+    ignore: [
+      ...constants.ignoredDirectories.map((directory) => `**/${directory}/**`),
+      ...constants.ignoredFileExtensions.map(
+        (extension) => `**/*.${extension}`,
+      ),
+    ],
   });
 
   const extensions: Set<string> = new Set();
