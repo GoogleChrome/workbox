@@ -28,7 +28,7 @@ describe(`[workbox-cli] lib/questions/ask-root-of-web-app.js`, function () {
   it(`should reject with a 'glob-directory-invalid' error when the answer isn't a valid directory`, async function () {
     const {askRootOfWebApp} = proxyquire(MODULE_PATH, {
       'glob': (pattern, config) => {
-        return Promise.reject(new Error(null));
+        return Promise.reject(new Error('glob-directory-invalid'));
       },
       'inquirer': {
         prompt: () => Promise.resolve({[questionRootDirectory]: DIRECTORY}),
@@ -57,7 +57,7 @@ describe(`[workbox-cli] lib/questions/ask-root-of-web-app.js`, function () {
   it(`should reject with a 'glob-directory-invalid' error when the manual input is provided (directory does not exist)`, async function () {
     const {askRootOfWebApp} = proxyquire(MODULE_PATH, {
       'glob': (pattern, config) => {
-        return Promise.reject(new Error(null));
+        return Promise.reject(new Error('glob-directory-invalid'));
       },
       'inquirer': {
         prompt: () =>
@@ -88,7 +88,7 @@ describe(`[workbox-cli] lib/questions/ask-root-of-web-app.js`, function () {
   it(`should resolve with a valid answer to the question when no child directories are present (default: use current directory)`, async function () {
     const {askRootOfWebApp} = proxyquire(MODULE_PATH, {
       'glob': (pattern, config) => {
-        return Promise.resolve([]);
+        return Promise.resolve(DIRECTORY);
       },
       'inquirer': {
         prompt: () => Promise.resolve({[questionRootDirectory]: DIRECTORY}),
