@@ -25,10 +25,8 @@ describe(`[workbox-build] lib/get-file-details.js`, function () {
 
   it(`should throw when there's a glob.sync() error`, function () {
     const {getFileDetails} = proxyquire(MODULE_PATH, {
-      glob: {
-        sync: () => {
-          throw new Error();
-        },
+      globSync: () => {
+        throw new Error();
       },
     });
 
@@ -45,9 +43,7 @@ describe(`[workbox-build] lib/get-file-details.js`, function () {
 
   it(`should return a warning when the pattern doesn't match anything`, function () {
     const {getFileDetails} = proxyquire(MODULE_PATH, {
-      glob: {
-        sync: () => [],
-      },
+      globSync: () => [],
     });
 
     const {globbedFileDetails, warning} = getFileDetails({
