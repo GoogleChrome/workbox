@@ -109,15 +109,8 @@ describe(`[workbox-cli] lib/questions/ask-extensions-to-cache.js`, function () {
 
   it(`should ignore the expected directories and extensions`, async function () {
     const {askExtensionsToCache} = proxyquire(MODULE_PATH, {
-      glob: async (pattern, config) => {
-        expect(config.ignore).to.eql([
-          ...constants.ignoredDirectories.map(
-            (directory) => `**/${directory}/**`,
-          ),
-          ...constants.ignoredFileExtensions.map(
-            (extension) => `**/*.${extension}`,
-          ),
-        ]);
+      glob: (pattern, config) => {
+        expect(config.ignore).to.eql(['**/node_modules/**', '**/*.map']);
 
         return MULTIPLE_EXTENSIONS.map((extension) => `file.${extension}`);
       },
