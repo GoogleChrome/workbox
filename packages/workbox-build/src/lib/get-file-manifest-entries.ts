@@ -22,7 +22,6 @@ export async function getFileManifestEntries({
   globFollow,
   globIgnores,
   globPatterns = [],
-  globStrict,
   manifestTransforms,
   maximumFileSizeToCacheInBytes,
   modifyURLPrefix,
@@ -38,7 +37,6 @@ export async function getFileManifestEntries({
         globFollow,
         globIgnores,
         globPattern,
-        globStrict,
       });
 
       if (warning) {
@@ -73,7 +71,6 @@ export async function getFileManifestEntries({
                 globFollow,
                 globIgnores,
                 globPattern,
-                globStrict,
               });
 
               if (warning) {

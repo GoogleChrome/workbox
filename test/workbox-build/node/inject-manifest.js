@@ -40,7 +40,6 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function () {
     'globFollow',
     'globIgnores',
     'globPatterns',
-    'globStrict',
     'injectionPoint',
     'manifestTransforms',
     'maximumFileSizeToCacheInBytes',

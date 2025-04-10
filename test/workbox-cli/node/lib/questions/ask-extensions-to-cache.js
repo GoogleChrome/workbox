@@ -25,7 +25,9 @@ const MULTIPLE_EXTENSIONS = ['html', 'js'];
 describe(`[workbox-cli] lib/questions/ask-extensions-to-cache.js`, function () {
   it(`should reject with a 'no-file-extensions-found' error when the globDirectory doesn't contain any matching files`, async function () {
     const {askExtensionsToCache} = proxyquire(MODULE_PATH, {
-      glob: () => [],
+      glob: {
+        glob: async () => [],
+      },
       ora: () => {
         return {
           start: () => {
@@ -45,7 +47,9 @@ describe(`[workbox-cli] lib/questions/ask-extensions-to-cache.js`, function () {
 
   it(`should reject with a 'no-file-extensions-selected' error when the answer is an empty array`, async function () {
     const {askExtensionsToCache} = proxyquire(MODULE_PATH, {
-      glob: () => Promise.reject(new Error([`file.${SINGLE_EXTENSION}`])),
+      glob: {
+        glob: async () => [`file.${SINGLE_EXTENSION}`],
+      },
       inquirer: {
         prompt: () => Promise.resolve({[QUESTION_NAME]: []}),
       },
@@ -68,7 +72,9 @@ describe(`[workbox-cli] lib/questions/ask-extensions-to-cache.js`, function () {
 
   it(`should resolve with the expected value when the answer is a single extension`, async function () {
     const {askExtensionsToCache} = proxyquire(MODULE_PATH, {
-      glob: () => [`file.${SINGLE_EXTENSION}`],
+      glob: {
+        glob: () => [`file.${SINGLE_EXTENSION}`],
+      },
       inquirer: {
         prompt: () => Promise.resolve({[QUESTION_NAME]: [SINGLE_EXTENSION]}),
       },
@@ -87,10 +93,9 @@ describe(`[workbox-cli] lib/questions/ask-extensions-to-cache.js`, function () {
 
   it(`should resolve with the expected value when the answer is multiple extensions`, async function () {
     const {askExtensionsToCache} = proxyquire(MODULE_PATH, {
-      glob: () =>
-        Promise.resolve(
-          MULTIPLE_EXTENSIONS.map((extension) => `file.${extension}`),
-        ),
+      glob: {
+        glob: () => MULTIPLE_EXTENSIONS.map((extension) => `file.${extension}`),
+      },
       inquirer: {
         prompt: () => Promise.resolve({[QUESTION_NAME]: MULTIPLE_EXTENSIONS}),
       },
@@ -109,10 +114,12 @@ describe(`[workbox-cli] lib/questions/ask-extensions-to-cache.js`, function () {
 
   it(`should ignore the expected directories and extensions`, async function () {
     const {askExtensionsToCache} = proxyquire(MODULE_PATH, {
-      glob: (pattern, config) => {
-        expect(config.ignore).to.eql(['**/node_modules/**', '**/*.map']);
+      glob: {
+        glob: (pattern, config) => {
+          expect(config.ignore).to.eql(['**/node_modules/**', '**/*.map']);
 
-        return MULTIPLE_EXTENSIONS.map((extension) => `file.${extension}`);
+          return MULTIPLE_EXTENSIONS.map((extension) => `file.${extension}`);
+        },
       },
       inquirer: {
         prompt: () => Promise.resolve({[QUESTION_NAME]: MULTIPLE_EXTENSIONS}),
