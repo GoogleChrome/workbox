@@ -10,7 +10,6 @@ const {oneLine} = require('common-tags');
 const constants = require('../../../gulp-tasks/utils/constants');
 const fse = require('fs-extra');
 const {globSync} = require('glob');
-
 const logHelper = require('../../../infra/utils/log-helper');
 const path = require('path');
 

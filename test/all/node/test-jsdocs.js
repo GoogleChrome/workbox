@@ -9,7 +9,6 @@
 const {expect} = require('chai');
 const fse = require('fs-extra');
 const {globSync} = require('glob');
-
 const upath = require('path');
 
 const {docs_build} = require('../../../gulp-tasks/docs.js');

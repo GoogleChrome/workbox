@@ -10,7 +10,6 @@ const {expect} = require('chai');
 const camelCase = require('camelcase');
 const fs = require('fs-extra');
 const {globSync} = require('glob');
-
 const ol = require('common-tags').oneLine;
 const upath = require('path');
 
