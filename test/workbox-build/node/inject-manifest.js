@@ -59,7 +59,32 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function () {
     'runtimeCaching',
     'skipWaiting',
   ];
-
+  const PRECACHE_ORDER = [
+    {
+      url: 'webpackEntry.js',
+      revision: /^[0-9a-f]{32}$/,
+    },
+    {
+      url: 'page-2.html',
+      revision: /^[0-9a-f]{32}$/,
+    },
+    {
+      url: 'page-1.html',
+      revision: /^[0-9a-f]{32}$/,
+    },
+    {
+      url: 'index.html',
+      revision: /^[0-9a-f]{32}$/,
+    },
+    {
+      url: 'styles/stylesheet-2.css',
+      revision: /^[0-9a-f]{32}$/,
+    },
+    {
+      url: 'styles/stylesheet-1.css',
+      revision: /^[0-9a-f]{32}$/,
+    },
+  ];
   describe('[workbox-build] required parameters', function () {
     for (const requiredParam of REQUIRED_PARAMS) {
       it(`should reject when '${requiredParam}' is missing`, async function () {
@@ -162,36 +187,7 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function () {
         entryPoint: 'injectManifest',
         swFile: swDest,
         expectedMethodCalls: {
-          precacheAndRoute: [
-            [
-              [
-                {
-                  url: 'index.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-1.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-2.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-1.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-2.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'webpackEntry.js',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-              ],
-            ],
-          ],
+          precacheAndRoute: [[PRECACHE_ORDER]],
         },
       });
     });
@@ -227,34 +223,7 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function () {
         expectedMethodCalls: {
           importScripts: [['./sample-import.js']],
           precacheAndRoute: [
-            [
-              [
-                {
-                  url: 'index.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-1.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-2.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-1.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-2.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'webpackEntry.js',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-              ],
-            ],
+            [PRECACHE_ORDER],
             [
               [
                 '/extra-assets/example.1234.css',
@@ -285,36 +254,7 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function () {
         entryPoint: 'injectManifest',
         swFile: swDest,
         expectedMethodCalls: {
-          precacheAndRoute: [
-            [
-              [
-                {
-                  url: 'index.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-1.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-2.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-1.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-2.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'webpackEntry.js',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-              ],
-            ],
-          ],
+          precacheAndRoute: [[PRECACHE_ORDER]],
         },
       });
     });
@@ -339,32 +279,7 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function () {
         expectedMethodCalls: {
           precacheAndRoute: [
             [
-              [
-                {
-                  url: 'index.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-1.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-2.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-1.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-2.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'webpackEntry.js',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-              ],
+              PRECACHE_ORDER,
               {
                 cleanURLs: true,
               },
@@ -396,36 +311,7 @@ describe(`[workbox-build] inject-manifest.js (End to End)`, function () {
         entryPoint: 'injectManifest',
         swFile: swDest,
         expectedMethodCalls: {
-          precacheAndRoute: [
-            [
-              [
-                {
-                  url: 'index.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-1.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-2.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-1.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-2.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'webpackEntry.js',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-              ],
-            ],
-          ],
+          precacheAndRoute: [[PRECACHE_ORDER]],
         },
       });
     });

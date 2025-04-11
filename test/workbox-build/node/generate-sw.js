@@ -65,6 +65,32 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
     'templatedURLs',
   ].concat(REQUIRED_PARAMS);
   const UNSUPPORTED_PARAMS = ['injectionPoint', 'swSrc'];
+  const PRECACHE_ORDER = [
+    {
+      url: 'webpackEntry.js',
+      revision: /^[0-9a-f]{32}$/,
+    },
+    {
+      url: 'page-2.html',
+      revision: /^[0-9a-f]{32}$/,
+    },
+    {
+      url: 'page-1.html',
+      revision: /^[0-9a-f]{32}$/,
+    },
+    {
+      url: 'index.html',
+      revision: /^[0-9a-f]{32}$/,
+    },
+    {
+      url: 'styles/stylesheet-2.css',
+      revision: /^[0-9a-f]{32}$/,
+    },
+    {
+      url: 'styles/stylesheet-1.css',
+      revision: /^[0-9a-f]{32}$/,
+    },
+  ];
 
   describe('[workbox-build] required parameters', function () {
     for (const requiredParam of REQUIRED_PARAMS) {
@@ -137,37 +163,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
         expectedMethodCalls: {
           __WB_DISABLE_DEV_LOGS: undefined,
           importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-          precacheAndRoute: [
-            [
-              [
-                {
-                  url: 'index.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-1.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-2.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-1.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-2.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'webpackEntry.js',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-              ],
-              {},
-            ],
-          ],
+          precacheAndRoute: [[PRECACHE_ORDER, {}]],
         },
       });
     });
@@ -210,37 +206,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
         expectedMethodCalls: {
           __WB_DISABLE_DEV_LOGS: true,
           importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-          precacheAndRoute: [
-            [
-              [
-                {
-                  url: 'index.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-1.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-2.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-1.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-2.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'webpackEntry.js',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-              ],
-              {},
-            ],
-          ],
+          precacheAndRoute: [[PRECACHE_ORDER, {}]],
         },
       });
     });
@@ -266,37 +232,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
         swFile: swDest,
         expectedMethodCalls: {
           importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/], [...importScripts]],
-          precacheAndRoute: [
-            [
-              [
-                {
-                  url: 'index.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-1.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-2.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-1.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-2.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'webpackEntry.js',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-              ],
-              {},
-            ],
-          ],
+          precacheAndRoute: [[PRECACHE_ORDER, {}]],
         },
       });
     });
@@ -334,35 +270,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
           skipWaiting: [[]],
           setCacheNameDetails: [[{prefix: cacheId}]],
           precacheAndRoute: [
-            [
-              [
-                {
-                  url: 'index.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-1.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-2.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-1.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-2.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'webpackEntry.js',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-              ],
-              {directoryIndex, ignoreURLParametersMatching},
-            ],
+            [PRECACHE_ORDER, {directoryIndex, ignoreURLParametersMatching}],
           ],
         },
         addEventListenerValidation: (addEventListenerStub) => {
@@ -402,47 +310,11 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
           precacheAndRoute: [
             [
               [
-                {
-                  url: 'index.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-1.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-2.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-1.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-2.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'webpackEntry.js',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  revision: null,
-                  url: '/one',
-                },
-                {
-                  revision: null,
-                  url: '/two',
-                },
-                {
-                  revision: '333',
-                  url: '/three',
-                },
-                {
-                  url: '/four',
-                  revision: '123',
-                  integrity: '456',
-                },
+                ...PRECACHE_ORDER,
+                {url: '/one', revision: null},
+                {url: '/two', revision: null},
+                {url: '/three', revision: '333'},
+                {url: '/four', revision: '123', integrity: '456'},
               ],
               {},
             ],
@@ -473,37 +345,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
         swFile: swDest,
         expectedMethodCalls: {
           importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-          precacheAndRoute: [
-            [
-              [
-                {
-                  url: 'index.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-1.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-2.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-1.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-2.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'webpackEntry.js',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-              ],
-              {},
-            ],
-          ],
+          precacheAndRoute: [[PRECACHE_ORDER, {}]],
         },
         addEventListenerValidation: (addEventListenerStub) => {
           expect(addEventListenerStub.calledOnce).to.be.true;
@@ -544,37 +386,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
         expectedMethodCalls: {
           createHandlerBoundToURL: [[navigateFallback]],
           importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-          precacheAndRoute: [
-            [
-              [
-                {
-                  url: 'index.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-1.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-2.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-1.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-2.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'webpackEntry.js',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-              ],
-              {},
-            ],
-          ],
+          precacheAndRoute: [[PRECACHE_ORDER, {}]],
           registerRoute: [[{name: 'NavigationRoute'}]],
           NavigationRoute: [
             [
@@ -617,11 +429,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
             [
               [
                 {
-                  url: 'link/index.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'link/page-1.html',
+                  url: 'link/webpackEntry.js',
                   revision: /^[0-9a-f]{32}$/,
                 },
                 {
@@ -629,7 +437,11 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
                   revision: /^[0-9a-f]{32}$/,
                 },
                 {
-                  url: 'link/styles/stylesheet-1.css',
+                  url: 'link/page-1.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'link/index.html',
                   revision: /^[0-9a-f]{32}$/,
                 },
                 {
@@ -637,7 +449,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
                   revision: /^[0-9a-f]{32}$/,
                 },
                 {
-                  url: 'link/webpackEntry.js',
+                  url: 'link/styles/stylesheet-1.css',
                   revision: /^[0-9a-f]{32}$/,
                 },
               ],
@@ -648,7 +460,10 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
       });
     });
 
-    it(`should use defaults when all the required parameters are present, with 'globFollow' and  symlinks`, async function () {
+    it(`should use defaults when all the required parameters are present, with 'globFollow:true' and  symlinks`, async function () {
+      //https://github.com/isaacs/node-glob/blob/main/changelog.md#90
+      //10.3 exclude symbolic links to directories when follow and nodir are both set
+
       const outputDir = tempy.directory();
       const swDest = upath.join(outputDir, 'sw.js');
       const globDirectory = tempy.directory();
@@ -657,15 +472,15 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
 
       const options = Object.assign({}, BASE_OPTIONS, {
         globDirectory,
-        globFollow: false,
+        globFollow: true,
         swDest,
       });
 
       const {count, filePaths, size, warnings} = await generateSW(options);
       expect(warnings).to.be.empty;
-      expect(count).to.eql(4);
+      expect(count).to.eql(6);
       // Line ending differences lead to different sizes on Windows.
-      expect(size).to.be.oneOf([2707, 2629]);
+      expect(size).to.be.oneOf([2782, 2698]);
 
       await confirmDirectoryContains(outputDir, filePaths);
 
@@ -677,11 +492,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
             [
               [
                 {
-                  url: 'link/index.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'link/page-1.html',
+                  url: 'link/webpackEntry.js',
                   revision: /^[0-9a-f]{32}$/,
                 },
                 {
@@ -689,7 +500,19 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
                   revision: /^[0-9a-f]{32}$/,
                 },
                 {
-                  url: 'link/webpackEntry.js',
+                  url: 'link/page-1.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'link/index.html',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'link/styles/stylesheet-2.css',
+                  revision: /^[0-9a-f]{32}$/,
+                },
+                {
+                  url: 'link/styles/stylesheet-1.css',
                   revision: /^[0-9a-f]{32}$/,
                 },
               ],
@@ -720,37 +543,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
         swFile: swDest,
         expectedMethodCalls: {
           importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-          precacheAndRoute: [
-            [
-              [
-                {
-                  url: 'index.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-1.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-2.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-1.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-2.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'webpackEntry.js',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-              ],
-              {},
-            ],
-          ],
+          precacheAndRoute: [[PRECACHE_ORDER, {}]],
           initialize: [[{}]],
         },
       });
@@ -780,37 +573,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
         swFile: swDest,
         expectedMethodCalls: {
           importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-          precacheAndRoute: [
-            [
-              [
-                {
-                  url: 'index.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-1.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-2.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-1.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-2.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'webpackEntry.js',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-              ],
-              {},
-            ],
-          ],
+          precacheAndRoute: [[PRECACHE_ORDER, {}]],
           initialize: [
             [
               {
@@ -961,37 +724,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
         expectedMethodCalls: {
           [STRING_HANDLER]: [[]],
           importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-          precacheAndRoute: [
-            [
-              [
-                {
-                  url: 'index.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-1.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-2.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-1.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-2.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'webpackEntry.js',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-              ],
-              {},
-            ],
-          ],
+          precacheAndRoute: [[PRECACHE_ORDER, {}]],
           registerRoute: [
             [STRING_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD],
           ],
@@ -1022,37 +755,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
         expectedMethodCalls: {
           [STRING_HANDLER]: [[]],
           importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-          precacheAndRoute: [
-            [
-              [
-                {
-                  url: 'index.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-1.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-2.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-1.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-2.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'webpackEntry.js',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-              ],
-              {},
-            ],
-          ],
+          precacheAndRoute: [[PRECACHE_ORDER, {}]],
           // See https://github.com/chaijs/chai/issues/697
           registerRoute: [
             ['params => true', {name: STRING_HANDLER}, DEFAULT_METHOD],
@@ -1132,37 +835,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
             [secondRuntimeCachingOptions.precacheFallback],
           ],
           importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-          precacheAndRoute: [
-            [
-              [
-                {
-                  url: 'index.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-1.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-2.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-1.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-2.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'webpackEntry.js',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-              ],
-              {},
-            ],
-          ],
+          precacheAndRoute: [[PRECACHE_ORDER, {}]],
           registerRoute: [
             [REGEXP_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD],
             [REGEXP_URL_PATTERN, {name: STRING_HANDLER}, DEFAULT_METHOD],
@@ -1233,37 +906,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
         expectedMethodCalls: {
           [handler]: [[runtimeCachingOptions]],
           importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-          precacheAndRoute: [
-            [
-              [
-                {
-                  url: 'index.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-1.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-2.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-1.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-2.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'webpackEntry.js',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-              ],
-              {},
-            ],
-          ],
+          precacheAndRoute: [[PRECACHE_ORDER, {}]],
           registerRoute: [
             [urlPattern.toString(), handler.toString(), DEFAULT_METHOD],
           ],
@@ -1302,37 +945,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
         expectedMethodCalls: {
           [handler]: [[runtimeCachingOptions]],
           importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-          precacheAndRoute: [
-            [
-              [
-                {
-                  url: 'index.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-1.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-2.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-1.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-2.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'webpackEntry.js',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-              ],
-              {},
-            ],
-          ],
+          precacheAndRoute: [[PRECACHE_ORDER, {}]],
           registerRoute: [
             [REGEXP_URL_PATTERN, {name: handler}, DEFAULT_METHOD],
           ],
@@ -1383,37 +996,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
         swFile: swDest,
         expectedMethodCalls: {
           importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-          precacheAndRoute: [
-            [
-              [
-                {
-                  url: 'index.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-1.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-2.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-1.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-2.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'webpackEntry.js',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-              ],
-              {},
-            ],
-          ],
+          precacheAndRoute: [[PRECACHE_ORDER, {}]],
         },
       });
     });
@@ -1463,37 +1046,7 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
         expectedMethodCalls: {
           [handler]: [[]],
           importScripts: [[/^\.\/workbox-[0-9a-f]{8}$/]],
-          precacheAndRoute: [
-            [
-              [
-                {
-                  url: 'index.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-1.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'page-2.html',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-1.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'styles/stylesheet-2.css',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-                {
-                  url: 'webpackEntry.js',
-                  revision: /^[0-9a-f]{32}$/,
-                },
-              ],
-              {},
-            ],
-          ],
+          precacheAndRoute: [[PRECACHE_ORDER, {}]],
           enable: [[]],
           registerRoute: [[urlPattern, {name: handler}, 'GET']],
         },
