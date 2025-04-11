@@ -461,8 +461,8 @@ describe(`[workbox-build] generate-sw.js (End to End)`, function () {
     });
 
     it(`should use defaults when all the required parameters are present, with 'globFollow:true' and  symlinks`, async function () {
-      //https://github.com/isaacs/node-glob/blob/main/changelog.md#90
-      //10.3 exclude symbolic links to directories when follow and nodir are both set
+      // https://github.com/isaacs/node-glob/blob/main/changelog.md#90
+      // 10.3 exclude symbolic links to directories when follow and nodir are both set
 
       const outputDir = tempy.directory();
       const swDest = upath.join(outputDir, 'sw.js');
