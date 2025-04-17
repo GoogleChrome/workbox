@@ -1,1 +1,1 @@
-declare module '@trickfilm400/rollup-plugin-off-main-thread';
+declare module '@surma/rollup-plugin-off-main-thread';
