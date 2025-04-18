@@ -611,6 +611,9 @@
               "$ref": "#/definitions/ArrayBufferView"
             },
             {
+              "$ref": "#/definitions/ReadableStream<any>"
+            },
+            {
               "$ref": "#/definitions/Blob"
             },
             {
@@ -618,9 +621,6 @@
             },
             {
               "$ref": "#/definitions/URLSearchParams"
-            },
-            {
-              "$ref": "#/definitions/ReadableStream<any>"
             },
             {
               "type": [
@@ -652,6 +652,9 @@
         "headers": {
           "anyOf": [
             {
+              "$ref": "#/definitions/Record<string,string>"
+            },
+            {
               "type": "array",
               "items": {
                 "type": "array",
@@ -669,9 +672,6 @@
             },
             {
               "$ref": "#/definitions/Headers"
-            },
-            {
-              "$ref": "#/definitions/Record<string,string>"
             }
           ]
         },
@@ -740,13 +740,13 @@
         "byteLength": {
           "type": "number"
         },
-        "__@toStringTag@570": {
+        "__@toStringTag@34": {
           "type": "string"
         }
       },
       "additionalProperties": false,
       "required": [
-        "__@toStringTag@570",
+        "__@toStringTag@34",
         "byteLength"
       ]
     },
@@ -786,19 +786,31 @@
         "byteLength": {
           "type": "number"
         },
-        "__@species@1064": {
+        "__@species@494": {
           "$ref": "#/definitions/SharedArrayBuffer"
         },
-        "__@toStringTag@570": {
+        "__@toStringTag@34": {
           "type": "string",
           "const": "SharedArrayBuffer"
         }
       },
       "additionalProperties": false,
       "required": [
-        "__@species@1064",
-        "__@toStringTag@570",
+        "__@species@494",
+        "__@toStringTag@34",
         "byteLength"
+      ]
+    },
+    "ReadableStream<any>": {
+      "type": "object",
+      "properties": {
+        "locked": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "locked"
       ]
     },
     "Blob": {
@@ -834,23 +846,11 @@
         "size"
       ]
     },
-    "ReadableStream<any>": {
-      "type": "object",
-      "properties": {
-        "locked": {
-          "type": "boolean"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "locked"
-      ]
-    },
-    "Headers": {
+    "Record<string,string>": {
       "type": "object",
       "additionalProperties": false
     },
-    "Record<string,string>": {
+    "Headers": {
       "type": "object",
       "additionalProperties": false
     },
