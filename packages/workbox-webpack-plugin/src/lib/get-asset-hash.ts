@@ -25,6 +25,6 @@ export function getAssetHash(asset: Asset): string | null {
 
   return crypto
     .createHash('md5')
-    .update(Buffer.from(asset.source.source()))
+    .update(Buffer.from(asset.source.source() as Buffer))
     .digest('hex');
 }
