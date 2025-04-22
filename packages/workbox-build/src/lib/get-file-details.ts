@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import glob from 'glob';
+import {globSync} from 'glob';
 import upath from 'upath';
 
 import {errors} from './errors';
@@ -26,7 +26,6 @@ export function getFileDetails({
   globFollow,
   globIgnores,
   globPattern,
-  globStrict,
 }: Omit<GlobPartial, 'globDirectory' | 'globPatterns' | 'templatedURLs'> & {
   // This will only be called when globDirectory is not undefined.
   globDirectory: string;
@@ -39,11 +38,10 @@ export function getFileDetails({
   let warning = '';
 
   try {
-    globbedFiles = glob.sync(globPattern, {
+    globbedFiles = globSync(globPattern, {
       cwd: globDirectory,
       follow: globFollow,
       ignore: globIgnores,
-      strict: globStrict,
     });
   } catch (err) {
     throw new Error(

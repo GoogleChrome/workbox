@@ -740,13 +740,13 @@
         "byteLength": {
           "type": "number"
         },
-        "__@toStringTag@25": {
+        "__@toStringTag@34": {
           "type": "string"
         }
       },
       "additionalProperties": false,
       "required": [
-        "__@toStringTag@25",
+        "__@toStringTag@34",
         "byteLength"
       ]
     },
@@ -786,18 +786,18 @@
         "byteLength": {
           "type": "number"
         },
-        "__@species@478": {
+        "__@species@494": {
           "$ref": "#/definitions/SharedArrayBuffer"
         },
-        "__@toStringTag@25": {
+        "__@toStringTag@34": {
           "type": "string",
           "const": "SharedArrayBuffer"
         }
       },
       "additionalProperties": false,
       "required": [
-        "__@species@478",
-        "__@toStringTag@25",
+        "__@species@494",
+        "__@toStringTag@34",
         "byteLength"
       ]
     },
@@ -835,7 +835,16 @@
     },
     "URLSearchParams": {
       "type": "object",
-      "additionalProperties": false
+      "properties": {
+        "size": {
+          "description": "The total number of parameter entries.",
+          "type": "number"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "size"
+      ]
     },
     "Record<string,string>": {
       "type": "object",

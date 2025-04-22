@@ -8,7 +8,7 @@
 
 const clearModule = require('clear-module');
 const execa = require('execa');
-const glob = require('glob');
+const {globSync} = require('glob');
 const ol = require('common-tags').oneLine;
 const upath = require('upath');
 const seleniumAssistant = require('selenium-assistant');
@@ -63,7 +63,7 @@ async function runTestSuite(testPath, nodeEnv, seleniumBrowser, webdriver) {
       webdriver,
     };
 
-    const testFiles = glob.sync(
+    const testFiles = globSync(
       upath.join(__dirname, '..', testPath, 'test-*.js'),
     );
 
@@ -74,7 +74,7 @@ async function runTestSuite(testPath, nodeEnv, seleniumBrowser, webdriver) {
 }
 
 async function runIntegrationForBrowser(browser) {
-  const packagesToTest = glob.sync(`test/${global.packageOrStar}/integration`);
+  const packagesToTest = globSync(`test/${global.packageOrStar}/integration`);
 
   for (const buildKey of Object.keys(constants.BUILD_TYPES)) {
     const webdriver = await browser.getSeleniumDriver();
@@ -121,7 +121,7 @@ async function test_integration() {
   await seleniumAssistant.downloadLocalBrowser('chrome', 'stable', expiration);
   await seleniumAssistant.downloadLocalBrowser('firefox', 'stable', expiration);
 
-  const packagesToTest = glob.sync(`test/${global.packageOrStar}/integration`);
+  const packagesToTest = globSync(`test/${global.packageOrStar}/integration`);
   if (packagesToTest.length === 0) {
     return;
   }

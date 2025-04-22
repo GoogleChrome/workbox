@@ -18,7 +18,7 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   },
   "dependencies": {
     "fast-json-stable-stringify": "^2.1.0",
@@ -31,7 +31,7 @@
     "webpack": "^4.4.0 || ^5.91.0"
   },
   "devDependencies": {
-    "@types/node": "^18.15.11",
+    "@types/node": "^20.14.8",
     "@types/webpack": "^5.28.1"
   },
   "author": "Google's Web DevRel Team and Google's Aurora Team",

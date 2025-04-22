@@ -10,7 +10,7 @@ const acorn = require('acorn');
 const {expect} = require('chai');
 const fs = require('fs-extra');
 const path = require('path');
-const glob = require('glob');
+const {globSync} = require('glob');
 const {getPackages} = require('../../../gulp-tasks/utils/get-packages');
 
 describe(`[all] Window and SW packages`, function () {
@@ -61,14 +61,12 @@ describe(`[all] Window and SW packages`, function () {
 
       // Inspect the package directory to get a list of top-level, public
       // module basenames.
-      const topLevelFiles = glob
-        .sync(`*.${ext}`, {
-          ignore: ['index', 'types', '_types', '_version'].map(
-            (file) => `${file}.${ext}`,
-          ),
-          cwd: packagePath,
-        })
-        .map((file) => path.basename(file, `.${ext}`));
+      const topLevelFiles = globSync(`*.${ext}`, {
+        ignore: ['index', 'types', '_types', '_version'].map(
+          (file) => `${file}.${ext}`,
+        ),
+        cwd: packagePath,
+      }).map((file) => path.basename(file, `.${ext}`));
 
       // Assert there's a 1-to-1 mapping between exports and top-level files.
       expect(namedExports.sort()).to.deep.equal(topLevelFiles.sort());
@@ -125,9 +123,9 @@ describe(`[all] Window and SW packages`, function () {
       // Inspect the package directory to get a list of top-level, public
       // module basenames.
       const privateDirectoryPath = path.join(packagePath, '_private');
-      const topLevelFiles = glob
-        .sync(`*.${ext}`, {cwd: privateDirectoryPath})
-        .map((file) => path.basename(file, `.${ext}`));
+      const topLevelFiles = globSync(`*.${ext}`, {
+        cwd: privateDirectoryPath,
+      }).map((file) => path.basename(file, `.${ext}`));
 
       // Assert there's a 1-to-1 mapping between exports and top-level files.
       expect(namedExports.sort()).to.deep.equal(topLevelFiles.sort());

@@ -12,7 +12,7 @@
     "file manifest"
   ],
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   },
   "author": "Google's Web DevRel Team and Google's Aurora Team",
   "license": "MIT",
@@ -36,7 +36,7 @@
     "common-tags": "^1.8.0",
     "fast-json-stable-stringify": "^2.1.0",
     "fs-extra": "^9.0.1",
-    "glob": "^7.1.6",
+    "glob": "^11.0.1",
     "lodash": "^4.17.20",
     "pretty-bytes": "^5.3.0",
     "rollup": "^2.79.2",
@@ -67,6 +67,6 @@
   },
   "types": "build/index.d.ts",
   "devDependencies": {
-    "@types/node": "^18.15.11"
+    "@types/node": "^20.14.8"
   }
 }

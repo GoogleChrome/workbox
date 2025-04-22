@@ -405,14 +405,6 @@ export interface GlobPartial {
    */
   globPatterns?: Array<string>;
   /**
-   * If true, an error reading a directory when generating a precache manifest
-   * will cause the build to fail. If false, the problematic directory will be
-   * skipped. For more information, see the definition of `strict` in the `glob`
-   * [documentation](https://github.com/isaacs/node-glob#options).
-   * @default true
-   */
-  globStrict?: boolean;
-  /**
    * If a URL is rendered based on some server-side logic, its contents may
    * depend on multiple files or on some other unique string value. The keys in
    * this object are server-rendered URLs. If the values are an array of

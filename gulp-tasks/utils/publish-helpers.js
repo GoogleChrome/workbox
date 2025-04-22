@@ -8,7 +8,7 @@
 
 const execa = require('execa');
 const fse = require('fs-extra');
-const glob = require('glob');
+const {globSync} = require('glob');
 const ol = require('common-tags').oneLine;
 const upath = require('upath');
 
@@ -126,7 +126,7 @@ const groupBuildFiles = async (tagName, gitBranch) => {
 
     // Copy files from the source code and move into the grouped build
     // directory. In others, have a flat file structure of just the built files.
-    const filesToInclude = glob.sync(pattern);
+    const filesToInclude = globSync(pattern);
     for (const fileToInclude of filesToInclude) {
       await fse.copy(
         fileToInclude,

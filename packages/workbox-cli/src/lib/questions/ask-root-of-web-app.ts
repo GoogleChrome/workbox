@@ -8,7 +8,7 @@
 
 import assert from 'assert';
 import fse from 'fs-extra';
-import glob from 'glob';
+import {glob} from 'glob';
 import inquirer from 'inquirer';
 import {oneLine as ol} from 'common-tags';
 
@@ -26,22 +26,8 @@ const questionManualInput = 'manualDirectoryInput';
  * working directory, with hidden and ignored ones filtered out.
  */
 async function getSubdirectories(): Promise<Array<string>> {
-  return await new Promise((resolve, reject) => {
-    glob(
-      '*/',
-      {
-        ignore: constants.ignoredDirectories.map(
-          (directory) => `${directory}/`,
-        ),
-      },
-      (error, directories) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(directories);
-        }
-      },
-    );
+  return await glob('*/', {
+    ignore: constants.ignoredDirectories.map((directory) => `${directory}/`),
   });
 }
 

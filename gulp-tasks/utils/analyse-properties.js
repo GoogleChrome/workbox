@@ -19,7 +19,7 @@
  * This is very rough and vague. It needs to be run manually and if it's not
  * used can and should be removed from Workbox repo.
  */
-const glob = require('glob');
+const {globSync} = require('glob');
 const path = require('path');
 const fs = require('fs-extra');
 const babylon = require('babylon');
@@ -54,7 +54,7 @@ class AnalyseBuildForProperties {
       constants.PACKAGE_BUILD_DIRNAME,
       '{*.prod.js,workbox-sw.js}',
     );
-    return glob.sync(buildGlob);
+    return globSync(buildGlob);
   }
 
   analyzeFile(filePath) {

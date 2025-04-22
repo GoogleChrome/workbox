@@ -23,10 +23,10 @@ describe(`[workbox-build] lib/get-file-details.js`, function () {
   const SIZE = 1234;
   const HASH = 'example-hash';
 
-  it(`should throw when there's a glob.sync() error`, function () {
+  it(`should throw when there's a glob.globSync() error`, function () {
     const {getFileDetails} = proxyquire(MODULE_PATH, {
       glob: {
-        sync: () => {
+        globSync: () => {
           throw new Error();
         },
       },
@@ -46,7 +46,7 @@ describe(`[workbox-build] lib/get-file-details.js`, function () {
   it(`should return a warning when the pattern doesn't match anything`, function () {
     const {getFileDetails} = proxyquire(MODULE_PATH, {
       glob: {
-        sync: () => [],
+        globSync: () => [],
       },
     });
 
@@ -61,7 +61,7 @@ describe(`[workbox-build] lib/get-file-details.js`, function () {
   it(`should return array of file details, without null values`, function () {
     const {getFileDetails} = proxyquire(MODULE_PATH, {
       'glob': {
-        sync: () => {
+        globSync: () => {
           return [FILE1, FILE2, DIRECTORY];
         },
       },

@@ -9,7 +9,7 @@
 const {expect} = require('chai');
 const camelCase = require('camelcase');
 const fs = require('fs-extra');
-const glob = require('glob');
+const {globSync} = require('glob');
 const ol = require('common-tags').oneLine;
 const upath = require('path');
 
@@ -19,7 +19,7 @@ const pkgPathToName = require('../../../gulp-tasks/utils/pkg-path-to-name');
 
 describe(`[all] Test package.json`, function () {
   it(`should expose correct main, browser and module fields`, function () {
-    const packageFiles = glob.sync('packages/**/package.json', {
+    const packageFiles = globSync('packages/**/package.json', {
       ignore: ['packages/*/node_modules/**/*'],
       cwd: upath.join(__dirname, '..', '..', '..'),
       absolute: true,
@@ -78,7 +78,7 @@ describe(`[all] Test package.json`, function () {
 
   it(`should import _version.mjs in each .mjs file`, function () {
     // Find directories with package.json file
-    const packageFiles = glob.sync('packages/*/package.json', {
+    const packageFiles = globSync('packages/*/package.json', {
       ignore: ['packages/*/node_modules/**/*'],
       cwd: upath.join(__dirname, '..', '..', '..'),
       absolute: true,
@@ -96,7 +96,7 @@ describe(`[all] Test package.json`, function () {
 
       // Glob for all js and mjs files in the package
       const packageName = pkgPathToName(upath.dirname(packagePath));
-      const packageFiles = glob.sync(`packages/${packageName}/**/*.${ext}`, {
+      const packageFiles = globSync(`packages/${packageName}/**/*.${ext}`, {
         ignore: [
           'packages/*/node_modules/**/*',
           `packages/*/_version.${ext}`,
@@ -128,7 +128,7 @@ describe(`[all] Test package.json`, function () {
     const versionRegex = /['|"]workbox:((?:[^:'"]*|:)*)['|"]/;
 
     // Find directories with package.json file
-    const packageFiles = glob.sync('packages/*/package.json', {
+    const packageFiles = globSync('packages/*/package.json', {
       ignore: ['packages/*/node_modules/**/*'],
       cwd: upath.join(__dirname, '..', '..', '..'),
       absolute: true,
@@ -142,7 +142,7 @@ describe(`[all] Test package.json`, function () {
 
       // Glob for all js and mjs files in the package
       const packageName = pkgPathToName(upath.dirname(packagePath));
-      const packageFiles = glob.sync(
+      const packageFiles = globSync(
         `packages/${packageName}/${constants.PACKAGE_BUILD_DIRNAME}/**/*.{js,mjs}`,
         {
           ignore: ['packages/*/node_modules/**/*'],
@@ -179,7 +179,7 @@ describe(`[all] Test package.json`, function () {
     const versionRegex = /['|"]workbox:((?:[^:'"]*|:)*)['|"]/;
 
     // Find directories with package.json file
-    const packageFiles = glob.sync('packages/*/package.json', {
+    const packageFiles = globSync('packages/*/package.json', {
       ignore: ['packages/*/node_modules/**/*'],
       cwd: upath.join(__dirname, '..', '..', '..'),
       absolute: true,
@@ -196,14 +196,11 @@ describe(`[all] Test package.json`, function () {
       const ext = 'types' in pkg ? 'js' : 'mjs';
 
       const packageName = pkgPathToName(upath.dirname(packagePath));
-      const versionFiles = glob.sync(
-        `packages/${packageName}/_version.${ext}`,
-        {
-          ignore: ['packages/*/node_modules/**/*'],
-          cwd: upath.join(__dirname, '..', '..', '..'),
-          absolute: true,
-        },
-      );
+      const versionFiles = globSync(`packages/${packageName}/_version.${ext}`, {
+        ignore: ['packages/*/node_modules/**/*'],
+        cwd: upath.join(__dirname, '..', '..', '..'),
+        absolute: true,
+      });
 
       // Find the version in each file.
       versionFiles.forEach((filePath) => {
