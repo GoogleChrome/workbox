@@ -17,7 +17,7 @@ app.use(express.static('public'));
  vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 /////////////////////////////////////////////////////////////////////////////*/
 
-const {execSync} = require('child_process');
+const {execFileSync} = require('child_process');
 const bodyParser = require('body-parser');
 
 app.use(bodyParser.json());
@@ -29,10 +29,14 @@ app.post('/deploy', (request, response) => {
   }
 
   const repoUrl = request.query.repo;
-  execSync(
-    `git checkout -- ./ && git pull -X theirs ${repoUrl} ` +
-      `glitch && refresh && git branch -D glitch`,
-  );
+  if (!repoUrl || !repoUrl.match(/^[a-zA-Z0-9._-]+$/)) { // Validate repoUrl
+    response.status(400).send('Invalid repository URL');
+    return;
+  }
+  execFileSync('git', [
+    'checkout', '--', './', '&&', 'git', 'pull', '-X', 'theirs', repoUrl,
+    'glitch', '&&', 'refresh', '&&', 'git', 'branch', '-D', 'glitch',
+  ]);
   response.status(200).send();
 });
 
