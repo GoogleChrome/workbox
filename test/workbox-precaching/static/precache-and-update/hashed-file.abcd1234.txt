@@ -1,1 +1,0 @@
-This file will be requested by sw-2.js.
