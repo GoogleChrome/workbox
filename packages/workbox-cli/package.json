@@ -34,7 +34,7 @@
     "common-tags": "^1.8.0",
     "fs-extra": "^9.0.1",
     "glob": "^11.0.1",
-    "inquirer": "^7.3.3",
+    "inquirer": "^13.0.1",
     "meow": "^7.1.0",
     "ora": "^5.0.0",
     "pretty-bytes": "^5.3.0",
