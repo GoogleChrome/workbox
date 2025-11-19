@@ -1,2 +1,2 @@
 // @ts-ignore
-try{self['workbox:window:7.3.0']&&_()}catch(e){}
+try{self['workbox:window:7.4.0']&&_()}catch(e){}

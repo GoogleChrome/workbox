@@ -1,2 +1,2 @@
 // @ts-ignore
-try{self['workbox:routing:7.3.0']&&_()}catch(e){}
+try{self['workbox:routing:7.4.0']&&_()}catch(e){}
