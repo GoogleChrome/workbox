@@ -110,7 +110,7 @@ describe(`[workbox-webpack-plugin] GenerateSW with webpack v4`, function () {
           webpackBuildCheck(webpackError, stats);
 
           const files = await globby('**', {cwd: outputDir});
-          console.log(files);
+
           expect(files).to.have.length(4);
 
           await validateServiceWorkerRuntime({
