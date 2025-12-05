@@ -29,7 +29,7 @@
     "@babel/runtime": "^7.11.2",
     "@rollup/plugin-babel": "^6.1.0",
     "@rollup/plugin-node-resolve": "^16.0.3",
-    "@rollup/plugin-replace": "^6.0.3",
+    "@rollup/plugin-replace": "^5.0.7",
     "@rollup/plugin-terser": "^0.4.4",
     "@surma/rollup-plugin-off-main-thread": "^2.2.3",
     "ajv": "^8.6.0",
