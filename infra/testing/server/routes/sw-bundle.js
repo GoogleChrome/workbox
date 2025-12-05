@@ -12,9 +12,8 @@ const {needsTranspile, queueTranspile} =
 const {nodeResolve} = require('@rollup/plugin-node-resolve');
 const {rollup} = require('rollup');
 const commonjs = require('@rollup/plugin-commonjs');
-// const multiEntry = require('@rollup/plugin-multi-entry');
+const multiEntry = require('@rollup/plugin-multi-entry');
 const replace = require('@rollup/plugin-replace');
-const {glob} = require('glob');
 
 const SW_NAMESPACES = getPackages({type: 'sw'}).map((pkg) => {
   return pkg.workbox.browserNamespace;
@@ -37,20 +36,10 @@ async function handler(req, res) {
 
     // Allows you to selectively run tests by adding the `?test=` to the URL.
     const testFilter = req.query.filter || '**/test-*.mjs';
-
-    const inputPattern = `./test/${packageName}/sw/${testFilter}`;
-    const inputFiles = await glob(inputPattern, {
-      absolute: false,
-      cwd: process.cwd(),
-    });
-
-    if (inputFiles.length === 0) {
-      throw new Error(`No test files found matching: ${inputPattern}`);
-    }
-
     const bundle = await rollup({
-      input: inputFiles,
+      input: `./test/${packageName}/sw/` + testFilter,
       plugins: [
+        multiEntry(),
         nodeResolve({
           moduleDirectories: ['packages', 'node_modules'],
         }),
