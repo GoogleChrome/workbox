@@ -49,10 +49,13 @@ async function handler(req, res) {
           exclude: '*.mjs',
         }),
         replace({
-          'preventAssignment': true,
-          'process.env.NODE_ENV': JSON.stringify(env),
-          'SW_NAMESPACES': JSON.stringify(SW_NAMESPACES),
-          'WORKBOX_CDN_ROOT_URL': '/__WORKBOX/buildFile',
+          preventAssignment: true,
+          delimiters: ['', ''],
+          values: {
+            'process.env.NODE_ENV': JSON.stringify(env),
+            'SW_NAMESPACES': JSON.stringify(SW_NAMESPACES),
+            'WORKBOX_CDN_ROOT_URL': JSON.stringify('/__WORKBOX/buildFile'),
+          },
         }),
       ],
       // Fail in the case of warning, so rebuilds work.
