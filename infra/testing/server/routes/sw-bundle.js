@@ -39,6 +39,12 @@ async function handler(req, res) {
     const bundle = await rollup({
       input: `./test/${packageName}/sw/` + testFilter,
       plugins: [
+        replace({
+          'preventAssignment': true,
+          'process.env.NODE_ENV': JSON.stringify(env),
+          'SW_NAMESPACES': JSON.stringify(SW_NAMESPACES),
+          'WORKBOX_CDN_ROOT_URL': '/__WORKBOX/buildFile',
+        }),
         multiEntry(),
         nodeResolve({
           moduleDirectories: ['packages', 'node_modules'],
@@ -47,12 +53,6 @@ async function handler(req, res) {
         // so we have to support this for the time being.
         commonjs({
           exclude: '*.mjs',
-        }),
-        replace({
-          'preventAssignment': true,
-          'process.env.NODE_ENV': JSON.stringify(env),
-          'SW_NAMESPACES': JSON.stringify(SW_NAMESPACES),
-          'WORKBOX_CDN_ROOT_URL': '/__WORKBOX/buildFile',
         }),
       ],
       // Fail in the case of warning, so rebuilds work.
