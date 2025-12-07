@@ -58,7 +58,7 @@ describe(`[workbox-build] lib/bundle`, function () {
         babel: sinon.stub(),
       },
       '@rollup/plugin-terser': sinon.stub(),
-      '@surma/rollup-plugin-off-main-thread': sinon.stub(),
+      '@trickfilm400/rollup-plugin-off-main-thread': sinon.stub(),
       'rollup': {
         rollup: sinon.stub().resolves(rollupStub),
       },
@@ -86,7 +86,8 @@ describe(`[workbox-build] lib/bundle`, function () {
       inlineWorkboxRuntime: false,
     });
 
-    expect(stubs['@surma/rollup-plugin-off-main-thread'].calledOnce).to.be.true;
+    expect(stubs['@trickfilm400/rollup-plugin-off-main-thread'].calledOnce).to
+      .be.true;
   });
 
   it(`should not use loadz0r when 'inlineWorkboxRuntime' is true`, async function () {
@@ -94,7 +95,8 @@ describe(`[workbox-build] lib/bundle`, function () {
       inlineWorkboxRuntime: true,
     });
 
-    expect(stubs['@surma/rollup-plugin-off-main-thread'].notCalled).to.be.true;
+    expect(stubs['@trickfilm400/rollup-plugin-off-main-thread'].notCalled).to.be
+      .true;
   });
 
   it(`should replace NODE_ENV with the 'mode' value`, async function () {
