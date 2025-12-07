@@ -23,21 +23,7 @@ module.exports = {
   // plugin set up and used to ensure as consist set of tests
   // as possible.
   getDefaultPlugins: (buildType, buildFormat = 'iife', es5 = false) => {
-    const plugins = [];
-
-    // This is what the build should be
-    const replaceOptions = {
-      preventAssignment: true,
-      WORKBOX_CDN_ROOT_URL: getVersionsCDNUrl(),
-    };
-
-    if (buildType) {
-      replaceOptions['process.env.NODE_ENV'] = JSON.stringify(buildType);
-    }
-
-    // Replace allows us to input NODE_ENV and strip code accordingly
-    plugins.push(replace(replaceOptions));
-    plugins.push(nodeResolve());
+    const plugins = [nodeResolve()];
 
     const babelConfig = {
       babelHelpers: 'bundled',
@@ -94,6 +80,19 @@ module.exports = {
       };
       plugins.push(terserPlugin(terserOptions));
     }
+
+    // This is what the build should be
+    const replaceOptions = {
+      preventAssignment: true,
+      WORKBOX_CDN_ROOT_URL: getVersionsCDNUrl(),
+    };
+
+    if (buildType) {
+      replaceOptions['process.env.NODE_ENV'] = JSON.stringify(buildType);
+    }
+
+    // Replace allows us to input NODE_ENV and strip code accordingly
+    plugins.push(replace(replaceOptions));
 
     return plugins;
   },
