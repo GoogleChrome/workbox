@@ -11,7 +11,7 @@ import {nodeResolve} from '@rollup/plugin-node-resolve';
 import {rollup, Plugin} from 'rollup';
 import terser from '@rollup/plugin-terser';
 import {writeFile} from 'fs-extra';
-import omt from '@surma/rollup-plugin-off-main-thread';
+import omt from '@trickfilm400/rollup-plugin-off-main-thread';
 import presetEnv from '@babel/preset-env';
 import replace from '@rollup/plugin-replace';
 import tempy from 'tempy';
@@ -84,7 +84,6 @@ export async function bundle({
 
   const rollupConfig: {
     input: string;
-    manualChunks?: (id: string) => string | undefined;
     plugins: Array<Plugin>;
   } = {
     plugins,
@@ -97,43 +96,59 @@ export async function bundle({
     // No lint for omt(), library has no types.
     // eslint-disable-next-line  @typescript-eslint/no-unsafe-call
     rollupConfig.plugins.unshift(omt());
-    rollupConfig.manualChunks = (id) => {
-      return id.includes('workbox') ? 'workbox' : undefined;
-    };
   }
 
   const bundle = await rollup(rollupConfig);
 
-  const {output} = await bundle.generate({
+  const outputOptions: {
+    sourcemap?: boolean;
+    format: 'es' | 'amd';
+    manualChunks?: (id: string) => string | undefined;
+    chunkFileNames?: string;
+    hashCharacters?: 'base64' | 'hex';
+  } = {
     sourcemap,
     // Using an external Workbox runtime requires 'amd'.
     format: inlineWorkboxRuntime ? 'es' : 'amd',
-  });
+  };
 
+  if (!inlineWorkboxRuntime) {
+    outputOptions.manualChunks = (id) => {
+      return id.includes('workbox') ? 'workbox' : undefined;
+    };
+    outputOptions.hashCharacters = 'hex';
+  }
+
+  const {output} = await bundle.generate(outputOptions);
   const files: Array<NameAndContents> = [];
   for (const chunkOrAsset of output) {
     if (chunkOrAsset.type === 'asset') {
-      files.push({
-        name: chunkOrAsset.fileName,
-        contents: chunkOrAsset.source,
-      });
+      if (!files.some((f) => f.name === chunkOrAsset.fileName)) {
+        files.push({
+          name: chunkOrAsset.fileName,
+          contents: chunkOrAsset.source,
+        });
+      }
     } else {
       let code = chunkOrAsset.code;
 
       if (chunkOrAsset.map) {
         const sourceMapFile = chunkOrAsset.fileName + '.map';
         code += `//# sourceMappingURL=${sourceMapFile}\n`;
-
-        files.push({
-          name: sourceMapFile,
-          contents: chunkOrAsset.map.toString(),
-        });
+        if (!files.some((f) => f.name === sourceMapFile)) {
+          files.push({
+            name: sourceMapFile,
+            contents: chunkOrAsset.map.toString(),
+          });
+        }
       }
 
-      files.push({
-        name: chunkOrAsset.fileName,
-        contents: code,
-      });
+      if (!files.some((f) => f.name === chunkOrAsset.fileName)) {
+        files.push({
+          name: chunkOrAsset.fileName,
+          contents: code,
+        });
+      }
     }
   }
 

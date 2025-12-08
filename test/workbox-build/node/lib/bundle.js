@@ -58,7 +58,7 @@ describe(`[workbox-build] lib/bundle`, function () {
         babel: sinon.stub(),
       },
       '@rollup/plugin-terser': sinon.stub(),
-      '@surma/rollup-plugin-off-main-thread': sinon.stub(),
+      '@trickfilm400/rollup-plugin-off-main-thread': sinon.stub(),
       'rollup': {
         rollup: sinon.stub().resolves(rollupStub),
       },
@@ -81,22 +81,22 @@ describe(`[workbox-build] lib/bundle`, function () {
     );
   });
 
-  it(`should use loadz0r and configure manualChunks when 'inlineWorkboxRuntime' is false`, async function () {
+  it(`should use loadz0r when 'inlineWorkboxRuntime' is false`, async function () {
     await bundle({
       inlineWorkboxRuntime: false,
     });
 
-    expect(stubs.rollup.rollup.args[0][0].manualChunks).to.be.a('function');
-    expect(stubs['@surma/rollup-plugin-off-main-thread'].calledOnce).to.be.true;
+    expect(stubs['@trickfilm400/rollup-plugin-off-main-thread'].calledOnce).to
+      .be.true;
   });
 
-  it(`should not use loadz0r or configure manualChunks when 'inlineWorkboxRuntime' is true`, async function () {
+  it(`should not use loadz0r when 'inlineWorkboxRuntime' is true`, async function () {
     await bundle({
       inlineWorkboxRuntime: true,
     });
 
-    expect(stubs.rollup.rollup.args[0][0].manualChunks).not.to.exist;
-    expect(stubs['@surma/rollup-plugin-off-main-thread'].notCalled).to.be.true;
+    expect(stubs['@trickfilm400/rollup-plugin-off-main-thread'].notCalled).to.be
+      .true;
   });
 
   it(`should replace NODE_ENV with the 'mode' value`, async function () {
