@@ -204,6 +204,10 @@ describe(`StrategyHandler`, function () {
     });
 
     it(`should ignore fetchOptions when request.mode === 'navigate'`, async function () {
+      // Firefox crashes when we change the request mode, so skipping this test.
+      if (navigator.userAgent.match(/firefox/i)) {
+        this.skip();
+      }
       // See https://github.com/GoogleChrome/workbox/issues/1796
       const fetchStub = sandbox.stub(self, 'fetch').resolves(new Response());
 
