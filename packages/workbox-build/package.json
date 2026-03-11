@@ -30,7 +30,7 @@
     "@rollup/plugin-babel": "^6.1.0",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-replace": "^6.0.3",
-    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-terser": "^1.0.0",
     "@trickfilm400/rollup-plugin-off-main-thread": "^3.0.0-pre1",
     "ajv": "^8.6.0",
     "common-tags": "^1.8.0",
