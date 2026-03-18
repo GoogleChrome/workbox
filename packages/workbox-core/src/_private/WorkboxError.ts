@@ -6,9 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {messageGenerator} from '../models/messages/messageGenerator.js';
-import {MapLikeObject} from '../types.js';
-import '../_version.js';
+import {messageGenerator} from '../models/messages/messageGenerator';
+import {MapLikeObject} from '../types';
+import '../_version';
 
 /**
  * Workbox errors should be thrown with this class.

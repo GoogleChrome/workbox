@@ -6,14 +6,15 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {copyResponse} from 'workbox-core/copyResponse.js';
-import {cacheNames} from 'workbox-core/_private/cacheNames.js';
-import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
-import {logger} from 'workbox-core/_private/logger.js';
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
-import {WorkboxPlugin} from 'workbox-core/types.js';
-import {Strategy, StrategyOptions} from 'workbox-strategies/Strategy.js';
-import {StrategyHandler} from 'workbox-strategies/StrategyHandler.js';
+import {
+  copyResponse,
+  getFriendlyURL,
+  logger,
+  WorkboxError,
+  WorkboxPlugin,
+  privateCacheNames,
+} from 'workbox-core';
+import {Strategy, StrategyOptions, StrategyHandler} from 'workbox-strategies';
 
 import './_version.js';
 
@@ -70,7 +71,7 @@ class PrecacheStrategy extends Strategy {
    * get the response from the network if there's a precache miss.
    */
   constructor(options: PrecacheStrategyOptions = {}) {
-    options.cacheName = cacheNames.getPrecacheName(options.cacheName);
+    options.cacheName = privateCacheNames.getPrecacheName(options.cacheName);
     super(options);
 
     this._fallbackToNetwork =

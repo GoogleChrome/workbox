@@ -6,9 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
-import {logger} from 'workbox-core/_private/logger.js';
-import './_version.js';
+import {WorkboxError, logger} from 'workbox-core';
+import './_version';
 
 /**
  * Given two `Response's`, compares several header values to see if they are

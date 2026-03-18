@@ -1,10 +1,31 @@
 {
   "extends": "../../tsconfig",
   "compilerOptions": {
-    "composite": true,
-    "outDir": "./",
-    "rootDir": "./src",
-    "tsBuildInfoFile": "./tsconfig.tsbuildinfo"
+    "tsBuildInfoFile": "./tsconfig.tsbuildinfo",
+    "rootDir": "src",
+    "noEmitOnError": true,
+
+    "lib": ["ES2020", "WebWorker"],
+    "target": "ES2020",
+    "types": ["node"],
+
+    "declaration": true,
+    "declarationDir": "types",
+    "emitDeclarationOnly": true,
+
+    "module": "ES2020",
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+
+    "noImplicitThis": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "preserveConstEnums": true,
+    "removeComments": false,
+    "typeRoots": ["./node_modules/@types"],
+    "strict": true,
+    "skipLibCheck": true
   },
   "include": ["src/**/*.ts"]
 }

@@ -6,13 +6,13 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.js';
-import {logger} from 'workbox-core/_private/logger.js';
 import {
+  assert,
+  logger,
   RouteHandler,
   RouteMatchCallback,
   RouteMatchCallbackOptions,
-} from 'workbox-core/types.js';
+} from 'workbox-core';
 
 import {HTTPMethod} from './utils/constants.js';
 import {Route} from './Route.js';

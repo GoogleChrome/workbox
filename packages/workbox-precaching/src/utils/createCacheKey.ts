@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
+import {WorkboxError} from 'workbox-core';
 import {PrecacheEntry} from '../_types.js';
 import '../_version.js';
 

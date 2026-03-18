@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {WorkboxPlugin, WorkboxPluginCallbackParam} from 'workbox-core/types.js';
+import {WorkboxPlugin, WorkboxPluginCallbackParam} from 'workbox-core';
 
 import '../_version.js';
 

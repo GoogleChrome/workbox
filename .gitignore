@@ -17,12 +17,13 @@ docs
 local-builds/
 firebase-debug.log
 .firebase
+packages/**/dist
+packages/**/types
 
 # Generated TypeScript files and build data
 tsconfig.tsbuildinfo
 packages/workbox-*/**/*.d.ts
 !packages/workbox-*/src/**/*.d.ts
-packages/workbox-*/**/*.js
 !packages/workbox-build/**/*.js
 !packages/workbox-webpack-plugin/**/*.js
 

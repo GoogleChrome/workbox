@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.js';
+import {assert} from 'workbox-core';
 import {
   UnidentifiedQueueStoreEntry,
   QueueStoreEntry,

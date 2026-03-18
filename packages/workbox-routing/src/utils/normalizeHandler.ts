@@ -6,8 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.js';
-import {RouteHandler, RouteHandlerObject} from 'workbox-core/types.js';
+import {assert, RouteHandler, RouteHandlerObject} from 'workbox-core';
 
 import '../_version.js';
 

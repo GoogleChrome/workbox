@@ -6,9 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
-import {assert} from 'workbox-core/_private/assert.js';
-import {logger} from 'workbox-core/_private/logger.js';
+import {WorkboxError, assert, logger} from 'workbox-core';
 import {calculateEffectiveBoundaries} from './utils/calculateEffectiveBoundaries.js';
 import {parseRangeHeader} from './utils/parseRangeHeader.js';
 import './_version.js';

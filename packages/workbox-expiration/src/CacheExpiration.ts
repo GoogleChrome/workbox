@@ -6,14 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.js';
-import {dontWaitFor} from 'workbox-core/_private/dontWaitFor.js';
-import {logger} from 'workbox-core/_private/logger.js';
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
-
-import {CacheTimestampsModel} from './models/CacheTimestampsModel.js';
-
-import './_version.js';
+import {assert, dontWaitFor, logger, WorkboxError} from 'workbox-core';
+import {CacheTimestampsModel} from './models/CacheTimestampsModel';
+import './_version';
 
 interface CacheExpirationConfig {
   maxEntries?: number;

@@ -6,8 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {cacheNames} from 'workbox-core/_private/cacheNames.js';
-import {logger} from 'workbox-core/_private/logger.js';
+import {privateCacheNames, logger} from 'workbox-core';
 import {deleteOutdatedCaches} from './utils/deleteOutdatedCaches.js';
 import './_version.js';
 
@@ -20,7 +19,7 @@ import './_version.js';
 function cleanupOutdatedCaches(): void {
   // See https://github.com/Microsoft/TypeScript/issues/28357#issuecomment-436484705
   self.addEventListener('activate', ((event: ExtendableEvent) => {
-    const cacheName = cacheNames.getPrecacheName();
+    const cacheName = privateCacheNames.getPrecacheName();
 
     event.waitUntil(
       deleteOutdatedCaches(cacheName).then((cachesDeleted) => {

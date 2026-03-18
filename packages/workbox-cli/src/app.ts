@@ -9,7 +9,7 @@
 import {oneLine as ol} from 'common-tags';
 import * as workboxBuild from 'workbox-build';
 import assert from 'assert';
-import {default as chokidar, WatchOptions} from 'chokidar';
+import WatchOptions, {default as chokidar} from 'chokidar';
 import meow from 'meow';
 import prettyBytes from 'pretty-bytes';
 import upath from 'upath';

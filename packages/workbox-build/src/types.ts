@@ -1,12 +1,12 @@
 import {PackageJson} from 'type-fest';
 
-import {BroadcastCacheUpdateOptions} from 'workbox-broadcast-update/BroadcastCacheUpdate';
-import {GoogleAnalyticsInitializeOptions} from 'workbox-google-analytics/initialize';
+import {BroadcastCacheUpdateOptions} from 'workbox-broadcast-update';
+import {GoogleAnalyticsInitializeOptions} from 'workbox-google-analytics';
 import {HTTPMethod} from 'workbox-routing/utils/constants';
-import {QueueOptions} from 'workbox-background-sync/Queue';
+import {QueueOptions} from 'workbox-background-sync';
 import {RouteHandler, RouteMatchCallback} from 'workbox-core/types';
-import {CacheableResponseOptions} from 'workbox-cacheable-response/CacheableResponse';
-import {ExpirationPluginOptions} from 'workbox-expiration/ExpirationPlugin';
+import {CacheableResponseOptions} from 'workbox-cacheable-response';
+import {ExpirationPluginOptions} from 'workbox-expiration';
 import {WorkboxPlugin} from 'workbox-core/types';
 
 export interface ManifestEntry {
