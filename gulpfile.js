@@ -6,10 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-const fse = require('fs-extra');
-const globby = require('globby');
-const minimist = require('minimist');
-const upath = require('upath');
+import fse from 'fs-extra';
+import {globbySync} from 'globby';
+import minimist from 'minimist';
+import upath from 'upath';
 
 const options = minimist(process.argv.slice(2));
 
@@ -26,10 +26,10 @@ global.port = options.port || 3000;
 global.packageOrStar = options.package || '*';
 global.cliOptions = options;
 
-const taskFiles = globby.sync('./gulp-tasks/*.js');
+const taskFiles = globbySync('./gulp-tasks/*.js');
 
 for (const taskFile of taskFiles) {
-  const taskDefinitions = require(taskFile);
+  const taskDefinitions = import(taskFile);
   for (const [name, task] of Object.entries(taskDefinitions)) {
     if (name === 'functions') {
       continue;
