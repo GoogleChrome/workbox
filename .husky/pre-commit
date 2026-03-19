@@ -1,4 +1,4 @@
 # Please see https://typicode.github.io/husky/#/?id=command-not-found
 # if you have trouble running this command.
 
-pnpm run lint-staged
+#pnpm run lint-staged

@@ -1,20 +1,15 @@
-/*
-  Copyright 2018 Google LLC
-
-  Use of this source code is governed by an MIT-style
-  license that can be found in the LICENSE file or at
-  https://opensource.org/licenses/MIT.
-*/
-
 import fse from 'fs-extra';
-import {globbySync} from 'globby';
 import minimist from 'minimist';
 import upath from 'upath';
+
+async function loadGlobby() {
+  const {globbySync} = await import('globby');
+  return globbySync;
+}
 
 const options = minimist(process.argv.slice(2));
 
 if (options.package) {
-  // Ensure the package is valid before running tasks
   try {
     fse.statSync(upath.join(__dirname, 'packages', options.package));
   } catch (err) {
@@ -26,20 +21,21 @@ global.port = options.port || 3000;
 global.packageOrStar = options.package || '*';
 global.cliOptions = options;
 
-const taskFiles = globbySync('./gulp-tasks/!*.js');
+(async () => {
+  const globbySync = await loadGlobby();
+  const taskFiles = globbySync('./gulp-tasks/!*.js');
 
-for (const taskFile of taskFiles) {
-  const taskDefinitions = require(taskFile);
-  for (const [name, task] of Object.entries(taskDefinitions)) {
-    if (name === 'functions') {
-      continue;
+  for (const taskFile of taskFiles) {
+    const taskDefinitions = require(taskFile);
+
+    for (const [name, task] of Object.entries(taskDefinitions)) {
+      if (name === 'functions') continue;
+      if (name in module.exports) {
+        throw new Error(
+          `Duplicate task definition: ${name} defined in ${taskFile} conflicts with another task.`,
+        );
+      }
+      module.exports[name] = task;
     }
-    if (name in module.exports) {
-      throw new Error(
-        `Duplicate task definition: ${name} defined in` +
-          ` ${taskFile} conflicts with another task.`,
-      );
-    }
-    module.exports[name] = task;
   }
-}
+})();
