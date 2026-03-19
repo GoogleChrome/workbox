@@ -26,7 +26,7 @@ global.port = options.port || 3000;
 global.packageOrStar = options.package || '*';
 global.cliOptions = options;
 
-/*const taskFiles = globbySync('./gulp-tasks/!*.js');
+const taskFiles = globbySync('./gulp-tasks/!*.js');
 
 for (const taskFile of taskFiles) {
   const taskDefinitions = import(taskFile);
@@ -42,4 +42,4 @@ for (const taskFile of taskFiles) {
     }
     module.exports[name] = task;
   }
-}*/
+}
