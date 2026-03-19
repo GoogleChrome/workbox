@@ -6,11 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {logger} from 'workbox-core/_private/logger.js';
 import {
+  logger,
   RouteHandlerCallback,
   RouteHandlerCallbackOptions,
-} from 'workbox-core/types.js';
+} from 'workbox-core';
 import {createHeaders} from './utils/createHeaders.js';
 import {concatenateToResponse} from './concatenateToResponse.js';
 import {isSupported} from './isSupported.js';

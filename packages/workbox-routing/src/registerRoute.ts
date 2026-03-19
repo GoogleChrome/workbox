@@ -6,9 +6,12 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {logger} from 'workbox-core/_private/logger.js';
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
-import {RouteHandler, RouteMatchCallback} from 'workbox-core/types.js';
+import {
+  logger,
+  WorkboxError,
+  RouteHandler,
+  RouteMatchCallback,
+} from 'workbox-core';
 
 import {Route} from './Route.js';
 import {RegExpRoute} from './RegExpRoute.js';

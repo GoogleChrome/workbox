@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import crypto from 'crypto';
+import {createHash} from 'node:crypto';
 import type {Asset} from 'webpack';
 
 /**
@@ -23,8 +23,7 @@ export function getAssetHash(asset: Asset): string | null {
     return null;
   }
 
-  return crypto
-    .createHash('md5')
+  return createHash('md5')
     .update(Buffer.from(asset.source.source() as Buffer))
     .digest('hex');
 }

@@ -14,7 +14,7 @@ import {writeFile} from 'fs-extra';
 import omt from '@trickfilm400/rollup-plugin-off-main-thread';
 import presetEnv from '@babel/preset-env';
 import replace from '@rollup/plugin-replace';
-import tempy from 'tempy';
+import {temporaryFile} from 'tempy';
 import upath from 'upath';
 
 import {GeneratePartial, RequiredSWDestPartial} from '../types';
@@ -39,8 +39,8 @@ export async function bundle({
   // a custom file system.
   const {dir, base} = upath.parse(swDest);
 
-  const temporaryFile = tempy.file({name: base});
-  await writeFile(temporaryFile, unbundledCode);
+  const tempFile = temporaryFile({name: base});
+  await writeFile(tempFile, unbundledCode);
 
   const plugins = [
     nodeResolve(),
@@ -87,7 +87,7 @@ export async function bundle({
     plugins: Array<Plugin>;
   } = {
     plugins,
-    input: temporaryFile,
+    input: tempFile,
   };
 
   // Rollup will inline the runtime by default. If we don't want that, we need

@@ -6,13 +6,16 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.js';
-import {cacheNames} from 'workbox-core/_private/cacheNames.js';
-import {logger} from 'workbox-core/_private/logger.js';
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
-import {waitUntil} from 'workbox-core/_private/waitUntil.js';
-import {Strategy} from 'workbox-strategies/Strategy.js';
-import {RouteHandlerCallback, WorkboxPlugin} from 'workbox-core/types.js';
+import {
+  assert,
+  logger,
+  WorkboxError,
+  waitUntil,
+  RouteHandlerCallback,
+  WorkboxPlugin,
+  privateCacheNames,
+} from 'workbox-core';
+import {Strategy} from 'workbox-strategies';
 
 import {createCacheKey} from './utils/createCacheKey.js';
 import {PrecacheInstallReportPlugin} from './utils/PrecacheInstallReportPlugin.js';
@@ -74,7 +77,7 @@ class PrecacheController {
     fallbackToNetwork = true,
   }: PrecacheControllerOptions = {}) {
     this._strategy = new PrecacheStrategy({
-      cacheName: cacheNames.getPrecacheName(cacheName),
+      cacheName: privateCacheNames.getPrecacheName(cacheName),
       plugins: [
         ...plugins,
         new PrecacheCacheKeyPlugin({precacheController: this}),

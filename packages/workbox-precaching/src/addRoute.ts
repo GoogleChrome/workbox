@@ -5,7 +5,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {registerRoute} from 'workbox-routing/registerRoute.js';
+import {registerRoute} from 'workbox-routing';
 
 import {getOrCreatePrecacheController} from './utils/getOrCreatePrecacheController.js';
 import {PrecacheRoute} from './PrecacheRoute.js';

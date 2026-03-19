@@ -6,14 +6,11 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
-import {logger} from 'workbox-core/_private/logger.js';
-import {assert} from 'workbox-core/_private/assert.js';
-import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
-import {QueueStore} from './lib/QueueStore.js';
-import {QueueStoreEntry, UnidentifiedQueueStoreEntry} from './lib/QueueDb.js';
-import {StorableRequest} from './lib/StorableRequest.js';
-import './_version.js';
+import {WorkboxError, logger, assert, getFriendlyURL} from 'workbox-core';
+import {QueueStore} from './lib/QueueStore';
+import {QueueStoreEntry, UnidentifiedQueueStoreEntry} from './lib/QueueDb';
+import {StorableRequest} from './lib/StorableRequest';
+import './_version';
 
 // Give TypeScript the correct global.
 declare let self: ServiceWorkerGlobalScope;

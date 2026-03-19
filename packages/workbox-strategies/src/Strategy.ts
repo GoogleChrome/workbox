@@ -6,15 +6,15 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {cacheNames} from 'workbox-core/_private/cacheNames.js';
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
-import {logger} from 'workbox-core/_private/logger.js';
-import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
 import {
+  privateCacheNames,
+  WorkboxError,
+  logger,
+  getFriendlyURL,
   HandlerCallbackOptions,
   RouteHandlerObject,
   WorkboxPlugin,
-} from 'workbox-core/types.js';
+} from 'workbox-core';
 
 import {StrategyHandler} from './StrategyHandler.js';
 
@@ -73,7 +73,7 @@ abstract class Strategy implements RouteHandlerObject {
      *
      * @type {string}
      */
-    this.cacheName = cacheNames.getRuntimeName(options.cacheName);
+    this.cacheName = privateCacheNames.getRuntimeName(options.cacheName);
     /**
      * The list
      * [Plugins]{@link https://developers.google.com/web/tools/workbox/guides/using-plugins}
@@ -225,7 +225,7 @@ abstract class Strategy implements RouteHandlerObject {
   }
 
   async _awaitComplete(
-    responseDone: Promise<Response>,
+    responseDone: Promise<Response | undefined>,
     handler: StrategyHandler,
     request: Request,
     event: ExtendableEvent,

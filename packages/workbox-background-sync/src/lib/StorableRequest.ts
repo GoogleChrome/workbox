@@ -6,8 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.js';
-import {MapLikeObject} from 'workbox-core/types.js';
+import {assert, MapLikeObject} from 'workbox-core';
 import '../_version.js';
 
 type SerializableProperties =

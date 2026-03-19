@@ -11,7 +11,7 @@ import {Answers} from 'inquirer';
 import inquirer from 'inquirer';
 import upath from 'upath';
 
-import {errors} from '../errors';
+import {errors} from '../errors.js';
 
 // The key used for the question/answer.
 const name = 'swDest';

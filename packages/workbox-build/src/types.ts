@@ -1,13 +1,12 @@
 import {PackageJson} from 'type-fest';
-
-import {BroadcastCacheUpdateOptions} from 'workbox-broadcast-update/BroadcastCacheUpdate';
-import {GoogleAnalyticsInitializeOptions} from 'workbox-google-analytics/initialize';
-import {HTTPMethod} from 'workbox-routing/utils/constants';
-import {QueueOptions} from 'workbox-background-sync/Queue';
-import {RouteHandler, RouteMatchCallback} from 'workbox-core/types';
-import {CacheableResponseOptions} from 'workbox-cacheable-response/CacheableResponse';
-import {ExpirationPluginOptions} from 'workbox-expiration/ExpirationPlugin';
-import {WorkboxPlugin} from 'workbox-core/types';
+import {BroadcastCacheUpdateOptions} from 'workbox-broadcast-update';
+import {GoogleAnalyticsInitializeOptions} from 'workbox-google-analytics';
+import {HTTPMethod} from 'workbox-routing';
+import {QueueOptions} from 'workbox-background-sync';
+import {RouteHandler, RouteMatchCallback} from 'workbox-core';
+import {CacheableResponseOptions} from 'workbox-cacheable-response';
+import {ExpirationPluginOptions} from 'workbox-expiration';
+import {WorkboxPlugin} from 'workbox-core';
 
 export interface ManifestEntry {
   integrity?: string;
@@ -572,13 +571,15 @@ export interface FileDetails {
  */
 export type BuildType = 'dev' | 'prod';
 
+type WorkboxConfig = {
+  browserNamespace?: string;
+  packageType?: string;
+  prodOnly?: boolean;
+};
+
 /**
  * @private
  */
-export interface WorkboxPackageJSON extends PackageJson {
-  workbox?: {
-    browserNamespace?: string;
-    packageType?: string;
-    prodOnly?: boolean;
-  };
-}
+export type WorkboxPackageJSON = PackageJson & {
+  workbox?: WorkboxConfig;
+};

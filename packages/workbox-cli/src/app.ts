@@ -9,8 +9,8 @@
 import {oneLine as ol} from 'common-tags';
 import * as workboxBuild from 'workbox-build';
 import assert from 'assert';
-import {default as chokidar, WatchOptions} from 'chokidar';
-import meow from 'meow';
+import chokidar from 'chokidar';
+import type {Result} from 'meow';
 import prettyBytes from 'pretty-bytes';
 import upath from 'upath';
 
@@ -26,6 +26,8 @@ interface BuildCommand {
   config: workboxBuild.GenerateSWOptions | workboxBuild.InjectManifestOptions;
   watch: boolean;
 }
+
+type WatchOptions = Parameters<typeof chokidar.watch>[1];
 
 /**
  * Runs the specified build command with the provided configuration.
@@ -61,9 +63,7 @@ async function runBuildCommand({command, config, watch}: BuildCommand) {
   }
 }
 
-export const app = async (
-  params: meow.Result<SupportedFlags>,
-): Promise<void> => {
+export const app = async (params: Result<SupportedFlags>): Promise<void> => {
   // This should not be a user-visible error, unless meow() messes something up.
   assert(params && Array.isArray(params.input), errors['missing-input']);
 
@@ -134,7 +134,11 @@ export const app = async (
               await runBuildCommand({command, config, watch: true});
             })
             .on('error', (err) => {
-              logger.error(err.toString());
+              if (err instanceof Error) {
+                logger.error(err.message);
+              } else {
+                logger.error(String(err));
+              }
             });
         }
       } else {

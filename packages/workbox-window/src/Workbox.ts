@@ -6,9 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {Deferred} from 'workbox-core/_private/Deferred.js';
-import {dontWaitFor} from 'workbox-core/_private/dontWaitFor.js';
-import {logger} from 'workbox-core/_private/logger.js';
+import {Deferred, dontWaitFor, logger} from 'workbox-core';
 import {TrustedScriptURL} from 'trusted-types/lib';
 
 import {messageSW} from './messageSW.js';

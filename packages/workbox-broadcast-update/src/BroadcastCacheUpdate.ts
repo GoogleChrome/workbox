@@ -6,20 +6,22 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.js';
-import {timeout} from 'workbox-core/_private/timeout.js';
-import {resultingClientExists} from 'workbox-core/_private/resultingClientExists.js';
-import {CacheDidUpdateCallbackParam} from 'workbox-core/types.js';
-import {logger} from 'workbox-core/_private/logger.js';
-import {responsesAreSame} from './responsesAreSame.js';
+import {
+  assert,
+  timeout,
+  CacheDidUpdateCallbackParam,
+  resultingClientExists,
+  logger,
+} from 'workbox-core';
+import {responsesAreSame} from './responsesAreSame';
 import {
   CACHE_UPDATED_MESSAGE_META,
   CACHE_UPDATED_MESSAGE_TYPE,
   DEFAULT_HEADERS_TO_CHECK,
   NOTIFY_ALL_CLIENTS,
-} from './utils/constants.js';
+} from './utils/constants';
 
-import './_version.js';
+import './_version';
 
 // UA-sniff Safari: https://stackoverflow.com/questions/7944460/detect-safari-browser
 // TODO(philipwalton): remove once this Safari bug fix has been released.

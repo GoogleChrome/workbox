@@ -6,16 +6,15 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {BackgroundSyncPlugin} from 'workbox-background-sync/BackgroundSyncPlugin.js';
-import {Queue} from 'workbox-background-sync/Queue.js';
-import {cacheNames} from 'workbox-core/_private/cacheNames.js';
-import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
-import {logger} from 'workbox-core/_private/logger.js';
-import {RouteMatchCallbackOptions} from 'workbox-core/types.js';
-import {Route} from 'workbox-routing/Route.js';
-import {Router} from 'workbox-routing/Router.js';
-import {NetworkFirst} from 'workbox-strategies/NetworkFirst.js';
-import {NetworkOnly} from 'workbox-strategies/NetworkOnly.js';
+import {BackgroundSyncPlugin, Queue} from 'workbox-background-sync';
+import {
+  privateCacheNames,
+  getFriendlyURL,
+  logger,
+  RouteMatchCallbackOptions,
+} from 'workbox-core';
+import {Route, Router} from 'workbox-routing';
+import {NetworkFirst, NetworkOnly} from 'workbox-strategies';
 import {
   QUEUE_NAME,
   MAX_RETENTION_TIME,
@@ -208,7 +207,7 @@ const createGtmJsRoute = (cacheName: string) => {
  * @memberof workbox-google-analytics
  */
 const initialize = (options: GoogleAnalyticsInitializeOptions = {}): void => {
-  const cacheName = cacheNames.getGoogleAnalyticsName(options.cacheName);
+  const cacheName = privateCacheNames.getGoogleAnalyticsName(options.cacheName);
 
   const bgSyncPlugin = new BackgroundSyncPlugin(QUEUE_NAME, {
     maxRetentionTime: MAX_RETENTION_TIME,

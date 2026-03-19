@@ -22,10 +22,36 @@
     "browserNamespace": "workbox.routing",
     "packageType": "sw"
   },
-  "main": "index.js",
-  "module": "index.mjs",
-  "types": "index.d.ts",
+  "files": [
+    "dist",
+    "types"
+  ],
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "pnpm clean && node ./build.js && tsc",
+    "build:with-deps": "node ./build.js --with-deps",
+    "clean": "rm -rf types && rm -rf dist",
+    "dev": "pnpx concurrently -c \"#ffcf00,#3178c6\" \"pnpm dev:build\" \"pnpm dev:types\" --names build,types",
+    "dev:build": "node ./build.js --watch",
+    "dev:types": "tsc --watch --preserveWatchOutput"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.8",
+    "es-check": "^9.6.1",
+    "esbuild": "^0.27.3",
+    "esbuild-node-externals": "^1.20.1",
+    "typescript": "^5.9.3"
+  },
   "dependencies": {
-    "workbox-core": "7.4.0"
+    "workbox-core": "workspace:*"
   }
 }

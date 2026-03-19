@@ -6,11 +6,8 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.js';
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
-import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
-import {logger} from 'workbox-core/_private/logger.js';
-import './_version.js';
+import {assert, WorkboxError, getFriendlyURL, logger} from 'workbox-core';
+import './_version';
 
 export interface CacheableResponseOptions {
   statuses?: number[];

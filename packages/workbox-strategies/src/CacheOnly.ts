@@ -6,9 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.js';
-import {logger} from 'workbox-core/_private/logger.js';
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
+import {assert, logger, WorkboxError} from 'workbox-core';
 
 import {Strategy} from './Strategy.js';
 import {StrategyHandler} from './StrategyHandler.js';

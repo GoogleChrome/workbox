@@ -10,41 +10,52 @@ import assert from 'assert';
 import inquirer from 'inquirer';
 import {oneLine as ol} from 'common-tags';
 
-import {errors} from '../errors';
-import {constants} from '../constants';
+import {errors} from '../errors.js';
+import {constants} from '../constants.js';
 
 const START_URL_QUERY_PARAMS_PROMPT =
   'Please enter the search parameter(s) that you would like to ignore (separated by comma):';
 
-// The keys used for the questions/answers.
-const question_ignoreURLParametersMatching = 'ignoreURLParametersMatching';
-const question_shouldAskForIgnoreURLParametersMatching =
-  'shouldAskForIgnoreURLParametersMatching';
+type StartUrlAnswers = {
+  shouldAskForIgnoreURLParametersMatching: boolean;
+  ignoreURLParametersMatching?: string;
+};
 
 /**
  * @return {Promise<Object>} The answers from inquirer.
  */
-async function askQuestion(): Promise<{
-  shouldAskForIgnoreURLParametersMatching: boolean;
-  ignoreURLParametersMatching?: string;
-}> {
-  return inquirer.prompt([
+async function askQuestion(): Promise<StartUrlAnswers> {
+  const {shouldAskForIgnoreURLParametersMatching} = await inquirer.prompt<{
+    shouldAskForIgnoreURLParametersMatching: boolean;
+  }>([
     {
-      name: question_shouldAskForIgnoreURLParametersMatching,
+      name: 'shouldAskForIgnoreURLParametersMatching',
       message: ol`Does your web app manifest include search parameter(s)
       in the 'start_url', other than 'utm_' or 'fbclid'
       (like '?source=pwa')?`,
-      type: 'confirm',
+      type: 'confirm' as const,
       default: false,
     },
+  ]);
+
+  if (!shouldAskForIgnoreURLParametersMatching) {
+    return {shouldAskForIgnoreURLParametersMatching};
+  }
+
+  const {ignoreURLParametersMatching} = await inquirer.prompt<{
+    ignoreURLParametersMatching: string;
+  }>([
     {
-      name: question_ignoreURLParametersMatching,
-      when: (answer: {shouldAskForIgnoreURLParametersMatching: boolean}) =>
-        answer.shouldAskForIgnoreURLParametersMatching,
+      name: 'ignoreURLParametersMatching',
       message: START_URL_QUERY_PARAMS_PROMPT,
-      type: 'input',
+      type: 'input' as const,
     },
   ]);
+
+  return {
+    shouldAskForIgnoreURLParametersMatching,
+    ignoreURLParametersMatching,
+  };
 }
 
 export async function askQueryParametersInStartUrl(

@@ -13,9 +13,8 @@ import {
   ModuleFilenameHelpers,
   WebpackError,
 } from 'webpack';
-import {transformManifest} from 'workbox-build/build/lib/transform-manifest';
-
 import {
+  transformManifest,
   WebpackGenerateSWOptions,
   WebpackInjectManifestOptions,
   ManifestEntry,

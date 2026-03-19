@@ -6,14 +6,14 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.js';
 import {HTTPMethod, defaultMethod, validMethods} from './utils/constants.js';
 import {normalizeHandler} from './utils/normalizeHandler.js';
 import {
+  assert,
   RouteHandler,
   RouteHandlerObject,
   RouteMatchCallback,
-} from 'workbox-core/types.js';
+} from 'workbox-core';
 import './_version.js';
 
 /**

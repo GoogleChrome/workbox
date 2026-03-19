@@ -6,9 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {WorkboxPlugin} from 'workbox-core/types.js';
-import {Queue, QueueOptions} from './Queue.js';
-import './_version.js';
+import {WorkboxPlugin} from 'workbox-core';
+import {Queue, QueueOptions} from './Queue';
+import './_version';
 
 /**
  * A class implementing the `fetchDidFail` lifecycle callback. This makes it

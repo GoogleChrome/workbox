@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {logger} from 'workbox-core/_private/logger.js';
+import {logger} from 'workbox-core';
 import '../_version.js';
 
 /**

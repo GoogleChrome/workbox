@@ -12,11 +12,8 @@
     "cli"
   ],
   "bin": {
-    "workbox": "build/bin.js"
+    "workbox": "dist/bin.js"
   },
-  "files": [
-    "build"
-  ],
   "engines": {
     "node": ">=20.0.0"
   },
@@ -28,30 +25,55 @@
   },
   "bugs": "https://github.com/googlechrome/workbox/issues",
   "homepage": "https://github.com/GoogleChrome/workbox/tree/master/packages/workbox-cli",
-  "dependencies": {
-    "chalk": "^4.1.0",
-    "chokidar": "^3.6.0",
-    "common-tags": "^1.8.0",
-    "fs-extra": "^9.0.1",
-    "glob": "^11.0.1",
-    "inquirer": "^7.3.3",
-    "meow": "^7.1.0",
-    "ora": "^5.0.0",
-    "pretty-bytes": "^5.3.0",
-    "stringify-object": "^3.3.0",
-    "upath": "^1.2.0",
-    "update-notifier": "^7.3.1",
-    "workbox-build": "7.4.0"
+  "files": [
+    "dist",
+    "types"
+  ],
+  "type": "module",
+  "main": "dist/bin.js",
+  "types": "types/bin.d.ts",
+  "exports": {
+    ".": {
+      "types": "./types/bin.d.ts",
+      "import": "./dist/bin.esm.js",
+      "require": "./dist/bin.js"
+    }
+  },
+  "scripts": {
+    "build": "pnpm clean && node ./build.js && tsc",
+    "build:with-deps": "node ./build.js --with-deps",
+    "clean": "rm -rf types && rm -rf dist",
+    "dev": "pnpx concurrently -c \"#ffcf00,#3178c6\" \"pnpm dev:build\" \"pnpm dev:types\" --names build,types",
+    "dev:build": "node ./build.js --watch",
+    "dev:types": "tsc --watch --preserveWatchOutput"
   },
   "workbox": {
     "packageType": "node_ts"
   },
   "devDependencies": {
     "@types/common-tags": "^1.8.0",
-    "@types/fs-extra": "^9.0.1",
-    "@types/inquirer": "^9.0.3",
+    "@types/fs-extra": "^11.0.1",
     "@types/node": "^20.14.8",
-    "@types/stringify-object": "^3.3.0",
-    "@types/update-notifier": "^4.1.1"
+    "@types/stringify-object": "^4.0.0",
+    "@types/update-notifier": "^6.0.8",
+    "es-check": "^9.6.1",
+    "esbuild": "^0.27.3",
+    "esbuild-node-externals": "^1.20.1",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "chalk": "^5.6.0",
+    "chokidar": "^5.0.0",
+    "common-tags": "^1.8.0",
+    "fs-extra": "^11.3.1",
+    "glob": "^13.0.1",
+    "inquirer": "^13.3.2",
+    "meow": "^14.1.0",
+    "ora": "^9.3.0",
+    "pretty-bytes": "^7.1.0",
+    "stringify-object": "^6.0.0",
+    "upath": "^2.0.0",
+    "update-notifier": "^7.3.1",
+    "workbox-build": "workspace:*"
   }
 }

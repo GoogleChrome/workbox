@@ -6,13 +6,9 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {assert} from 'workbox-core/_private/assert.js';
-import {Deferred} from 'workbox-core/_private/Deferred.js';
-import {logger} from 'workbox-core/_private/logger.js';
-import {StreamSource} from './_types.js';
-import {WorkboxError} from 'workbox-core/_private/WorkboxError.js';
-
-import './_version.js';
+import {assert, Deferred, logger, WorkboxError} from 'workbox-core';
+import {StreamSource} from './_types';
+import './_version';
 
 /**
  * Takes either a Response, a ReadableStream, or a

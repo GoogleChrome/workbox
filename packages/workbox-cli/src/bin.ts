@@ -9,28 +9,40 @@
 */
 
 import meow from 'meow';
-import updateNotifier from 'update-notifier';
+import type {Result} from 'meow';
+import updateNotifier, {type Package} from 'update-notifier';
 
-import {app} from './app';
+import {app} from './app.js';
 import {cleanupStackTrace} from './lib/cleanup-stack-trace.js';
-import {helpText} from './lib/help-text';
-import {logger} from './lib/logger';
+import {helpText} from './lib/help-text.js';
+import {logger} from './lib/logger.js';
 
-export interface SupportedFlags extends meow.AnyFlags {
-  debug: meow.BooleanFlag;
-  injectManifest: meow.BooleanFlag;
-  watch: meow.BooleanFlag;
-}
+export const supportedFlags = {
+  debug: {
+    type: 'boolean',
+  },
+  injectManifest: {
+    type: 'boolean',
+  },
+  watch: {
+    type: 'boolean',
+  },
+} as const;
+
+export type SupportedFlags = typeof supportedFlags;
 
 void (async () => {
-  const params: meow.Result<any> = meow(helpText);
-  updateNotifier({pkg: params.pkg as updateNotifier.Package}).notify();
+  const params: Result<SupportedFlags> = meow(helpText, {
+    importMeta: import.meta,
+    flags: supportedFlags,
+  });
+
+  updateNotifier({pkg: params.pkg as Package}).notify();
 
   try {
     await app(params);
   } catch (error) {
     if (error instanceof Error) {
-      // Show the full error and stack trace if we're run with --debug.
       if (params.flags.debug) {
         if (error.stack) {
           logger.error(`\n${error.stack}`);

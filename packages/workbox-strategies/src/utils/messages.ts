@@ -6,8 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {logger} from 'workbox-core/_private/logger.js';
-import {getFriendlyURL} from 'workbox-core/_private/getFriendlyURL.js';
+import {logger, getFriendlyURL} from 'workbox-core';
 import '../_version.js';
 
 export const messages = {

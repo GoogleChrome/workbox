@@ -11,8 +11,8 @@ import {Answers, Question} from 'inquirer';
 import inquirer from 'inquirer';
 import {oneLine as ol} from 'common-tags';
 
-import {constants} from '../constants';
-import {errors} from '../errors';
+import {constants} from '../constants.js';
+import {errors} from '../errors.js';
 
 // The key used for the question/answer.
 const name = 'configLocation';
