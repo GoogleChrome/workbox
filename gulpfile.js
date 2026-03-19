@@ -29,7 +29,7 @@ global.cliOptions = options;
 const taskFiles = globbySync('./gulp-tasks/!*.js');
 
 for (const taskFile of taskFiles) {
-  const taskDefinitions = import(taskFile);
+  const taskDefinitions = require(taskFile);
   for (const [name, task] of Object.entries(taskDefinitions)) {
     if (name === 'functions') {
       continue;
