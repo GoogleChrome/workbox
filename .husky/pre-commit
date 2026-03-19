@@ -1,8 +1,4 @@
-#!/bin/sh
-
 # Please see https://typicode.github.io/husky/#/?id=command-not-found
 # if you have trouble running this command.
-
-. "$(dirname "$0")/_/husky.sh"
 
 pnpm run lint-staged
