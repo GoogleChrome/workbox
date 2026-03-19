@@ -44,7 +44,7 @@
     "dev:types": "tsc --watch --preserveWatchOutput"
   },
   "devDependencies": {
-    "@types/node": "^18.19.130",
+    "@types/node": "^20.14.8",
     "es-check": "^9.6.1",
     "esbuild": "^0.27.3",
     "esbuild-node-externals": "^1.20.1",

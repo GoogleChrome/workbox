@@ -47,6 +47,20 @@
     "dev:build": "node ./build.js --watch",
     "dev:types": "tsc --watch --preserveWatchOutput"
   },
+  "workbox": {
+    "packageType": "node_ts"
+  },
+  "devDependencies": {
+    "@types/common-tags": "^1.8.0",
+    "@types/fs-extra": "^11.0.1",
+    "@types/node": "^20.14.8",
+    "@types/stringify-object": "^4.0.0",
+    "@types/update-notifier": "^6.0.8",
+    "es-check": "^9.6.1",
+    "esbuild": "^0.27.3",
+    "esbuild-node-externals": "^1.20.1",
+    "typescript": "^5.9.3"
+  },
   "dependencies": {
     "chalk": "^5.6.0",
     "chokidar": "^5.0.0",
@@ -61,20 +75,5 @@
     "upath": "^2.0.0",
     "update-notifier": "^7.3.1",
     "workbox-build": "workspace:*"
-  },
-  "workbox": {
-    "packageType": "node_ts"
-  },
-  "devDependencies": {
-    "@types/common-tags": "^1.8.0",
-    "@types/fs-extra": "^11.0.1",
-    "@types/inquirer": "^9.0.3",
-    "@types/node": "^20.14.8",
-    "@types/stringify-object": "^4.0.0",
-    "@types/update-notifier": "^6.0.8",
-    "es-check": "^9.6.1",
-    "esbuild": "^0.27.3",
-    "esbuild-node-externals": "^1.20.1",
-    "typescript": "^5.9.3"
   }
 }

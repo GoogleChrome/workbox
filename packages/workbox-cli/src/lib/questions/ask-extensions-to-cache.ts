@@ -13,8 +13,8 @@ import {glob} from 'glob';
 import ora from 'ora';
 import upath from 'upath';
 
-import {errors} from '../errors';
-import {constants} from '../constants';
+import {errors} from '../errors.js';
+import {constants} from '../constants.js';
 
 // The key used for the question/answer.
 const name = 'globPatterns';

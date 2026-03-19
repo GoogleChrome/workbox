@@ -6,12 +6,15 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {validateWebpackGenerateSWOptions} from 'workbox-build/build/lib/validate-options';
-import {bundle} from 'workbox-build/build/lib/bundle';
-import {populateSWTemplate} from 'workbox-build/build/lib/populate-sw-template';
+import {
+  ManifestEntry,
+  WebpackGenerateSWOptions,
+  validateWebpackGenerateSWOptions,
+  bundle,
+  populateSWTemplate,
+} from 'workbox-build';
 import prettyBytes from 'pretty-bytes';
 import webpack from 'webpack';
-import {ManifestEntry, WebpackGenerateSWOptions} from 'workbox-build';
 import {getScriptFilesForChunks} from './lib/get-script-files-for-chunks';
 import {getManifestEntriesFromCompilation} from './lib/get-manifest-entries-from-compilation';
 import {relativeToOutputPath} from './lib/relative-to-output-path';

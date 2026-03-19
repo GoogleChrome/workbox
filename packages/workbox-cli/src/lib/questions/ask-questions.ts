@@ -6,12 +6,12 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {askConfigLocation} from './ask-config-location';
-import {askExtensionsToCache} from './ask-extensions-to-cache';
-import {askRootOfWebApp} from './ask-root-of-web-app';
-import {askSWDest} from './ask-sw-dest';
-import {askSWSrc} from './ask-sw-src';
-import {askQueryParametersInStartUrl} from './ask-start_url-query-params';
+import {askConfigLocation} from './ask-config-location.js';
+import {askExtensionsToCache} from './ask-extensions-to-cache.js';
+import {askRootOfWebApp} from './ask-root-of-web-app.js';
+import {askSWDest} from './ask-sw-dest.js';
+import {askSWSrc} from './ask-sw-src.js';
+import {askQueryParametersInStartUrl} from './ask-start_url-query-params.js';
 
 interface ConfigWithConfigLocation {
   config: {

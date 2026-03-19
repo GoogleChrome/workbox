@@ -12,8 +12,8 @@
     "declarationDir": "types",
     "emitDeclarationOnly": true,
 
-    "module": "ES2020",
-    "moduleResolution": "Node",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,

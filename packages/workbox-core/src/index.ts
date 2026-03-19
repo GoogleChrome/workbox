@@ -21,6 +21,7 @@ import {
   cacheMatchIgnoreParams,
   executeQuotaErrorCallbacks,
   waitUntil,
+  canConstructReadableStream,
 } from './_private';
 import {cacheNames} from './cacheNames';
 import {copyResponse} from './copyResponse';
@@ -61,4 +62,5 @@ export {
   executeQuotaErrorCallbacks,
   WorkboxPlugin,
   waitUntil,
+  canConstructReadableStream,
 };

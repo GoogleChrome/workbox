@@ -1,6 +1,14 @@
 {
   "name": "workbox-webpack-plugin",
   "version": "7.4.0",
+  "license": "MIT",
+  "author": "Google's Web DevRel Team and Google's Aurora Team",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/googlechrome/workbox.git"
+  },
+  "bugs": "https://github.com/GoogleChrome/workbox/issues",
+  "homepage": "https://github.com/GoogleChrome/workbox",
   "description": "A plugin for your Webpack build process, helping you generate a manifest of local files that workbox-sw should precache.",
   "keywords": [
     "workbox",
@@ -15,31 +23,47 @@
   "workbox": {
     "packageType": "node_ts"
   },
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
   "engines": {
     "node": ">=20.0.0"
   },
-  "dependencies": {
-    "fast-json-stable-stringify": "^2.1.0",
-    "pretty-bytes": "^5.4.1",
-    "upath": "^1.2.0",
-    "webpack-sources": "^1.4.3",
-    "workbox-build": "7.4.0"
+  "files": [
+    "dist",
+    "types"
+  ],
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.js"
+    }
   },
-  "peerDependencies": {
-    "webpack": "^4.4.0 || ^5.91.0"
+  "scripts": {
+    "build": "pnpm clean && node ./build.js && tsc",
+    "build:with-deps": "node ./build.js --with-deps",
+    "clean": "rm -rf types && rm -rf dist",
+    "dev": "pnpx concurrently -c \"#ffcf00,#3178c6\" \"pnpm dev:build\" \"pnpm dev:types\" --names build,types",
+    "dev:build": "node ./build.js --watch",
+    "dev:types": "tsc --watch --preserveWatchOutput"
   },
   "devDependencies": {
     "@types/node": "^20.14.8",
-    "@types/webpack": "^5.28.1"
+    "@types/webpack": "^5.28.1",
+    "es-check": "^9.6.1",
+    "esbuild": "^0.27.3",
+    "esbuild-node-externals": "^1.20.1",
+    "typescript": "^5.9.3"
   },
-  "author": "Google's Web DevRel Team and Google's Aurora Team",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/googlechrome/workbox.git"
+  "dependencies": {
+    "fast-json-stable-stringify": "^2.1.0",
+    "pretty-bytes": "^7.1.0",
+    "upath": "^2.0.0",
+    "webpack-sources": "^3.3.3",
+    "workbox-build": "workspace:*"
   },
-  "bugs": "https://github.com/GoogleChrome/workbox/issues",
-  "homepage": "https://github.com/GoogleChrome/workbox"
+  "peerDependencies": {
+    "webpack": "^4.47.0 || ^5.105.0"
+  }
 }

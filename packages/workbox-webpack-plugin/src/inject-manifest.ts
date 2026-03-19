@@ -6,9 +6,12 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {escapeRegExp} from 'workbox-build/build/lib/escape-regexp';
-import {replaceAndUpdateSourceMap} from 'workbox-build/build/lib/replace-and-update-source-map';
-import {validateWebpackInjectManifestOptions} from 'workbox-build/build/lib/validate-options';
+import {
+  WebpackInjectManifestOptions,
+  escapeRegExp,
+  replaceAndUpdateSourceMap,
+  validateWebpackInjectManifestOptions,
+} from 'workbox-build';
 import prettyBytes from 'pretty-bytes';
 import stringify from 'fast-json-stable-stringify';
 import upath from 'upath';
@@ -17,7 +20,6 @@ import webpack from 'webpack';
 import {getManifestEntriesFromCompilation} from './lib/get-manifest-entries-from-compilation';
 import {getSourcemapAssetName} from './lib/get-sourcemap-asset-name';
 import {relativeToOutputPath} from './lib/relative-to-output-path';
-import {WebpackInjectManifestOptions} from 'workbox-build';
 // Used to keep track of swDest files written by *any* instance of this plugin.
 // See https://github.com/GoogleChrome/workbox/issues/2181
 const _generatedAssetNames = new Set<string>();

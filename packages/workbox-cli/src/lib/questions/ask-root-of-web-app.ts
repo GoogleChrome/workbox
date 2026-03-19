@@ -12,64 +12,67 @@ import {glob} from 'glob';
 import inquirer from 'inquirer';
 import {oneLine as ol} from 'common-tags';
 
-import {errors} from '../errors';
-import {constants} from '../constants';
+import {errors} from '../errors.js';
+import {constants} from '../constants.js';
 
 const ROOT_PROMPT = 'Please enter the path to the root of your web app:';
 
-// The keys used for the questions/answers.
-const questionRootDirectory = 'globDirectory';
-const questionManualInput = 'manualDirectoryInput';
-
-/**
- * @return {Promise<Array<string>>} The subdirectories of the current
- * working directory, with hidden and ignored ones filtered out.
- */
-async function getSubdirectories(): Promise<Array<string>> {
+async function getSubdirectories(): Promise<string[]> {
   return await glob('*/', {
     ignore: constants.ignoredDirectories.map((directory) => `${directory}/`),
   });
 }
 
-/**
- * @return {Promise<Object>} The answers from inquirer.
- */
 async function askQuestion(): Promise<{
   globDirectory: string;
   manualDirectoryInput?: string;
 }> {
-  const subdirectories: (string | InstanceType<typeof inquirer.Separator>)[] =
-    await getSubdirectories();
+  const subdirectories = await getSubdirectories();
 
   if (subdirectories.length > 0) {
     const manualEntryChoice = 'Manually enter path';
-    return inquirer.prompt([
+
+    const {globDirectory} = await inquirer.prompt<{globDirectory: string}>([
       {
-        name: questionRootDirectory,
-        type: 'list',
+        name: 'globDirectory',
+        type: 'list' as const,
         message: ol`What is the root of your web app (i.e. which directory do
         you deploy)?`,
-        choices: subdirectories.concat([
+        choices: [
+          ...subdirectories,
           new inquirer.Separator(),
           manualEntryChoice,
-        ]),
-      },
-      {
-        name: questionManualInput,
-        when: (answers: {globDirectory: string}) =>
-          answers.globDirectory === manualEntryChoice,
-        message: ROOT_PROMPT,
+        ],
       },
     ]);
+
+    if (globDirectory === manualEntryChoice) {
+      const {manualDirectoryInput} = await inquirer.prompt<{
+        manualDirectoryInput: string;
+      }>([
+        {
+          name: 'manualDirectoryInput',
+          type: 'input' as const,
+          message: ROOT_PROMPT,
+        },
+      ]);
+
+      return {globDirectory, manualDirectoryInput};
+    }
+
+    return {globDirectory};
   }
 
-  return inquirer.prompt([
+  const {globDirectory} = await inquirer.prompt<{globDirectory: string}>([
     {
-      name: questionRootDirectory,
+      name: 'globDirectory',
+      type: 'input' as const,
       message: ROOT_PROMPT,
       default: '.',
     },
   ]);
+
+  return {globDirectory};
 }
 
 export async function askRootOfWebApp(): Promise<string> {
@@ -78,7 +81,7 @@ export async function askRootOfWebApp(): Promise<string> {
   try {
     const stat = await fse.stat(manualDirectoryInput || globDirectory);
     assert(stat.isDirectory());
-  } catch (error) {
+  } catch {
     throw new Error(errors['glob-directory-invalid']);
   }
 
