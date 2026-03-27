@@ -14,7 +14,12 @@ export interface InstallResult {
 }
 
 export interface CleanupResult {
-  deletedCacheRequests: string[];
+  deletedURLs: string[];
+  /**
+   * @deprecated Use `deletedURLs` instead.
+   * TODO: Remove in the next major release.
+   */
+  deletedCacheRequests?: string[];
 }
 
 export declare interface PrecacheEntry {
@@ -51,8 +56,10 @@ export type urlManipulation = ({url}: {url: URL}) => URL[];
 
 /**
  * @typedef {Object} CleanupResult
- * @property {Array<string>} deletedCacheRequests List of URLs that were deleted
- * while cleaning up the cache.
+ * @property {Array<string>} deletedURLs List of URLs that were deleted while
+ * cleaning up the cache.
+ * @property {Array<string>} [deletedCacheRequests] Deprecated alias for
+ * deletedURLs.
  *
  * @memberof workbox-precaching
  */
