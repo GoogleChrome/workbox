@@ -109,17 +109,34 @@ async function test_integration() {
     return;
   }
 
-  // Install the latest Chrome and Firefox webdrivers without referencing
-  // package-lock.json, to ensure that they're up to date.
-  await execa('npm', ['install', '--no-save', 'chromedriver', 'geckodriver'], {
-    preferLocal: true,
-  });
-
   logHelper.log(`Downloading browsers...`);
   const expiration = 24;
   // We are only running tests in stable, see bellow for reasons.
   await seleniumAssistant.downloadLocalBrowser('chrome', 'stable', expiration);
   await seleniumAssistant.downloadLocalBrowser('firefox', 'stable', expiration);
+
+  // Determine downloaded Chrome version to match ChromeDriver
+  const chromeBrowser = seleniumAssistant.getLocalBrowser('chrome', 'stable');
+  let chromedriverSpec = 'chromedriver';
+  if (chromeBrowser && chromeBrowser.isValid()) {
+    const version = chromeBrowser.getVersionNumber();
+    if (version !== -1) {
+      chromedriverSpec = `chromedriver@${version}`;
+      logHelper.log(
+        `Matched Chrome version ${version}, installing ${chromedriverSpec}`,
+      );
+    }
+  }
+
+  // Install the matching Chrome and latest Firefox webdrivers without referencing
+  // package-lock.json, to ensure that they're up to date.
+  await execa(
+    'npm',
+    ['install', '--no-save', chromedriverSpec, 'geckodriver'],
+    {
+      preferLocal: true,
+    },
+  );
 
   const packagesToTest = globSync(`test/${global.packageOrStar}/integration`);
   if (packagesToTest.length === 0) {
