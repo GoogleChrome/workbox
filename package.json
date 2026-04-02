@@ -78,7 +78,7 @@
     "semver": "^7.6.0",
     "serve-index": "^1.9.1",
     "service-worker-mock": "^1.9.3",
-    "sinon": "^9.0.3",
+    "sinon": "^21.0.3",
     "tempy": "^0.7.1",
     "type-fest": "^3.13.1",
     "typescript": "^4.9.5",
