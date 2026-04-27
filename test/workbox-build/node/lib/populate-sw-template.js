@@ -26,7 +26,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function () {
           renderString() {
             throw new Error();
           }
-        }
+        },
       },
     });
 
@@ -43,7 +43,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function () {
       'eta': {
         Eta: class {
           renderString() {}
-        }
+        },
       },
     });
 
@@ -71,7 +71,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function () {
           constructor() {
             this.renderString = renderStringStub;
           }
-        }
+        },
       },
       './runtime-caching-converter': {
         runtimeCachingConverter: () => runtimeCachingPlaceholder,
@@ -137,7 +137,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function () {
           constructor() {
             this.renderString = renderStringStub;
           }
-        }
+        },
       },
       './runtime-caching-converter': {
         runtimeCachingConverter: () => runtimeCachingPlaceholder,
@@ -213,7 +213,7 @@ describe(`[workbox-build] lib/populate-sw-template.js`, function () {
           constructor() {
             this.renderString = renderStringStub;
           }
-        }
+        },
       },
       './runtime-caching-converter': {
         runtimeCachingConverter: () => runtimeCachingPlaceholder,
