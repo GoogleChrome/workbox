@@ -77,7 +77,7 @@ export function populateSWTemplate({
   const moduleRegistry = new ModuleRegistry();
 
   try {
-    const populatedTemplate = eta.renderString(swTemplate)({
+    const populatedTemplate = eta.renderString(swTemplate, {
       cacheId,
       cleanupOutdatedCaches,
       clientsClaim,
