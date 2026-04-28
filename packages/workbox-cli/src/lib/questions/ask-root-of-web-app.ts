@@ -8,7 +8,7 @@
 
 import assert from 'assert';
 import fse from 'fs-extra';
-import {glob} from 'glob';
+import {glob} from 'tinyglobby';
 import inquirer from 'inquirer';
 import {oneLine as ol} from 'common-tags';
 
