@@ -825,7 +825,7 @@ describe(`[workbox-webpack-plugin] InjectManifest with webpack v5`, function () 
           webpackBuildCheck(webpackError, stats);
 
           const files = await globby('**', {cwd: outputDir});
-          expect(files).to.have.length(4);
+          expect(files).to.have.length(3);
 
           await validateServiceWorkerRuntime({
             swFile,
