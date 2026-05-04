@@ -740,13 +740,13 @@
         "byteLength": {
           "type": "number"
         },
-        "__@toStringTag@34": {
+        "__@toStringTag@32": {
           "type": "string"
         }
       },
       "additionalProperties": false,
       "required": [
-        "__@toStringTag@34",
+        "__@toStringTag@32",
         "byteLength"
       ]
     },
@@ -786,18 +786,18 @@
         "byteLength": {
           "type": "number"
         },
-        "__@species@494": {
+        "__@species@492": {
           "$ref": "#/definitions/SharedArrayBuffer"
         },
-        "__@toStringTag@34": {
+        "__@toStringTag@32": {
           "type": "string",
           "const": "SharedArrayBuffer"
         }
       },
       "additionalProperties": false,
       "required": [
-        "__@species@494",
-        "__@toStringTag@34",
+        "__@species@492",
+        "__@toStringTag@32",
         "byteLength"
       ]
     },
