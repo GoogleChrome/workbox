@@ -18,17 +18,17 @@ export const swTemplate = `/**
  * See https://goo.gl/2aRDsh
  */
 
-<% if (importScripts) { %>
+<% if (it.importScripts) { %>
 importScripts(
-  <%= importScripts.map(JSON.stringify).join(',\\n  ') %>
+  <%= it.importScripts.map(JSON.stringify).join(',\\n  ') %>
 );
 <% } %>
 
-<% if (navigationPreload) { %><%= use('workbox-navigation-preload', 'enable') %>();<% } %>
+<% if (it.navigationPreload) { %><%= it.use('workbox-navigation-preload', 'enable') %>();<% } %>
 
-<% if (cacheId) { %><%= use('workbox-core', 'setCacheNameDetails') %>({prefix: <%= JSON.stringify(cacheId) %>});<% } %>
+<% if (it.cacheId) { %><%= it.use('workbox-core', 'setCacheNameDetails') %>({prefix: <%= JSON.stringify(it.cacheId) %>});<% } %>
 
-<% if (skipWaiting) { %>
+<% if (it.skipWaiting) { %>
 self.skipWaiting();
 <% } else { %>
 self.addEventListener('message', (event) => {
@@ -37,24 +37,24 @@ self.addEventListener('message', (event) => {
   }
 });
 <% } %>
-<% if (clientsClaim) { %><%= use('workbox-core', 'clientsClaim') %>();<% } %>
+<% if (it.clientsClaim) { %><%= it.use('workbox-core', 'clientsClaim') %>();<% } %>
 
-<% if (Array.isArray(manifestEntries) && manifestEntries.length > 0) {%>
+<% if (Array.isArray(it.manifestEntries) && it.manifestEntries.length > 0) {%>
 /**
  * The precacheAndRoute() method efficiently caches and responds to
  * requests for URLs in the manifest.
  * See https://goo.gl/S9QRab
  */
-<%= use('workbox-precaching', 'precacheAndRoute') %>(<%= JSON.stringify(manifestEntries, null, 2) %>, <%= precacheOptionsString %>);
-<% if (cleanupOutdatedCaches) { %><%= use('workbox-precaching', 'cleanupOutdatedCaches') %>();<% } %>
-<% if (navigateFallback) { %><%= use('workbox-routing', 'registerRoute') %>(new <%= use('workbox-routing', 'NavigationRoute') %>(<%= use('workbox-precaching', 'createHandlerBoundToURL') %>(<%= JSON.stringify(navigateFallback) %>)<% if (navigateFallbackAllowlist || navigateFallbackDenylist) { %>, {
-  <% if (navigateFallbackAllowlist) { %>allowlist: [<%= navigateFallbackAllowlist %>],<% } %>
-  <% if (navigateFallbackDenylist) { %>denylist: [<%= navigateFallbackDenylist %>],<% } %>
+<%= it.use('workbox-precaching', 'precacheAndRoute') %>(<%= JSON.stringify(it.manifestEntries, null, 2) %>, <%= it.precacheOptionsString %>);
+<% if (it.cleanupOutdatedCaches) { %><%= it.use('workbox-precaching', 'cleanupOutdatedCaches') %>();<% } %>
+<% if (it.navigateFallback) { %><%= it.use('workbox-routing', 'registerRoute') %>(new <%= it.use('workbox-routing', 'NavigationRoute') %>(<%= it.use('workbox-precaching', 'createHandlerBoundToURL') %>(<%= JSON.stringify(it.navigateFallback) %>)<% if (it.navigateFallbackAllowlist || it.navigateFallbackDenylist) { %>, {
+  <% if (it.navigateFallbackAllowlist) { %>allowlist: [<%= it.navigateFallbackAllowlist %>],<% } %>
+  <% if (it.navigateFallbackDenylist) { %>denylist: [<%= it.navigateFallbackDenylist %>],<% } %>
 }<% } %>));<% } %>
 <% } %>
 
-<% if (runtimeCaching) { runtimeCaching.forEach(runtimeCachingString => {%><%= runtimeCachingString %><% });} %>
+<% if (it.runtimeCaching) { it.runtimeCaching.forEach(runtimeCachingString => {%><%= runtimeCachingString %><% });} %>
 
-<% if (offlineAnalyticsConfigString) { %><%= use('workbox-google-analytics', 'initialize') %>(<%= offlineAnalyticsConfigString %>);<% } %>
+<% if (it.offlineAnalyticsConfigString) { %><%= it.use('workbox-google-analytics', 'initialize') %>(<%= it.offlineAnalyticsConfigString %>);<% } %>
 
-<% if (disableDevLogs) { %>self.__WB_DISABLE_DEV_LOGS = true;<% } %>`;
+<% if (it.disableDevLogs) { %>self.__WB_DISABLE_DEV_LOGS = true;<% } %>`;
