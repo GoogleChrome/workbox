@@ -56,6 +56,9 @@ function calculateEffectiveBoundaries(
   } else if (end !== undefined && start === undefined) {
     effectiveStart = blobSize - end;
     effectiveEnd = blobSize;
+  } else {
+    effectiveStart = 0;
+    effectiveEnd = blobSize;
   }
 
   return {

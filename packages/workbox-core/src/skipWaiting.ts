@@ -14,7 +14,7 @@ import './_version.js';
 declare let self: ServiceWorkerGlobalScope;
 
 /**
- * This method is deprecated, and will be removed in Workbox v7.
+ * This method is deprecated, and will be removed in a future version of Workbox.
  *
  * Calling self.skipWaiting() is equivalent, and should be used instead.
  *
@@ -26,7 +26,7 @@ function skipWaiting(): void {
   if (process.env.NODE_ENV !== 'production') {
     logger.warn(
       `skipWaiting() from workbox-core is no longer recommended ` +
-        `and will be removed in Workbox v7. Using self.skipWaiting() instead ` +
+        `and will be removed in a future version of Workbox. Using self.skipWaiting() instead ` +
         `is equivalent.`,
     );
   }
