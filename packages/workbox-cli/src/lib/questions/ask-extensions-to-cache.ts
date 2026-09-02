@@ -9,7 +9,7 @@
 import assert from 'assert';
 import {Answers} from 'inquirer';
 import inquirer from 'inquirer';
-import {glob} from 'glob';
+import {glob} from 'tinyglobby';
 import ora from 'ora';
 import upath from 'upath';
 
