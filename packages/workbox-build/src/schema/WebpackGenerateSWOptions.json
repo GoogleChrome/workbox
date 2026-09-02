@@ -127,7 +127,7 @@
       "type": "boolean"
     },
     "navigateFallback": {
-      "description": "If specified, all\n[navigation requests](https://developers.google.com/web/fundamentals/primers/service-workers/high-performance-loading#first_what_are_navigation_requests)\nfor URLs that aren't precached will be fulfilled with the HTML at the URL\nprovided. You must pass in the URL of an HTML document that is listed in\nyour precache manifest. This is meant to be used in a Single Page App\nscenario, in which you want all navigations to use common\n[App Shell HTML](https://developers.google.com/web/fundamentals/architecture/app-shell).",
+      "description": "If specified, all\n[navigation requests](https://web.dev/articles/handling-navigation-requests)\nfor URLs that aren't precached will be fulfilled with the HTML at the URL\nprovided. You must pass in the URL of an HTML document that is listed in\nyour precache manifest. This is meant to be used in a Single Page App\nscenario, in which you want all navigations to use common\n[App Shell HTML](https://developers.google.com/web/fundamentals/architecture/app-shell).",
       "default": null,
       "type": [
         "null",

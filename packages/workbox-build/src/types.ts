@@ -263,7 +263,7 @@ export interface GeneratePartial {
   mode?: string | null;
   /**
    * If specified, all
-   * [navigation requests](https://developers.google.com/web/fundamentals/primers/service-workers/high-performance-loading#first_what_are_navigation_requests)
+   * [navigation requests](https://web.dev/articles/handling-navigation-requests)
    * for URLs that aren't precached will be fulfilled with the HTML at the URL
    * provided. You must pass in the URL of an HTML document that is listed in
    * your precache manifest. This is meant to be used in a Single Page App
