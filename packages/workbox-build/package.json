@@ -24,9 +24,9 @@
   "homepage": "https://github.com/GoogleChrome/workbox",
   "dependencies": {
     "@apideck/better-ajv-errors": "^0.3.1",
-    "@babel/core": "^8.0.1",
-    "@babel/preset-env": "^8.0.2",
-    "@babel/runtime": "^8.0.0",
+    "@babel/core": "^7.24.4",
+    "@babel/preset-env": "^7.11.0",
+    "@babel/runtime": "^7.27.1",
     "@rollup/plugin-babel": "^7.1.0",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-replace": "^6.0.3",

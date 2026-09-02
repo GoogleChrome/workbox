@@ -6,8 +6,8 @@
   "description": "Top-level scripts and dependencies for the workbox monorepo. Not meant to be published to npm.",
   "devDependencies": {
     "@babel/cli": "^7.24.1",
-    "@babel/core": "^8.0.1",
-    "@babel/preset-env": "^8.0.2",
+    "@babel/core": "^7.24.4",
+    "@babel/preset-env": "^7.11.0",
     "@google-cloud/storage": "^5.20.5",
     "@octokit/rest": "^19.0.13",
     "@rollup/plugin-babel": "^7.1.0",
