@@ -554,8 +554,8 @@ class Workbox extends WorkboxEventTarget {
    * @param {Event} originalEvent
    */
   private readonly _onControllerChange = (originalEvent: Event) => {
-    const sw = this._sw;
-    const isExternal = sw !== navigator.serviceWorker.controller;
+    const sw = navigator.serviceWorker.controller ?? undefined;
+    const isExternal = sw !== this._sw;
 
     // Unconditionally dispatch the controlling event, with isExternal set
     // to distinguish between controller changes due to the initial registration
@@ -574,7 +574,7 @@ class Workbox extends WorkboxEventTarget {
       if (process.env.NODE_ENV !== 'production') {
         logger.log('Registered service worker now controlling this page.');
       }
-      this._controllingDeferred.resolve(sw);
+      this._controllingDeferred.resolve(sw!);
     }
   };
 
