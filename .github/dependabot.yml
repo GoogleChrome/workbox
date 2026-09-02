@@ -12,6 +12,8 @@ updates:
         dependency-type: 'production'
       devDependencies:
         dependency-type: 'development'
+    cooldown:
+      default-days: 14
 
   - package-ecosystem: 'github-actions'
     directory: '/'
