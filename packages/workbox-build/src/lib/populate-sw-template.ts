@@ -16,7 +16,6 @@ import {stringifyWithoutComments} from './stringify-without-comments';
 import {swTemplate} from '../templates/sw-template';
 
 const eta = new Eta({
-  useWith: true,
   autoEscape: false,
 })
 
