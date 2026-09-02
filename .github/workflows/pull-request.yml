@@ -2,6 +2,9 @@ name: Test Suite
 
 on: [pull_request]
 
+permissions:
+  contents: read
+
 jobs:
   Node_Tests_Windows:
     runs-on: windows-latest
