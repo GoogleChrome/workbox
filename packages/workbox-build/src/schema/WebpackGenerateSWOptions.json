@@ -611,9 +611,6 @@
               "$ref": "#/definitions/ArrayBufferView"
             },
             {
-              "$ref": "#/definitions/ReadableStream<any>"
-            },
-            {
               "$ref": "#/definitions/Blob"
             },
             {
@@ -621,6 +618,9 @@
             },
             {
               "$ref": "#/definitions/URLSearchParams"
+            },
+            {
+              "$ref": "#/definitions/ReadableStream<any>"
             },
             {
               "type": [
@@ -740,13 +740,13 @@
         "byteLength": {
           "type": "number"
         },
-        "__@toStringTag@32": {
+        "__@toStringTag@569": {
           "type": "string"
         }
       },
       "additionalProperties": false,
       "required": [
-        "__@toStringTag@32",
+        "__@toStringTag@569",
         "byteLength"
       ]
     },
@@ -786,31 +786,19 @@
         "byteLength": {
           "type": "number"
         },
-        "__@species@492": {
+        "__@species@1063": {
           "$ref": "#/definitions/SharedArrayBuffer"
         },
-        "__@toStringTag@32": {
+        "__@toStringTag@569": {
           "type": "string",
           "const": "SharedArrayBuffer"
         }
       },
       "additionalProperties": false,
       "required": [
-        "__@species@492",
-        "__@toStringTag@32",
+        "__@species@1063",
+        "__@toStringTag@569",
         "byteLength"
-      ]
-    },
-    "ReadableStream<any>": {
-      "type": "object",
-      "properties": {
-        "locked": {
-          "type": "boolean"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "locked"
       ]
     },
     "Blob": {
@@ -844,6 +832,18 @@
       "additionalProperties": false,
       "required": [
         "size"
+      ]
+    },
+    "ReadableStream<any>": {
+      "type": "object",
+      "properties": {
+        "locked": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "locked"
       ]
     },
     "Record<string,string>": {
