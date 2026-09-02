@@ -56,6 +56,7 @@ const {RawSource} = webpack.sources || require('webpack-sources');
 class InjectManifest {
   protected config: WebpackInjectManifestOptions;
   private alreadyCalled: boolean;
+  private alreadyWarned: boolean;
 
   /**
    * Creates an instance of InjectManifest.
@@ -63,6 +64,7 @@ class InjectManifest {
   constructor(config: WebpackInjectManifestOptions) {
     this.config = config;
     this.alreadyCalled = false;
+    this.alreadyWarned = false;
   }
 
   /**
@@ -260,23 +262,26 @@ class InjectManifest {
   async addAssets(compilation: webpack.Compilation): Promise<void> {
     // See https://github.com/GoogleChrome/workbox/issues/1790
     if (this.alreadyCalled) {
-      const warningMessage =
+      if(!this.alreadyWarned) {
+        const warningMessage =
         `${this.constructor.name} has been called ` +
         `multiple times, perhaps due to running webpack in --watch mode. The ` +
         `precache manifest generated after the first call may be inaccurate! ` +
         `Please see https://github.com/GoogleChrome/workbox/issues/1790 for ` +
         `more information.`;
 
-      if (
-        !compilation.warnings.some(
-          (warning) =>
-            warning instanceof Error && warning.message === warningMessage,
-        )
-      ) {
-        compilation.warnings.push(
-          new Error(warningMessage) as webpack.WebpackError,
-        );
-      }
+        if (
+          !compilation.warnings.some(
+            (warning) =>
+              warning instanceof Error && warning.message === warningMessage,
+          )
+        ) {
+          compilation.warnings.push(
+            new Error(warningMessage) as webpack.WebpackError,
+          );
+          this.alreadyWarned = true;
+        }
+      }      
     } else {
       this.alreadyCalled = true;
     }
@@ -368,4 +373,4 @@ class InjectManifest {
   }
 }
 
-export {InjectManifest};
+export { InjectManifest };

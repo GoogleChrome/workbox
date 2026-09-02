@@ -71,6 +71,7 @@ export interface GenerateSWConfig extends WebpackGenerateSWOptions {
 class GenerateSW {
   protected config: GenerateSWConfig;
   private alreadyCalled: boolean;
+  private alreadyWarned: boolean;
 
   /**
    * Creates an instance of GenerateSW.
@@ -78,6 +79,7 @@ class GenerateSW {
   constructor(config: GenerateSWConfig = {}) {
     this.config = config;
     this.alreadyCalled = false;
+    this.alreadyWarned = false;
   }
 
   /**
@@ -147,22 +149,25 @@ class GenerateSW {
   async addAssets(compilation: webpack.Compilation): Promise<void> {
     // See https://github.com/GoogleChrome/workbox/issues/1790
     if (this.alreadyCalled) {
-      const warningMessage =
-        `${this.constructor.name} has been called ` +
-        `multiple times, perhaps due to running webpack in --watch mode. The ` +
-        `precache manifest generated after the first call may be inaccurate! ` +
-        `Please see https://github.com/GoogleChrome/workbox/issues/1790 for ` +
-        `more information.`;
+      if(!this.alreadyWarned) {
+        const warningMessage =
+          `${this.constructor.name} has been called ` +
+          `multiple times, perhaps due to running webpack in --watch mode. The ` +
+          `precache manifest generated after the first call may be inaccurate! ` +
+          `Please see https://github.com/GoogleChrome/workbox/issues/1790 for ` +
+          `more information.`;
 
-      if (
-        !compilation.warnings.some(
-          (warning) =>
-            warning instanceof Error && warning.message === warningMessage,
-        )
-      ) {
-        compilation.warnings.push(
-          Error(warningMessage) as webpack.WebpackError,
-        );
+        if (
+          !compilation.warnings.some(
+            (warning) =>
+              warning instanceof Error && warning.message === warningMessage,
+          )
+        ) {
+          compilation.warnings.push(
+            Error(warningMessage) as webpack.WebpackError,
+          );
+          this.alreadyWarned = true;
+        }
       }
     } else {
       this.alreadyCalled = true;
