@@ -6,7 +6,10 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {PrecacheController} from '../PrecacheController.js';
+import {
+  PrecacheController,
+  PrecacheControllerOptions,
+} from '../PrecacheController.js';
 import '../_version.js';
 
 let precacheController: PrecacheController | undefined;
@@ -15,9 +18,11 @@ let precacheController: PrecacheController | undefined;
  * @return {PrecacheController}
  * @private
  */
-export const getOrCreatePrecacheController = (): PrecacheController => {
+export const getOrCreatePrecacheController = (
+  options?: PrecacheControllerOptions,
+): PrecacheController => {
   if (!precacheController) {
-    precacheController = new PrecacheController();
+    precacheController = new PrecacheController(options);
   }
   return precacheController;
 };
