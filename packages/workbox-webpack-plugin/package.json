@@ -22,9 +22,9 @@
   },
   "dependencies": {
     "fast-json-stable-stringify": "^2.1.0",
-    "pretty-bytes": "^5.4.1",
-    "upath": "^1.2.0",
-    "webpack-sources": "^1.4.3",
+    "pretty-bytes": "^7.1.1",
+    "upath": "^3.0.8",
+    "webpack-sources": "^3.5.1",
     "workbox-build": "7.4.1"
   },
   "peerDependencies": {
