@@ -834,7 +834,11 @@ describe(`PrecacheController`, function () {
         activateEvent,
       );
       expect(cleanupDetailsTwo.deletedURLs.length).to.equal(1);
+      expect(cleanupDetailsTwo.deletedCacheRequests.length).to.equal(1);
       expect(cleanupDetailsTwo.deletedURLs[0]).to.eql(
+        `${location.origin}/scripts/index.js?__WB_REVISION__=1234`,
+      );
+      expect(cleanupDetailsTwo.deletedCacheRequests[0]).to.eql(
         `${location.origin}/scripts/index.js?__WB_REVISION__=1234`,
       );
 
@@ -891,6 +895,10 @@ describe(`PrecacheController`, function () {
         activateEvent,
       );
       expect(cleanupDetailsTwo.deletedURLs).to.have.members([
+        `${location.origin}/index.1234.html`,
+        `${location.origin}/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=1234`,
+      ]);
+      expect(cleanupDetailsTwo.deletedCacheRequests).to.have.members([
         `${location.origin}/index.1234.html`,
         `${location.origin}/scripts/stress.js?test=search&foo=bar&__WB_REVISION__=1234`,
       ]);

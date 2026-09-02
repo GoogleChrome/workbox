@@ -264,7 +264,10 @@ class PrecacheController {
         printCleanupDetails(deletedURLs);
       }
 
-      return {deletedURLs};
+      return {
+        deletedURLs,
+        deletedCacheRequests: deletedURLs,
+      };
     });
   }
 
