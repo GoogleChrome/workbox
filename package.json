@@ -58,7 +58,7 @@
     "html-webpack-plugin-v4": "npm:html-webpack-plugin@^4.5.0",
     "html-webpack-plugin-v5": "npm:html-webpack-plugin@^5.0.0-alpha.14",
     "husky": "^7.0.4",
-    "idb": "^8.0.3",
+    "idb": "^7.0.2",
     "jsdoc": "^3.6.11",
     "jsdoc-baseline": "^0.1.5",
     "lerna": "^5.6.2",
