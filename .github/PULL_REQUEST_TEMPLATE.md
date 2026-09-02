@@ -1,4 +1,4 @@
-**Prior to creating a pull request, please follow all the steps in the [contributing guide](https://github.com/GoogleChrome/workbox/blob/v6/CONTRIBUTING.md).**
+**Prior to creating a pull request, please follow all the steps in the [contributing guide](https://github.com/GoogleChrome/workbox/blob/v7/CONTRIBUTING.md).**
 
 Fixes #_issue number_
 
