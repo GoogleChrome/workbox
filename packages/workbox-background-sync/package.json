@@ -28,5 +28,6 @@
   "types": "index.d.ts",
   "dependencies": {
     "idb": "^7.0.2",
+    "workbox-core": "7.4.1"
   }
 }
