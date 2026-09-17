@@ -226,5 +226,29 @@ describe(`StaleWhileRevalidate`, function () {
 
       await eventDoneWaiting(event);
     });
+
+    it(`should include the network error in the 'no-response' error`, async function () {
+      const injectedError = new Error('Injected error.');
+      sandbox.stub(self, 'fetch').rejects(injectedError);
+
+      const request = new Request('http://example.io/test/');
+      const event = new FetchEvent('fetch', {request});
+      spyOnEvent(event);
+
+      const staleWhileRevalidate = new StaleWhileRevalidate();
+      await expectError(
+        () =>
+          staleWhileRevalidate.handle({
+            request,
+            event,
+          }),
+        'no-response',
+        (err) => {
+          expect(err.details.error).to.equal(injectedError);
+        },
+      );
+
+      await eventDoneWaiting(event);
+    });
   });
 });
