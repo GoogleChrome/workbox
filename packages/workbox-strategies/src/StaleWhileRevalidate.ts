@@ -80,15 +80,21 @@ class StaleWhileRevalidate extends Strategy {
       });
     }
 
-    const fetchAndCachePromise = handler.fetchAndCachePut(request).catch(() => {
-      // Swallow this error because a 'no-response' error will be thrown in
-      // main handler return flow. This will be in the `waitUntil()` flow.
-    });
+    let error: Error | undefined = undefined;
+    const fetchAndCachePromise = handler
+      .fetchAndCachePut(request)
+      .catch((err) => {
+        // Swallow this error because a 'no-response' error will be thrown in
+        // main handler return flow. This will be in the `waitUntil()` flow.
+        // Keep a reference to it so the thrown error can report what went wrong.
+        if (err instanceof Error) {
+          error = err;
+        }
+      });
     void handler.waitUntil(fetchAndCachePromise);
 
     let response = await handler.cacheMatch(request);
 
-    let error;
     if (response) {
       if (process.env.NODE_ENV !== 'production') {
         logs.push(
@@ -103,15 +109,9 @@ class StaleWhileRevalidate extends Strategy {
             `Will wait for the network response.`,
         );
       }
-      try {
-        // NOTE(philipwalton): Really annoying that we have to type cast here.
-        // https://github.com/microsoft/TypeScript/issues/20006
-        response = (await fetchAndCachePromise) as Response | undefined;
-      } catch (err) {
-        if (err instanceof Error) {
-          error = err;
-        }
-      }
+      // NOTE(philipwalton): Really annoying that we have to type cast here.
+      // https://github.com/microsoft/TypeScript/issues/20006
+      response = (await fetchAndCachePromise) as Response | undefined;
     }
 
     if (process.env.NODE_ENV !== 'production') {
