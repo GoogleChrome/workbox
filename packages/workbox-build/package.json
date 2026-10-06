@@ -31,7 +31,7 @@
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-replace": "^6.0.3",
     "@rollup/plugin-terser": "^1.0.0",
-    "@trickfilm400/rollup-plugin-off-main-thread": "^4.0.0-pre2",
+    "@trickfilm400/rollup-plugin-off-main-thread": "^4.0.0-pre3",
     "ajv": "^8.6.0",
     "common-tags": "^1.8.0",
     "eta": "^4.5.1",
