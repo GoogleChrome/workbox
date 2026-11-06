@@ -565,7 +565,7 @@ class StrategyHandler {
       const result = await Promise.allSettled(promises);
       const firstRejection = result.find((i) => i.status === 'rejected');
       if (firstRejection) {
-        throw (firstRejection as PromiseRejectedResult).reason;
+        throw firstRejection.reason;
       }
     }
   }

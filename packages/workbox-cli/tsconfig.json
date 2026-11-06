@@ -2,7 +2,8 @@
   "extends": "../../tsconfig",
   "compilerOptions": {
     "esModuleInterop": true,
-    "module": "CommonJS",
+    "module": "node20",
+    "moduleResolution": "node16",
     "outDir": "build",
     "rootDir": "src",
     "target": "ES2018",
