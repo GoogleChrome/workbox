@@ -575,10 +575,10 @@ export type BuildType = 'dev' | 'prod';
 /**
  * @private
  */
-export interface WorkboxPackageJSON extends PackageJson {
+export type WorkboxPackageJSON = PackageJson & {
   workbox?: {
     browserNamespace?: string;
     packageType?: string;
     prodOnly?: boolean;
   };
-}
+};

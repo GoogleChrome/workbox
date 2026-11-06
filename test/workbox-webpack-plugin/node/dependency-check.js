@@ -23,7 +23,6 @@ describe(`[workbox-webpack-plugin] Test Dependencies`, function () {
         ),
         {
           ignoreDirs: ['test', 'build', 'demo'],
-          ignoreMatches: ['@babel/runtime'],
         },
         (unusedDeps) => {
           if (unusedDeps.dependencies.length > 0) {
