@@ -6,6 +6,7 @@
     "start": "node updateServer.js"
   },
   "dependencies": {
+    "body-parser": "^1.20.2",
     "express": "^4.17.1"
   },
   "engines": {

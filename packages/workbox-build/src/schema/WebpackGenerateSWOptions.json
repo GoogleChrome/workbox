@@ -250,6 +250,9 @@
         },
         "hasIndices": {
           "type": "boolean"
+        },
+        "unicodeSets": {
+          "type": "boolean"
         }
       },
       "additionalProperties": false,
@@ -263,7 +266,8 @@
         "multiline",
         "source",
         "sticky",
-        "unicode"
+        "unicode",
+        "unicodeSets"
       ]
     },
     "GoogleAnalyticsInitializeOptions": {
@@ -608,9 +612,6 @@
               "$ref": "#/definitions/ArrayBuffer"
             },
             {
-              "$ref": "#/definitions/ArrayBufferView"
-            },
-            {
               "$ref": "#/definitions/Blob"
             },
             {
@@ -620,7 +621,10 @@
               "$ref": "#/definitions/URLSearchParams"
             },
             {
-              "$ref": "#/definitions/ReadableStream<any>"
+              "$ref": "#/definitions/ArrayBufferView%3CArrayBuffer%3E"
+            },
+            {
+              "$ref": "#/definitions/ReadableStream%3Cany%3E"
             },
             {
               "type": [
@@ -652,7 +656,7 @@
         "headers": {
           "anyOf": [
             {
-              "$ref": "#/definitions/Record<string,string>"
+              "$ref": "#/definitions/Record%3Cstring%2Cstring%3E"
             },
             {
               "type": "array",
@@ -690,6 +694,14 @@
             "navigate",
             "no-cors",
             "same-origin"
+          ],
+          "type": "string"
+        },
+        "priority": {
+          "enum": [
+            "auto",
+            "high",
+            "low"
           ],
           "type": "string"
         },
@@ -740,65 +752,27 @@
         "byteLength": {
           "type": "number"
         },
-        "__@toStringTag@569": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "__@toStringTag@569",
-        "byteLength"
-      ]
-    },
-    "ArrayBufferView": {
-      "type": "object",
-      "properties": {
-        "buffer": {
-          "$ref": "#/definitions/ArrayBufferLike"
-        },
-        "byteLength": {
+        "maxByteLength": {
           "type": "number"
         },
-        "byteOffset": {
-          "type": "number"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "buffer",
-        "byteLength",
-        "byteOffset"
-      ]
-    },
-    "ArrayBufferLike": {
-      "anyOf": [
-        {
-          "$ref": "#/definitions/ArrayBuffer"
+        "resizable": {
+          "type": "boolean"
         },
-        {
-          "$ref": "#/definitions/SharedArrayBuffer"
-        }
-      ]
-    },
-    "SharedArrayBuffer": {
-      "type": "object",
-      "properties": {
-        "byteLength": {
-          "type": "number"
+        "detached": {
+          "type": "boolean"
         },
-        "__@species@1063": {
-          "$ref": "#/definitions/SharedArrayBuffer"
-        },
-        "__@toStringTag@569": {
+        "__@toStringTag@522": {
           "type": "string",
-          "const": "SharedArrayBuffer"
+          "const": "ArrayBuffer"
         }
       },
       "additionalProperties": false,
       "required": [
-        "__@species@1063",
-        "__@toStringTag@569",
-        "byteLength"
+        "__@toStringTag@522",
+        "byteLength",
+        "detached",
+        "maxByteLength",
+        "resizable"
       ]
     },
     "Blob": {
@@ -825,13 +799,32 @@
       "type": "object",
       "properties": {
         "size": {
-          "description": "The total number of parameter entries.",
           "type": "number"
         }
       },
       "additionalProperties": false,
       "required": [
         "size"
+      ]
+    },
+    "ArrayBufferView<ArrayBuffer>": {
+      "type": "object",
+      "properties": {
+        "buffer": {
+          "$ref": "#/definitions/ArrayBuffer"
+        },
+        "byteLength": {
+          "type": "number"
+        },
+        "byteOffset": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "buffer",
+        "byteLength",
+        "byteOffset"
       ]
     },
     "ReadableStream<any>": {

@@ -157,6 +157,9 @@
         },
         "hasIndices": {
           "type": "boolean"
+        },
+        "unicodeSets": {
+          "type": "boolean"
         }
       },
       "additionalProperties": false,
@@ -170,7 +173,8 @@
         "multiline",
         "source",
         "sticky",
-        "unicode"
+        "unicode",
+        "unicodeSets"
       ]
     }
   },
