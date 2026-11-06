@@ -7,7 +7,6 @@
 */
 
 const {series} = require('gulp');
-const execa = require('execa');
 const fse = require('fs-extra');
 const upath = require('upath');
 
@@ -15,7 +14,6 @@ const {build_packages} = require('./build-packages');
 
 // This is needed for workbox-build but is also used by the rollup-helper
 // to add CDN details to workbox-sw.
-// Make sure this runs **before** build_lerna_bootstrap.
 async function build_update_cdn_details() {
   const cdnDetails = await fse.readJSON(
     upath.join(__dirname, '..', 'cdn-details.json'),
@@ -45,14 +43,6 @@ async function build_update_cdn_details() {
   });
 }
 
-async function build_lerna_bootstrap() {
-  await execa('lerna', ['bootstrap'], {preferLocal: true});
-}
-
 module.exports = {
-  build: series(
-    build_update_cdn_details,
-    build_lerna_bootstrap,
-    build_packages,
-  ),
+  build: series(build_update_cdn_details, build_packages),
 };

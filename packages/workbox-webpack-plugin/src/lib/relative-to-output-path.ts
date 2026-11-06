@@ -24,7 +24,7 @@ export function relativeToOutputPath(
 ): string {
   // See https://github.com/jantimon/html-webpack-plugin/pull/266/files#diff-168726dbe96b3ce427e7fedce31bb0bcR38
   if (upath.resolve(swDest) === upath.normalize(swDest)) {
-    return upath.relative(compilation.options.output.path!, swDest);
+    return upath.relative(compilation.options.output.path, swDest);
   }
 
   // Otherwise, return swDest as-is.
