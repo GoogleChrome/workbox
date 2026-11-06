@@ -9,7 +9,7 @@
 import assert from 'assert';
 import fse from 'fs-extra';
 import {glob} from 'glob';
-import inquirer from 'inquirer';
+import inquirer, {Answers} from 'inquirer';
 import {oneLine as ol} from 'common-tags';
 
 import {errors} from '../errors';
@@ -46,7 +46,7 @@ async function askQuestion(): Promise<{
     return inquirer.prompt([
       {
         name: questionRootDirectory,
-        type: 'list',
+        type: 'select',
         message: ol`What is the root of your web app (i.e. which directory do
         you deploy)?`,
         choices: subdirectories.concat([
@@ -56,9 +56,10 @@ async function askQuestion(): Promise<{
       },
       {
         name: questionManualInput,
-        when: (answers: {globDirectory: string}) =>
-          answers.globDirectory === manualEntryChoice,
+        when: (answers: Answers) =>
+          answers[questionRootDirectory] === manualEntryChoice,
         message: ROOT_PROMPT,
+        type: 'input',
       },
     ]);
   }
@@ -67,6 +68,7 @@ async function askQuestion(): Promise<{
     {
       name: questionRootDirectory,
       message: ROOT_PROMPT,
+      type: 'input',
       default: '.',
     },
   ]);

@@ -7,7 +7,7 @@
 */
 
 import assert from 'assert';
-import inquirer from 'inquirer';
+import inquirer, {Answers} from 'inquirer';
 import {oneLine as ol} from 'common-tags';
 
 import {errors} from '../errors';
@@ -39,8 +39,8 @@ async function askQuestion(): Promise<{
     },
     {
       name: question_ignoreURLParametersMatching,
-      when: (answer: {shouldAskForIgnoreURLParametersMatching: boolean}) =>
-        answer.shouldAskForIgnoreURLParametersMatching,
+      when: (answers: Answers) =>
+        Boolean(answers[question_shouldAskForIgnoreURLParametersMatching]),
       message: START_URL_QUERY_PARAMS_PROMPT,
       type: 'input',
     },

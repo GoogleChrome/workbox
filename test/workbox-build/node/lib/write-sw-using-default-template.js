@@ -20,7 +20,10 @@ describe(`[workbox-build] lib/write-sw-using-default-template.js`, function () {
   it(`should reject with an error when fs-extra.mkdirp() fails`, async function () {
     const {writeSWUsingDefaultTemplate} = proxyquire(MODULE_PATH, {
       'upath': {
-        dirname: () => 'ignored',
+        default: {
+          dirname: () => 'ignored',
+          resolve: (path) => path,
+        },
       },
       'fs-extra': {
         mkdirp: () => Promise.reject(new Error()),
@@ -40,7 +43,10 @@ describe(`[workbox-build] lib/write-sw-using-default-template.js`, function () {
   it(`should reject with an error when fs-extra.writeFile() fails`, async function () {
     const {writeSWUsingDefaultTemplate} = proxyquire(MODULE_PATH, {
       'upath': {
-        dirname: () => 'ignored',
+        default: {
+          dirname: () => 'ignored',
+          resolve: (path) => path,
+        },
       },
       'fs-extra': {
         mkdirp: () => Promise.resolve(),
@@ -62,7 +68,10 @@ describe(`[workbox-build] lib/write-sw-using-default-template.js`, function () {
 
     const {writeSWUsingDefaultTemplate} = proxyquire(MODULE_PATH, {
       'upath': {
-        dirname: () => 'ignored',
+        default: {
+          dirname: () => 'ignored',
+          resolve: (path) => path,
+        },
       },
       'fs-extra': {
         mkdirp: () => Promise.resolve(),

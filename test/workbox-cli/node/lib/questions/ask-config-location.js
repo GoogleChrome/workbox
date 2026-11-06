@@ -23,7 +23,9 @@ describe(`[workbox-cli] lib/questions/ask-config-location.js`, function () {
   it(`should reject with a 'invalid-config-location' error when the answer is an empty string`, async function () {
     const {askConfigLocation} = proxyquire(MODULE_PATH, {
       inquirer: {
-        prompt: () => Promise.resolve({[QUESTION_NAME]: ''}),
+        default: {
+          prompt: () => Promise.resolve({[QUESTION_NAME]: ''}),
+        },
       },
     });
 
@@ -39,7 +41,9 @@ describe(`[workbox-cli] lib/questions/ask-config-location.js`, function () {
     const expectedAnswer = 'expected answer';
     const {askConfigLocation} = proxyquire(MODULE_PATH, {
       inquirer: {
-        prompt: () => Promise.resolve({[QUESTION_NAME]: expectedAnswer}),
+        default: {
+          prompt: () => Promise.resolve({[QUESTION_NAME]: expectedAnswer}),
+        },
       },
     });
 

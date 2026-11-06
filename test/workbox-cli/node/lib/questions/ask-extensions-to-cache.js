@@ -51,7 +51,9 @@ describe(`[workbox-cli] lib/questions/ask-extensions-to-cache.js`, function () {
         glob: async () => [`file.${SINGLE_EXTENSION}`],
       },
       inquirer: {
-        prompt: () => Promise.resolve({[QUESTION_NAME]: []}),
+        default: {
+          prompt: () => Promise.resolve({[QUESTION_NAME]: []}),
+        },
       },
       ora: () => {
         return {
@@ -76,7 +78,9 @@ describe(`[workbox-cli] lib/questions/ask-extensions-to-cache.js`, function () {
         glob: () => [`file.${SINGLE_EXTENSION}`],
       },
       inquirer: {
-        prompt: () => Promise.resolve({[QUESTION_NAME]: [SINGLE_EXTENSION]}),
+        default: {
+          prompt: () => Promise.resolve({[QUESTION_NAME]: [SINGLE_EXTENSION]}),
+        },
       },
       ora: () => {
         return {
@@ -97,7 +101,9 @@ describe(`[workbox-cli] lib/questions/ask-extensions-to-cache.js`, function () {
         glob: () => MULTIPLE_EXTENSIONS.map((extension) => `file.${extension}`),
       },
       inquirer: {
-        prompt: () => Promise.resolve({[QUESTION_NAME]: MULTIPLE_EXTENSIONS}),
+        default: {
+          prompt: () => Promise.resolve({[QUESTION_NAME]: MULTIPLE_EXTENSIONS}),
+        },
       },
       ora: () => {
         return {
@@ -122,7 +128,9 @@ describe(`[workbox-cli] lib/questions/ask-extensions-to-cache.js`, function () {
         },
       },
       inquirer: {
-        prompt: () => Promise.resolve({[QUESTION_NAME]: MULTIPLE_EXTENSIONS}),
+        default: {
+          prompt: () => Promise.resolve({[QUESTION_NAME]: MULTIPLE_EXTENSIONS}),
+        },
       },
       ora: () => {
         return {

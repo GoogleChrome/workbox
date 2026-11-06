@@ -46,8 +46,10 @@ describe(`[workbox-build] lib/bundle`, function () {
         writeFile: sinon.stub().resolves(),
       },
       'upath': {
-        format: sinon.stub().callsFake((args) => `${args.dir}${args.base}`),
-        parse: sinon.stub().returns({base: 'sw.js', dir: ''}),
+        default: {
+          format: sinon.stub().callsFake((args) => `${args.dir}${args.base}`),
+          parse: sinon.stub().returns({base: 'sw.js', dir: ''}),
+        },
       },
       'tempy': {
         file: sinon.stub().returns('sw.js'),

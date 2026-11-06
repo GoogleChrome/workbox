@@ -9,6 +9,7 @@
 */
 
 import meow from 'meow';
+import {pathToFileURL} from 'url';
 import updateNotifier from 'update-notifier';
 
 import {app} from './app';
@@ -16,15 +17,28 @@ import {cleanupStackTrace} from './lib/cleanup-stack-trace.js';
 import {helpText} from './lib/help-text';
 import {logger} from './lib/logger';
 
-export interface SupportedFlags extends meow.AnyFlags {
-  debug: meow.BooleanFlag;
-  injectManifest: meow.BooleanFlag;
-  watch: meow.BooleanFlag;
+export interface SupportedFlags {
+  debug?: boolean;
+  injectManifest?: boolean;
+  watch?: boolean;
+}
+
+export interface CliParams {
+  input: Array<string>;
+  flags: SupportedFlags;
+  pkg: Record<string, unknown>;
+  showHelp: (exitCode?: number) => never;
 }
 
 void (async () => {
-  const params: meow.Result<any> = meow(helpText);
-  updateNotifier({pkg: params.pkg as updateNotifier.Package}).notify();
+  // meow needs to locate package.json, and import.meta isn't available in
+  // CommonJS, so pass the same information that it would contain.
+  const params = meow(helpText, {
+    importMeta: {url: pathToFileURL(__filename).href} as ImportMeta,
+  }) as unknown as CliParams;
+  updateNotifier({
+    pkg: params.pkg as unknown as updateNotifier.Package,
+  }).notify();
 
   try {
     await app(params);

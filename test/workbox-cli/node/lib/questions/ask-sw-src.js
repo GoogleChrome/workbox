@@ -20,7 +20,9 @@ describe(`[workbox-cli] lib/questions/ask-sw-src.js`, function () {
     const expectedAnswer = 'expected answer';
     const {askSWSrc} = proxyquire(MODULE_PATH, {
       inquirer: {
-        prompt: () => Promise.resolve({[QUESTION_NAME]: expectedAnswer}),
+        default: {
+          prompt: () => Promise.resolve({[QUESTION_NAME]: expectedAnswer}),
+        },
       },
     });
 

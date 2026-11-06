@@ -8,6 +8,7 @@
 
 const expect = require('chai').expect;
 const proxyquire = require('proxyquire');
+const upath = require('upath');
 
 const {errors} = require('../../../../packages/workbox-build/build/lib/errors');
 
@@ -70,7 +71,10 @@ describe(`[workbox-build] lib/translate-url-to-sourcemap-paths.ts`, function () 
         existsSync: () => true,
       },
       'upath': {
-        resolve: (...args) => args.join('/'),
+        default: {
+          dirname: upath.dirname,
+          resolve: (...args) => args.join('/'),
+        },
       },
     });
 

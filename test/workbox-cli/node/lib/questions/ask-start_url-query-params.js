@@ -35,11 +35,13 @@ describe(`[workbox-cli] lib/questions/ask-start_url-query-params.js`, function (
     const shouldAskForIgnoreURLParametersMatching = false;
     const {askQueryParametersInStartUrl} = proxyquire(MODULE_PATH, {
       inquirer: {
-        prompt: () =>
-          Promise.resolve({
-            [question_shouldAskForIgnoreURLParametersMatching]:
-              shouldAskForIgnoreURLParametersMatching,
-          }),
+        default: {
+          prompt: () =>
+            Promise.resolve({
+              [question_shouldAskForIgnoreURLParametersMatching]:
+                shouldAskForIgnoreURLParametersMatching,
+            }),
+        },
       },
     });
 
@@ -51,11 +53,13 @@ describe(`[workbox-cli] lib/questions/ask-start_url-query-params.js`, function (
     const shouldAskForIgnoreURLParametersMatching = true;
     const {askQueryParametersInStartUrl} = proxyquire(MODULE_PATH, {
       inquirer: {
-        prompt: () =>
-          Promise.resolve({
-            [question_shouldAskForIgnoreURLParametersMatching]:
-              shouldAskForIgnoreURLParametersMatching,
-          }),
+        default: {
+          prompt: () =>
+            Promise.resolve({
+              [question_shouldAskForIgnoreURLParametersMatching]:
+                shouldAskForIgnoreURLParametersMatching,
+            }),
+        },
       },
     });
 
@@ -72,12 +76,15 @@ describe(`[workbox-cli] lib/questions/ask-start_url-query-params.js`, function (
     const ignoreURLParametersMatching = '?source';
     const {askQueryParametersInStartUrl} = proxyquire(MODULE_PATH, {
       inquirer: {
-        prompt: () =>
-          Promise.resolve({
-            [question_shouldAskForIgnoreURLParametersMatching]:
-              shouldAskForIgnoreURLParametersMatching,
-            [question_ignoreURLParametersMatching]: ignoreURLParametersMatching,
-          }),
+        default: {
+          prompt: () =>
+            Promise.resolve({
+              [question_shouldAskForIgnoreURLParametersMatching]:
+                shouldAskForIgnoreURLParametersMatching,
+              [question_ignoreURLParametersMatching]:
+                ignoreURLParametersMatching,
+            }),
+        },
       },
     });
 
@@ -96,12 +103,15 @@ describe(`[workbox-cli] lib/questions/ask-start_url-query-params.js`, function (
     const ignoreURLParametersMatching = 'search,version,?language';
     const {askQueryParametersInStartUrl} = proxyquire(MODULE_PATH, {
       inquirer: {
-        prompt: () =>
-          Promise.resolve({
-            [question_shouldAskForIgnoreURLParametersMatching]:
-              shouldAskForIgnoreURLParametersMatching,
-            [question_ignoreURLParametersMatching]: ignoreURLParametersMatching,
-          }),
+        default: {
+          prompt: () =>
+            Promise.resolve({
+              [question_shouldAskForIgnoreURLParametersMatching]:
+                shouldAskForIgnoreURLParametersMatching,
+              [question_ignoreURLParametersMatching]:
+                ignoreURLParametersMatching,
+            }),
+        },
       },
     });
 
@@ -123,12 +133,15 @@ describe(`[workbox-cli] lib/questions/ask-start_url-query-params.js`, function (
     );
     const {askQueryParametersInStartUrl} = proxyquire(MODULE_PATH, {
       inquirer: {
-        prompt: () =>
-          Promise.resolve({
-            [question_shouldAskForIgnoreURLParametersMatching]:
-              shouldAskForIgnoreURLParametersMatching,
-            [question_ignoreURLParametersMatching]: ignoreURLParametersMatching,
-          }),
+        default: {
+          prompt: () =>
+            Promise.resolve({
+              [question_shouldAskForIgnoreURLParametersMatching]:
+                shouldAskForIgnoreURLParametersMatching,
+              [question_ignoreURLParametersMatching]:
+                ignoreURLParametersMatching,
+            }),
+        },
       },
     });
 
@@ -144,12 +157,15 @@ describe(`[workbox-cli] lib/questions/ask-start_url-query-params.js`, function (
     );
     const {askQueryParametersInStartUrl} = proxyquire(MODULE_PATH, {
       inquirer: {
-        prompt: () =>
-          Promise.resolve({
-            [question_shouldAskForIgnoreURLParametersMatching]:
-              shouldAskForIgnoreURLParametersMatching,
-            [question_ignoreURLParametersMatching]: ignoreURLParametersMatching,
-          }),
+        default: {
+          prompt: () =>
+            Promise.resolve({
+              [question_shouldAskForIgnoreURLParametersMatching]:
+                shouldAskForIgnoreURLParametersMatching,
+              [question_ignoreURLParametersMatching]:
+                ignoreURLParametersMatching,
+            }),
+        },
       },
     });
 
