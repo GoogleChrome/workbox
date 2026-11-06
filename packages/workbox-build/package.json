@@ -12,7 +12,7 @@
     "file manifest"
   ],
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.22.0"
   },
   "author": "Google's Web DevRel Team and Google's Aurora Team",
   "license": "MIT",
@@ -67,6 +67,6 @@
   },
   "types": "build/index.d.ts",
   "devDependencies": {
-    "@types/node": "^20.14.8"
+    "@types/node": "^22.20.5"
   }
 }

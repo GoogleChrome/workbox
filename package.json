@@ -20,7 +20,7 @@
     "@types/common-tags": "^1.8.4",
     "@types/estree": "^1.0.5",
     "@types/fs-extra": "^9.0.13",
-    "@types/node": "^20.14.8",
+    "@types/node": "^22.20.5",
     "@types/stringify-object": "^3.3.1",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
@@ -81,7 +81,7 @@
     "worker-plugin": "^5.0.1"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.22.0"
   },
   "homepage": "https://github.com/GoogleChrome/workbox#readme",
   "license": "MIT",
