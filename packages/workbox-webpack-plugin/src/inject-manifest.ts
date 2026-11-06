@@ -10,7 +10,7 @@ import {escapeRegExp} from 'workbox-build/build/lib/escape-regexp';
 import {replaceAndUpdateSourceMap} from 'workbox-build/build/lib/replace-and-update-source-map';
 import {validateWebpackInjectManifestOptions} from 'workbox-build/build/lib/validate-options';
 import prettyBytes from 'pretty-bytes';
-import stringify from 'fast-json-stable-stringify';
+import stringify from 'safe-stable-stringify';
 import upath from 'upath';
 import webpack from 'webpack';
 

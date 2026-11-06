@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {oneLine as ol} from 'common-tags';
+import {oneLine as ol} from './lib/one-line';
 import * as workboxBuild from 'workbox-build';
 import assert from 'assert';
 import {watch} from 'chokidar';

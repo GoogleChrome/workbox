@@ -17,7 +17,6 @@
     "@rollup/plugin-terser": "^1.0.2",
     "@types/babel__core": "^7.20.5",
     "@types/babel__preset-env": "^7.9.6",
-    "@types/common-tags": "^1.8.4",
     "@types/estree": "^1.0.5",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^22.20.5",

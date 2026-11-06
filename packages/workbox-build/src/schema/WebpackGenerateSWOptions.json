@@ -247,12 +247,6 @@
         },
         "dotAll": {
           "type": "boolean"
-        },
-        "hasIndices": {
-          "type": "boolean"
-        },
-        "unicodeSets": {
-          "type": "boolean"
         }
       },
       "additionalProperties": false,
@@ -260,14 +254,12 @@
         "dotAll",
         "flags",
         "global",
-        "hasIndices",
         "ignoreCase",
         "lastIndex",
         "multiline",
         "source",
         "sticky",
-        "unicode",
-        "unicodeSets"
+        "unicode"
       ]
     },
     "GoogleAnalyticsInitializeOptions": {
@@ -752,27 +744,15 @@
         "byteLength": {
           "type": "number"
         },
-        "maxByteLength": {
-          "type": "number"
-        },
-        "resizable": {
-          "type": "boolean"
-        },
-        "detached": {
-          "type": "boolean"
-        },
-        "__@toStringTag@522": {
+        "__@toStringTag@556": {
           "type": "string",
           "const": "ArrayBuffer"
         }
       },
       "additionalProperties": false,
       "required": [
-        "__@toStringTag@522",
-        "byteLength",
-        "detached",
-        "maxByteLength",
-        "resizable"
+        "__@toStringTag@556",
+        "byteLength"
       ]
     },
     "Blob": {

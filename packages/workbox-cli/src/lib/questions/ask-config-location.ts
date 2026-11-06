@@ -9,7 +9,7 @@
 import assert from 'assert';
 import {Answers, Question} from 'inquirer';
 import inquirer from 'inquirer';
-import {oneLine as ol} from 'common-tags';
+import {oneLine as ol} from '../one-line';
 
 import {constants} from '../constants';
 import {errors} from '../errors';

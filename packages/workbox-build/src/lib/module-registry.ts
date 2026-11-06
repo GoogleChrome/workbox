@@ -6,7 +6,7 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {oneLine as ol} from 'common-tags';
+import {oneLine as ol} from './one-line';
 import upath from 'upath';
 
 /**

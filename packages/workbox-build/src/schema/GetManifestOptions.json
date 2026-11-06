@@ -139,12 +139,6 @@
         },
         "dotAll": {
           "type": "boolean"
-        },
-        "hasIndices": {
-          "type": "boolean"
-        },
-        "unicodeSets": {
-          "type": "boolean"
         }
       },
       "additionalProperties": false,
@@ -152,14 +146,12 @@
         "dotAll",
         "flags",
         "global",
-        "hasIndices",
         "ignoreCase",
         "lastIndex",
         "multiline",
         "source",
         "sticky",
-        "unicode",
-        "unicodeSets"
+        "unicode"
       ]
     }
   },

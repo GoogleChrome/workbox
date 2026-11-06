@@ -10,8 +10,8 @@ import assert from 'assert';
 import {Answers} from 'inquirer';
 import inquirer from 'inquirer';
 import {glob} from 'glob';
-import ora from 'ora';
 import upath from 'upath';
+import yoctoSpinner from 'yocto-spinner';
 
 import {errors} from '../errors';
 import {constants} from '../constants';
@@ -56,7 +56,7 @@ async function askQuestion(globDirectory: string): Promise<Answers> {
   // We need to get a list of extensions corresponding to files in the directory
   // to use when asking the next question. That could potentially take some
   // time, so we show a spinner and explanatory text.
-  const spinner = ora({
+  const spinner = yoctoSpinner({
     text: `Examining files in ${globDirectory}...`,
     stream: process.stdout,
   }).start();

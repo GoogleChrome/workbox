@@ -29,28 +29,24 @@
   "bugs": "https://github.com/googlechrome/workbox/issues",
   "homepage": "https://github.com/GoogleChrome/workbox/tree/master/packages/workbox-cli",
   "dependencies": {
-    "chalk": "^4.1.0",
     "chokidar": "^6.0.0",
-    "common-tags": "^1.8.0",
     "fs-extra": "^11.4.1",
     "glob": "^14.0.4",
     "inquirer": "^14.2.5",
     "meow": "^14.1.0",
     "minimatch": "^11.0.5",
-    "ora": "^5.0.0",
     "pretty-bytes": "^7.2.0",
     "stringify-object": "^7.0.0",
+    "tiny-updater": "^3.7.0",
     "upath": "^3.0.8",
-    "update-notifier": "^7.3.1",
-    "workbox-build": "7.4.1"
+    "workbox-build": "7.4.1",
+    "yocto-spinner": "^1.2.2"
   },
   "workbox": {
     "packageType": "node_ts"
   },
   "devDependencies": {
-    "@types/common-tags": "^1.8.0",
     "@types/fs-extra": "^11.0.4",
-    "@types/node": "^22.20.5",
-    "@types/update-notifier": "^4.1.1"
+    "@types/node": "^22.20.5"
   }
 }

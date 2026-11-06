@@ -7,7 +7,8 @@
 */
 
 import objectStringify from 'stringify-object';
-import stripComments from 'strip-comments';
+
+import {stripComments} from './strip-comments';
 
 export function stringifyWithoutComments(obj: {[key: string]: any}): string {
   return objectStringify(obj, {
@@ -17,8 +18,7 @@ export function stringifyWithoutComments(obj: {[key: string]: any}): string {
         typeof _prop !== 'symbol' &&
         typeof _obj[_prop as string] === 'function'
       ) {
-        // Can't typify correctly stripComments
-        return stripComments(str); // eslint-disable-line
+        return stripComments(str);
       }
       return str;
     },

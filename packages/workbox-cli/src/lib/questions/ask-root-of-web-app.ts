@@ -10,7 +10,7 @@ import assert from 'assert';
 import fse from 'fs-extra';
 import {glob} from 'glob';
 import inquirer, {Answers} from 'inquirer';
-import {oneLine as ol} from 'common-tags';
+import {oneLine as ol} from '../one-line';
 
 import {errors} from '../errors';
 import {constants} from '../constants';
