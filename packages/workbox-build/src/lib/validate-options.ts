@@ -7,7 +7,7 @@
 */
 
 import {betterAjvErrors} from '@apideck/better-ajv-errors';
-import {oneLine as ol} from 'common-tags';
+import {oneLine as ol} from './one-line';
 import Ajv, {JSONSchemaType} from 'ajv';
 
 import {errors} from './errors';

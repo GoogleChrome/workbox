@@ -3,7 +3,8 @@
   "compilerOptions": {
     "composite": true,
     "esModuleInterop": true,
-    "module": "CommonJS",
+    "module": "node20",
+    "moduleResolution": "node16",
     "outDir": "./build",
     "resolveJsonModule": true,
     "rootDir": "./src",

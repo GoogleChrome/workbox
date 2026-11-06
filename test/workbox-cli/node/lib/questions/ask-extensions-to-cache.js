@@ -25,15 +25,17 @@ const MULTIPLE_EXTENSIONS = ['html', 'js'];
 describe(`[workbox-cli] lib/questions/ask-extensions-to-cache.js`, function () {
   it(`should reject with a 'no-file-extensions-found' error when the globDirectory doesn't contain any matching files`, async function () {
     const {askExtensionsToCache} = proxyquire(MODULE_PATH, {
-      glob: {
+      'glob': {
         glob: async () => [],
       },
-      ora: () => {
-        return {
-          start: () => {
-            return {stop: () => {}};
-          },
-        };
+      'yocto-spinner': {
+        default: () => {
+          return {
+            start: () => {
+              return {stop: () => {}};
+            },
+          };
+        },
       },
     });
 
@@ -47,18 +49,22 @@ describe(`[workbox-cli] lib/questions/ask-extensions-to-cache.js`, function () {
 
   it(`should reject with a 'no-file-extensions-selected' error when the answer is an empty array`, async function () {
     const {askExtensionsToCache} = proxyquire(MODULE_PATH, {
-      glob: {
+      'glob': {
         glob: async () => [`file.${SINGLE_EXTENSION}`],
       },
-      inquirer: {
-        prompt: () => Promise.resolve({[QUESTION_NAME]: []}),
+      'inquirer': {
+        default: {
+          prompt: () => Promise.resolve({[QUESTION_NAME]: []}),
+        },
       },
-      ora: () => {
-        return {
-          start: () => {
-            return {stop: () => {}};
-          },
-        };
+      'yocto-spinner': {
+        default: () => {
+          return {
+            start: () => {
+              return {stop: () => {}};
+            },
+          };
+        },
       },
     });
 
@@ -72,18 +78,22 @@ describe(`[workbox-cli] lib/questions/ask-extensions-to-cache.js`, function () {
 
   it(`should resolve with the expected value when the answer is a single extension`, async function () {
     const {askExtensionsToCache} = proxyquire(MODULE_PATH, {
-      glob: {
+      'glob': {
         glob: () => [`file.${SINGLE_EXTENSION}`],
       },
-      inquirer: {
-        prompt: () => Promise.resolve({[QUESTION_NAME]: [SINGLE_EXTENSION]}),
+      'inquirer': {
+        default: {
+          prompt: () => Promise.resolve({[QUESTION_NAME]: [SINGLE_EXTENSION]}),
+        },
       },
-      ora: () => {
-        return {
-          start: () => {
-            return {stop: () => {}};
-          },
-        };
+      'yocto-spinner': {
+        default: () => {
+          return {
+            start: () => {
+              return {stop: () => {}};
+            },
+          };
+        },
       },
     });
 
@@ -93,18 +103,22 @@ describe(`[workbox-cli] lib/questions/ask-extensions-to-cache.js`, function () {
 
   it(`should resolve with the expected value when the answer is multiple extensions`, async function () {
     const {askExtensionsToCache} = proxyquire(MODULE_PATH, {
-      glob: {
+      'glob': {
         glob: () => MULTIPLE_EXTENSIONS.map((extension) => `file.${extension}`),
       },
-      inquirer: {
-        prompt: () => Promise.resolve({[QUESTION_NAME]: MULTIPLE_EXTENSIONS}),
+      'inquirer': {
+        default: {
+          prompt: () => Promise.resolve({[QUESTION_NAME]: MULTIPLE_EXTENSIONS}),
+        },
       },
-      ora: () => {
-        return {
-          start: () => {
-            return {stop: () => {}};
-          },
-        };
+      'yocto-spinner': {
+        default: () => {
+          return {
+            start: () => {
+              return {stop: () => {}};
+            },
+          };
+        },
       },
     });
 
@@ -114,22 +128,26 @@ describe(`[workbox-cli] lib/questions/ask-extensions-to-cache.js`, function () {
 
   it(`should ignore the expected directories and extensions`, async function () {
     const {askExtensionsToCache} = proxyquire(MODULE_PATH, {
-      glob: {
+      'glob': {
         glob: (pattern, config) => {
           expect(config.ignore).to.eql(['**/node_modules/**', '**/*.map']);
 
           return MULTIPLE_EXTENSIONS.map((extension) => `file.${extension}`);
         },
       },
-      inquirer: {
-        prompt: () => Promise.resolve({[QUESTION_NAME]: MULTIPLE_EXTENSIONS}),
+      'inquirer': {
+        default: {
+          prompt: () => Promise.resolve({[QUESTION_NAME]: MULTIPLE_EXTENSIONS}),
+        },
       },
-      ora: () => {
-        return {
-          start: () => {
-            return {stop: () => {}};
-          },
-        };
+      'yocto-spinner': {
+        default: () => {
+          return {
+            start: () => {
+              return {stop: () => {}};
+            },
+          };
+        },
       },
     });
 

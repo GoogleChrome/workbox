@@ -31,7 +31,10 @@ describe(`[workbox-cli] lib/questions/ask-root-of-web-app.js`, function () {
         return Promise.reject(new Error(null));
       },
       'inquirer': {
-        prompt: () => Promise.resolve({[questionRootDirectory]: DIRECTORY}),
+        default: {
+          Separator: class {},
+          prompt: () => Promise.resolve({[questionRootDirectory]: DIRECTORY}),
+        },
       },
       'fs-extra': {
         stat: (path) => {
@@ -60,11 +63,14 @@ describe(`[workbox-cli] lib/questions/ask-root-of-web-app.js`, function () {
         return Promise.reject(new Error(null));
       },
       'inquirer': {
-        prompt: () =>
-          Promise.resolve({
-            [questionRootDirectory]: DIRECTORY,
-            [questionManualInput]: CHILD_DIRECTORY,
-          }),
+        default: {
+          Separator: class {},
+          prompt: () =>
+            Promise.resolve({
+              [questionRootDirectory]: DIRECTORY,
+              [questionManualInput]: CHILD_DIRECTORY,
+            }),
+        },
       },
       'fs-extra': {
         stat: (path) => {
@@ -91,7 +97,10 @@ describe(`[workbox-cli] lib/questions/ask-root-of-web-app.js`, function () {
         return Promise.resolve([]);
       },
       'inquirer': {
-        prompt: () => Promise.resolve({[questionRootDirectory]: DIRECTORY}),
+        default: {
+          Separator: class {},
+          prompt: () => Promise.resolve({[questionRootDirectory]: DIRECTORY}),
+        },
       },
       'fs-extra': {
         stat: (path) => {
@@ -116,11 +125,14 @@ describe(`[workbox-cli] lib/questions/ask-root-of-web-app.js`, function () {
         return Promise.resolve([]);
       },
       'inquirer': {
-        prompt: () =>
-          Promise.resolve({
-            [questionRootDirectory]: DIRECTORY,
-            [questionManualInput]: CHILD_DIRECTORY,
-          }),
+        default: {
+          Separator: class {},
+          prompt: () =>
+            Promise.resolve({
+              [questionRootDirectory]: DIRECTORY,
+              [questionManualInput]: CHILD_DIRECTORY,
+            }),
+        },
       },
       'fs-extra': {
         stat: (path) => {
@@ -143,11 +155,14 @@ describe(`[workbox-cli] lib/questions/ask-root-of-web-app.js`, function () {
         return Promise.resolve([]);
       },
       'inquirer': {
-        prompt: () =>
-          Promise.resolve({
-            [questionRootDirectory]: DIRECTORY,
-            [questionManualInput]: CHILD_DIRECTORY_WHITE_SPACE,
-          }),
+        default: {
+          Separator: class {},
+          prompt: () =>
+            Promise.resolve({
+              [questionRootDirectory]: DIRECTORY,
+              [questionManualInput]: CHILD_DIRECTORY_WHITE_SPACE,
+            }),
+        },
       },
       'fs-extra': {
         stat: (path) => {
@@ -170,11 +185,14 @@ describe(`[workbox-cli] lib/questions/ask-root-of-web-app.js`, function () {
         return Promise.resolve([]);
       },
       'inquirer': {
-        prompt: () =>
-          Promise.resolve({
-            [questionRootDirectory]: DIRECTORY,
-            [questionManualInput]: CHILD_DIRECTORY_BLANK,
-          }),
+        default: {
+          Separator: class {},
+          prompt: () =>
+            Promise.resolve({
+              [questionRootDirectory]: DIRECTORY,
+              [questionManualInput]: CHILD_DIRECTORY_BLANK,
+            }),
+        },
       },
       'fs-extra': {
         stat: (path) => {

@@ -6,20 +6,20 @@
   https://opensource.org/licenses/MIT.
 */
 
-import {oneLine as ol} from 'common-tags';
+import {oneLine as ol} from './lib/one-line';
 import * as workboxBuild from 'workbox-build';
 import assert from 'assert';
-import {default as chokidar, WatchOptions} from 'chokidar';
-import meow from 'meow';
+import {watch} from 'chokidar';
 import prettyBytes from 'pretty-bytes';
 import upath from 'upath';
 
 import {constants} from './lib/constants.js';
 import {errors} from './lib/errors.js';
+import {getWatchIgnored} from './lib/get-watch-ignored.js';
 import {logger} from './lib/logger.js';
 import {readConfig} from './lib/read-config.js';
 import {runWizard} from './lib/run-wizard.js';
-import {SupportedFlags} from './bin.js';
+import {CliParams} from './bin.js';
 
 interface BuildCommand {
   command: 'generateSW' | 'injectManifest';
@@ -61,9 +61,7 @@ async function runBuildCommand({command, config, watch}: BuildCommand) {
   }
 }
 
-export const app = async (
-  params: meow.Result<SupportedFlags>,
-): Promise<void> => {
+export const app = async (params: CliParams): Promise<void> => {
   // This should not be a user-visible error, unless meow() messes something up.
   assert(params && Array.isArray(params.input), errors['missing-input']);
 
@@ -114,19 +112,16 @@ export const app = async (
       const config = configFromDisk!;
       // Determine whether we're in --watch mode, or one-off mode.
       if (params?.flags?.watch) {
-        const options: WatchOptions = {
-          ignoreInitial: true,
-        };
-        if (config.globIgnores) {
-          options.ignored = config.globIgnores;
-        }
-        if (config.globDirectory) {
-          options.cwd = config.globDirectory;
-        }
-
         if (config.globPatterns) {
-          chokidar
-            .watch(config.globPatterns, options)
+          const rootDirectory = upath.resolve(config.globDirectory ?? '.');
+          watch(rootDirectory, {
+            ignoreInitial: true,
+            ignored: getWatchIgnored(
+              rootDirectory,
+              config.globPatterns,
+              config.globIgnores ?? ['**/node_modules/**/*'],
+            ),
+          })
             .on('all', async () => {
               await runBuildCommand({command, config, watch: true});
             })
@@ -134,7 +129,7 @@ export const app = async (
               await runBuildCommand({command, config, watch: true});
             })
             .on('error', (err) => {
-              logger.error(err.toString());
+              logger.error(String(err));
             });
         }
       } else {

@@ -43,14 +43,14 @@ describe(`[workbox-build] lib/bundle`, function () {
       rollupStub,
       '@babel/preset-env': sinon.stub(),
       'fs-extra': {
+        mkdtemp: sinon.stub().resolves('temporary-directory'),
         writeFile: sinon.stub().resolves(),
       },
       'upath': {
-        format: sinon.stub().callsFake((args) => `${args.dir}${args.base}`),
-        parse: sinon.stub().returns({base: 'sw.js', dir: ''}),
-      },
-      'tempy': {
-        file: sinon.stub().returns('sw.js'),
+        default: {
+          format: sinon.stub().callsFake((args) => `${args.dir}${args.base}`),
+          parse: sinon.stub().returns({base: 'sw.js', dir: ''}),
+        },
       },
       '@rollup/plugin-node-resolve': sinon.stub(),
       '@rollup/plugin-replace': sinon.stub(),

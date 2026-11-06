@@ -6,11 +6,16 @@
   https://opensource.org/licenses/MIT.
 */
 
-import chalk from 'chalk';
+import {styleText} from 'util';
 
 export const logger = {
-  debug: (...args: string[]): void => console.log(chalk.gray(...args)),
+  debug: (...args: string[]): void =>
+    console.log(styleText('gray', args.join(' '))),
   log: (...args: string[]): void => console.log(...args),
-  warn: (...args: string[]): void => console.warn(chalk.yellow(...args)),
-  error: (...args: string[]): void => console.error(chalk.red.bold(...args)),
+  warn: (...args: string[]): void =>
+    console.warn(styleText('yellow', args.join(' '), {stream: process.stderr})),
+  error: (...args: string[]): void =>
+    console.error(
+      styleText(['red', 'bold'], args.join(' '), {stream: process.stderr}),
+    ),
 };

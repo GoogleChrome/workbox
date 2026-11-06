@@ -23,7 +23,9 @@ describe(`[workbox-cli] lib/questions/ask-sw-dest.js`, function () {
   it(`should reject with a 'invalid-sw-dest' error when the answer is empty`, async function () {
     const {askSWDest} = proxyquire(MODULE_PATH, {
       inquirer: {
-        prompt: () => Promise.resolve({[QUESTION_NAME]: ''}),
+        default: {
+          prompt: () => Promise.resolve({[QUESTION_NAME]: ''}),
+        },
       },
     });
 
@@ -39,7 +41,9 @@ describe(`[workbox-cli] lib/questions/ask-sw-dest.js`, function () {
     const expectedAnswer = 'expected answer';
     const {askSWDest} = proxyquire(MODULE_PATH, {
       inquirer: {
-        prompt: () => Promise.resolve({[QUESTION_NAME]: expectedAnswer}),
+        default: {
+          prompt: () => Promise.resolve({[QUESTION_NAME]: expectedAnswer}),
+        },
       },
     });
 

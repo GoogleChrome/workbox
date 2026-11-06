@@ -18,12 +18,12 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.22.0"
   },
   "dependencies": {
-    "fast-json-stable-stringify": "^2.1.0",
-    "pretty-bytes": "^5.4.1",
-    "upath": "^1.2.0",
+    "pretty-bytes": "^7.2.0",
+    "safe-stable-stringify": "^3.0.0",
+    "upath": "^3.0.8",
     "webpack-sources": "^1.4.3",
     "workbox-build": "7.4.1"
   },
@@ -31,7 +31,7 @@
     "webpack": "^4.4.0 || ^5.91.0"
   },
   "devDependencies": {
-    "@types/node": "^20.14.8",
+    "@types/node": "^22.20.5",
     "@types/webpack": "^5.28.1"
   },
   "author": "Google's Web DevRel Team and Google's Aurora Team",

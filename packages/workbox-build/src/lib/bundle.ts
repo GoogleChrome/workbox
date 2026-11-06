@@ -10,11 +10,12 @@ import {babel} from '@rollup/plugin-babel';
 import {nodeResolve} from '@rollup/plugin-node-resolve';
 import {rollup, Plugin} from 'rollup';
 import terser from '@rollup/plugin-terser';
-import {writeFile} from 'fs-extra';
+import {mkdtemp, realpath, writeFile} from 'fs-extra';
+import {tmpdir} from 'os';
+import {join} from 'path';
 import omt from '@trickfilm400/rollup-plugin-off-main-thread';
 import presetEnv from '@babel/preset-env';
 import replace from '@rollup/plugin-replace';
-import tempy from 'tempy';
 import upath from 'upath';
 
 import {GeneratePartial, RequiredSWDestPartial} from '../types';
@@ -39,7 +40,12 @@ export async function bundle({
   // a custom file system.
   const {dir, base} = upath.parse(swDest);
 
-  const temporaryFile = tempy.file({name: base});
+  // The prefix can't contain "workbox", or manualChunks below would treat this
+  // file as part of the Workbox runtime.
+  const temporaryDirectory = await mkdtemp(
+    join(await realpath(tmpdir()), 'sw-'),
+  );
+  const temporaryFile = join(temporaryDirectory, base);
   await writeFile(temporaryFile, unbundledCode);
 
   const plugins = [

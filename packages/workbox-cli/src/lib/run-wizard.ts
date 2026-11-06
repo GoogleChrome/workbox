@@ -7,7 +7,7 @@
 */
 
 import fse from 'fs-extra';
-import {oneLine as ol} from 'common-tags';
+import {oneLine as ol} from './one-line';
 import stringifyObject from 'stringify-object';
 
 import {askQuestions} from './questions/ask-questions';

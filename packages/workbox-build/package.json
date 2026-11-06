@@ -12,7 +12,7 @@
     "file manifest"
   ],
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.22.0"
   },
   "author": "Google's Web DevRel Team and Google's Aurora Team",
   "license": "MIT",
@@ -23,28 +23,26 @@
   "bugs": "https://github.com/GoogleChrome/workbox/issues",
   "homepage": "https://github.com/GoogleChrome/workbox",
   "dependencies": {
-    "@apideck/better-ajv-errors": "^0.3.1",
-    "@babel/core": "^7.24.4",
-    "@babel/preset-env": "^7.11.0",
-    "@babel/runtime": "^7.27.1",
+    "@apideck/better-ajv-errors": "^0.3.7",
+    "@babel/core": "^7.29.13",
+    "@babel/preset-env": "^7.29.7",
     "@rollup/plugin-babel": "^7.1.0",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-replace": "^6.0.3",
-    "@rollup/plugin-terser": "^1.0.0",
-    "@trickfilm400/rollup-plugin-off-main-thread": "^3.0.0-pre1",
-    "ajv": "^8.6.0",
-    "common-tags": "^1.8.0",
-    "eta": "^4.5.1",
-    "fast-json-stable-stringify": "^2.1.0",
-    "fs-extra": "^9.0.1",
-    "glob": "^13.0.6",
-    "pretty-bytes": "^5.3.0",
-    "rollup": "^4.53.3",
-    "source-map": "^0.8.0-beta.0",
-    "stringify-object": "^3.3.0",
-    "strip-comments": "^2.0.1",
-    "tempy": "^1.0.1",
-    "upath": "^1.2.0",
+    "@rollup/plugin-terser": "^1.0.2",
+    "@trickfilm400/rollup-plugin-off-main-thread": "^4.0.0",
+    "acorn": "^8.19.0",
+    "ajv": "^8.20.0",
+    "eta": "^4.6.0",
+    "fs-extra": "^11.4.1",
+    "glob": "^14.0.4",
+    "pretty-bytes": "^7.2.0",
+    "rollup": "^4.67.5",
+    "safe-stable-stringify": "^3.0.0",
+    "source-map": "^0.8.0",
+    "stringify-object": "^7.0.0",
+    "type-fest": "^3.13.1",
+    "upath": "^3.0.8",
     "workbox-background-sync": "7.4.1",
     "workbox-broadcast-update": "7.4.1",
     "workbox-cacheable-response": "7.4.1",
@@ -67,6 +65,6 @@
   },
   "types": "build/index.d.ts",
   "devDependencies": {
-    "@types/node": "^20.14.8"
+    "@types/node": "^22.20.5"
   }
 }
