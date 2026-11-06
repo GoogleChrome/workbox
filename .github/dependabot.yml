@@ -3,7 +3,6 @@ updates:
   - package-ecosystem: 'npm'
     directories:
       - '/'
-      - '/packages'
     schedule:
       interval: 'monthly'
     open-pull-requests-limit: 2

@@ -5,7 +5,6 @@
   },
   "description": "Top-level scripts and dependencies for the workbox monorepo. Not meant to be published to npm.",
   "devDependencies": {
-    "@babel/cli": "^7.24.1",
     "@babel/core": "^7.24.4",
     "@babel/preset-env": "^7.11.0",
     "@google-cloud/storage": "^5.20.5",
@@ -16,14 +15,12 @@
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-replace": "^6.0.3",
     "@rollup/plugin-terser": "^1.0.0",
-    "@rollup/plugin-typescript": "^12.3.0",
     "@types/babel__core": "^7.20.5",
     "@types/babel__preset-env": "^7.9.6",
     "@types/common-tags": "^1.8.4",
-    "@types/eslint": "^8.56.10",
     "@types/estree": "^1.0.5",
     "@types/fs-extra": "^9.0.13",
-    "@types/node": "^20.14.8",
+    "@types/node": "^22.20.5",
     "@types/stringify-object": "^3.3.1",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
@@ -31,7 +28,6 @@
     "babel-plugin-transform-async-to-promises": "^0.8.18",
     "babylon": "^6.18.0",
     "body-parser": "^1.20.2",
-    "bytes": "^3.1.2",
     "camelcase": "^6.3.0",
     "chai": "^4.4.1",
     "chai-as-promised": "^7.1.1",
@@ -41,7 +37,6 @@
     "comlink": "^4.4.1",
     "common-tags": "^1.8.2",
     "copy-webpack-plugin": "^6.4.1",
-    "coveralls": "^3.1.1",
     "del": "^5.1.0",
     "depcheck": "^1.4.7",
     "eslint": "^7.32.0",
@@ -54,7 +49,6 @@
     "glob": "^13.0.6",
     "globby": "^11.1.0",
     "gulp": "^4.0.2",
-    "gzip-size": "^5.1.1",
     "html-webpack-plugin-v4": "npm:html-webpack-plugin@^4.5.0",
     "html-webpack-plugin-v5": "npm:html-webpack-plugin@^5.0.0-alpha.14",
     "husky": "^7.0.4",
@@ -79,7 +73,6 @@
     "service-worker-mock": "^1.9.3",
     "sinon": "^9.0.3",
     "tempy": "^1.0.1",
-    "type-fest": "^3.13.1",
     "typescript": "^4.9.5",
     "typescript-json-schema": "^0.63.0",
     "upath": "^1.2.0",
@@ -88,7 +81,7 @@
     "worker-plugin": "^5.0.1"
   },
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.22.0"
   },
   "homepage": "https://github.com/GoogleChrome/workbox#readme",
   "license": "MIT",
@@ -125,5 +118,8 @@
     "test_server": "gulp test_server",
     "version": "gulp build && git add -A packages"
   },
-  "version": ""
+  "version": "",
+  "workspaces": [
+    "packages/*"
+  ]
 }
