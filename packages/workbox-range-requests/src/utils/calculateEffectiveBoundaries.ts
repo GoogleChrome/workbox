@@ -35,7 +35,12 @@ function calculateEffectiveBoundaries(
 
   const blobSize = blob.size;
 
-  if ((end && end > blobSize) || (start && start < 0)) {
+  if (
+    (end && end > blobSize) ||
+    (start && start < 0) ||
+    // A range that starts at or past the end of the blob can't be satisfied.
+    (start !== undefined && start >= blobSize)
+  ) {
     throw new WorkboxError('range-not-satisfiable', {
       size: blobSize,
       end,

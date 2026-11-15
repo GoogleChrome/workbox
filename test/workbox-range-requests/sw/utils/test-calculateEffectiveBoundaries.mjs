@@ -60,6 +60,15 @@ describe(`calculateEffectiveBoundaries()`, function () {
     );
   });
 
+  it(`should throw when it's called with a 'start' parameter equal to or larger than the blob's size`, async function () {
+    for (const start of [SOURCE_BLOB_SIZE, SOURCE_BLOB_SIZE + 1]) {
+      await expectError(
+        () => calculateEffectiveBoundaries(SOURCE_BLOB, start),
+        'range-not-satisfiable',
+      );
+    }
+  });
+
   it(`should return the expected boundaries when it's called with valid parameters`, function () {
     const testCases = [
       [

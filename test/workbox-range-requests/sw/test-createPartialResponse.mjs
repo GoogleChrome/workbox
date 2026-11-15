@@ -51,6 +51,20 @@ describe(`createPartialResponse()`, function () {
       expect(response.status).to.equal(416);
     });
 
+    it(`should return a Response with status 416 when the range starts at or past the end of the body`, async function () {
+      for (const range of [
+        `bytes=${SOURCE_BLOB_SIZE}-`,
+        `bytes=${SOURCE_BLOB_SIZE + 1}-`,
+      ]) {
+        const request = new Request('/', {headers: {range}});
+        const response = await createPartialResponse(
+          request,
+          new Response(SOURCE_BLOB),
+        );
+        expect(response.status).to.equal(416, `for '${range}'`);
+      }
+    });
+
     it(`should return the expected Response when it's called with valid parameters`, async function () {
       const response = await createPartialResponse(
         VALID_REQUEST,
