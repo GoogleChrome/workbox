@@ -16,7 +16,6 @@ describe(`[workbox-cli] package.json`, function () {
         upath.join(__dirname, '..', '..', '..', 'packages', 'workbox-cli'),
         {
           ignoreDirs: ['build'],
-          ignoreMatches: ['@babel/runtime'],
         },
         (unusedDeps) => {
           if (unusedDeps.dependencies.length > 0) {
