@@ -43,7 +43,6 @@
     "stringify-object": "^3.3.0",
     "strip-comments": "^2.0.1",
     "tempy": "^1.0.1",
-    "type-fest": "^3.13.1",
     "upath": "^1.2.0",
     "workbox-background-sync": "7.4.1",
     "workbox-broadcast-update": "7.4.1",
